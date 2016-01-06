@@ -25,24 +25,22 @@ public class UsageExample {
 	
 	// load an ontology through the OWL API
 	File file = new File(".");
-	File ontologyfile = new java.io.File(
-							Paths.get(file.getAbsoluteFile().getParentFile().getAbsolutePath(),
+	File ontologyfile = new java.io.File(Paths.get(file.getAbsoluteFile().getParentFile().getAbsolutePath(),
 									  "resource", 
 									  "TinyExampleOntology.owl").toString());
 	OWLOntology tinyExampleOntology = 
 			OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
 	
 	
-	// provide a reasoner and a reasoner factory to be used for justification finding (here we use ELK)
+	// indicate a reasoner and a reasoner factory to be used for justification finding (here we use ELK)
 	OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
 	Logger.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
 	OWLReasoner reasoner = reasonerFactory.createReasoner(tinyExampleOntology);
     
-    
+    // indicate the IRIs of some relevant classes/roles in the ontology
   	OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
   	String ontologyuri = "http://www.semanticweb.org/marvin/ontologies/2016/0/untitled-ontology-490#";
   	OWLClass animalLover = dataFactory.getOWLClass(IRI.create(ontologyuri + "AnimalLover"));
-  	OWLClass heart = dataFactory.getOWLClass(IRI.create(ontologyuri + "Heart"));
   	OWLClass organ = dataFactory.getOWLClass(IRI.create(ontologyuri + "Organ"));
   	OWLObjectProperty hasBodyPart = dataFactory.getOWLObjectProperty(IRI.create(ontologyuri + "hasBodyPart"));
   	OWLObjectProperty has = dataFactory.getOWLObjectProperty(IRI.create(ontologyuri + "has"));
