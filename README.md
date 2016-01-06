@@ -1,5 +1,5 @@
 # verbalizer
-= - Project for the Verbalization of Derivations in Description Logics. =
+## - Project for the Verbalization of Derivations in Description Logics. ##
 
 Note that this software is under development and constantly changing. In case of any queries, please contact [the author](https://www.uni-ulm.de/in/ki/staff/marvinschiller.html).
 
