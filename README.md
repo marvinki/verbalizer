@@ -9,9 +9,11 @@ An example for how to use this software can be found in:
 
 This software is made available under the [Apache 2.0 license](https://github.com/marvinki/verbalizer/blob/master/LICENSE). It uses the following libraries in unmodified form:
 
+-------------
 1) | OWL API
    | [http://owlapi.sourceforge.net/](http://owlapi.sourceforge.net/).
    | The OWL API is open source software and available under the LGPL and Apache licenses.
+------------
 2) Java API for WordNet Searching (JAWS)
 Use and distribution is permitted by the following [license](http://morphadorner.northwestern.edu/licenses/thirdparty/jaws.html)
 3) Protege libraries
