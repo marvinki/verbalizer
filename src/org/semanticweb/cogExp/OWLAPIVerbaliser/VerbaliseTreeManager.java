@@ -304,13 +304,13 @@ public enum VerbaliseTreeManager {
 				// and the source concept is new.
 				String result = makeUppercaseStart(VerbalisationManager.verbalise((OWLObject) newformula)); 
 				String intString = VerbalisationManager.verbalise(superclass);
-				if (superclass instanceof OWLObjectSomeValuesFrom)
-					intString = "something that " + intString; 
 				if (intString.length()>14){
 					if (intString.substring(0,14).equals("something that")){
 						intString = intString.substring(15);
 					}
 				}
+				if (superclass instanceof OWLObjectSomeValuesFrom)
+					intString = "something that " + intString; 
 				result += ", therefore being " + intString; 
 				return result;
 				}
@@ -342,7 +342,8 @@ public enum VerbaliseTreeManager {
 				String result = "";
 				result += "Since " + VerbalisationManager.verbalise(prem1);
 				result += ", which ";
-				result += "is "; // TODO -- should only be there if needed!
+				if (!(superclass instanceof OWLObjectSomeValuesFrom))
+					result += "is "; // TODO -- should only be there if needed!
 				result += VerbalisationManager.verbalise(prem2.getSuperClass());
 				result += ", "; 
 				result += VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); 

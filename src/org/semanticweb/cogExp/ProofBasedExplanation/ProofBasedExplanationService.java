@@ -89,7 +89,8 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 * @return				-- a text string containing the explanation
 	 */
 	public static String getExplanationResult(OWLAxiom axiom, OWLReasoner reasoner, OWLReasonerFactory factory, OWLOntology ontology){
-		return getExplanationResult(axiom, reasoner, factory, ontology);
+		WordNetQuery.INSTANCE.disableDict();
+		return getExplanationResult(axiom, reasoner, factory, ontology,"");
 	}
 
 }

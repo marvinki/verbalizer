@@ -779,7 +779,7 @@ public enum VerbalisationManager {
 				OWLAnnotationAssertionAxiom annotax = (OWLAnnotationAssertionAxiom) ax;
 				OWLAnnotation annot = annotax.getAnnotation();
 				if (annot.getProperty().getIRI().getFragment().toString().equals("label")){
-						System.out.println("assessing label  " + annot.getValue().toString());
+						// System.out.println("assessing label  " + annot.getValue().toString());
 						if (annot.getValue().toString().substring(0,4).equals("the ")
 								|| annot.getValue().toString().substring(0,3).equals("an ")
 								|| annot.getValue().toString().substring(0,2).equals("a ")
@@ -822,7 +822,10 @@ public enum VerbalisationManager {
 	 if (axiom instanceof OWLSubClassOfAxiom){
 		   explanation = explanationGenerator.getExplanation(dataFactory.getOWLObjectIntersectionOf(((OWLSubClassOfAxiom) axiom).getSubClass(), ( (OWLSubClassOfAxiom) axiom).getSuperClass().getObjectComplementOf()));
 	 }
-		
+	 if (explanation.size()==0){
+		 return "Justifiction finding did not find any premises to derive the axiom. This suggests that the derivation does not hold.";
+	 }
+	 
 	// convert to internal format
 	 OWLFormula axiomFormula;
 	 List<OWLFormula> justificationFormulas = new ArrayList<OWLFormula>();

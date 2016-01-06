@@ -107,7 +107,11 @@ public class JustificationComputation {
 		OWLReasonerFactory reasonerFactory = null;
 		OWLReasoner reasoner = null;
 		
-		
+		if (reasoner_select!=null && reasoner_select.equals("elk")){
+			reasonerFactory = new ElkReasonerFactory();
+			// OWLReasonerConfiguration config = new SimpleConfiguration(10000);
+	        reasoner = reasonerFactory.createReasoner(ontology);
+		}
 		
 		// To generate an inferred ontology we use implementations of
         // inferred axiom generators

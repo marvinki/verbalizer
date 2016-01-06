@@ -562,14 +562,11 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 				e.printStackTrace();
 			}
 			}
-			// initialtree.sequentDeltaPrint();
 			limit--;
-			// HACKY! REMOVE THIS WHEN DONE WITH DEBUGGING!
-			// if (limit < 500) throw new ArrayIndexOutOfBoundsException();
 		}
-		// System.out.println("Remaining open nodes: "+ initialtree.getOpenNodes().size());
+		
 		long endtime = System.currentTimeMillis();
-		System.out.println("Time taken was " + (endtime - starttime) + "ms.");
+		// System.out.println("Time taken was " + (endtime - starttime) + "ms.");
 					return null;
 	}
 	
