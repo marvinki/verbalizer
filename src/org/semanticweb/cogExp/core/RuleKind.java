@@ -1,0 +1,5 @@
+package org.semanticweb.cogExp.core;
+
+public enum RuleKind {
+	ELIMINATION, PSEUDOELIMINATION, INTRODUCTION, SPLITTING, TERMINATING, FORWARD, BACKWARD;
+}
