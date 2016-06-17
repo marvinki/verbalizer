@@ -1,14 +1,18 @@
 package org.semanticweb.cogExp.FormulaConverter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPIManagerManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLAtom;
 import org.semanticweb.cogExp.OWLFormulas.OWLClassName;
 import org.semanticweb.cogExp.OWLFormulas.OWLDataRan;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLIndividualName;
+import org.semanticweb.cogExp.OWLFormulas.OWLInteger;
 import org.semanticweb.cogExp.OWLFormulas.OWLLiteralType;
 import org.semanticweb.cogExp.OWLFormulas.OWLLiteralValue;
 import org.semanticweb.cogExp.OWLFormulas.OWLRoleName;
@@ -31,7 +35,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.vocab.XSDVocabulary;
 
 public enum ConversionManager {
@@ -57,8 +60,8 @@ public enum ConversionManager {
 		List<OWLFormula> tail = formula.getArgs();
 		// System.out.println("TRANSFORMING:  " + this);
 		OWLObject result;
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		// OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		if (head.isSymb()){
 			switch ((OWLSymb) head){
 			case EQUIV:  	
@@ -142,24 +145,23 @@ public enum ConversionManager {
 			case DATAHASVALUE:
 				OWLFormula propname = (OWLFormula) tail.get(0);
 				OWLDataPropertyExpression prop = (OWLDataPropertyExpression) toOWLAPI((OWLDataPropertyName) propname.getHead());
-				OWLLiteralValue literalvalue = (OWLLiteralValue) tail.get(1).getHead();
+				OWLAtom tailhead = tail.get(1).getHead();
+				// System.out.println("tailhead " + tailhead);
+				OWLLiteralValue literalvalue = (OWLLiteralValue) tailhead;
 				OWLLiteral lit = (OWLLiteral) toOWLAPI(literalvalue);
 				OWLDataHasValue expr = dataFactory.getOWLDataHasValue(prop,lit);
 				result = expr;
 				break;
 			case OBJECTHASVALUE:
 				OWLFormula propname2 = (OWLFormula) tail.get(0);
+				// System.out.println("DEBUG " + propname2);
 				OWLObjectPropertyExpression prop2 = (OWLObjectPropertyExpression) toOWLAPI(((OWLObjectPropertyName) propname2.getHead()));
+				// System.out.println("DEBUG (2) " + prop2);
 				OWLIndividualName indiv = (OWLIndividualName) tail.get(1).getHead();
 				OWLIndividual ni = (OWLIndividual) toOWLAPI(indiv);
 				OWLObjectHasValue expr2 = dataFactory.getOWLObjectHasValue(prop2,ni);
 				result = expr2;
 				break;
-				// TODO!!!!!
-				// OWLDataHasValue odhv = (OWLDataHasValue) ce;
-				// OWLDataPropertyExpression prop = odhv.getProperty();
-				// OWLLiteral literal = odhv.getValue();
-				// tail.get(0)
 			case DISJ:
 				// TODO: Attention, this only handles the binary case!
 				// System.out.println("case neg");
@@ -172,10 +174,32 @@ public enum ConversionManager {
 				OWLClassExpression classD = (OWLClassExpression) toOWLAPI(tail.get(1));
 				result = dataFactory.getOWLObjectPropertyDomainAxiom(propD,classD);
 				break;	
+			case RANGE:
+				OWLObjectPropertyExpression propR = (OWLObjectPropertyExpression) toOWLAPI(tail.get(0));
+				OWLClassExpression classR = (OWLClassExpression) toOWLAPI(tail.get(1));
+				result = dataFactory.getOWLObjectPropertyRangeAxiom(propR,classR);
+				break;	
+			case OBJECTEXACTCARDINALITY:
+				OWLObjectPropertyExpression propEx = (OWLObjectPropertyExpression) toOWLAPI(tail.get(1));
+				OWLFormula owlintform = tail.get(0);
+				OWLInteger owlint = (OWLInteger) owlintform.getHead();
+				int cardinality = owlint.getValue();
+				result = dataFactory.getOWLObjectExactCardinality(cardinality, propEx);
 			case SUBPROPERTYOF:
-				OWLObjectPropertyExpression subp1 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(0));
-				OWLObjectPropertyExpression subp2 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(1));
-				result = dataFactory.getOWLSubObjectPropertyOfAxiom(subp1,subp2);
+				if (tail.get(0).getHead().equals(OWLSymb.SUBPROPERTYCHAIN)){
+					List<OWLObjectPropertyExpression> props = new ArrayList<OWLObjectPropertyExpression>();
+					for (OWLFormula form : tail.get(0).getArgs()){
+						OWLObjectPropertyExpression sub = (OWLObjectPropertyExpression) toOWLAPI(form);
+						props.add(sub);
+					}
+					OWLObjectPropertyExpression subp2 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(1));
+					result = dataFactory.getOWLSubPropertyChainOfAxiom(props, subp2);
+				}
+				else{
+					OWLObjectPropertyExpression subp1 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(0));
+					OWLObjectPropertyExpression subp2 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(1));
+					result = dataFactory.getOWLSubObjectPropertyOfAxiom(subp1,subp2);
+				}
 				break;		
 			default: 
 				result = dataFactory.getOWLNothing();
@@ -205,22 +229,19 @@ public enum ConversionManager {
 	
 	
 	private static OWLObject toOWLAPI(OWLSymb symb){
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		return dataFactory.getOWLThing();
 		
 	}
 	
 	
 	private static OWLObject toOWLAPI(OWLClassName classname){
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		return dataFactory.getOWLClass(IRI.create(classname.getOntologyname()));
 	}
 	
 	private static OWLObject toOWLAPI(OWLRoleName rolename){
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		// if (dataproperty)
 		//	return dataFactory.getOWLDataProperty(IRI.create(ontologyname));
 		// else 
@@ -228,26 +249,22 @@ public enum ConversionManager {
 	}
 	
 	private static OWLObject toOWLAPI(OWLIndividualName name){
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		return dataFactory.getOWLNamedIndividual(IRI.create(name.getOntologyname()));	
 	}
 	
 	private static OWLObject toOWLAPI(OWLDataPropertyName name){
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		return dataFactory.getOWLDataProperty(IRI.create(name.getOntologyname()));
 	}
 	
 	private static OWLObject toOWLAPI(OWLObjectPropertyName name){
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory=manager.getOWLDataFactory();
-		return dataFactory.getOWLDataProperty(IRI.create(name.getOntologyname()));
+		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
+		return dataFactory.getOWLObjectProperty(IRI.create(name.getOntologyname()));
 	}
 	
 	private static OWLObject toOWLAPI(OWLLiteralValue val){
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		OWLLiteral lit = dataFactory.getOWLLiteral(val.getValue(),ConversionManager.literaltypeToDatatype(val.getType()));
 		return lit;	
 	}
@@ -286,8 +303,7 @@ public enum ConversionManager {
 	}
 	
 	public static OWLDatatype literaltypeToDatatype(OWLLiteralType littype){
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		if (littype.equals(OWLLiteralType.BOOLEAN)){
 			return dataFactory.getBooleanOWLDatatype();
 		}

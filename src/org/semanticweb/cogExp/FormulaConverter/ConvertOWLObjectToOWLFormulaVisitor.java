@@ -11,6 +11,8 @@ import org.semanticweb.cogExp.OWLFormulas.OWLDataRan;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLIndividualName;
 import org.semanticweb.cogExp.OWLFormulas.OWLInteger;
+import org.semanticweb.cogExp.OWLFormulas.OWLLiteralType;
+import org.semanticweb.cogExp.OWLFormulas.OWLLiteralValue;
 import org.semanticweb.cogExp.OWLFormulas.OWLRoleName;
 import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -40,6 +42,7 @@ import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLDataUnionOf;
 import org.semanticweb.owlapi.model.OWLDatatype;
@@ -158,14 +161,17 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLObjectHasValue ce) {
+		// System.out.println("DEBUG visit OWLObject has value " + ce);
 		OWLObjectHasValue odhv = (OWLObjectHasValue) ce;
 		OWLObjectPropertyExpression prop = odhv.getProperty();
 		OWLIndividual indiv = odhv.getValue();
-		return OWLFormula.createFormulaObjectProperty(prop.asOWLObjectProperty().getIRI().getFragment(),
+		OWLFormula formula = OWLFormula.createFormulaObjectProperty(prop.asOWLObjectProperty().getIRI().getFragment(),
 									      prop.asOWLObjectProperty().getIRI().toString(),
 										  indiv.asOWLNamedIndividual().getIRI().getFragment(),
 										  indiv.asOWLNamedIndividual().getIRI().toString()
 										  );
+		// System.out.println("returning " + formula);
+		return formula;
 	}
 
 	public OWLFormula visit(OWLObjectMinCardinality card) {
@@ -212,8 +218,13 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLDataSomeValuesFrom arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		OWLDataPropertyExpression prop = arg0.getProperty();
+		OWLDataRange filler = arg0.getFiller();
+		OWLFormula formulaprop = OWLFormula.createFormulaDataProperty(prop.asOWLDataProperty().getIRI().getFragment(), 
+				prop.asOWLDataProperty().getIRI().toString());
+		OWLFormula formulafiller = filler.accept(this);
+		System.out.println("returning " + OWLFormula.createFormula(OWLSymb.DATASOMEVALUESFROM,formulaprop, formulafiller));
+		return OWLFormula.createFormula(OWLSymb.DATASOMEVALUESFROM,formulaprop, formulafiller);
 	}
 
 	public OWLFormula visit(OWLDataAllValuesFrom arg0) {
@@ -222,13 +233,16 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLDataHasValue odhv) {
+		System.out.println("DEBUG!  conversion visiting " + odhv);
 		OWLDataPropertyExpression prop = odhv.getProperty();
 		OWLLiteral literal = odhv.getValue();
 		prop.asOWLDataProperty().getIRI();
-		return OWLFormula.createFormulaDataProperty(prop.asOWLDataProperty().getIRI().getFragment(),
+		OWLFormula formula = OWLFormula.createFormulaDataProperty(prop.asOWLDataProperty().getIRI().getFragment(),
 										 prop.asOWLDataProperty().getIRI().toString(),
 										 literal.getLiteral(),
 										 ConversionManager.datatypeToLiteraltype(literal.getDatatype()));
+		System.out.println("DEBUG!  conversion returning " + formula);
+		return formula;
 	}
 
 	public OWLFormula visit(OWLDataMinCardinality arg0) {
@@ -324,8 +338,8 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 
 	public OWLFormula visit(OWLObjectPropertyRangeAxiom ax) {
 		OWLFormula f = OWLFormula.createFormula(OWLSymb.RANGE,
-				ax.getRange().accept(this),
-				ax.getProperty().accept(this));
+				ax.getProperty().accept(this),
+				ax.getRange().accept(this));
 		// System.out.println(f2);
 		return f;
 	}
@@ -346,7 +360,7 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 		OWLFormula f3 = OWLFormula.createFormula(OWLSymb.SUBPROPERTYOF,
 				ax.getSubProperty().accept(this),
 				ax.getSuperProperty().accept(this));
-		// System.out.println(f2);
+		// System.out.println(" CREATED " + f3);
 		return f3;
 	}
 
@@ -436,12 +450,14 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 
 	public OWLFormula visit(OWLSubPropertyChainOfAxiom ax) {
 		List<OWLObjectPropertyExpression> propertychain = ax.getPropertyChain();
+		OWLObjectPropertyExpression superproperty = ax.getSuperProperty();
 		List<OWLFormula> propformulachain = new ArrayList<OWLFormula>();
 		for(OWLObjectPropertyExpression propexpr : propertychain){
 			propformulachain.add(propexpr.accept(this));
 		}
-		OWLFormula f2 = OWLFormula.createFormula(OWLSymb.SUBPROPERTYCHAIN,propformulachain);
-		// System.out.println(f2);
+		OWLFormula f2 = OWLFormula.createFormula(OWLSymb.SUBPROPERTYOF,
+				OWLFormula.createFormula(OWLSymb.SUBPROPERTYCHAIN,propformulachain),superproperty.accept(this));
+		// System.out.println("DEBUG CONVERTER CHAIN " + f2);
 		return f2;
 	}
 
@@ -494,8 +510,14 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLDataOneOf arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("convert dataoneof " + arg0);
+		Set<OWLLiteral> individuals = arg0.getValues();
+		List<OWLFormula> literalformulas = new ArrayList<OWLFormula>();
+		for (OWLLiteral indiv : individuals){
+			OWLFormula newindividiualFormula = indiv.accept(this);
+			literalformulas.add(newindividiualFormula);
+		}
+		return OWLFormula.createFormula(OWLSymb.DATAONEOF,literalformulas);
 	}
 
 	public OWLFormula visit(OWLDataIntersectionOf arg0) {
@@ -514,8 +536,10 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLLiteral arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		OWLLiteralType type = ConversionManager.datatypeToLiteraltype(arg0.getDatatype());
+		OWLLiteralValue lit = new OWLLiteralValue(arg0.getLiteral(),type);
+		OWLFormula litformula = new OWLFormula(lit);
+		return litformula;
 	}
 
 	public OWLFormula visit(OWLFacetRestriction arg0) {
