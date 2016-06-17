@@ -2,13 +2,23 @@ package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.util.ArrayList;
 import java.util.List;
+
+/*
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+*/
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLDecoder;
 
 public enum WordnetTmpdirManager {
@@ -53,14 +63,25 @@ public enum WordnetTmpdirManager {
 	
 	private static void createTmps(File newTempdir, String input, String output) throws IOException{
 		InputStream input1 = WordnetTmpdirManager.INSTANCE.getClass().getClassLoader().getResourceAsStream(input);
+		if (input1==null){
+			/*
+			System.out.println(FrameworkUtil.getBundle(WordnetTmpdirManager.INSTANCE.getClass()));
+			BundleContext context = FrameworkUtil.getBundle(WordnetTmpdirManager.class).getBundleContext();
+			System.out.println(FrameworkUtil.getBundle(WordnetTmpdirManager.class));
+			URL url = context.getBundle().getResource("resource/data.adj");
+			input1 = url.openConnection().getInputStream();
+			*/
+		}
 		File target1 = new File(output);
 		target1.createNewFile();
+		System.out.println("input " + input);
+		System.out.println("copying files " + input1 + " TO " + target1);
 		copyFileUsingStream(input1,target1);
 	}
 		
 	public static void createTmps(File newTempdir, List<String> names) throws IOException{
 		for (String str : names){
-			createTmps(newTempdir,"resources"  + File.separator + str,
+			createTmps(newTempdir,"resource"  + File.separator + str,
 			        		newTempdir.getAbsolutePath().toString() + File.separator + str);
 			}
 	}
