@@ -77,7 +77,6 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLObjectVisitorEx;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLPropertyRange;
 import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
@@ -101,10 +100,21 @@ import org.semanticweb.owlapi.model.SWRLRule;
 import org.semanticweb.owlapi.model.SWRLSameIndividualAtom;
 import org.semanticweb.owlapi.model.SWRLVariable;
 
+import com.google.common.base.Optional;
+
 public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 	
 	private static final String _space = VerbalisationManager.INSTANCE._space;
+	
+	private Obfuscator obfuscator;
+	
+	public void setObfuscator(Obfuscator obfuscator){
+		this.obfuscator = obfuscator;
+	}
 
+	public Obfuscator getObfuscator(){
+		return obfuscator;
+	}
 
 	public static List<OWLClassExpression> collectAndExpressions(OWLObject ob){
 		List<OWLClassExpression> result = new ArrayList<OWLClassExpression>();
@@ -200,6 +210,8 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 	}
 	
 	public static String removeUnderscores(String str){
+		if (str.length()<1) 
+			return "";
 		if (str.substring(0,1).equals("\"")){
 			str = str.substring(1);
 		}
@@ -246,7 +258,9 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 		}
 		int j = -1;
 		// find second uppercase
-		for (int i=u+1; i<str.length(); i++){
+		if (str.length()>u && Character.isUpperCase(str.charAt(u+1)))
+				return false; // <-- acronym case
+		for (int i=u+2; i<str.length(); i++){
 			if (Character.isUpperCase(str.charAt(i))){
 				j = i;
 			}
@@ -263,13 +277,20 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 		if (Character.isUpperCase(str.charAt(0)))
 				return false;
 		int u = -1;
+		boolean second = false;
 		for (int i=0; i<str.length(); i++){
 			if (Character.isUpperCase(str.charAt(i))){
 				u = i;
 				break;
 			}
 		}
-		if (u==-1){
+		for (int j=u+2; j<str.length(); j++){
+			if (Character.isUpperCase(str.charAt(j))){
+				second = true;
+				break;
+			}
+		}
+		if (!second){
 			return false;
 		}
 		return true;
@@ -291,8 +312,19 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 		return resultstring;
 	}
 	
+	public static boolean detectAcronym(String str){
+		if (str.length()>1 
+				&& Character.isUpperCase(str.charAt(0))
+				&& Character.isUpperCase(str.charAt(1))
+				){
+			return true;
+		}
+		return false;
+	}
+	
 	// VERBALIZE SUBCLASSOFAXIOM
 	public String visit(OWLSubClassOfAxiom arg0) {
+		// System.out.println("visit subclassof called ");
 		// Left hand side
 		String leftstring = "";
 		leftstring = arg0.getSubClass().accept(this);
@@ -301,7 +333,8 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 			OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) arg0.getSubClass();
 			OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 			if (cl!=null){
-				somethingthat = cl.toString() + " that ";
+				//somethingthat = cl.toString() + " that ";
+				somethingthat = cl.accept(this) + " that ";
 			}
 		}
 		if (arg0.getSubClass() instanceof OWLObjectIntersectionOf){
@@ -313,7 +346,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 					OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) expr;
 					OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 					if (cl!=null){
-						somethingthat = cl.accept(this) + "that ";
+						somethingthat = cl.accept(this) + " that ";
 					}
 				}
 			}
@@ -321,7 +354,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 		if (arg0.getSubClass() instanceof OWLObjectIntersectionOf 
 				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())){
 			leftstring = somethingthat 
-				+ VerbalisationManager.pseudoNLStringMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass()) ;
+				 + VerbalisationManager.pseudoNLStringMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass(),obfuscator) ;
 		}
 		if (arg0.getSubClass() instanceof OWLObjectIntersectionOf 
 				&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass())){
@@ -338,9 +371,13 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 				&& !(arg0.getSuperClass() instanceof OWLObjectIntersectionOf
 						&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())
 						)
+				&& !(arg0.getSuperClass() instanceof OWLObjectIntersectionOf
+						&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())
+						)
 				&& !(arg0.getSuperClass() instanceof OWLObjectHasValue) 
 				&& !(arg0.getSuperClass() instanceof OWLDataHasValue) 
 				){
+			// System.out.println("DEBUG! " + arg0.getSuperClass());
 			leftstring = leftstring + " is";
 		}
 		// this catches the simple case where the superclass is only a single existential
@@ -355,7 +392,8 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 				OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) filler;
 				OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 				if (cl!=null){
-					middle = cl.toString() + " that ";
+					// middle = cl.toString() + " that ";
+					middle = cl.accept(this) + " that ";
 				}
 				else
 				middle = "something that ";
@@ -371,7 +409,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 						OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) expr;
 						OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 						if (cl!=null){
-							middle = cl.toString() + " THAT ";
+							middle = cl.toString() + " that ";
 						}
 					}
 				}
@@ -379,13 +417,13 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 			fillerstrs.add(filler.accept(this));
 			return leftstring
 					+ " " 
-					+ VerbalisationManager.verbaliseProperty(property, fillerstrs, middle);
+					+ VerbalisationManager.verbaliseProperty(property, fillerstrs, middle,obfuscator);
 		}
 		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
 				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
 			return leftstring
 					+ " " +
-			VerbalisationManager.pseudoNLStringMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
+			VerbalisationManager.pseudoNLStringMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass(),obfuscator);
 		}
 		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
 				&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
@@ -400,10 +438,12 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 	
 	// VERBALIZE OWLCLASS
 	public String visit(OWLClass ce) {
+		// System.out.println("visiting OWL Class "  + ce);
 		return VerbalisationManager.INSTANCE.getClassNLString(ce);
    }
 	
 	public String verbaliseComplexIntersection(OWLObjectIntersectionOf arg0){
+		// System.out.println("complx int " + arg0);
 		List<OWLClassExpression> operands = arg0.getOperandsAsList();
 		// distinguish operands by their types and order them appropriately
 		List<OWLClassExpression> classExps = new ArrayList<OWLClassExpression>();
@@ -437,7 +477,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 			return head;
 		}
 		if (someExps.size()>0 && allExps.size()==0){
-			head = VerbalisationManager.INSTANCE.verbaliseComplexIntersection(arg0);
+			head = VerbalisationManager.INSTANCE.verbaliseComplexIntersection(arg0,obfuscator);
 			return head;
 			/*
 			// TODO: this is not aggregating in case there is a multiple exists pattern
@@ -482,7 +522,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 	public String visit(OWLObjectIntersectionOf arg0) {
 		String resultstring = "";
 		if (VerbalisationManager.checkMultipleExistsPattern(arg0)){
-			return " something that " + VerbalisationManager.pseudoNLStringMultipleExistsPattern(arg0);
+			return " something that " + VerbalisationManager.pseudoNLStringMultipleExistsPattern(arg0,obfuscator);
 		} else{
 			if (checkMultipleExistsAndForallPattern(arg0)){
 				return " something that " + VerbalisationManager.pseudoNLStringMultipleExistsAndForallPattern(arg0);
@@ -530,13 +570,15 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 		if (filler instanceof OWLObjectSomeValuesFrom)
 			middlestring = middlestring + "something that ";
 		fillerstrs.add(filler.accept(this));
-		return VerbalisationManager.verbaliseProperty(property, fillerstrs, middlestring);
+		return VerbalisationManager.verbaliseProperty(property, fillerstrs, middlestring,obfuscator);
 	}
 	
 	
 	public String visit(OWLObjectSomeValuesFrom existsexpr) {
+		// System.out.println("DEBUG -- " + existsexpr);
 		OWLObjectPropertyExpression property = existsexpr.getProperty();
-		String propfragment = property.getNamedProperty().getIRI().getFragment();
+		// changed! String propfragment = property.getNamedProperty().getIRI().getFragment();
+		Optional<String> propfragment = property.getNamedProperty().getIRI().getRemainder();
 		OWLClassExpression filler = existsexpr.getFiller();
 		List<String> fillerstrs = new ArrayList<String>();
 		String middle = "";
@@ -551,7 +593,8 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 		}
 		fillerstrs.add(filler.accept(this));
 		
-		String str = VerbalisationManager.verbaliseProperty(property,fillerstrs,middle);
+		String str = VerbalisationManager.verbaliseProperty(property,fillerstrs,middle,obfuscator);
+		// System.out.println("DEBUG visit " + str);
 		return str;
 	}
 	
@@ -667,13 +710,17 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 
 	public String visit(OWLObjectPropertyDomainAxiom arg0) {
 		// treat this as syntactic sugar, convert this to the form \exists r. \top \sqsubseteq X and output
+		/*
 		OWLObjectPropertyExpression prop = arg0.getProperty();
 		OWLClassExpression classexp = arg0.getDomain();
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		OWLSubClassOfAxiom subclax = dataFactory.getOWLSubClassOfAxiom(
 				dataFactory.getOWLObjectSomeValuesFrom(prop,dataFactory.getOWLThing()), classexp);
 		return  subclax.accept(this);
+		*/
+		OWLObjectPropertyExpression prop = arg0.getProperty();
+		OWLClassExpression classexp = arg0.getDomain();
+		return "anything that " + VerbalisationManager.INSTANCE.getPropertyNLString(prop) + " is " + classexp.accept(this);
 	}
 
 	public String visit(OWLEquivalentObjectPropertiesAxiom arg0) {
@@ -735,8 +782,10 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 		String resultstring = "";
 		OWLObjectPropertyExpression prop1 = arg0.getProperty();
 		OWLClassExpression prop2 = arg0.getRange();
-		resultstring = resultstring + "range(" +  prop1.accept(this) +  "," 
-		+ prop2.accept(this) + ")";
+		// resultstring = resultstring + "range(" +  prop1.accept(this) +  "," 
+		// + prop2.accept(this) + ")";
+		resultstring = resultstring + "what " +  VerbalisationManager.INSTANCE.getPropertyNLString(prop1) +  " is " 
+				+ prop2.accept(this) + "";
 		return resultstring;
 		
 	}
@@ -893,6 +942,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 	}
 
 	public String visit(OWLObjectHasValue arg0) {
+		VerbalisationManager.INSTANCE.includesHasValue = true;
 		return "hasValue" + "(" + arg0.getProperty().accept(this) +  "," + arg0.getValue() + ")"; 
 	}
 
@@ -945,6 +995,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 	}
 
 	public String visit(OWLDataHasValue arg0) {
+		VerbalisationManager.INSTANCE.includesHasValue = true;
 		return arg0.getProperty().accept(this) + _space +  arg0.getValue().getLiteral();
 		// return "hasValue" + "(" + arg0.getProperty().accept(this) +  "," + arg0.getValue() + ")"; 
 	}

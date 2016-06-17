@@ -1,8 +1,10 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 
-
+// import org.semanticweb.cogExp.ErrorWriter;
 
 import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
@@ -12,9 +14,11 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 public enum WordNetQuery {
 	INSTANCE;
 	
-	private WordNetDatabase database = WordNetDatabase.getFileInstance();
+	private WordNetDatabase database; // = WordNetDatabase.getFileInstance();
 	private static final String _space = VerbalisationManager.INSTANCE._space;
 	private boolean disabled = false;
+	private HashMap<String,int[]> cache = new HashMap<String,int[]>();
+	private HashMap<String,Integer> isTypeCache = new HashMap<String,Integer>();
 	// private static ErrorWriter errorWriter = new ErrorWriter("/var/folders/v0/3ytrm6vj49l0h238wgg66x7w0000gn/T/error.tmp");
 	
 	WordNetQuery(){
@@ -31,6 +35,8 @@ public enum WordNetQuery {
 	public void setDict(String dict){
 		System.setProperty("wordnet.database.dir",dict);
 		disabled = false;
+		database = WordNetDatabase.getFileInstance();
+		// Synset[] synsets = database.getSynsets("person");
 	}
 	
 	public void disableDict(){
@@ -44,21 +50,32 @@ public enum WordNetQuery {
 	
 	
 	public float isType(String str, SynsetType type){
+		if (isTypeCache.containsKey(str)){
+			return isTypeCache.get(str);
+		}
+		// errorWriter.write("is Type called with " + str + ", data base " + database.toString() + "\n");
 		String[] arr = str.split(_space);   
 		if (arr.length <1) return 0;
 		Synset[] synsets = database.getSynsets(arr[arr.length-1]); // getting synsets for last word
-		if (synsets.length==0)
+		if (synsets.length==0){
+			// System.out.println("no synsets ");
 			return 0;
+		}
 	    int countType = 0;
 		for (int i = 0; i < synsets.length; i++) {
 			if (synsets[i].getType().equals(type))
 				countType++;
-		}	
+		}
+		isTypeCache.put(str,countType);
 		return countType;
 	}
 	
 	
 	public int[] getTypes(String str){
+		if (cache.containsKey(str)){
+			// System.out.println("DEBUG -- retrieved cached element for " + str + " ! " + cache.get(str).toString());
+			return cache.get(str);
+		}
 		// errorWriter.write("get Types called with " + str + ", data base " + database.toString() + "\n");
 		// errorWriter.write("file instance " + database.getFileInstance() + "\n");
 		String[] arr = str.split(_space);  
@@ -76,6 +93,8 @@ public enum WordNetQuery {
 			}	
 		// errorWriter.write("types " + Arrays.toString(types) + "\n");
 		// errorWriter.close();
+		// System.out.println("Caching element " + str + " " + types.toString());
+		cache.put(str, types);
 		return types;
 	}
 	
