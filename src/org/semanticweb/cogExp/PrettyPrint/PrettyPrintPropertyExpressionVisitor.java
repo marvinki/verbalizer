@@ -45,7 +45,6 @@ public class PrettyPrintPropertyExpressionVisitor implements OWLPropertyExpressi
 		return arg0.getIRI().getFragment();
 	}
 
-	@Override
 	public String visit(OWLAnnotationProperty arg0) {
 		// TODO Auto-generated method stub
 		return null;
