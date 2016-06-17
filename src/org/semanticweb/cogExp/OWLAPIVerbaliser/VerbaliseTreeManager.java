@@ -86,6 +86,7 @@ public enum VerbaliseTreeManager {
 			SequentInferenceRule infrule = step.getInfrule();
 			//
 			// Debug
+			// 
 			// result = result +=  " <<  " + infrule.getName() + " >> ";
 			//
 			// Check if rule is to be skipped
@@ -1075,6 +1076,7 @@ public enum VerbaliseTreeManager {
 				seq.makeUppercaseStart();
 				seq.add(new LogicElement("which is"));
 				seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) subcl2).getSuperClass(),obfuscator));
+				seq.add(new LogicElement("."));
 				seq.add(new LogicElement("Therefore,"));
 				seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) additions_to_antecedent.get(0)),obfuscator));
 				return seq;
