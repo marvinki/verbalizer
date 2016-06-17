@@ -22,7 +22,6 @@ public class OWLFormula {
 	public OWLFormula(OWLAtom head, List<OWLFormula> tail){
 		this.head = head;
 		this.tail = tail;	
-		// System.out.println("debug formula, constructed " + this);
 	}
 	
 	public OWLFormula(OWLAtom head){
@@ -42,7 +41,6 @@ public class OWLFormula {
 	 * @return atoms of formula in breath first order
 	 */
 	public LinkedList<OWLAtom> getBFLinearisation(){
-		// System.out.println("get BF lin called for " + this);
 		// initialise Queue as Helper Structure
 		LinkedList<OWLFormula> queue = new LinkedList<OWLFormula>();
 		LinkedList<OWLAtom> accumulator = new LinkedList<OWLAtom>();
@@ -104,22 +102,16 @@ public class OWLFormula {
 	
 	@Override
 	public boolean equals(Object o){
-		// System.out.println("equal? " + this + " " + o);
 		if (!(o instanceof OWLFormula)){
-			// System.out.println("equals: false (wrong object type)");
 			return false;
 		} else{
 			OWLFormula other = (OWLFormula) o;
 			if (tail==null || tail.size()==0){
 				if (other.tail==null || other.tail.size()==0){
-					// System.out.println("equals: " + other.head.equals(this.head) + " (null tail)");
 					return other.head.equals(this.head);
 				} else{
-					// System.out.println("equals: false (null tail) mismatch");
 					return false;
 				}
-				// System.out.println("equals: " + other.head.equals(this.head) + " (null tail)");
-				// return other.head.equals(this.head);
 			} else{
 				boolean equaltail = true;
 				if (other.tail==null || other.tail.size()!=tail.size()){
@@ -138,7 +130,6 @@ public class OWLFormula {
 						return false;
 					}
 				}
-				// System.out.println(" equaltail: " +  equaltail);
 			return other.head.equals(this.head) && equaltail;
 			}
 		}
@@ -160,7 +151,6 @@ public class OWLFormula {
 	 
 	
 	public static List<Pair<OWLFormula,OWLFormula>> mergeSubmatchers(List<List<Pair<OWLFormula,OWLFormula>>> submatchers) throws Exception{
-		// System.out.println("DEBUG! mergeSubmatchers called");
 		ArrayList<Pair<OWLFormula,OWLFormula>> matcher = new ArrayList<Pair<OWLFormula,OWLFormula>>();
 		for (List<Pair<OWLFormula,OWLFormula>> submatcher : submatchers){	
 			// for all formulas in the submatcher, check compatibility and add
@@ -201,41 +191,34 @@ public class OWLFormula {
 				}
 			} // end submatcher loop
 		} // end tail index loop
-		// System.out.println("DEBUG! mergeSubmatchers exists with " + matcher);
 		return matcher;
 	}
 	
 	// the "other" formula needs to be more general (more vars)
 	public List<Pair<OWLFormula,OWLFormula>> match(OWLFormula otherformula) throws Exception{
-		// System.out.println("called match with: " + this + " and " + otherformula);
 		// ArrayList<Pair<OWLFormula,OWLFormula>> matcher = new ArrayList<Pair<OWLFormula,OWLFormula>>();
 		// if we are at a variable, we construct matcher
-		if (otherformula.head instanceof OWLVar){
-			// System.out.println("OWLVar case");
+		if (otherformula.head instanceof OWLVar){		
 			LinkedList<Pair<OWLFormula,OWLFormula>> matcher = new LinkedList<Pair<OWLFormula,OWLFormula>>();
-			// System.out.println("var case!");
 			Pair<OWLFormula,OWLFormula> matcherpair = new Pair<OWLFormula,OWLFormula>(otherformula, this);
 			matcher.add(matcherpair);
-			// System.out.println("Matcher " + matcher);
 			return matcher;
 		}
 		// if we are at a role variable, likewise, we construct matcher
 		if (otherformula.head instanceof OWLRoleVar){
-			        // System.out.println("OWLRoleVar case");
+			        
 					LinkedList<Pair<OWLFormula,OWLFormula>> matcher = new LinkedList<Pair<OWLFormula,OWLFormula>>();
-					// System.out.println("var case!");
+					
 					Pair<OWLFormula,OWLFormula> matcherpair = new Pair<OWLFormula,OWLFormula>(otherformula, this);
 					matcher.add(matcherpair);
-					// System.out.println("Matcher " + matcher);
+					
 					return matcher;
 				}
 		// catch all cases where formulas obviously don't match
 		if (!this.head.equals(otherformula.head)){
-			// System.out.println("Formulas do not match -- heads not equal");
 			throw new Exception("formulas do not match!");
 		}
 		// now the heads match, are the matchers for the subformulas compatible?
-		// System.out.println("Still in the matching procedure ... ");
 		LinkedList<List<Pair<OWLFormula,OWLFormula>>> submatchers = new LinkedList<List<Pair<OWLFormula,OWLFormula>>>();
 		if (tail!=null){
 			for (int i=0; i<this.tail.size(); i++){
@@ -243,12 +226,10 @@ public class OWLFormula {
 				submatchers.add(submatcher);
 			}
 		}	
-		// System.out.println("DEBUG -- should return");
 		return mergeSubmatchers(submatchers);		
 	}
 	
 	public static List<Pair<OWLFormula,OWLFormula>> match(List<OWLFormula> formulas,  List<OWLFormula> otherformulas) throws Exception{
-		// System.out.println("match called");
 		if(formulas.size()!=otherformulas.size()){
 			throw new Exception ("error with using matching");}
 		LinkedList<List<Pair<OWLFormula,OWLFormula>>> submatchers = new LinkedList<List<Pair<OWLFormula,OWLFormula>>>();
@@ -260,9 +241,7 @@ public class OWLFormula {
 	}
 	
 	public OWLFormula applyMatcher(List<Pair<OWLFormula,OWLFormula>> matcher){
-		// System.out.println("called apply Matcher with " + this + " " + matcher);
 		if (this.head instanceof OWLVar){
-			// System.out.println("var case");
 			for(Pair<OWLFormula,OWLFormula> pair : matcher){
 				if (pair.t.head.equals(this.head)){
 					return pair.u;
@@ -271,7 +250,6 @@ public class OWLFormula {
 			return this;
 		} // done with the case were we are at a var
 		if (this.head instanceof OWLRoleVar){
-			// System.out.println("var case");
 			for(Pair<OWLFormula,OWLFormula> pair : matcher){
 				if (pair.t.head.equals(this.head)){
 					return pair.u;
@@ -284,12 +262,10 @@ public class OWLFormula {
 			return new OWLFormula(this.head);
 		}
 		ArrayList<OWLFormula> taillist = new ArrayList<OWLFormula>();
-		// System.out.println("debug matching, tail : " + tail);
 		// need to apply matcher recursively
 		for (OWLFormula formula : tail){
 			taillist.add(formula.applyMatcher(matcher));
 		}
-		// System.out.println("debug matching, taillist : " + taillist);
 		return new OWLFormula(this.head,taillist);
 	}
 	
@@ -301,7 +277,6 @@ public class OWLFormula {
 		pattern2.add(candidate1);
 		pattern2.add(candidate2);
 		List<Pair<OWLFormula,OWLFormula>> matcher = OWLFormula.match(pattern2, pattern);
-		// System.out.println("matcher: " + matcher);
 		return matcher;
 	}
 	
@@ -467,19 +442,15 @@ public class OWLFormula {
 	}
 	
 	public List<OWLFormula> getConjuncts(){
-		// System.out.println("get conjunct called with " +  this);
 		List<OWLFormula> result = new ArrayList<OWLFormula>();
 		if (head.equals(OWLSymb.INT)){
 			for (OWLFormula arg : tail){
-				// System.out.println("adding " + arg.getConjuncts());
 				result.addAll(arg.getConjuncts());
 			}
 		} else 
 		{
-			// System.out.println("adding " + this);
 			result.add(this);
 		}
-		// System.out.println("returning " + result);
 		return result;
 	}
 	
