@@ -68,7 +68,6 @@ public class Sequent<FormulaType> {
 	/* ===== CONSTRUCTORS ====== */
 	
 	public Sequent(ArrayList<FormulaType> ant, ArrayList<FormulaType> succ) throws Exception{
-		// System.out.println("DBG CONSTR CALLED ");
 		for (FormulaType f1 : ant){
 			addAntecedent((OWLFormula) f1);
 		}
@@ -80,7 +79,6 @@ public class Sequent<FormulaType> {
 	}
 	
 	public Sequent(ArrayList<FormulaType> ant, ArrayList<FormulaType> succ, int id) throws Exception{
-		// System.out.println("DBG CONSTR CALLED ");
 		for (FormulaType f1 : ant){
 			addAntecedent((OWLFormula) f1);
 		}
@@ -135,29 +133,19 @@ public class Sequent<FormulaType> {
 	
 	
 	public int addAntecedent(OWLFormula formula) throws Exception{
-		// System.out.println("sequent add called (1)");
-		// System.out.println("DBG ADDANT DELEGATE CALLED (2) ");
 		if (formula==null){
 			System.out.println("we are about to throw an exception for " + formula);
 			throw new Exception();
 		}
 		int id = -100;
-		// System.out.println("Sequent DEBUG (1)" + formula);
-		// System.out.println("Checking -- already contained ? " + antecedent.contains(formula));
-		// System.out.println("Counting " + antecedent.getAllFormulas().size());
 		antecedent.insert(formula);
-		// System.out.println("Now -- already contained ? " + antecedent.contains(formula));
-		// System.out.println("Counting " + antecedent.getAllFormulas().size());
-		// System.out.println("Sequent DEBUG (2)" + formula);
 		insertIntoSubexprsTree(formula);
 		id = antecedentFormulaGetID(formula);
 		return id;
 	}
 	
 	public int addAntecedent(OWLFormula formula, int depth) throws Exception{
-		// System.out.println("sequent add called (2)");
 		int id = -100;
-		// System.out.println("DBG SEQ ADD ANT " + formula);
 		antecedent.insert(formula);
 		insertIntoSubexprsTree(formula);
 		id = antecedentFormulaGetID(formula);
@@ -168,7 +156,6 @@ public class Sequent<FormulaType> {
 	
 	public int addSuccedent(OWLFormula formula) throws Exception{
 		int id = -100;
-		// System.out.println("DBG SEQ ADD SUCC " + formula);
 		succedent.insert(formula);
 		insertIntoSubexprsTree(formula);
 		id = succedentFormulaGetID(formula);
@@ -226,12 +213,6 @@ public class Sequent<FormulaType> {
 	}
 	
 	public boolean alreadyContainedInAntecedent(OWLFormula f){
-		// System.out.println("already contained? " + f + " "+ antecedent.contains(f));
-		// System.out.println("antecedent? " + antecedent);
-		// if (antecedent.contains(f)){
-		// 	System.out.println(antecedent);
-		// 	System.out.println("id: " + antecedentFormulaGetID(f));
-		// }
 		return antecedent.contains(f);
 	}
 	
@@ -262,14 +243,12 @@ public class Sequent<FormulaType> {
 		TermTree subexprs = this.subexprs.clone();
 		HashMap<Integer,Integer> depths = (HashMap<Integer,Integer>) this.formulaDepth.clone();
 		int newid = InferenceApplicationService.INSTANCE.generateSequentID();
-		// System.out.println("DEBUG -- sequent is cloned, original id " + id + " newid " + newid);
 		return new Sequent<FormulaType>(newant,newsucc,subexprs,newid, depths);
 	}
 	
 	
 	
 	public boolean equal(Sequent seq2){
-		// System.out.println("Sequent equals called");
 		Set antecedent2 = seq2.getAllAntecedentOWLFormulas();
 		Set succedent2 = seq2.getAllSuccedentOWLFormulas();
 		boolean equalP = true;
@@ -283,7 +262,6 @@ public class Sequent<FormulaType> {
 			if(!foundP){equalP=false;
 					return false;
 			}
-			// System.out.println(foundP);
 		}
 		for (Object ant1: antecedent2){
 			boolean foundP = false;
@@ -295,7 +273,6 @@ public class Sequent<FormulaType> {
 			if(!foundP){equalP=false;
 			return false;
 			}
-			// System.out.println(foundP);
 		}
 		for (Object suc1: getAllSuccedentOWLFormulas()){
 			boolean foundP = false;
@@ -307,7 +284,6 @@ public class Sequent<FormulaType> {
 			if(!foundP){equalP=false;
 			return false;
 			}
-			// System.out.println(foundP);
 		}
 		for (Object suc1: succedent2){
 			boolean foundP = false;
@@ -319,7 +295,6 @@ public class Sequent<FormulaType> {
 			if(!foundP){equalP=false;
 			return false;
 			}
-			// System.out.println(foundP);
 		}
 		return equalP;
 	}
@@ -360,7 +335,6 @@ public class Sequent<FormulaType> {
 	
 	
 	public List<OWLFormula> retrieveOWLFormulas(SequentSinglePosition pos){	
-		// System.out.println("function called for single position, pos " + pos.getToplevelPosition());
 		List formulas = new ArrayList();
 		if (pos.getSequentPart()==SequentPart.ANTECEDENT){
 			if (this.antecedentGetFormula(pos.getToplevelPosition())!=null){
@@ -374,13 +348,11 @@ public class Sequent<FormulaType> {
 			}
 		}
 		else formulas.add(this.succedentGetFormula(pos.getToplevelPosition()));
-		// System.out.println("formulas : " + formulas);
 		return formulas;
 	}
 	
 	
 	public List<OWLFormula> retrieveOWLFormulas(SequentPositionInNode pos){
-		// System.out.println("retrieve Formulas with SequentPositionInNode called.");
 		SequentPosition seqpos = pos.getSequentPosition();
 		return retrieveOWLFormulas(seqpos);
 	}
@@ -388,7 +360,6 @@ public class Sequent<FormulaType> {
 
 	
 	public List<OWLFormula> retrieveOWLFormulas(SequentPosition pos){
-		// System.out.println("retrieve Formulas with SequentPosition called.");
 		if (pos instanceof SequentSinglePosition) return retrieveOWLFormulas((SequentSinglePosition) pos);
 		if (pos instanceof SequentMultiPosition) return retrieveOWLFormulas((SequentMultiPosition) pos);
 		return null;
@@ -419,7 +390,6 @@ public class Sequent<FormulaType> {
 		
 		HashMap bindings = bin.getBindings();
 		Collection all_positions = bindings.values();
-		// System.out.println(all_positions);
 		for (Object b : all_positions){
 			if (b instanceof SequentSinglePosition){
 				list.addAll(retrieveOWLFormulas((SequentSinglePosition) b));
@@ -431,7 +401,6 @@ public class Sequent<FormulaType> {
 			    list.addAll(retrieveOWLFormulas(((SequentPositionInNode) b).getSequentPosition()));
 			}	
 		}
-		// System.out.println("retrieveOWLFormulas - ruleBinding returns" + list);
 		return list;
 	}
 	
@@ -475,7 +444,6 @@ public class Sequent<FormulaType> {
 	public void insertIntoSubexprsTree(OWLFormula formula) throws Exception{
 			if(!subexprs.contains(formula)){
 			subexprs.insert(formula);
-			// System.out.println("INSERTING into SUBEXPRSTREE " + formula);
 			}
 			if (!(formula.getArgs()==null || formula.getArgs().size()==0)){
 					for (OWLFormula child : formula.getArgs()){
@@ -492,7 +460,6 @@ public class Sequent<FormulaType> {
 	}	
 	
 	public boolean subexprInSequent(OWLFormula formula){
-		// System.out.println(" Subexprs tree " + subexprs);
 		return subexprs.contains(formula);
 	}
 	
@@ -521,7 +488,6 @@ public class Sequent<FormulaType> {
 	}
 	
 	public Sequent amputateDepth(int depth){
-		// System.out.println("sequent amputation taking place");
 		Sequent clone = this.clone(); // produce ordinary clone
 		// amputate antecedent
 		Set<OWLFormula> allAntecedentForms = antecedent.getAllFormulas();
@@ -530,8 +496,6 @@ public class Sequent<FormulaType> {
 			int antdepth = getFormulaDepth(antecedent.formulaGetID(ant));
 			if (antdepth>depth){
 				clone.antecedent.remove(ant);
-				// System.out.println("DEBUG removing {" + antdepth + "} " + ant);
-				// System.out.println("DEBUG all formulas " + clone.antecedent.getAllFormulas());
 				}
 		}
 		// amputate succedent -- not necessary!
