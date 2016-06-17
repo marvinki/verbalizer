@@ -2,6 +2,7 @@ package org.semanticweb.cogExp.core;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.LinkedList;
@@ -10,8 +11,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
-
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
+import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 
 
 public enum InferenceApplicationService {
@@ -66,7 +68,7 @@ public List<RuleBindingForNode> findRuleBindingsWhereInferenceApplicableDepthLim
 		// Optimization! This is one difference to above!
 		Sequent amputatedSequent = sequent.amputateDepth(bfslevel);
 		// Sequent amputatedSequent = sequent;
-		// System.out.println("amputated sequent, depth " + bfslevel + " "+ sequent);
+		System.out.println("amputated sequent, depth " + bfslevel + " "+ sequent);
 		List<RuleBinding> bindings = new ArrayList<RuleBinding>();
 		// System.out.println("DEBUG (Inference appl.): before getting bindings in findRuleBindingsWhereInferenceApplicable");
 		if (saturation.length>0){ 
@@ -99,29 +101,7 @@ public List<RuleBindingForNode> findRuleBindingsWhereInferenceApplicableDepthLim
 			// System.out.println("DEBUG (Inference appl.): where appli: new antecedent " + binding.getNewAntecedent());
 			// turn binding into binding with node id.
 			RuleBindingForNode binding_fornode = new RuleBindingForNode(open_node.getId(),binding,binding.getNewAntecedent(),binding.getNewSuccedent());
-			// before returning the rule binding, check if computed conclusion is not already present in the *proper* sequent (not the amputated one -- otherwise, we run in a loop!)
-			/* try {
-				// get original sequent again!
-				sequent = ((ProofNode<Sequent,java.lang.String,SequentPosition>) open_node).getContent();
-				List<RuleApplicationResults> results = rule.computeRuleApplicationResults(sequent, binding_fornode);
-				boolean nothingNew = false;
-				for (RuleApplicationResults result :results){
-					Set<String> additions = result.getAllAdditionKeys();
-					for (String str: additions){
-						OWLFormula addition = (OWLFormula) result.getAddition(str);
-						if (sequent.alreadyContainedInAntecedent(addition))
-							nothingNew = true;
-					}
-				}
-				if (nothingNew)
-					continue;
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				continue;
-				// e.printStackTrace();
-			}
-			*/
-			// now put in
+			
 			rule_bindings.add(binding_fornode);
 			// System.out.println("DEBUG (Inference appl.):  where appli: new antecedent " + binding_fornode.getNewAntecedent());
 		}
@@ -138,7 +118,7 @@ public List<RuleBindingForNode> findRuleBindingsWhereInferenceApplicableDepthLim
 		// Optimization! This is one difference to above!
 		Sequent amputatedSequent = sequent;
 		// Sequent amputatedSequent = sequent;
-		// System.out.println("amputated sequent, depth " + bfslevel + " "+ sequent);
+		// System.out.println("amputated sequent, depth__ " + bfslevel + " "+ sequent);
 		List<RuleBinding> bindings = new ArrayList<RuleBinding>();
 		// System.out.println("DEBUG (Inference appl.): before getting bindings in findRuleBindingsWhereInferenceApplicable");
 		if (saturation.length>0){ 
@@ -156,8 +136,37 @@ public List<RuleBindingForNode> findRuleBindingsWhereInferenceApplicableDepthLim
 				continue;
 			 	bindings.add(tmpBin);
 		}
+		
 		// Now that we know there are bindings, we redo everything with the real sequent.
-		sequent = (Sequent) open_node.getContent();
+		sequent = (Sequent) open_node.getContent(); // this is evil, we are really using a different sequent here!
+		
+		// System.out.println("Rule " + rule.getName());
+		
+		boolean ok = true;
+		List<RuleBindingForNode> rule_bindings_alt = new ArrayList<RuleBindingForNode>();
+		for (RuleBinding rb2: bindings){
+			RuleBinding newBinding = rb2.convert(amputatedSequent, sequent);
+			if (newBinding!=null){
+				RuleBindingForNode binding_fornode = new RuleBindingForNode(open_node.getId(),
+						newBinding,newBinding.getNewAntecedent(),newBinding.getNewSuccedent());
+				rule_bindings_alt.add(binding_fornode);
+			} else ok = false;
+		}
+		if (ok && (rule.getName().equals("INLG2012NguyenEtAlRule12")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule15")
+				|| rule.getName().equals("Botintro")
+				|| rule.getName().equals("Topintro")
+				|| rule.getName().equals("R0")
+				|| rule.getName().equals("R0")
+				|| rule.getName().equals("AdditionalDLRules-Propchain")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule5")
+				)
+				){
+			 return rule_bindings_alt;
+		}
+		
+		
+		
 		if (bindings.size()>0){
 			if (saturation.length>0){ 
 				bindings =  rule.findRuleBindings(sequent,true);
@@ -169,12 +178,24 @@ public List<RuleBindingForNode> findRuleBindingsWhereInferenceApplicableDepthLim
 		
 		for (RuleBinding binding : bindings){
 			RuleBindingForNode binding_fornode = new RuleBindingForNode(open_node.getId(),binding,binding.getNewAntecedent(),binding.getNewSuccedent());
-			
-			rule_bindings.add(binding_fornode);
+			// need to check if this corresponds to what we computed before!
+			boolean isOk = false;
+			for (RuleBinding rb2: tmpBindings){
+				// TODO! Need to test real equality here!
+				// System.out.println(rb2.getNewAntecedent());
+				if (rb2.getNewAntecedent()!=null && rb2.getNewAntecedent().equals(binding_fornode.getNewAntecedent())
+						|| rb2.getNewAntecedent()==null
+						)
+					isOk = true;
+			}
+			if (isOk)
+				rule_bindings.add(binding_fornode);
 			// System.out.println("DEBUG (Inference appl.):  where appli: new antecedent " + binding_fornode.getNewAntecedent());
 		}
 	// }
-	return rule_bindings;
+		// System.out.println("Rule bindings " + rule_bindings);
+		// System.out.println("Rule bindings alt: " + rule_bindings_alt);
+		return rule_bindings;
 }
 
 
@@ -195,7 +216,6 @@ public List<JustificationNode> getAllJustificationsOfAKind(ProofTree tree, java.
 	return results;
 }
 
-
 public void applySequentInferenceRule(ProofTree tree, RuleBindingForNode binding, SequentInferenceRule rule, HierarchNode... hnode) 
 		throws UselessInferenceException{
 	// System.out.println("apply seq inf called");
@@ -214,7 +234,8 @@ public void applySequentInferenceRule(ProofTree tree, RuleBindingForNode binding
 	try {
 		// System.out.println(binding.getRuleBinding());
 		premiseSequents = rule.computePremises(sequent, binding.getRuleBinding());
-		// System.out.println(premiseSequents);
+		// System.out.println("premise sequents " + premiseSequents);
+		// System.out.println("premise sequents " + premiseSequents.getSequents().get(0).getAllAntecedentOWLFormulas());
 		assert(premiseSequents!=null);
 		// if (premiseSequents.size()==0) throw new UselessInferenceException();
 	} catch (Exception e) {
@@ -225,6 +246,7 @@ public void applySequentInferenceRule(ProofTree tree, RuleBindingForNode binding
 	if (premiseSequents == null || premiseSequents.getSequents().size()==0){
 		System.out.println("STH WICKED HAPPENED");
 		System.out.println("-- rule: " + rule.getName());
+		throw new UselessInferenceException();
 	}
 	if (premiseSequents == null || premiseSequents.getSequents().size()==0) throw new UselessInferenceException();
 	if (premiseSequents.getSequents().get(0).equals(sequent)){System.out.println("FOO " + premiseSequents.getSequents().get(0) + " AND " + sequent);}
@@ -318,7 +340,7 @@ public void applySequentInferenceRule(ProofTree tree, RuleBindingForNode binding
 }
 
 public void applySequentInferenceRuleToSaturate(ProofTree tree, RuleBindingForNode binding, SequentInferenceRule rule, HierarchNode... hnode) throws UselessInferenceException{
-	System.out.println("apply seq inf called");
+	// System.out.println("apply seq inf called");
 	// generate new sequents & proof nodes
 	ProofNode node = tree.getProofNode(binding.getNodeId());
 	Sequent sequent = (Sequent) node.getContent();
@@ -490,11 +512,118 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		return limited_bindings;
 	}
 	
-	public ProofTree runSimpleLoop(ProofTree initialtree,List<SequentInferenceRule> rules, int limit, boolean...saturate){
+	public Pair<List<RuleBindingForNode>,List<SequentInferenceRule>> findBindings(ProofNode opennode, Sequent seq, List<SequentInferenceRule> runningRules, int bfsLevel, boolean... saturate){
+		SequentInferenceRule current_rule = null;
+		List<RuleBinding> bindings = new ArrayList<RuleBinding>();
+		List<SequentInferenceRule> rules = new ArrayList<SequentInferenceRule>();
+		List<RuleBindingForNode> rule_bindings = new ArrayList<RuleBindingForNode>();
+		while(runningRules.size()>0 && bindings.size()==0){
+			current_rule = runningRules.get(0);				
+			runningRules.remove(0);
+			  // System.out.println("trying rule " + current_rule.getName());
+			// positions = findPositionsWhereInferenceApplicable(initialtree, runningRules.get(0));
+			// System.out.println("before getting bindings");
+			// System.out.println("DEBUG runSimpleLoop trying: " + runningRules.get(0).getName());
+			// List<RuleBindingForNode> bindings_pre = new ArrayList(); 
+			List<RuleBindingForNode> foundBindings = new ArrayList<RuleBindingForNode>();
+			if (saturate.length>0){	
+					// System.out.println("case1");
+					//bindings.addAll(current_rule.findRuleBindings(seq));
+					foundBindings = findRuleBindingsWhereInferenceApplicableDepthLimited(opennode, seq,current_rule, bfsLevel, true);
+				} else 
+					{	
+					// bindings.addAll(current_rule.findRuleBindings(seq));
+						// System.out.println("case2");
+				     foundBindings = findRuleBindingsWhereInferenceApplicableDepthLimited(opennode, seq,current_rule,bfsLevel);
+							// System.out.println("case2 after");
+						} 
+			for (RuleBindingForNode binding : foundBindings){
+				rule_bindings.add(binding);
+				rules.add(current_rule);
+			}
+		}
+			// System.out.println("returning result with " + current_rule.getName());
+		return new Pair(rule_bindings,rules);
+	}
+	
+	/* Original, strange
+	public Pair<List<RuleBindingForNode>,List<SequentInferenceRule>> findBindings(ProofNode opennode, Sequent seq, List<SequentInferenceRule> runningRules, int bfsLevel, boolean... saturate){
+		SequentInferenceRule current_rule = null;
+		List<RuleBinding> bindings = new ArrayList<RuleBinding>();
+		List<SequentInferenceRule> rules = new ArrayList<SequentInferenceRule>();
+		List<RuleBindingForNode> rule_bindings = new ArrayList<RuleBindingForNode>();
+		while(runningRules.size()>0 && bindings.size()==0){
+			current_rule = runningRules.get(0);				
+			runningRules.remove(0);
+			  // System.out.println("trying rule " + current_rule.getName());
+			// positions = findPositionsWhereInferenceApplicable(initialtree, runningRules.get(0));
+			// System.out.println("before getting bindings");
+			// System.out.println("DEBUG runSimpleLoop trying: " + runningRules.get(0).getName());
+			// List<RuleBindingForNode> bindings_pre = new ArrayList(); 
+			if (saturate.length>0){	
+					// System.out.println("case1");
+					//bindings.addAll(current_rule.findRuleBindings(seq));
+					bindings.addAll(findRuleBindingsWhereInferenceApplicableDepthLimited(opennode, seq,current_rule, bfsLevel, true));
+				} else 
+					{	
+					// bindings.addAll(current_rule.findRuleBindings(seq));
+						// System.out.println("case2");
+				     bindings.addAll(findRuleBindingsWhereInferenceApplicableDepthLimited(opennode, seq,current_rule,bfsLevel));
+							// System.out.println("case2 after");
+						} 
+			// if (bindings.size()>0 ) return new Pair(bindings,current_rule);
+			// System.out.println("now the bindings!");
+			// System.out.println(bindings);
+		}	 // end while
+		for (RuleBinding binding : bindings){
+			RuleBindingForNode binding_fornode = new RuleBindingForNode(opennode.getId(),binding,binding.getNewAntecedent(),binding.getNewSuccedent());
+			// now put in
+			List<RuleBinding> tmpBindings = new ArrayList(bindings);
+			bindings= new ArrayList<RuleBinding>();
+			rule_bindings.add(binding_fornode);
+			rules.add(current_rule);
+		}
+		// System.out.println("returning result with " + current_rule.getName());
+		return new Pair(rule_bindings,rules);
+	}
+	*/
+	
+	
+	/*
+	public ProofTree runSimpleLoop(ProofTree initialtree,
+								List<SequentInferenceRule> rules, 
+								int limit, 
+								long timelimit, 
+								boolean...saturate){
+	long starttime = System.currentTimeMillis();
+	int bfsLIMIT = 100;
+	
+	
+	
+	
+	while (initialtree.getOpenNodes().size() > 0){
+		  List<ProofNode> open_nodes = initialtree.getOpenNodes();
+		  for (ProofNode opennode : open_nodes){
+			  int bfsLevel = 0;
+			  while (open_nodes.contains(opennode) && bfsLevel<bfsLIMIT){
+		    	Sequent seq = (Sequent) opennode.getContent();
+		    	seq = seq.amputateDepth(bfsLevel);
+		    	List<SequentInferenceRule> runningRules = new ArrayList<SequentInferenceRule>(rules);
+		    	Pair<List<RuleBindingForNode>,List<SequentInferenceRule>> bindings = 
+		    			findBindings(opennode, seq, runningRules, bfsLevel, saturate);
+		}
+	}
+	*/	
+	
+	public ProofTree runSimpleLoop(ProofTree initialtree,List<SequentInferenceRule> rules, int limit, long timelimit, boolean...saturate){
+		
+		AlreadyTriedCache.INSTANCE.reset();
+		
+		Pair<List<RuleBindingForNode>,List<SequentInferenceRule>> bindings_dash_save = null;
 		long starttime = System.currentTimeMillis();
 		boolean allTried = false;
 		int bfsLevel = 0;
-		while(limit>0 && initialtree.getOpenNodes().size() > 0 && allTried==false){
+		while(limit>0 && System.currentTimeMillis()-starttime <timelimit && initialtree.getOpenNodes().size() > 0 && allTried==false){
 			// find some rule that is applicable
 			// List<SequentPositionInNode> positions = new ArrayList();
 			// List<RuleBindingForNode> bindings = new ArrayList();
@@ -504,35 +633,51 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			// while(runningRules.size()>0 && positions.size()==0 && bindings.size()==0){
 			    List<RuleBindingForNode> bindings = new ArrayList();
 			    List<ProofNode> open_nodes = initialtree.getOpenNodes();
+			    List<SequentInferenceRule> detectedRules = new ArrayList<SequentInferenceRule>();
 			    for (ProofNode opennode : open_nodes){
+			    	
 			    	Sequent seq = (Sequent) opennode.getContent();
-			    	seq = seq.amputateDepth(bfsLevel);
-			    		while(runningRules.size()>0 && bindings.size()==0){
-			    				// positions = findPositionsWhereInferenceApplicable(initialtree, runningRules.get(0));
-			    				// System.out.println("before getting bindings");
-			    				// System.out.println("DEBUG runSimpleLoop trying: " + runningRules.get(0).getName());
-			    				// List<RuleBindingForNode> bindings_pre = new ArrayList(); 
-			    				if (saturate.length>0){	
-			    						// System.out.println("case1");
-			    						bindings.addAll(findRuleBindingsWhereInferenceApplicableDepthLimited(opennode, seq,runningRules.get(0), bfsLevel, true));
-			    					} else 
-			    						{	
-			    							// System.out.println("case2");
-			    							bindings.addAll(findRuleBindingsWhereInferenceApplicableDepthLimited(opennode, seq, runningRules.get(0),bfsLevel));
-			    								// System.out.println("case2 after");
-			    							} 
-				// System.out.println("now the bindings!");
-				// System.out.println(bindings);
-				current_rule = runningRules.get(0);
-				runningRules.remove(0);
-			    } // end while
+			    	if (seq instanceof IncrementalSequent){
+			    		seq = ((IncrementalSequent) seq).amputateDepth(bfsLevel);
+			    	} else{
+			            seq = (Sequent) opennode.getContent();
+			            seq = seq.amputateDepth(bfsLevel);
+			    	}
+			    	
+			    	
+			    	 // Sequent seq = (Sequent) opennode.getContent();
+			    	 // seq = seq.amputateDepth(bfsLevel);
+			    	
+			    	// System.out.println("BFS LEVEL " + bfsLevel);
+			    	// Debugging only
+			    	// System.out.println(seq);
+			    	 //Set<OWLFormula> anteceds=  seq.getAllAntecedentOWLFormulas();
+			    	 //for (OWLFormula form: anteceds){
+			    	//	System.out.print(VerbalisationManager.prettyPrint(form) + " ");
+			    	 //   System.out.println(seq.getFormulaDepth(seq.antecedentFormulaGetID(form)));
+			    	// }
+			    	// Debugging end
+			    	boolean empty =false;
+			    	Pair<List<RuleBindingForNode>,List<SequentInferenceRule>> bindings_dash = null;
+			    	/*
+			    	if (bindings_dash_save!=null){
+			    		List<RuleBindingForNode> saved = bindings_dash_save.t;
+			    		if (saved.size()>0){
+			    		bindings_dash = bindings_dash_save;}
+			    		else empty = true;
+			    	}
+			    	*/
+			    	if (bindings_dash==null || empty)
+			    	bindings_dash = findBindings(opennode, seq, runningRules, bfsLevel, saturate);
+			    	bindings = bindings_dash.t;
+			    	detectedRules = bindings_dash.u;
 			    } // end for 
 			// System.out.println("after looping, binding size: " + bindings.size());    
 			if (bindings.size()==0){ 
 				bfsLevel=bfsLevel + 1;
-				// System.out.println("BFS LEVEL NOW: " + bfsLevel);
+				System.out.println("BFS LEVEL NOW: " + bfsLevel);
 				/// HACKY!
-				if (bfsLevel > 1000){
+				if (bfsLevel > 30){
 					return initialtree;
 				}
 				// 
@@ -543,15 +688,162 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			if (bindings.size()>0){ 
 				allTried = false;
 				try {
-				for (RuleBinding rb: bindings){
+					current_rule = 	detectedRules.get(0);
+				// for (RuleBinding rb: bindings){
 					// System.out.println(" in simple loop " + rb.getNewAntecedent());
-				}
+				// }
 				   // System.out.println("ONE APPLICATION is carried out by runSimpleLoop");
-				   // System.out.println("rulename " + current_rule.getName());
-				 
+				   // System.out.println("rulename " + current_rule.getName() + " at bfs level " + bfsLevel + " limit " + limit + " timelimit " + (timelimit - (System.currentTimeMillis()-starttime)));
+				   // System.out.println(" in simple loop " + bindings.get(0).getNewAntecedent());
+				// System.out.println(current_rule.getName() + "-->" + bindings.get(0).getNewAntecedent());
+				   
 				// for (RuleBindingForNode rb: bindings)
-				//  	 applySequentInferenceRule(initialtree,rb,current_rule);	
+				//  	 applySequentInferenceRule(initialtree,rb,current_rule);
+					
+				// if (current_rule.getName().equals("INLG2012NguyenEtAlRule15")){
+					
+					/*
+					Set<OWLFormula> conclusions = new HashSet<OWLFormula>();
+					
+					for (int h = 0; h<bindings.size();h++){
+						RuleBindingForNode bind = bindings.get(h);
+						current_rule = detectedRules.get(h);
+						// if (!conclusions.contains(bind.getNewAntecedent()))
+							applySequentInferenceRule(initialtree,bind,current_rule);
+						// conclusions.add(bind.getNewAntecedent());
+					}
+					*/
+					
+				// }
+				// else
+				// 	applySequentInferenceRule(initialtree,bindings.get(0),detectedRules.get(0));
+				
+				//	applySequentInferenceRule(initialtree,bindings.get(0),current_rule);
+				
+				// if (bindings.size()>1)
+				// 	applySequentInferenceRule(initialtree,bindings.get(1),detectedRules.get(1));
+				// else 
+				
+				// System.out.println(detectedRules.get(0));
+				// System.out.println(bindings.get(0).getNewAntecedent());
+				// System.out.println(detectedRules.get(1));
+				// System.out.println(bindings.get(1).getNewAntecedent());
+				
+				
+				if (detectedRules.get(0).getName().equals("INLG2012NguyenEtAlRule1"))	
+					{
+					applySequentInferenceRule(initialtree,bindings.get(0),detectedRules.get(0));
+					System.out.println(current_rule.getName() + "-->" + bindings.get(0).getNewAntecedent());
+					}
+				else{
+					/*
+				if (bindings.get(0).getNewAntecedent()!=null 
+						&& bindings.get(0).getNewAntecedent().toString().contains("Spatial")
+						&& bindings.get(0).getNewAntecedent().toString().contains("419")
+						&& bindings.get(0).getNewAntecedent().toString().contains("131")
+						&& bindings.get(0).getNewAntecedent().toString().contains("771")
+						&& bindings.get(0).getNewAntecedent().toString().contains("443")
+						)
+				 System.out.println(current_rule.getName() + "-->" + bindings.get(0).getNewAntecedent());
+				*/
+				
+				for(int h = 0; h<bindings.size();h++){
+					if (initialtree.getOpenNodes().size()==0)
+						break;
+					ProofNode newopennode = (ProofNode) initialtree.getOpenNodes().get(0);
+					RuleBindingForNode rb = bindings.get(h);
+					Sequent seqnew = (Sequent) newopennode.getContent();
+					Sequent oldseq = (Sequent) initialtree.getProofNode(rb.getNodeId()).getContent();
+					RuleBinding rbnew = rb.convert(oldseq, seqnew);
+					if ( rbnew!=null && (rbnew.getNewAntecedent()==null 
+							|| !seqnew.alreadyContainedInAntecedent(rbnew.getNewAntecedent()))
+							// && !detectedRules.get(h).getName().equals("ELEXISTSMINUS")
+							// && !detectedRules.get(h).getName().equals("INLG2012NguyenEtAlRule2")
+							&& !detectedRules.get(h).getName().equals("INLG2012NguyenEtAlRule1")
+							){
+					RuleBindingForNode rbnewfn = new RuleBindingForNode(newopennode.getId(),rbnew);
+					applySequentInferenceRule(initialtree,rbnewfn,detectedRules.get(h));
+				    // System.out.println(detectedRules.get(h).getName() + "-->" + rbnewfn.getNewAntecedent());
+					/*
+					if (rbnewfn.getNewAntecedent()!=null && rbnewfn.getNewAntecedent().toString().contains("Spatial")
+							// && rbnewfn.getNewAntecedent().toString().contains("419")
+							// && rbnewfn.getNewAntecedent().toString().contains("131")
+							// && rbnewfn.getNewAntecedent().toString().contains("771")
+							// && rbnewfn.getNewAntecedent().toString().contains("443")
+							)
+					   System.out.println(detectedRules.get(h).getName() + "-->" + rbnewfn.getNewAntecedent());
+					*/
+					
+					// Sanity checking
+					/*
+					if (initialtree.getOpenNodes().size()>0){
+						ProofNode node2 = (ProofNode) initialtree.getOpenNodes().get(0);
+						Sequent seqnew_check = (Sequent) node2.getContent();
+						// System.out.println("obtained new antecedent " + rbnewfn.getNewAntecedent().prettyPrint());
+						// System.out.println("check report");
+						seqnew_check.reportAntecedent();
+						// System.out.println(((IncrementalSequent) seqnew_check).getAntecedentTree());
+						try {
+							((IncrementalSequent) seqnew_check).getAntecedentTree().insert(rbnewfn.getNewAntecedent());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						if (!seqnew_check.alreadyContainedInAntecedent(rbnewfn.getNewAntecedent())){
+							System.out.println("reported not to be contained");
+							throw new RuntimeException();
+						}
+						boolean notin = true;
+						Set<OWLFormula> listantecedent = seqnew_check.getAllAntecedentOWLFormulas();
+						for (OWLFormula form : listantecedent){
+						if (form.equals(rbnewfn.getNewAntecedent())){
+							notin = false;
+						}
+						}
+						if (notin){
+							System.out.println("not in list");
+							throw new RuntimeException();
+						}
+					} // end sanity checks
+					*/
+					
+					}
+				}
+				
+				}  //end else
+				
+				ProofNode newopennode = null;
+				if(initialtree.getOpenNodes().size()>0)
+					newopennode = (ProofNode) initialtree.getOpenNodes().get(0);
+				if (newopennode!=null){
+					Sequent obtainedsequent = (Sequent) newopennode.getContent(); 
+					List<RuleBinding> terminationlist = AdditionalDLRules.SIMPLETERMINATION.findRuleBindings((Sequent) newopennode.getContent());
+					// obtainedsequent.reportAntecedent();
+					if (terminationlist.size()>0){
+					// System.out.println("terminationlist " + terminationlist);
+					RuleBindingForNode rbnewfn = new RuleBindingForNode(newopennode.getId(),terminationlist.get(0));
+					applySequentInferenceRule(initialtree,rbnewfn,AdditionalDLRules.SIMPLETERMINATION);
+					}
+					
+				}
+				
+				
+				/*
 				applySequentInferenceRule(initialtree,bindings.get(0),current_rule);
+				if (bindings.size()>1 && initialtree.getOpenNodes().size()>0){
+					ProofNode newopennode = (ProofNode) initialtree.getOpenNodes().get(0);
+					RuleBindingForNode rb = bindings.get(1);
+					rb.setNodeId(newopennode.getId());
+					applySequentInferenceRule(initialtree,bindings.get(1),detectedRules.get(1));
+				}
+				*/
+				// 	applySequentInferenceRule(initialtree,bindings.get(1),detectedRules.get(1));
+				
+				List<RuleBindingForNode> saved_rbs = bindings;
+				 List<SequentInferenceRule> saved_rs = detectedRules;
+				 saved_rbs.remove(0);
+				 saved_rs.remove(0);
+				 bindings_dash_save = new Pair(saved_rbs,saved_rs);
 				
 				if(initialtree.getOpenNodes().size()>0){
 				int count = ((Sequent) ((ProofNode) initialtree.getOpenNodes().get(0)).getContent()).getAllAntecedentOWLFormulas().size();
@@ -560,6 +852,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			} catch (UselessInferenceException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return initialtree;
 			}
 			}
 			limit--;
@@ -1023,9 +1316,10 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 	  * @throws ProofNotFoundException
 	  * @throws Exception
 	  */
-	 public static GentzenTree computeProofTree(OWLFormula conclusion, List<OWLFormula> axioms, int loopLimit, String ruleset) throws ProofNotFoundException,Exception{
+	 public static GentzenTree computeProofTree(OWLFormula conclusion, List<OWLFormula> axioms, int loopLimit, long timeLimit, String ruleset) throws ProofNotFoundException,Exception{
 		 	
-		  	Sequent<OWLFormula> sequent = new Sequent<OWLFormula>();
+		  	// Sequent<OWLFormula> sequent = new Sequent<OWLFormula>();
+		    IncrementalSequent sequent = new IncrementalSequent();
 	 	  	sequent.addSuccedent(conclusion);
 	 	  	for (OWLFormula axiom: axioms){
 	 	  		// System.out.println("DBG INFSERV COMPUTE PT ADDING " + axiom);
@@ -1036,7 +1330,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		    List<SequentInferenceRule> allInferenceRules = RuleSetManager.INSTANCE.getRuleSet(ruleset);
 	    		 
 	    	sequent.setHighestInitAxiomid(1000);
-		    InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree, allInferenceRules, loopLimit);
+		    InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree, allInferenceRules, loopLimit, timeLimit);
 		    	 
 		    if(prooftree.getOpenNodes().size()>0){
 		    		 throw new ProofNotFoundException("proof not found within step limit " + loopLimit);

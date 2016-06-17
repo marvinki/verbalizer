@@ -74,4 +74,6 @@ public List<RuleApplicationResults> computeRuleApplicationResults(Sequent sequen
 	return null;
 }
 
+public void clearCaches(){}
+
 }

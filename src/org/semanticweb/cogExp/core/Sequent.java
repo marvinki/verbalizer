@@ -7,15 +7,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
+
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.*;
 
 
 public class Sequent<FormulaType> {
 	
-	private TermTree antecedent = new TermTree();
+	protected TermTree antecedent = new TermTree();
 	private TermTree succedent = new TermTree();
 	private TermTree subexprs = new TermTree();
-	private int id= -1;
+	protected int id= -1;
 	private int highest_init_axiomid;
 	private HashMap<Integer,Integer> formulaDepth = new HashMap<Integer,Integer>(); // heuristic to create short proofs by BFSing on formulas
 	
@@ -116,6 +118,14 @@ public class Sequent<FormulaType> {
 	}
 	
 	public Sequent() {
+		antecedent = new TermTree();
+		succedent = new TermTree();
+		subexprs = new TermTree();
+		// id= -1;
+		this.id = InferenceApplicationService.INSTANCE.generateSequentID();
+		formulaDepth = new HashMap<Integer,Integer>(); // heuristic to create short proofs by BFSing on formulas
+		// System.out.println("generated sequent with id "+  this.id);
+		
 		// TODO Auto-generated constructor stub
 	}
 
@@ -125,12 +135,19 @@ public class Sequent<FormulaType> {
 	
 	
 	public int addAntecedent(OWLFormula formula) throws Exception{
+		// System.out.println("sequent add called (1)");
 		// System.out.println("DBG ADDANT DELEGATE CALLED (2) ");
-		if (formula==null)
+		if (formula==null){
+			System.out.println("we are about to throw an exception for " + formula);
 			throw new Exception();
+		}
 		int id = -100;
 		// System.out.println("Sequent DEBUG (1)" + formula);
+		// System.out.println("Checking -- already contained ? " + antecedent.contains(formula));
+		// System.out.println("Counting " + antecedent.getAllFormulas().size());
 		antecedent.insert(formula);
+		// System.out.println("Now -- already contained ? " + antecedent.contains(formula));
+		// System.out.println("Counting " + antecedent.getAllFormulas().size());
 		// System.out.println("Sequent DEBUG (2)" + formula);
 		insertIntoSubexprsTree(formula);
 		id = antecedentFormulaGetID(formula);
@@ -138,6 +155,7 @@ public class Sequent<FormulaType> {
 	}
 	
 	public int addAntecedent(OWLFormula formula, int depth) throws Exception{
+		// System.out.println("sequent add called (2)");
 		int id = -100;
 		// System.out.println("DBG SEQ ADD ANT " + formula);
 		antecedent.insert(formula);
@@ -158,11 +176,6 @@ public class Sequent<FormulaType> {
 	}
 	
 
-	
-	
-	
-	
-	
 	/* =====  Removing ===== */
 	
 
@@ -178,22 +191,7 @@ public class Sequent<FormulaType> {
 		// removeFromSubexprsTree(formula);
 	}
 	
-	/* GETTING ANTECEDENT */
 	
-	/*
-	public ArrayList<FormulaType> getAntecedent(){
-		ArrayList<FormulaType> results =  new ArrayList<FormulaType>();
-		HashSet<OWLFormula> formulas =  antecedent.getAllFormulas();
-		for (OWLFormula form : formulas){
-			// System.out.println("DBG SEQ GET from " + form);
-			OWLObject owlform = form.toOWLAPI();
-			// System.out.println("DBG SEQ GET to " + owlform);
-			FormulaType typeform = (FormulaType) owlform;
-			results.add(typeform);
-		}
-		return results;
-	}
-	*/
 	
 	public HashSet<OWLFormula> getAllAntecedentOWLFormulas(){
 		return antecedent.getAllFormulas();
@@ -228,6 +226,12 @@ public class Sequent<FormulaType> {
 	}
 	
 	public boolean alreadyContainedInAntecedent(OWLFormula f){
+		// System.out.println("already contained? " + f + " "+ antecedent.contains(f));
+		// System.out.println("antecedent? " + antecedent);
+		// if (antecedent.contains(f)){
+		// 	System.out.println(antecedent);
+		// 	System.out.println("id: " + antecedentFormulaGetID(f));
+		// }
 		return antecedent.contains(f);
 	}
 	
@@ -257,280 +261,10 @@ public class Sequent<FormulaType> {
 		TermTree newsucc = succedent.clone();
 		TermTree subexprs = this.subexprs.clone();
 		HashMap<Integer,Integer> depths = (HashMap<Integer,Integer>) this.formulaDepth.clone();
-		return new Sequent<FormulaType>(newant,newsucc,subexprs,InferenceApplicationService.INSTANCE.generateSequentID(), depths);
+		int newid = InferenceApplicationService.INSTANCE.generateSequentID();
+		// System.out.println("DEBUG -- sequent is cloned, original id " + id + " newid " + newid);
+		return new Sequent<FormulaType>(newant,newsucc,subexprs,newid, depths);
 	}
-	
-	
-	
-	/* 
-	public static java.lang.String NLString(Object ob){
-		java.lang.String resultstring ="";
-		Pattern somepattern = Pattern.compile("\\#(.*?)\\>"); 
-		if (ob instanceof OWLSubClassOfAxiom){
-			resultstring = resultstring + NLString(((OWLSubClassOfAxiom) ob).getSubClass()) +  " is a " + NLString(((OWLSubClassOfAxiom) ob).getSuperClass());
-		} else {
-			if (ob instanceof OWLClass || ob instanceof OWLProperty || ob instanceof OWLPropertyRange || ob instanceof OWLDataProperty || ob instanceof OWLIndividual){
-				String classstring = ob.toString();
-				Matcher m = somepattern.matcher(classstring);
-				String s = "";
-				while (m.find()){
-					 s = m.group(1);
-				}
-				resultstring = resultstring + s;
-			}
-			else {
-			resultstring = resultstring + ob.toString();
-		}	
-		}
-		return resultstring;
-	}
-	
-	*/
-	
-	/*
-	public static java.lang.String shorthandString(Object ob){
-		 Pattern somepattern = Pattern.compile("\\#(.*?)\\>"); 
-		java.lang.String resultstring ="";
-		// System.out.println(ob.getClass());
-		// "≣"
-		
-		if (ob instanceof OWLDataHasValue){
-			OWLDataHasValue axiom = (OWLDataHasValue) ob;
-			resultstring = resultstring + "hasValue" + "(" + shorthandString(axiom.getProperty());
-			resultstring = resultstring + "," + axiom.getValue() + ")";
-			return resultstring;
-		} 
-		if (ob instanceof OWLObjectHasValue){
-			OWLObjectHasValue axiom = (OWLObjectHasValue) ob;
-			resultstring = resultstring + "hasValue" + "(" + shorthandString(axiom.getProperty());
-			resultstring = resultstring + "," + shorthandString(axiom.getValue()) + ")";
-			return resultstring;
-		} 
-	
-		if (ob instanceof OWLDifferentIndividualsAxiom){
-			OWLDifferentIndividualsAxiom axiom = (OWLDifferentIndividualsAxiom) ob;
-			List<OWLIndividual> exprs =  axiom.getIndividualsAsList();
-			resultstring = resultstring + "different(";
-			boolean firstp = true;
-			for (OWLIndividual exp : exprs){
-				if (!firstp) {resultstring = resultstring + ",";}
-				firstp = false;
-				resultstring = resultstring + shorthandString(exp);
-			}
-			resultstring = resultstring + ")";
-		} 
-		else
-		if (ob instanceof OWLDatatype){
-			OWLDatatype axiom = (OWLDatatype) ob;
-			if (axiom.isInteger()) {resultstring = resultstring +  "Integer";}
-			else {resultstring = resultstring;}
-		} 
-		else
-		if (ob instanceof OWLFunctionalDataPropertyAxiom){
-			OWLFunctionalDataPropertyAxiom axiom = (OWLFunctionalDataPropertyAxiom) ob;
-			resultstring = resultstring + "functional" + "(" + shorthandString(axiom.getProperty());
-			resultstring = resultstring + ")";
-		} 
-		else
-			if (ob instanceof OWLFunctionalObjectPropertyAxiom){
-				OWLFunctionalObjectPropertyAxiom axiom = (OWLFunctionalObjectPropertyAxiom) ob;
-				resultstring = resultstring + "functional" + "(" + shorthandString(axiom.getProperty());
-				resultstring = resultstring + ")";
-			} 
-		else
-			if (ob instanceof OWLDataMinCardinality){
-				OWLDataMinCardinality axiom = (OWLDataMinCardinality) ob;
-				resultstring = resultstring + "min#" + "(" + shorthandString(axiom.getCardinality()) + ","+ shorthandString(axiom.getProperty());
-				resultstring = resultstring + "," +  shorthandString(axiom.getFiller()) +")";
-			} 
-			else
-		if (ob instanceof OWLObjectMinCardinality){
-			OWLObjectMinCardinality axiom = (OWLObjectMinCardinality) ob;
-			resultstring = resultstring + ">=" + axiom.getCardinality() + "(" + shorthandString(axiom.getProperty()) + "." + shorthandString(axiom.getFiller());
-			resultstring = resultstring + ")";
-		} 
-		else
-			if (ob instanceof OWLObjectMaxCardinality){
-				OWLObjectMaxCardinality axiom = (OWLObjectMaxCardinality) ob;
-				resultstring = resultstring + "<=" + axiom.getCardinality() + "(" + shorthandString(axiom.getProperty()) + "." + shorthandString(axiom.getFiller());
-				resultstring = resultstring + ")";
-			} 
-			else
-			if (ob instanceof OWLObjectExactCardinality){
-				OWLObjectExactCardinality axiom = (OWLObjectExactCardinality) ob;
-				resultstring = resultstring + "=" + axiom.getCardinality() + "(" + shorthandString(axiom.getProperty()) + "." + shorthandString(axiom.getFiller());
-				resultstring = resultstring + ")";
-			} 
-			else
-			if (ob instanceof OWLSymmetricObjectPropertyAxiom){
-				OWLSymmetricObjectPropertyAxiom axiom = (OWLSymmetricObjectPropertyAxiom) ob;
-				resultstring = resultstring + "symm" + "(" + shorthandString(axiom.getProperty());
-				resultstring = resultstring + ")";
-			} 
-			else
-				if (ob instanceof OWLTransitiveObjectPropertyAxiom){
-					OWLTransitiveObjectPropertyAxiom axiom = (OWLTransitiveObjectPropertyAxiom) ob;
-					resultstring = resultstring + "trans" + "(" + shorthandString(axiom.getProperty());
-					resultstring = resultstring + ")";
-				} 
-				else
-		if (ob instanceof OWLEquivalentClassesAxiom){
-			List<OWLClassExpression> exprs =  ((OWLEquivalentClassesAxiom) ob).getClassExpressionsAsList();
-			resultstring = resultstring + "equivalent(";
-			boolean firstp = true;
-			for (OWLClassExpression exp : exprs){
-				if (!firstp) {resultstring = resultstring + ",";}
-				firstp = false;
-				resultstring = resultstring + shorthandString(exp);
-			}
-			resultstring = resultstring + ")";
-		} 
-		else
-		if (ob instanceof OWLDisjointClassesAxiom){
-			List<OWLClassExpression> exprs =  ((OWLDisjointClassesAxiom) ob).getClassExpressionsAsList();
-			resultstring = resultstring + "disjoint(" +  shorthandString(exprs.get(0)) +  "," + shorthandString(exprs.get(1)) + ")";
-		} 
-		else
-		if (ob instanceof OWLInverseObjectPropertiesAxiom){
-				OWLObjectPropertyExpression expr1 =  ((OWLInverseObjectPropertiesAxiom) ob).getFirstProperty();
-				OWLObjectPropertyExpression expr2 =  ((OWLInverseObjectPropertiesAxiom) ob).getSecondProperty();
-				resultstring = resultstring + "inverse(" +  shorthandString(expr1) + ","+ shorthandString(expr2) + ")";
-			} 
-			else
-		if (ob instanceof OWLPropertyRangeAxiom){
-			resultstring = resultstring + "range(" +  shorthandString(((OWLPropertyRangeAxiom) ob).getProperty()) +  "," + shorthandString(((OWLPropertyRangeAxiom) ob).getRange()) + ")";
-		}
-		else
-			if (ob instanceof OWLPropertyDomainAxiom){
-				resultstring = resultstring + "domain(" +  shorthandString(((OWLPropertyDomainAxiom) ob).getProperty()) +  "," + shorthandString(((OWLPropertyDomainAxiom) ob).getDomain()) + ")";
-			}
-			else
-		if (ob instanceof OWLSubClassOfAxiom){
-			resultstring = resultstring + shorthandString(((OWLSubClassOfAxiom) ob).getSubClass()) +  "⊑" + shorthandString(((OWLSubClassOfAxiom) ob).getSuperClass());
-		}
-		else
-			if (ob instanceof OWLSubObjectPropertyOfAxiom){
-				resultstring = resultstring + shorthandString(((OWLSubObjectPropertyOfAxiom) ob).getSubProperty()) +  "⊑" + shorthandString(((OWLSubObjectPropertyOfAxiom) ob).getSuperProperty());
-			}
-			else
-		if (ob instanceof OWLClassExpression && ((OWLClassExpression) ob).isOWLThing()){
-			resultstring = resultstring + "⊤";
-		}
-		else
-		if (ob instanceof OWLClassExpression && ((OWLClassExpression) ob).isOWLNothing()){
-				resultstring = resultstring + "⊥";
-			}
-			else
-		if (ob instanceof OWLObjectUnionOf){
-			// System.out.println("debug union");
-			// System.out.println(((OWLObjectUnionOf) ob).getOperandsAsList().size());
-			if (((OWLObjectUnionOf) ob).getOperandsAsList().size()==2){
-			resultstring = resultstring + 
-					"("+ shorthandString(((OWLObjectUnionOf) ob).getOperandsAsList().get(0)) 
-					+ "⊔" + shorthandString(((OWLObjectUnionOf) ob).getOperandsAsList().get(1)) + ")"; 
-		} else  {// resultstring = resultstring + ob.toString();
-			boolean firstp = true;
-			resultstring = resultstring + "(";
-			for (OWLClassExpression exp: ((OWLObjectUnionOf) ob).getOperandsAsList()){
-				if (!firstp){ resultstring = resultstring + "⊔";}
-				firstp = false;
-				resultstring = resultstring + shorthandString(exp);
-			}
-			resultstring = resultstring + ")";
-		}
-		}
-		else
-		if (ob instanceof OWLObjectAllValuesFrom){
-			// System.out.println("debug all");
-			resultstring = resultstring + "∀" 
-		+ shorthandString(((OWLObjectAllValuesFrom) ob).getProperty()) 
-		+ "." + shorthandString(((OWLObjectAllValuesFrom) ob).getFiller());
-		}
-		else
-			if (ob instanceof OWLObjectSomeValuesFrom){
-				// System.out.println("debug some");
-				resultstring = resultstring + "∃" 
-			+ shorthandString(((OWLObjectSomeValuesFrom) ob).getProperty()) 
-			+ "." + shorthandString(((OWLObjectSomeValuesFrom) ob).getFiller());
-			}
-			else
-		if (ob instanceof OWLObjectIntersectionOf){
-			// System.out.println("debug intersect");
-			boolean firstp = true;
-			resultstring = resultstring + "(";
-			for (OWLClassExpression exp: ((OWLObjectIntersectionOf) ob).getOperandsAsList()){
-				if (!firstp){ resultstring = resultstring + "⊓";}
-				firstp = false;
-				resultstring = resultstring + shorthandString(exp);
-			}
-			resultstring = resultstring + ")"; 
-		} 
-		else{
-		if  (ob instanceof OWLObjectComplementOf){
-			// System.out.println("debug compl");
-			resultstring = resultstring + "¬" + "(" + shorthandString(((OWLObjectComplementOf) ob).getOperand()) + ")";			
-		} else {
-			if (ob instanceof OWLClass || ob instanceof OWLProperty || ob instanceof OWLPropertyRange || ob instanceof OWLDataProperty || ob instanceof OWLIndividual){
-				String classstring = ob.toString();
-				Matcher m = somepattern.matcher(classstring);
-				String s = "";
-				while (m.find()){
-					 s = m.group(1);
-				}
-				resultstring = resultstring + s;
-			}
-			else {
-			resultstring = resultstring + ob.toString();
-		}	
-		}
-		}
-		return resultstring;
-	}
-*/
-	
-	/* 
-	public static java.lang.String pseudoNLStringExists(OWLObjectSomeValuesFrom existsexpr){
-		OWLObjectPropertyExpression property = existsexpr.getProperty();
-		OWLClassExpression filler = existsexpr.getFiller();
-		java.lang.String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
-		java.lang.String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
-		if (part1.equals("") && part2.equals("") || part1==null && part2==null){
-			part1= "has " + existsexpr.getProperty().getNamedProperty().getIRI().getFragment() + "-successor ";
-		}
-		// System.out.println("PSEUDO NL STRING EXISTS PART2 " + part2);
-		// System.out.println("PSEUDO NL STRING EXISTS RETURNS " + part1 + pseudoNLString(filler) + part2);
-		return part1 + pseudoNLString(filler) + part2;
-	}
-	*/
-	
-	/*
-	public static java.lang.String pseudoNLStringClass(OWLClass classexpr){
-		java.lang.String str = VerbalisationManager.INSTANCE.getClassNLString(classexpr);
-		return str;
-	}
-	*/
-	
-	/*
-	public static java.lang.String pseudoNLSimpleIntersection(OWLObjectIntersectionOf ints){
-		java.lang.String str = VerbalisationManager.INSTANCE.getSimpleIntersectionNLString(ints);
-		return str;
-	}
-	*/
-	
-	/*
-	
-	public static String pseudoNLString(OWLClassExpression ob){
-		VerbaliseClassExpressionVisitor verbaliseVisitor = new VerbaliseClassExpressionVisitor();
-		return ob.accept(verbaliseVisitor);
-	}
-	
-	
-	public static String pseudoNLString(OWLAxiom ob){
-		VerbaliseAxiomVisitor verbaliseVisitor = new VerbaliseAxiomVisitor();
-		return ob.accept(verbaliseVisitor);
-	}
-	
-	*/
 	
 	
 	
@@ -592,88 +326,9 @@ public class Sequent<FormulaType> {
 	
 	
 
-	/*
-	public List<FormulaType> retrieveFormulas(SequentSinglePosition pos){	
-		List formulas = new ArrayList();
-		if (pos.getSequentPart()==SequentPart.ANTECEDENT){
-			if (this.antecedentGetFormula(pos.getToplevelPosition())!=null){
-				formulas.add((FormulaType) this.antecedentGetFormula(pos.getToplevelPosition()).toOWLAPI());
-			} else{
-				formulas = getAntecedent();
-				List<FormulaType>  list = new ArrayList<FormulaType>();
-				FormulaType formula = (FormulaType) formulas.get(pos.getToplevelPosition());
-				list.add(formula);
-				return list;
-			}
-		}
-		else formulas.add((FormulaType) this.succedentGetFormula(pos.getToplevelPosition()).toOWLAPI());
-		return formulas;
-	}
-	*/
 	
 	
-	/*
-	public List<FormulaType> retrieveFormulas(SequentPositionInNode pos){
-		// System.out.println("retrieve Formulas with SequentPositionInNode called.");
-		SequentPosition seqpos = pos.getSequentPosition();
-		return retrieveFormulas(seqpos);
-	}
-	*/
-	
-	/*
-	public List<FormulaType> retrieveFormulas(SequentPosition pos){
-		// System.out.println("retrieve Formulas with SequentPosition called.");
-		if (pos instanceof SequentSinglePosition) return retrieveFormulas((SequentSinglePosition) pos);
-		if (pos instanceof SequentMultiPosition) return retrieveFormulas((SequentMultiPosition) pos);
-		return null;
-	}
-	*/
-	
-	/*
-	public List<FormulaType> retrieveFormulas(SequentMultiPosition pos){
-		List formulas = new ArrayList();
-		List<FormulaType>  list = new ArrayList<FormulaType>();
-		if (pos.getSequentPart()==SequentPart.ANTECEDENT){
-				formulas = getAntecedent();
-		}
-		if (pos.getSequentPart()==SequentPart.SUCCEDENT){
-			formulas = getSuccedent();
-		}	
-		Integer[][] positions = pos.getPositions();
-		for (int i = 0; i < positions.length; i++){
-			FormulaType formula = (FormulaType) formulas.get(positions[i][0]);
-			list.add(formula);
-		}
-		return list;
-	}
-	*/
-	
-	/*
-	public List<FormulaType> retrieveFormulas(RuleBinding bin){
-		List formulas = new ArrayList();
-		List<FormulaType>  list = new ArrayList<FormulaType>();
-		
-		HashMap bindings = bin.getBindings();
-		// System.out.println("DEBUG bindings " + bindings);
-		Collection all_positions = bindings.values();
-		// System.out.println("DEBUG all positions " + all_positions);
-		for (Object b : all_positions){
-			if (b instanceof SequentSinglePosition){
-				list.addAll(retrieveFormulas((SequentSinglePosition) b));
-			}
-			if (b instanceof SequentMultiPosition){
-			    list.addAll(retrieveFormulas((SequentMultiPosition) b));
-			}	
-			if (b instanceof SequentPositionInNode){
-			    list.addAll(retrieveFormulas(((SequentPositionInNode) b).getSequentPosition()));
-			}	
-		}
-		
-		return list;
-	}
-	*/
-	
-	public OWLFormula getOWLSubformula(OWLFormula formula, List<Integer> pos){
+	public static OWLFormula getOWLSubformula(OWLFormula formula, List<Integer> pos){
 		if (pos==null | pos.size()==0){
 			return formula;
 		} 
@@ -815,9 +470,13 @@ public class Sequent<FormulaType> {
 		return antecedent.toString();
 	}
 	
+	/* ==== SUBEXPRESSIONS ==== */
+	
 	public void insertIntoSubexprsTree(OWLFormula formula) throws Exception{
 			if(!subexprs.contains(formula)){
-			subexprs.insert(formula);}
+			subexprs.insert(formula);
+			// System.out.println("INSERTING into SUBEXPRSTREE " + formula);
+			}
 			if (!(formula.getArgs()==null || formula.getArgs().size()==0)){
 					for (OWLFormula child : formula.getArgs()){
 						insertIntoSubexprsTree(child);
@@ -862,14 +521,16 @@ public class Sequent<FormulaType> {
 	}
 	
 	public Sequent amputateDepth(int depth){
+		// System.out.println("sequent amputation taking place");
 		Sequent clone = this.clone(); // produce ordinary clone
 		// amputate antecedent
-		Set<OWLFormula> allAntecedentForms = clone.antecedent.getAllFormulas();
+		Set<OWLFormula> allAntecedentForms = antecedent.getAllFormulas();
+				// clone.antecedent.getAllFormulas(); <-- changed this
 		for (OWLFormula ant : allAntecedentForms){
 			int antdepth = getFormulaDepth(antecedent.formulaGetID(ant));
 			if (antdepth>depth){
 				clone.antecedent.remove(ant);
-				// System.out.println("DEBUG removing " + ant);
+				// System.out.println("DEBUG removing {" + antdepth + "} " + ant);
 				// System.out.println("DEBUG all formulas " + clone.antecedent.getAllFormulas());
 				}
 		}
@@ -882,8 +543,38 @@ public class Sequent<FormulaType> {
 				clone.antecedent.remove(succ);
 		}
 		*/
+		// System.out.println("returning clone with id " + clone.getID() + " based on " + this.getID());
 		return clone;
 	}
 	
+	public String antecedentPrintIDMapping(){
+		return antecedent.printIDMapping();
+	}
+	
+	public void reportSubexpressionFormulas(){
+		System.out.println("SUBEXPRESSIONS REPORT for sequent " + id);
+		Set<OWLFormula> exprs = subexprs.getAllFormulas();
+		List<OWLFormula> sortedexprs = new ArrayList<>(exprs);
+		Comparator<OWLFormula> c = new OWLFormulaComparator();
+		sortedexprs.sort(c);
+		for (OWLFormula form : sortedexprs){
+			System.out.println(form.prettyPrint());
+		}
+		System.out.println("\n");
+	}
+	
+	public void reportAntecedent(){
+		System.out.println("ANTECEDENT REPORT for sequent " + id);
+		Set<OWLFormula> exprs = antecedent.getAllFormulas();
+		List<OWLFormula> sortedexprs = new ArrayList<>(exprs);
+		Comparator<OWLFormula> c = new OWLFormulaComparator();
+		sortedexprs.sort(c);
+		int i = 0;
+		for (OWLFormula form : sortedexprs){
+			System.out.println(i + ": " + form.prettyPrint() + " {" + getFormulaDepth(antecedentFormulaGetID(form)) + "}");
+			i++;
+		}
+		System.out.println("\n");
+	}
 	
 }

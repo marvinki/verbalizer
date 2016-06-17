@@ -26,4 +26,6 @@ public interface SequentInferenceRule {
 	
 	public List<RuleKind> qualifyRule();
 	
+	public void clearCaches();
+	
 }

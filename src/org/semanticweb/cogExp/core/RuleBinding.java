@@ -2,6 +2,7 @@ package org.semanticweb.cogExp.core;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 
@@ -58,4 +59,31 @@ public class RuleBinding extends AbstractSequentPositions {
 	return newsuccedent;
 }
 	
+	public String toString(){
+		return hashMap.toString();
+	}
+	
+	public RuleBinding convert(Sequent source, Sequent target){
+		Set<String> keys = hashMap.keySet();
+		HashMap<java.lang.String,SequentPosition> newHashMap = new HashMap<java.lang.String,SequentPosition>();
+		for (String key : keys){
+			SequentPosition pos = hashMap.get(key);
+			if (pos instanceof SequentSinglePosition){
+				SequentSinglePosition singlePos = (SequentSinglePosition) pos;
+				int i = singlePos.getToplevelPosition();
+				OWLFormula form = source.antecedentGetFormula(i);
+				int targetId = target.antecedentFormulaGetID(form);
+				// System.out.println(key + " Orig: " + form + " found: " +  target.antecedentGetFormula(targetId));
+				SequentSinglePosition newPos = new SequentSinglePosition(SequentPart.ANTECEDENT,targetId);
+				newHashMap.put(key, newPos);
+			} else
+				return null;
+		}
+		RuleBinding newBinding = new RuleBinding(newHashMap,newantecedent, newsuccedent);
+		// System.out.println("New antecedent " + newBinding.getNewAntecedent());
+		if (newantecedent !=null && target.alreadyContainedInAntecedent(newantecedent))
+			return null;
+		
+		return newBinding;
+	}
 }

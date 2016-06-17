@@ -168,24 +168,31 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE1neo,
     			INLG2012NguyenEtAlRules.RULE1,
     			AdditionalDLRules.SUBCLANDEQUIVELIM,
-    			INLG2012NguyenEtAlRules.RULE12,
-    			AdditionalDLRules.FORALLUNION,
-    			INLG2012NguyenEtAlRules.RULE23Repeat,
-    			INLG2012NguyenEtAlRules.RULE23,
+    			INLG2012NguyenEtAlRules.RULE12new,
+    			// AdditionalDLRules.FORALLUNION,
+    			// INLG2012NguyenEtAlRules.RULE23Repeat,
+    			// INLG2012NguyenEtAlRules.RULE23,
     			INLG2012NguyenEtAlRules.RULE2,
-    			INLG2012NguyenEtAlRules.RULE15,
+    			INLG2012NguyenEtAlRules.RULE3,
     			// // // allInferenceRules.add(AdditionalDLRules.UNIONINTRO);
     			AdditionalDLRules.RULE5MULTI,
-    			INLG2012NguyenEtAlRules.RULE5,
+    			// INLG2012NguyenEtAlRules.RULE5new,  
     			INLG2012NguyenEtAlRules.RULE6neo,
     			AdditionalDLRules.ELEXISTSMINUS,
     			INLG2012NguyenEtAlRules.RULE34, // handle disjointness
+    			INLG2012NguyenEtAlRules.RULE35, // handle disjointness
+    			AdditionalDLRules.APPLRANGE,
     			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
     			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
     			AdditionalDLRules.R0, // introduce trivial subsumptions
     			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
     			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
-    			// INLG2012NguyenEtAlRules.RULE42
+    			INLG2012NguyenEtAlRules.RULE42,
+    			INLG2012NguyenEtAlRules.RULE23Repeat, // transitivity
+    			INLG2012NguyenEtAlRules.RULE23, // transitivity
+    			INLG2012NguyenEtAlRules.RULE15,
+    			AdditionalDLRules.PROPCHAIN
+    			
 	    };
 	    
 	 
@@ -214,7 +221,108 @@ public enum RuleSetManager {
 	    rulesets.put("EL",EL);
 	    
 	    
-	}
+	   /*
+	    AdditionalDLRules.SIMPLETERMINATION,
+		SequentTerminationAxiom.INSTANCE,
+		AdditionalDLRules.EQUIVEXTRACT,
+		INLG2012NguyenEtAlRules.RULE1neo,
+		INLG2012NguyenEtAlRules.RULE1,
+		AdditionalDLRules.SUBCLANDEQUIVELIM,
+		INLG2012NguyenEtAlRules.RULE12new,
+		INLG2012NguyenEtAlRules.RULE2,
+		INLG2012NguyenEtAlRules.RULE3,
+		AdditionalDLRules.RULE5MULTI,
+		INLG2012NguyenEtAlRules.RULE5new,  
+		INLG2012NguyenEtAlRules.RULE6neo,
+		AdditionalDLRules.ELEXISTSMINUS,
+		INLG2012NguyenEtAlRules.RULE34, // handle disjointness
+		AdditionalDLRules.APPLRANGE,
+		AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
+		AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
+		AdditionalDLRules.R0, // introduce trivial subsumptions
+		AdditionalDLRules.DEFDOMAIN, // translate domain definition 
+		INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
+		INLG2012NguyenEtAlRules.RULE42,
+		INLG2012NguyenEtAlRules.RULE23Repeat, // transitivity
+		INLG2012NguyenEtAlRules.RULE23, // transitivity
+		INLG2012NguyenEtAlRules.RULE15,
+		AdditionalDLRules.PROPCHAIN
+		*/
+	    
+	    
+	    SequentInferenceRule[] ELInitNonredundant = {
+	    		AdditionalDLRules.SIMPLETERMINATION,
+	    		SequentTerminationAxiom.INSTANCE,
+    			AdditionalDLRules.EQUIVEXTRACT,   // <--- should be off
+    			INLG2012NguyenEtAlRules.RULE1neo,
+    			INLG2012NguyenEtAlRules.RULE1,
+    			// AdditionalDLRules.SUBCLANDEQUIVELIM, // REDUNDANT
+    			INLG2012NguyenEtAlRules.RULE12new,
+    			// AdditionalDLRules.FORALLUNION,
+    			INLG2012NguyenEtAlRules.RULE2,
+    			INLG2012NguyenEtAlRules.RULE3,
+    			// // // allInferenceRules.add(AdditionalDLRules.UNIONINTRO);
+    			// AdditionalDLRules.RULE5BIN,
+    			INLG2012NguyenEtAlRules.RULE5new,
+    			INLG2012NguyenEtAlRules.RULE6neo,
+    			AdditionalDLRules.ELEXISTSMINUS,
+    			INLG2012NguyenEtAlRules.RULE34, // handle disjointness
+    			INLG2012NguyenEtAlRules.RULE35, // handle disjointness
+    			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
+    			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
+    			AdditionalDLRules.R0, // introduce trivial subsumptions  // <--- off?
+    			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
+    			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
+    			INLG2012NguyenEtAlRules.RULE42,
+    			INLG2012NguyenEtAlRules.RULE23Repeat,
+    			INLG2012NguyenEtAlRules.RULE23,
+    			INLG2012NguyenEtAlRules.RULE15,
+    			AdditionalDLRules.PROPCHAIN,
+    			AdditionalDLRules.APPLRANGE  // <---- extra
+	    };    
+	    
+	    ArrayList<SequentInferenceRule> ELnonredundant = new ArrayList<SequentInferenceRule>(Arrays.asList(ELInitNonredundant));
+	    rulesets.put("ELnonredundant",ELnonredundant);
+	    
+	
+	
+	
+	SequentInferenceRule[] ontopandInit = {
+    		AdditionalDLRules.SIMPLETERMINATION,
+    		SequentTerminationAxiom.INSTANCE,
+			AdditionalDLRules.EQUIVEXTRACT,
+			INLG2012NguyenEtAlRules.RULE1neo,
+			INLG2012NguyenEtAlRules.RULE1,
+			AdditionalDLRules.SUBCLANDEQUIVELIM,
+			INLG2012NguyenEtAlRules.RULE12new,
+			AdditionalDLRules.FORALLUNION,
+			INLG2012NguyenEtAlRules.RULE23Repeat,
+			INLG2012NguyenEtAlRules.RULE23,
+			INLG2012NguyenEtAlRules.RULE2,
+			INLG2012NguyenEtAlRules.RULE15,
+			// // // allInferenceRules.add(AdditionalDLRules.UNIONINTRO);
+			AdditionalDLRules.RULE5MULTI,
+			INLG2012NguyenEtAlRules.RULE5,
+			INLG2012NguyenEtAlRules.RULE6neo,
+			AdditionalDLRules.ELEXISTSMINUS,
+			INLG2012NguyenEtAlRules.RULE34, // handle disjointness
+			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
+			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
+			AdditionalDLRules.R0, // introduce trivial subsumptions
+			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
+			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
+			// INLG2012NguyenEtAlRules.RULE42
+			AdditionalDLRules.ONLYSOME,
+			AdditionalDLRules.UNIONINTRO
+    };
+    
+    ArrayList<SequentInferenceRule> ontopand = new ArrayList<SequentInferenceRule>(Arrays.asList(ontopandInit));
+    rulesets.put("OP",ontopand);
+    
+	} //////////
+	
+	
+	
 	
 	   public static boolean isVerbalisedELRule(SequentInferenceRule rule){
 	    	if (
@@ -222,17 +330,26 @@ public enum RuleSetManager {
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE1neo) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE1) ||
 	    	rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) ||
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE12new) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE12) ||
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE5new) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE5) ||
+	    	rule.equals(AdditionalDLRules.RULE5MULTI) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE15) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE6neo) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE34) || // handle disjointness
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE35) || // handle disjointness
 			// AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
 			// AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
 			// AdditionalDLRules.R0, // introduce trivial subsumptions
 			// AdditionalDLRules.DEFDOMAIN, // translate domain definition 
-	    	rule.equals(INLG2012NguyenEtAlRules.RULE37) // || // handle subpropertyof
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE37) || // || // handle subpropertyof
 	    	// rule.equals(INLG2012NguyenEtAlRules.RULE42))
+	    	rule.equals(AdditionalDLRules.PROPCHAIN) ||
+	    	rule.equals(AdditionalDLRules.APPLRANGE) ||
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE23Repeat) ||
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE23) ||
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE42)
 	    	)
 	    		return true;
 	    	else return false;
