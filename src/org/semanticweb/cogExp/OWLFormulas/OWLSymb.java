@@ -8,8 +8,8 @@ package org.semanticweb.cogExp.OWLFormulas;
  *
  */
 public enum OWLSymb implements OWLAtom{
-	SUBCL, INT, UNION, EXISTS, FORALL, TOP, BOT, NEG, EQUIV, RANGE, DOMAIN, DATADOMAIN, DATAHASVALUE, OBJECTHASVALUE, 
-	TRANSITIVE, FUNCTIONAL, FUNCTIONALDATA, IRREFLEXIVE, INVERSEOBJPROP, INVFUNCTIONAL, DISJ, SUBPROPERTYCHAIN, SUBPROPERTYOF, EQUIVOBJPROP, ONEOF, 
+	SUBCL, INT, UNION, EXISTS, FORALL, TOP, BOT, NEG, EQUIV, RANGE, DOMAIN, DATADOMAIN, DATAHASVALUE, DATASOMEVALUESFROM, OBJECTHASVALUE, 
+	TRANSITIVE, FUNCTIONAL, FUNCTIONALDATA, IRREFLEXIVE, INVERSEOBJPROP, INVFUNCTIONAL, DISJ, SUBPROPERTYCHAIN, SUBPROPERTYOF, EQUIVOBJPROP, ONEOF, DATAONEOF, 
 	OBJECTMINCARDINALITY, OBJECTMAXCARDINALITY, OBJECTEXACTCARDINALITY; 
 	
 	/** Returns a pretty printed string for a symbol
@@ -41,10 +41,12 @@ public enum OWLSymb implements OWLAtom{
 			case EQUIVOBJPROP:	output="equivobprop"; break; 
 			case OBJECTHASVALUE:     output="objhasval"; break;
 			case DATAHASVALUE:     output="datahasval"; break;
+			case DATASOMEVALUESFROM:     output="datasomeval"; break;
 			case OBJECTMINCARDINALITY:     output="objectmincardinality"; break;
 			case OBJECTMAXCARDINALITY:     output="objectmaxcardinality"; break;
 			case OBJECTEXACTCARDINALITY:   output="objectexactcardinality"; break;
 			case ONEOF:     output="oneof"; break;
+			case DATAONEOF:     output="dataoneof"; break;
 			case DISJ:     output="disj"; break;
 		}
 		return output;

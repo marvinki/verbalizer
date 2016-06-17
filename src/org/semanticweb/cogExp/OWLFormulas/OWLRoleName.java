@@ -57,6 +57,14 @@ public class OWLRoleName implements OWLAtom {
 	}
 	
 	@Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 17 + rolename.hashCode();
+        hash = hash * 31 + ontologyname.hashCode();
+        return hash;
+    }
+	
+	@Override
 	public boolean isSymb() {
 		return false;
 	}

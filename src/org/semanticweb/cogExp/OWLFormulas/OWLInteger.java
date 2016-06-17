@@ -31,6 +31,16 @@ public class OWLInteger implements OWLAtom{
 	}
 	
 	@Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 17 + this.value;
+        // for (OWLFormula form : this.tail){
+        // 	hash = hash * 31 + form.hashCode();
+        // }
+        return hash;
+    }
+	
+	@Override
 	public String toString(){
 		return "|" + value + "|";
 	}

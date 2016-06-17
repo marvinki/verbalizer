@@ -2,9 +2,15 @@ package org.semanticweb.cogExp.OWLFormulas;
 
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.LinkedList;
+
+import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.core.Pair;
 
 
@@ -123,12 +129,13 @@ public class OWLFormula {
 			       || this.head.equals(OWLSymb.UNION)
 			       || this.head.equals(OWLSymb.EQUIV)){
 					// this should only be relevant for formulas where subformulas are commutative (e.g. int, union)
-					if (!other.tail.containsAll(this.tail)){equaltail = false;}
-					if (!this.tail.containsAll(other.tail)){equaltail = false;}
+					if (!other.tail.containsAll(this.tail)){equaltail = false; return false;}
+					if (!this.tail.containsAll(other.tail)){equaltail = false; return false;}
 				}
 				else {
 					if (!this.tail.equals(other.tail)){
 						equaltail = false;
+						return false;
 					}
 				}
 				// System.out.println(" equaltail: " +  equaltail);
@@ -205,7 +212,7 @@ public class OWLFormula {
 		// if we are at a variable, we construct matcher
 		if (otherformula.head instanceof OWLVar){
 			// System.out.println("OWLVar case");
-			ArrayList<Pair<OWLFormula,OWLFormula>> matcher = new ArrayList<Pair<OWLFormula,OWLFormula>>();
+			LinkedList<Pair<OWLFormula,OWLFormula>> matcher = new LinkedList<Pair<OWLFormula,OWLFormula>>();
 			// System.out.println("var case!");
 			Pair<OWLFormula,OWLFormula> matcherpair = new Pair<OWLFormula,OWLFormula>(otherformula, this);
 			matcher.add(matcherpair);
@@ -215,7 +222,7 @@ public class OWLFormula {
 		// if we are at a role variable, likewise, we construct matcher
 		if (otherformula.head instanceof OWLRoleVar){
 			        // System.out.println("OWLRoleVar case");
-					ArrayList<Pair<OWLFormula,OWLFormula>> matcher = new ArrayList<Pair<OWLFormula,OWLFormula>>();
+					LinkedList<Pair<OWLFormula,OWLFormula>> matcher = new LinkedList<Pair<OWLFormula,OWLFormula>>();
 					// System.out.println("var case!");
 					Pair<OWLFormula,OWLFormula> matcherpair = new Pair<OWLFormula,OWLFormula>(otherformula, this);
 					matcher.add(matcherpair);
@@ -229,7 +236,7 @@ public class OWLFormula {
 		}
 		// now the heads match, are the matchers for the subformulas compatible?
 		// System.out.println("Still in the matching procedure ... ");
-		ArrayList<List<Pair<OWLFormula,OWLFormula>>> submatchers = new ArrayList<List<Pair<OWLFormula,OWLFormula>>>();
+		LinkedList<List<Pair<OWLFormula,OWLFormula>>> submatchers = new LinkedList<List<Pair<OWLFormula,OWLFormula>>>();
 		if (tail!=null){
 			for (int i=0; i<this.tail.size(); i++){
 				List<Pair<OWLFormula,OWLFormula>> submatcher = this.tail.get(i).match(otherformula.tail.get(i));
@@ -244,7 +251,7 @@ public class OWLFormula {
 		// System.out.println("match called");
 		if(formulas.size()!=otherformulas.size()){
 			throw new Exception ("error with using matching");}
-		ArrayList<List<Pair<OWLFormula,OWLFormula>>> submatchers = new ArrayList<List<Pair<OWLFormula,OWLFormula>>>();
+		LinkedList<List<Pair<OWLFormula,OWLFormula>>> submatchers = new LinkedList<List<Pair<OWLFormula,OWLFormula>>>();
 		for (int i = 0; i<formulas.size();i++){
 			List<Pair<OWLFormula,OWLFormula>> submatcher = formulas.get(i).match(otherformulas.get(i));
 			submatchers.add(submatcher);
@@ -436,6 +443,8 @@ public class OWLFormula {
 		    || (head.equals(OWLSymb.FORALL))
 		    || (head.equals(OWLSymb.NEG))
 		    || (head.equals(OWLSymb.UNION))
+		    || (head.equals(OWLSymb.DATAONEOF))
+		    || (head.equals(OWLSymb.ONEOF))
 				;
 	}
 	
@@ -457,7 +466,28 @@ public class OWLFormula {
 		return false;
 	}
 	
+	public List<OWLFormula> getConjuncts(){
+		// System.out.println("get conjunct called with " +  this);
+		List<OWLFormula> result = new ArrayList<OWLFormula>();
+		if (head.equals(OWLSymb.INT)){
+			for (OWLFormula arg : tail){
+				// System.out.println("adding " + arg.getConjuncts());
+				result.addAll(arg.getConjuncts());
+			}
+		} else 
+		{
+			// System.out.println("adding " + this);
+			result.add(this);
+		}
+		// System.out.println("returning " + result);
+		return result;
+	}
+	
+	public String prettyPrint(){
+		return VerbalisationManager.prettyPrint(ConversionManager.toOWLAPI(this));
+	}
 	
 	
+
 	
 }

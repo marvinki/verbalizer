@@ -31,6 +31,13 @@ public class OWLIndividualName implements OWLAtom{
 	    return nameSame && ontologynameSame;   
 	}
 	
+	public int hashCode() {
+        int hash = 1;
+        hash = hash * 17 + individualname.hashCode();
+        hash = hash * 31 + ontologyname.hashCode();
+        return hash;
+    }
+	
 	@Override
 	public String toString(){
 		return "[[" + individualname + "]]";

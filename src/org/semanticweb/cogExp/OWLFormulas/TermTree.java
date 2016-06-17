@@ -1,6 +1,7 @@
 package org.semanticweb.cogExp.OWLFormulas;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,46 +46,34 @@ public class TermTree {
 		return i;
 	}
 	
-	/* 
-	public void insert(OWLFormula formula){
-		LinkedList<OWLAtom> list = formula.getBFLinearisation();
-		if (root == null){ // make sure there is something in the root
-			TermNode newtn;
-			if (list.size()==1){
-				ArrayList<OWLFormula> newformulalist = new ArrayList<OWLFormula>();
-				newformulalist.add(formula);
-				newtn = new TermNodeLeaf(list.get(0),newformulalist);
-			} else{
-				newtn = new TermNode(list.get(0));
-			}
-			root = newtn;
-			list.remove(0);
-		}
-		insert(list,root,formula);
-		return;
-	}
-	*/
+	
 	
 	public void insert(OWLFormula formula) throws Exception{
 		// do not insert if formula is already present!
+		// System.out.println("Checking containment with tree " + this);
 		if (contains(formula)){
+			System.out.println("Formula already contained! " + formula);
 			return;
 		}
 		// System.out.println("TT Insert is inserting formula: " + formula);
 		LinkedList<OWLAtom> list = formula.getBFLinearisation();
-		// System.out.println("insert uses linearisation: " + list);
+	    // System.out.println("insert uses linearisation: " + list);
 		if (root == null){ // make sure there is something in the root
 			// System.out.println("in the null case");
 			root = new TermNode(null);
 		}
 		// System.out.println("after root vodoo");
 		insert(list,root,formula);
+		// show the id
+		// System.out.println("Inserted formula " + formula + " with id " + formulaGetID(formula) + " into tree " + this);
 		return;
 	}
 	
 	
 	public void insert(LinkedList<OWLAtom> list, TermNode parent, OWLFormula originalFormula) throws Exception{
-		// System.out.println("insert iterator called with " + list);
+		// System.out.println("insert iterator called with current item " + list);
+		// System.out.println("and parent " + parent);
+		// System.out.println(" is leaf parent " + (parent instanceof TermNodeLeaf));
 		if (list.size()==0){
 				return;
 		}
@@ -99,7 +88,8 @@ public class TermTree {
 		}
 		if (right_child == null){ // need to add alternative
 			TermNode newnode;
-			if (list.size()==1){ // if leaf
+			if (list.size()==1){ // if we need to create leaf
+				    // System.out.println("creating leaf");
 					HashMap<Integer,OWLFormula> newformulalist = new HashMap<Integer,OWLFormula>();
 					this.last_term_id += 1;
 					newformulalist.put(this.last_term_id, originalFormula);
@@ -117,6 +107,7 @@ public class TermTree {
 			}
 			// in any case, link the new node with the parent
 			parent.addAlternative(newnode);
+			// System.out.println("leafy parent " + parent);
 		} // end the case of adding an alternative
 		else{ // if there already exists the right node
 			if (list.size()==1){ // if leaf
@@ -126,9 +117,31 @@ public class TermTree {
 					termIds.put(this.last_term_id,originalFormula);
 					formulaToIDMapping.put(originalFormula, this.last_term_id);
 				}	else { // this case should not happen... in principle
-					System.out.println("TERM TREE: SOMETHING IS REALLY GOING WRONG!" + originalFormula);
+					// --> in fact, this happens when "list" is a sublist of a longer term
+					// now create a leaf as an alternative to the right child
+					// System.out.println("TERM TREE: SOMETHING IS REALLY GOING WRONG!" + originalFormula);
+					// System.out.println("right_child: " + right_child);
+					HashMap<Integer,OWLFormula> newformulalist = new HashMap<Integer,OWLFormula>();
+					this.last_term_id += 1;
+					newformulalist.put(this.last_term_id, originalFormula);
+					termIds.put(this.last_term_id,originalFormula);
+					formulaToIDMapping.put(originalFormula, this.last_term_id);
+					TermNodeLeaf tnl = new TermNodeLeaf(list.get(0),newformulalist);
+					parent.addAlternative(tnl);
 				}
 			} else { // if not leaf; recurse
+				if (right_child instanceof TermNodeLeaf
+						&& list.size()>0
+						){ // <-- need to be careful, are we inserting a super-string of what is already there? 
+					// System.out.println("attention!");
+					// we create an alternative node with the same head as the "right child"
+					TermNode tn = new TermNode(list.get(0));
+					list.remove(0);
+					parent.addAlternative(tn);
+					// tn.addAlternative(right_child);
+					// System.out.println("generated " + tn);
+					insert(list,tn,originalFormula);
+				} else 
 				list.remove(0);
 				insert(list,right_child,originalFormula);
 			}
@@ -136,87 +149,6 @@ public class TermTree {
 		return;
 	}
 	
-	
-	/* OLD IDEA THAT WAS FLAWED
-	public TermNode build(OWLFormula formula){
-		OWLAtom formulahead = formula.getHead();
-		ArrayList<OWLFormula> formulatail = formula.getArgs();
-		TermNode result = new TermNode(formulahead);
-		if (formulatail.size()>0){
-		ArrayList<TermNode> al = new ArrayList<TermNode>();	
-		for (OWLFormula f: formulatail){	
-				al.add(build(f));
-		}
-		ListNode ln = new ListNode(al);
-		result.addAlternative(ln);
-		}
-		return result;
-	} 
-	*/
-	
-	/* OLD IDEA THAT WAS FLAWED
-	public void insert(OWLFormula formula){
-		if (root==null){
-			root = build(formula);
-		} else{
-			insert(formula,root);
-		}
-	}
-	
-	
-	public void insert(OWLFormula formula, TermNode node){
-		OWLAtom formulahead = formula.getHead();
-		ArrayList<OWLFormula> formulatail = formula.getArgs();
-		OWLAtom nodehead = node.getHead();
-		HashSet<ListNode> alternatives = node.getAlternatives();
-		// System.out.println("formulahead " + formulahead);
-		// System.out.println("formulatail " + formulatail);
-		// System.out.println("nodehead " + nodehead);
-		// System.out.println("alternatives " + alternatives);
-		if (formulahead.equals(nodehead)){
-			// schauen, ob es Argumentlisten mit uebereinstimmenden Inhalten gibt
-			ListNode winner = null;
-			int maxmatchcount = 0;
-			int matchcount = 0;
-			for (ListNode alt: alternatives){
-				if (formulatail.size() == alt.getList().size()){
-					matchcount = 0;
-					for (int i = 0; i < formulatail.size(); i++){
-						if (formulatail.get(i).getHead().equals(alt.getList().get(i).getHead())){
-							matchcount = matchcount + 1;
-						}
-					}
-				}
-				if (matchcount>maxmatchcount){
-					maxmatchcount = matchcount;
-					winner = alt;
-				}
-			} // nun wissen wir, wo die meiste Uebereinstimmung besteht.
-			if (formulatail.size()==0 && alternatives.size()==0){
-				return; // wir sind beim Blatt, nichts zu tun.
-			}
-			if (winner==null || formulatail.size()>matchcount){ //keine oder wenig Uebereinstimmung
-				// Erzeuge Unterbaum:
-				ArrayList<TermNode> args = new ArrayList<TermNode>();
-				for (OWLFormula f: formulatail){
-					TermNode tn = build(f);
-					args.add(tn);
-				}
-				ListNode newAlternative = new ListNode(args);	
-				alternatives.add(newAlternative);
-			}
-			if (formulatail.size()==matchcount){ // perfekte Uebereinstimmung, wir machen Rekursion
-				for (int  i = 0; i< winner.getList().size(); i++){
-					insert(formulatail.get(i),winner.getList().get(i));
-				}
-			}
-			
-		} // hier endet der Teil, falls die Koepfe uebereinstimmen
-		
-		return;
-	}
-	
-	*/
 	
 	// simple check if a certain formula is contained.
 	public boolean contains (OWLFormula formula){
@@ -286,7 +218,7 @@ public class TermTree {
 			if (node instanceof TermNodeLeaf){
 				TermNodeLeaf tnl = (TermNodeLeaf) node;
 				// now need to loop through formulas
-				List<OWLFormula> allformulas = tnl.getFormulas();
+				Collection<OWLFormula> allformulas = tnl.getFormulas();
 				for (OWLFormula form : allformulas){
 					if (form.containsSubformula(formula)){
 						return true;
@@ -366,7 +298,19 @@ public class TermTree {
 	// return formulas that are potential candidates for matching (correct structure)
 		public List<OWLFormula> matchCandidates (OWLFormula formula){
 			LinkedList<OWLAtom> list = formula.getBFLinearisation();
-			return matchCandidates(formula,list, root);
+			// this is just for testing!
+			List<OWLFormula> candidates = matchCandidates(formula,list, root);
+			/////// below was used for debugging only!
+			// for (int i = 0; i < candidates.size();i++){
+			// 	for (int j = 0; j < candidates.size();j++){
+			//		if (i!=j && candidates.get(i).equals(candidates.get(j))){
+			//			System.out.println(this.toString());
+			//			System.out.println("ALERT! " + candidates.get(i));
+			//			throw new RuntimeException();
+			//		}
+			//	}
+			//}
+			return candidates;
 			// HashSet<TermNode> rootalternativeset = root.getAlternatives();
 			// for (TermNode tn: rootalternativeset){
 			// 	return matchCandidates(formula,list, tn);
@@ -390,6 +334,7 @@ public class TermTree {
 						getAllFormulas(tn, accumulator);
 						newlist.addAll(accumulator);
 					}
+					// System.out.println("returned list base case " + newlist.toString());
 					return newlist;
 					}
 				// base case without var
@@ -421,39 +366,29 @@ public class TermTree {
 					if (!(children==null || children.size()==0)){
 						list.remove(0);
 						for (TermNode tn : children){
+							// System.out.println(" looping for " + tn);
 							// System.out.println("before removal " + list);
 							// System.out.println("after removal " + list);
 							
 							/* HERE!!! */
 							
 							List<OWLFormula> reclist = matchCandidates(formula,list,tn);
+							
+							///// ---> the below was removed because it produced duplicates!
+							HashSet allFormulas = new HashSet<OWLFormula>();
+							// System.out.println(" tn " + tn);
+							getAllFormulas(tn,allFormulas);   // <--- this is a lot; is this really necessary?? apparently yes, as soon as a var appears, not much can be done
+							
+							
 							if (!(reclist==null)){
-								newlist.addAll(reclist);
+								allFormulas.addAll(reclist);
+								// System.out.println("reclist " + reclist);
 							}
 							
-							/*
-							System.out.println("List: " + list);
-							System.out.println("looking for head: " + list.get(0));
-							List<TermNode> matches =  findAllSubChildrenWithParticularHead(list.get(0),tn);
-							System.out.println(matches);
-							for (TermNode match : matches){
-								reclist = matchCandidates(formula,list,match);
-								if (!(reclist==null)){
-									newlist.addAll(reclist);
-								}
-							}	
-							*/
 							
-							HashSet allFormulas = new HashSet<OWLFormula>();
-							getAllFormulas(tn,allFormulas);
+							// System.out.println(allFormulas.toString());
 							newlist.addAll(allFormulas);
 							
-							/* This is insufficient if variables may occur within a linearisation, and one does not know how far one has to look for.
-							List<OWLFormula> reclist = matchCandidates(formula,list,tn);
-							if (!(reclist==null)){
-								newlist.addAll(reclist);
-							}
-							*/ 
 						}
 					}
 					// System.out.println("var case, returning: " + newlist);
@@ -475,7 +410,9 @@ public class TermTree {
 					} else{ // was found
 						 // System.out.println("child was found");
 						list.remove(0);
-						return matchCandidates(formula,list,right_child);
+						List<OWLFormula> results = matchCandidates(formula,list,right_child);
+						// System.out.println("recursive result" + results);
+						return results;
 				}
 			} // end recursive case
 			
@@ -483,7 +420,8 @@ public class TermTree {
 		
 		public List<OWLFormula> findMatchingFormulas (OWLFormula formula){ 
 				List<OWLFormula> candidates = matchCandidates(formula);
-				// System.out.println("candidates for matching: "+ candidates);
+				System.out.println("tried to match formula " + formula);
+				System.out.println("candidates for matching: "+ candidates);
 				ArrayList<OWLFormula> results = new ArrayList<OWLFormula>();
 				for (OWLFormula candidate : candidates){
 					try {
@@ -491,10 +429,11 @@ public class TermTree {
 						// System.out.println("candidate did match");
 						results.add(candidate);
 					} catch (Exception e) {
-						//  System.out.println("candidate did not match");
+						  System.out.println("candidate " + candidate.prettyPrint() + " did not match " + formula);
 						// do nothing if does not match
 					}
 				}
+				System.out.println("findMatchingFormulas returning results " + results);
 				return results;
 		}
 		
@@ -633,6 +572,8 @@ public class TermTree {
 	
 	@Override
 	public String toString() {
+		if (root==null)
+			return "Empty tree";
 		return TermNode.print(root,0);
 	}
 	
@@ -650,7 +591,24 @@ public class TermTree {
 	
 	
 	public int formulaGetID(OWLFormula formula){
-		return formulaToIDMapping.get(formula);
+		/* 
+		for (OWLFormula form : formulaToIDMapping.keySet()){
+			System.out.println("Candidate form" + form);
+			System.out.println(form.equals(formula));
+			System.out.println(form.hashCode());
+			System.out.println(formula.hashCode());
+		} */
+		// System.out.println("formulaGetID called with formula " + formula);
+		// System.out.println("Mapping " + formulaToIDMapping);
+		// System.out.println(formulaToIDMapping.get(formula));
+		if (formula==null)
+		{System.out.println("formula null");}
+		if (formulaToIDMapping.get(formula)==null){
+			System.out.println("Mapping " + formulaToIDMapping);
+			System.out.println("formulaGetID called with formula " + formula);
+		}
+		int id = formulaToIDMapping.get(formula);
+		return id;
 	}
 	
 	public OWLFormula getFormula(int i){
@@ -692,6 +650,10 @@ public class TermTree {
 			all_classes.addAll(decomposeClassNames(formula));
 		}
 		return all_classes;
+	}
+	
+	public String printIDMapping(){
+		return formulaToIDMapping.toString();
 	}
 
 }

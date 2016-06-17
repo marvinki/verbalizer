@@ -33,6 +33,17 @@ public class OWLDataPropertyName implements OWLAtom {
 	}
 	
 	@Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 17 + this.datapropertyname.hashCode();
+        hash = hash * 31 + this.ontologyname.hashCode();
+        // for (OWLFormula form : this.tail){
+        // 	hash = hash * 31 + form.hashCode();
+        // }
+        return hash;
+    }
+	
+	@Override
 	public OWLDataPropertyName clone(){
 		return new OWLDataPropertyName(datapropertyname, ontologyname);
 	}

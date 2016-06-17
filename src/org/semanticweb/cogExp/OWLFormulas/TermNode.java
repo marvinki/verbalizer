@@ -28,9 +28,9 @@ public class TermNode {
 	public String toString() {
 		String result = "TermNode \n";
 		if (head!=null){
-		result += head.toString();
+		result += "Head:" + head.toString();
 		}
-		result += "\n";
+		result += "\n Alternatives: \n";
 		for (TermNode alt: alternatives){
 			result += "   ";
 			result += alt.toString();

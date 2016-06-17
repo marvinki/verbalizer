@@ -24,18 +24,32 @@ public class OWLClassName implements OWLAtom{
 	    if (other == null) return false;
 	    if (other == this) return true;
 	    if (!(other instanceof OWLClassName))return false;
-	    if (classname==null && ((OWLClassName) other).getName()!=null) return false;
-	    boolean classnameSame = classname.equals(((OWLClassName) other).getName());
+	    OWLClassName otherclassname = ((OWLClassName) other);
+	    if (classname==null && otherclassname.getName()!=null) return false;
+	    boolean classnameSame = classname.equals(otherclassname.getName());
 	    if (!classnameSame){return false;}
-	    boolean ontologynameSame = ontologyname.equals(((OWLClassName) other).ontologyname);
+	    boolean ontologynameSame = ontologyname.equals(otherclassname.ontologyname);
 	    // System.out.println("class name equal? " + classname + " / " + ((OWLClassName) other).getName() + " AND " + ontologyname + " / " + ((OWLClassName) other).ontologyname);
 	    // System.out.println(classnameSame && ontologynameSame);
 	    return classnameSame && ontologynameSame;   
 	}
 	
+	 @Override
+	    public int hashCode() {
+	        int hash = 1;
+	        hash = hash * 17 + classname.hashCode();
+	        hash = hash * 31 + ontologyname.hashCode();
+	        return hash;
+	    }
+	
+
+	public String toSimpleString(){
+		return "[" + classname + "]";
+	}
+	
 	@Override
 	public String toString(){
-		return "[" + classname + "]";
+		return "[" + ontologyname + ":" + classname + "]";
 	}
 	
 	@Override

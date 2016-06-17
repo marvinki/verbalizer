@@ -1,6 +1,7 @@
 package org.semanticweb.cogExp.OWLFormulas;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -18,8 +19,9 @@ public class TermNodeLeaf extends TermNode{
 		// formulas.add(i,formula);
 	}
 	
-	public ArrayList<OWLFormula> getFormulas(){
-		return new ArrayList<OWLFormula>(formulas.values());
+	public Collection<OWLFormula> getFormulas(){
+		return formulas.values();
+		// return new ArrayList<OWLFormula>(formulas.values());
 	}
 	
 	public Set<Integer> getFormulaIDs(){

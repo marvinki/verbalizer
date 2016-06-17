@@ -39,6 +39,14 @@ public class OWLLiteralValue implements OWLAtom{
 	}
 	
 	@Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 17 + value.hashCode();
+        hash = hash * 31 + type.hashCode();
+        return hash;
+    }
+	
+	@Override
 	public String toString(){
 		return "<<" + value + ">>";
 	}
