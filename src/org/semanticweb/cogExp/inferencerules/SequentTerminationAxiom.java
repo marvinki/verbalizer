@@ -167,4 +167,6 @@ public enum SequentTerminationAxiom implements SequentInferenceRule {
 		return findRuleBindings(s);
 	}
 	
+	public void clearCaches(){}
+	
 }
