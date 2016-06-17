@@ -429,7 +429,7 @@ public class TermTree {
 						// System.out.println("candidate did match");
 						results.add(candidate);
 					} catch (Exception e) {
-						//  System.out.println("candidate " + candidate.prettyPrint() + " did not match " + formula);
+						  // System.out.println("candidate " + candidate.prettyPrint() + " did not match " + formula);
 						// do nothing if does not match
 					}
 				}
