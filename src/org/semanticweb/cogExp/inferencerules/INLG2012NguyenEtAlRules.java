@@ -2936,17 +2936,17 @@ RULE14{
 					continue; // throw out unproductive case
 				try{
 					OWLFormula cand1 = candidates.get(i);
-					System.out.println("cand1 " + cand1.prettyPrint());
+					// System.out.println("cand1 " + cand1.prettyPrint());
 					// List<Pair<OWLFormula,OWLFormula>> matcher = candidates.get(i).match(prem1);
 					// OWLFormula prem_2 = prem2.applyMatcher(matcher);
 					OWLFormula prem_2 = OWLFormula.createFormula(OWLSymb.SUBCL,
 											candidates.get(i).getArgs().get(1).getArgs().get(1),
 											OWLFormula.createFormulaVar("v3"));
-				    System.out.println(" prem_2  " + prem_2);
+				    // System.out.println(" prem_2  " + prem_2);
 					// System.out.println(prem_2bis);
 					List<OWLFormula>  candidates2_pre = s.findMatchingFormulasInAntecedent(prem_2);
 					// s.reportAntecedent();
-					System.out.println(" 2nd candidates " + candidates2_pre);
+					// System.out.println(" 2nd candidates " + candidates2_pre);
 					for(OWLFormula cand2 : candidates2_pre){
 						if (cand2.getArgs().get(1).equals(cand2.getArgs().get(0)))
 							continue; // abort trivial case
@@ -2973,7 +2973,7 @@ RULE14{
 							// System.out.println(s.alreadyContainedInAntecedent(conclusion));
 							// System.out.println("prem 1 " + cand1);
 							// System.out.println("prem 2 " + cand2);
-							System.out.println("conclusion " + conclusion.prettyPrint());
+							// System.out.println("conclusion " + conclusion.prettyPrint());
 							if (!s.alreadyContainedInAntecedent(conclusion) && 
 									// constructed conclusion (the superclass) must be of relevance!!!
 									((s.antecedentContainsOrDeeplyContains(conclusion.getArgs().get(1))) || 
@@ -2998,7 +2998,7 @@ RULE14{
 									}
 									if (allclear){
 										// now construct the binding!
-											System.out.println("creating binding for " + conclusion.prettyPrint());
+											// System.out.println("creating binding for " + conclusion.prettyPrint());
 											// System.out.println(s.alreadyContainedInAntecedent(conclusion));
 											RuleBinding binding = new RuleBinding(conclusion,null);
 											SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(cand1));
