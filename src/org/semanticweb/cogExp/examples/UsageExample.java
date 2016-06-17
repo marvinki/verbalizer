@@ -2,9 +2,10 @@ package org.semanticweb.cogExp.examples;
 import java.io.File;
 import java.nio.file.Paths;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+// import org.apache.log4j.Level;
+// import org.apache.log4j.Logger;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.ProofBasedExplanation.ProofBasedExplanationService;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -34,13 +35,14 @@ public class UsageExample {
 	
 	// indicate a reasoner and a reasoner factory to be used for justification finding (here we use ELK)
 	OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
-	Logger.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
+	// Logger.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
 	OWLReasoner reasoner = reasonerFactory.createReasoner(tinyExampleOntology);
     
     // indicate the IRIs of some relevant classes/roles in the ontology
   	OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
   	String ontologyuri = "http://www.semanticweb.org/marvin/ontologies/2016/0/untitled-ontology-490#";
   	OWLClass animalLover = dataFactory.getOWLClass(IRI.create(ontologyuri + "AnimalLover"));
+ 	OWLClass person = dataFactory.getOWLClass(IRI.create(ontologyuri + "Person"));
   	OWLClass organ = dataFactory.getOWLClass(IRI.create(ontologyuri + "Organ"));
   	OWLObjectProperty hasBodyPart = dataFactory.getOWLObjectProperty(IRI.create(ontologyuri + "hasBodyPart"));
   	OWLObjectProperty has = dataFactory.getOWLObjectProperty(IRI.create(ontologyuri + "has"));
@@ -55,9 +57,20 @@ public class UsageExample {
 					)
 			);
 	
-	String explanation = ProofBasedExplanationService.getExplanationResult(axiom, reasoner, reasonerFactory, tinyExampleOntology);
+	// Another one
+	// "AnimalLover subClassOf likes some (has some Organ)"
+	OWLSubClassOfAxiom axiom2 = dataFactory.getOWLSubClassOfAxiom(animalLover, 
+				person
+				);
+	
+	WordNetQuery.INSTANCE.disableDict();
+	String explanation = VerbalisationManager.verbalizeAxiom(axiom, reasoner, reasonerFactory, tinyExampleOntology, false,false);
 	System.out.println("Explanation for \"" + VerbalisationManager.verbalise(axiom) + "\":\n");
 	System.out.println(explanation);
+	
+	// String explanation2 = ProofBasedExplanationService.getExplanationResult(axiom2, reasoner, reasonerFactory, tinyExampleOntology,true);
+	// System.out.println("Explanation for \"" + VerbalisationManager.verbalise(axiom2) + "\":\n");
+	// System.out.println(explanation2);
 	
 	
 	}
