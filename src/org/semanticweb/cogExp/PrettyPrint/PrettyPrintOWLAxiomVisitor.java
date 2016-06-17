@@ -14,6 +14,7 @@ import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDatatypeDefinitionAxiom;
 import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
@@ -216,9 +217,9 @@ public String visit(OWLFunctionalDataPropertyAxiom arg0) {
 
 public String visit(OWLEquivalentDataPropertiesAxiom arg0) {
 	String resultstring = "";
-	List<OWLClassExpression> exprs =  ((OWLEquivalentClassesAxiom) arg0).getClassExpressionsAsList();
+	Set<OWLDataPropertyExpression> exprs =  ((OWLEquivalentDataPropertiesAxiom) arg0).getProperties();
     boolean firstp = true;
-	for (OWLClassExpression exp : exprs){
+	for (OWLDataPropertyExpression exp : exprs){
 		if (!firstp) {resultstring = resultstring + "?≡?";}
 		firstp = false;
 		resultstring = resultstring + ppPropertyExpressionVisit.visit(exp);
