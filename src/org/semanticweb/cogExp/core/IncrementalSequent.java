@@ -20,16 +20,12 @@ public class IncrementalSequent extends Sequent{
 	
 	public IncrementalSequent(Sequent mastersequent){
 		this.mastersequent = mastersequent;
-		// this.id = InferenceApplicationService.INSTANCE.generateSequentID();  <-- not necessary, done by superclass constructor
-		// System.out.println("IncSeq Constructor 1 called, id " + this.id);
 	}
 	
 	public IncrementalSequent(Sequent mastersequent, Set<Integer> antecedents, Set<Integer> succedents){
 		this.antecedents = antecedents;
 		this.succedents = succedents;
 		this.mastersequent = mastersequent;
-		// this.id = InferenceApplicationService.INSTANCE.generateSequentID(); <-- not necessary, done by superclass constructor
-		// System.out.println("IncSeq Constructor 2 called, id " + this.id + ", mastersequent " + mastersequent.id);
 	}
 	
 	public IncrementalSequent(Sequent mastersequent, Set<Integer> antecedents, Set<Integer> succedents, int id){
@@ -37,13 +33,10 @@ public class IncrementalSequent extends Sequent{
 		this.succedents = succedents;
 		this.mastersequent = mastersequent;
 		this.id = id;
-		// System.out.println("IncSeq Constructor 3 called, id " + this.id);
 	}
 	
 	public IncrementalSequent(){
 		mastersequent = new Sequent();
-		// this.id = InferenceApplicationService.INSTANCE.generateSequentID(); <-- not necessary, done by superclass constructor
-		// System.out.println("IncSeq Constructor 4 called, id " + this.id + ", mastersequent " + mastersequent.id);
 	}
 	
 	public int antecedentGetHighestContainedTermID(){
@@ -51,23 +44,14 @@ public class IncrementalSequent extends Sequent{
 	}
 
 	public int addAntecedent(OWLFormula formula) throws Exception{
-		// System.out.println("Size before " + mastersequent.getAllAntecedentOWLFormulas().size());
 		int formid = mastersequent.addAntecedent(formula);
 		antecedents.add(formid);
-		// System.out.println("inc sequent added " + formula.prettyPrint() + " with id " + formid + " incremental sequent id " + id);
-		// DEBUGGING
-		// System.out.println("is contained now: " +  antecedents.contains(mastersequent.antecedentFormulaGetID(formula)));
-		
-		// System.out.println(mastersequent.antecedentFormulaGetID(formula));
-		// System.out.println(antecedents);
-		// System.out.println("Size after " + mastersequent.getAllAntecedentOWLFormulas().size());
 		return id;
 	}
 	
 	public int addAntecedent(OWLFormula formula, int depth) throws Exception{
 		int formid = mastersequent.addAntecedent(formula, depth);
 		antecedents.add(formid);
-		// System.out.println("inc sequent added " + formula.prettyPrint() + " with id " + formid + " to inc seq " + this.id);
 		return formid;
 	}
 	
@@ -91,12 +75,8 @@ public class IncrementalSequent extends Sequent{
 	public HashSet<OWLFormula> getAllAntecedentOWLFormulas(){
 		Set<OWLFormula> formulas = mastersequent.getAllAntecedentOWLFormulas(); // this could be made more efficient!
 		HashSet<OWLFormula> results = new HashSet<OWLFormula>();
-		// System.out.println("inc antecedents count: " + antecedents.size());
-		// System.out.println("formulas count: " + formulas.size());
 		for (OWLFormula form : formulas){
-			// System.out.println("checking formula id " + mastersequent.antecedentFormulaGetID(form) + " " + form.prettyPrint());
 			if (antecedents.contains(mastersequent.antecedentFormulaGetID(form))){
-				// System.out.println(antecedents.contains(mastersequent.antecedentFormulaGetID(form)));
 				results.add(form);
 			}
 		}
@@ -136,17 +116,12 @@ public class IncrementalSequent extends Sequent{
 	}
 		
 	// this still needs to be implemented properly!
-		public boolean succedentContainsOrDeeplyContains (OWLFormula formula){
+	public boolean succedentContainsOrDeeplyContains (OWLFormula formula){
 			return mastersequent.succedentContainsOrDeeplyContains (formula);
-		}
+	}
 	
 	public boolean alreadyContainedInAntecedent(OWLFormula f){
 		boolean containedMaster = mastersequent.alreadyContainedInAntecedent(f);
-		// System.out.println(mastersequent.antecedentPrintIDMapping());
-		// System.out.println(f);
-		// System.out.println("contained in master antecedent: " + f.prettyPrint() + " :" + containedMaster);
-		// System.out.println(mastersequent.getAllAntecedentOWLFormulas());
-		// System.out.println("contained in master antecedent?: " + f + " :" + containedMaster);
 		boolean contained = false;
 		int id = -1;
 		if (containedMaster){
@@ -154,7 +129,6 @@ public class IncrementalSequent extends Sequent{
 			{System.out.println("f null");}
 			if (mastersequent==null)
 			{System.out.println("masterseq null");}
-			// {System.out.println(mastersequent.antecedentFormulaGetID(f));}
 			id = mastersequent.antecedentFormulaGetID(f);
 			contained = antecedents.contains(id);
 		}
@@ -175,7 +149,6 @@ public class IncrementalSequent extends Sequent{
 	
 	public List<OWLFormula> findMatchingFormulasInAntecedent(OWLFormula formula){
 		List<OWLFormula> found = mastersequent.findMatchingFormulasInAntecedent(formula);
-		System.out.println(" Inc Seq findMatching found " + found);
 		List<OWLFormula> result = new ArrayList<OWLFormula>();
 		for (OWLFormula form : found){
 			if (antecedents.contains(mastersequent.antecedentFormulaGetID(form))){
@@ -214,14 +187,11 @@ public class IncrementalSequent extends Sequent{
 	
 	@Override
 	public IncrementalSequent clone(){
-		// System.out.println("DEBUG -- incremental sequent is cloned, original id " + id + " , mastersequent " + mastersequent.getID());
-		// int newid = InferenceApplicationService.INSTANCE.generateSequentID();
 		Set<Integer> newant = new HashSet<Integer>();
 		newant.addAll(antecedents);
 		Set<Integer> newsucc = new HashSet<Integer>();
 		newsucc.addAll(succedents);
 		IncrementalSequent clone = new IncrementalSequent(mastersequent, newant,newsucc); //,newid);
-		// System.out.println(antecedents);
 		return clone;
 	}
 	
@@ -273,8 +243,6 @@ public class IncrementalSequent extends Sequent{
 	/* ==== AMPUTATION === */
 	
 	public Sequent amputateDepth(int depth){
-		// System.out.println("Inc Seq is amputating sequent with id " + id);
-		// create an amputated version of the master sequent
 		Sequent newmastersequent = mastersequent.amputateDepth(depth);
 		// now wrap this into an incremental sequent object
 		Set<Integer> newant = new HashSet<Integer>(); // maybe this could be made more efficient by 
