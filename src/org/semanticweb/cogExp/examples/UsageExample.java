@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 // import org.apache.log4j.Logger;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
-import org.semanticweb.cogExp.ProofBasedExplanation.ProofBasedExplanationService;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
