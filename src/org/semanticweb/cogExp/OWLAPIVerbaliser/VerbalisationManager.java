@@ -39,7 +39,6 @@ import org.semanticweb.owlapi.search.EntitySearcher;
 
 import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
-import com.google.common.base.Optional;
 
 import edu.smu.tspell.wordnet.SynsetType;
 
@@ -174,9 +173,8 @@ public enum VerbalisationManager {
 				for (OWLAnnotationAssertionAxiom axiom : annotationaxioms){
 					if (axiom.getAnnotation().getProperty().getIRI().getFragment().equals("label")){
 						// System.out.println("DEBUG TO STRING " + axiom.getAnnotation().getValue());
-						// SimpleRenderer renderer = new SimpleRenderer();			
-						Optional<OWLLiteral> opt = axiom.getAnnotation().getValue().asLiteral();
-						OWLLiteral literal = opt.orNull();
+						// SimpleRenderer renderer = new SimpleRenderer();
+						OWLLiteral literal = axiom.getAnnotation().getValue().asLiteral().get();
 						str = literal.getLiteral();
 						// str = axiom.getAnnotation().getValue().toString();
 					}
