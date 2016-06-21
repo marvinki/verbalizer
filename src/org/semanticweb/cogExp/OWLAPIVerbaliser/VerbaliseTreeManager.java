@@ -86,18 +86,22 @@ public enum VerbaliseTreeManager {
 			SequentInferenceRule infrule = step.getInfrule();
 			//
 			// Debug
+			// 
 			// result = result +=  " <<  " + infrule.getName() + " >> ";
 			//
 			// Check if rule is to be skipped
 			if(infrule.equals(INLG2012NguyenEtAlRules.RULE23Repeat) && !singletonStep){
 				continue; // do not even advance the conclusions
 			}
+			/*
 			if (infrule.equals(INLG2012NguyenEtAlRules.RULE15) 
 					&& premises.contains(before_previousconclusion)
 					&& !singletonStep) 
 					{	
+				System.out.println("WE ARE SKIPPING SOMETHING (TEXTUALISATION)");
 				continue;
 			}
+			*/
 			if (!singletonStep 
 				&& !VerbalisationManager.INSTANCE.featuresOFF	
 					&& (infrule.equals(AdditionalDLRules.ELEXISTSMINUS) 
@@ -203,12 +207,15 @@ public enum VerbaliseTreeManager {
 			if(infrule.equals(INLG2012NguyenEtAlRules.RULE23Repeat) && !singletonStep){
 				continue; // do not even advance the conclusions
 			}
+			/*
 			if (infrule.equals(INLG2012NguyenEtAlRules.RULE15) 
 					&& premises.contains(before_previousconclusion)
 					&& !singletonStep) 
 					{	
+				System.out.println("WE ARE SKIPPING SOMETHING (VERBALISATION)");
 				continue;
 			}
+			*/
 			if (!singletonStep 
 				&& !VerbalisationManager.INSTANCE.featuresOFF	
 					&& (infrule.equals(AdditionalDLRules.ELEXISTSMINUS) 
@@ -686,6 +693,10 @@ public enum VerbaliseTreeManager {
 			Object before_previousconclusion,
 			Obfuscator obfuscator
 			){
+		// if (additions_to_antecedent==null){
+		// 	System.out.println("null addition to antecedent");}
+		// else
+		//  System.out.println("textualise called with conclusion " + additions_to_antecedent);;
 			// String resultstring = "";
 			// Catch particular rules and use schematic output for them
 			if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) && premiseformulas.contains(previousconclusion)){
@@ -802,7 +813,7 @@ public enum VerbaliseTreeManager {
 						seq.add(new LogicElement(","));
 						OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
 						seq.concat(VerbalisationManager.textualise(addition,obfuscator));
-						seq.add(new LogicElement(" [args: " + premiseformulas.size() + "]"));
+						// seq.add(new LogicElement(" [args: " + premiseformulas.size() + "]"));
 						return seq;
 					}
 				}
@@ -994,7 +1005,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement("However, no"));
 				String tooltiptext = subcl.getSubClass().asOWLClass().getIRI().asLiteral().toString();
 				ClassElement classElem = new ClassElement(str,tooltiptext);
-				System.out.println("DEBUG!!!! :: " + str);
+				// System.out.println("DEBUG!!!! :: " + str);
 				seq.add(classElem);
 				seq.add(new LogicElement("is"));
 				seq.concat(VerbalisationManager.textualise(subcl.getSuperClass(),obfuscator));
@@ -1075,6 +1086,7 @@ public enum VerbaliseTreeManager {
 				seq.makeUppercaseStart();
 				seq.add(new LogicElement("which is"));
 				seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) subcl2).getSuperClass(),obfuscator));
+				seq.add(new LogicElement("."));
 				seq.add(new LogicElement("Therefore,"));
 				seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) additions_to_antecedent.get(0)),obfuscator));
 				return seq;

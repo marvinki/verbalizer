@@ -420,8 +420,8 @@ public class TermTree {
 		
 		public List<OWLFormula> findMatchingFormulas (OWLFormula formula){ 
 				List<OWLFormula> candidates = matchCandidates(formula);
-				System.out.println("tried to match formula " + formula);
-				System.out.println("candidates for matching: "+ candidates);
+				// System.out.println("tried to match formula " + formula);
+				// System.out.println("candidates for matching: "+ candidates);
 				ArrayList<OWLFormula> results = new ArrayList<OWLFormula>();
 				for (OWLFormula candidate : candidates){
 					try {
@@ -429,11 +429,11 @@ public class TermTree {
 						// System.out.println("candidate did match");
 						results.add(candidate);
 					} catch (Exception e) {
-						  System.out.println("candidate " + candidate.prettyPrint() + " did not match " + formula);
+						  // System.out.println("candidate " + candidate.prettyPrint() + " did not match " + formula);
 						// do nothing if does not match
 					}
 				}
-				System.out.println("findMatchingFormulas returning results " + results);
+				// System.out.println("findMatchingFormulas returning results " + results);
 				return results;
 		}
 		

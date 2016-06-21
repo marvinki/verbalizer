@@ -1,5 +1,6 @@
 package org.semanticweb.cogExp.PrettyPrint;
 
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectInverseOf;
@@ -42,6 +43,11 @@ public class PrettyPrintPropertyExpressionVisitor implements OWLPropertyExpressi
 
 	public String visit(OWLDataProperty arg0) {
 		return arg0.getIRI().getFragment();
+	}
+
+	public String visit(OWLAnnotationProperty arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 		

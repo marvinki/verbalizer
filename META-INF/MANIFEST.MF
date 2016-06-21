@@ -5,34 +5,20 @@ Bundle-SymbolicName: org.semanticweb.cogexp.verbalizer;singleton:=true
 Bundle-Description: A verbalizer for EL derivations
 Bundle-Version: 1.0.0.qualifier
 Export-Package: .,
- org.semanticweb.cogExp,
  org.semanticweb.cogExp.FormulaConverter,
  org.semanticweb.cogExp.GentzenTree,
  org.semanticweb.cogExp.OWLAPIVerbaliser,
  org.semanticweb.cogExp.OWLFormulas,
  org.semanticweb.cogExp.PrettyPrint,
- org.semanticweb.cogExp.ProofBasedExplanation,
  org.semanticweb.cogExp.core,
- org.semanticweb.cogExp.coverageEvaluator,
  org.semanticweb.cogExp.examples,
- org.semanticweb.cogExp.inferencerules,
- org.semanticweb.elk.owlapi
-Import-Package: ch.qos.logback.classic;version="1.1.3",
- com.google.common.base,
- javax.swing,
- org.coode.owlapi.functionalparser,
- org.semanticweb.owlapi.model,
- org.slf4j;version="1.7.12",
- uk.ac.manchester.cs.jfact
-Bundle-ClassPath: lib/elk-owlapi.jar,
- .,
+ org.semanticweb.cogExp.inferencerules
+Import-Package: com.google.common.base,
+ javax.swing
+Bundle-ClassPath: .,
  lib/jaws-bin.jar,
  lib/log4j.jar,
- lib/DictTmp.jar
-Require-Bundle: org.protege.editor.owl;bundle-version="5.0.0",
- org.protege.editor.core.application;bundle-version="5.0.0",
- org.protege.common;bundle-version="5.0.0",
- org.semanticweb.owl.owlapi;bundle-version="4.1.3",
- log4j.over.slf4j,
- ch.qos.logback.classic;bundle-version="1.1.3",
- ch.qos.logback.core;bundle-version="1.1.3"
+ lib/DictTmp.jar,
+ lib/owlapi-osgidistribution-4.1.0.jar,
+ lib/elk-owlapi.jar
+

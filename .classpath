@@ -19,7 +19,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="lib/elk-owlapi.jar"/>
 	<classpathentry kind="lib" path="lib/jaws-bin.jar"/>
-	<classpathentry kind="lib" path="lib/owlapi-bin.jar"/>
 	<classpathentry kind="lib" path="lib/protege-editor-core.jar"/>
 	<classpathentry kind="lib" path="lib/protege-editor-owl.jar"/>
 	<classpathentry kind="lib" path="lib/log4j.jar"/>
