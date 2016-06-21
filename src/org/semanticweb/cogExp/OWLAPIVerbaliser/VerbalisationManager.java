@@ -273,6 +273,12 @@ public enum VerbalisationManager {
 		if(propstring.indexOf("[X]")>=0){
 			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
 			String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+			if (part1.endsWith(" ")){
+				part1 = part1.substring(0, part1.length()-1);
+			}
+			if (part2.startsWith(" ")){
+				part2 = part2.substring(1, part2.length());
+			}
 			result.add(new RoleElement(part1)); // += part1;
 			if (part2.equals("") && part1.equals("") || part1==null && part2==null){
 				result.add(new RoleElement("has as" + _space + property.getNamedProperty().getIRI().getFragment() + "-successor "));
@@ -293,8 +299,13 @@ public enum VerbalisationManager {
 			result.addAll(str);
 			needsep = true;
 		}
-		if (VerbalisationManager.INSTANCE.getPropertyNLString(property).indexOf("[X]")>=0)
-			result.add(new RoleElement(VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property)));
+		if (VerbalisationManager.INSTANCE.getPropertyNLString(property).indexOf("[X]")>=0){
+			String p2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+			if (p2.startsWith(" ")){
+				p2 = p2.substring(1, p2.length());
+			}
+			result.add(new RoleElement(p2));
+		}
 			// result += VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 		return result;
 	}
