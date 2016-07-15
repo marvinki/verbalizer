@@ -14,6 +14,10 @@ public class RoleElement extends TextElement{
 		return "<font color=Maroon>" + content + "</font>"; 
 	}
 	
+	public String toString(){
+		return content;
+	}
+	
 	@Override
 	public void addToDocument(JTextPane textPane){
 		StyledDocument document = textPane.getStyledDocument();

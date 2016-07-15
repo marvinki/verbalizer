@@ -303,6 +303,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	
 	// VERBALIZE SUBCLASSOFAXIOM
 	public List<TextElement> visit(OWLSubClassOfAxiom arg0) {
+		// System.out.println("-------");
 		// define some elements that will be used later
 		LogicElement somethingthatElement = new LogicElement("something that");
 		LogicElement thatElement =  new LogicElement("that");
@@ -318,6 +319,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
 			OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) arg0.getSubClass();
 			OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
+			// System.out.println("SUBCLASS SOMEOF DEBUG " + some1 + " " + cl);
 			if (cl!=null){
 				//somethingthat = cl.toString() + " that ";
 				somethingthat =cl.accept(this); 
@@ -354,7 +356,9 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		}
 		if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
 			// leftstring = new ArrayList<TextElement>();
-			leftstring.add(0,somethingthatElement);
+			// System.out.println("leftstring " + leftstring);
+			leftstring.addAll(0,somethingthat);
+			// leftstring.add(0,somethingthatElement);
 		}
 		List<TextElement> middlestring = new ArrayList<TextElement>();
 		if (!(arg0.getSuperClass() instanceof OWLObjectSomeValuesFrom) 
@@ -540,7 +544,12 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 			for(OWLClassExpression allelse : allelseExps){
 				if (!isFirst)
 					seq4.add(new LogicElement("and")) ;
-				seq4.concat(new TextElementSequence(allelse.accept(this)));
+				List<TextElement> allelseString = allelse.accept(this);
+				if (allelseString == null){
+					seq.add(new LogicElement("{NULL}"));
+				}else{
+					seq4.concat(new TextElementSequence(allelse.accept(this)));
+				}
 				isFirst = false;
 			}
 		}

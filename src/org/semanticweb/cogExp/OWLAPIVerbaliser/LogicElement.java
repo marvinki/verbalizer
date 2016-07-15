@@ -6,6 +6,10 @@ import javax.swing.text.StyledDocument;
 
 public class LogicElement extends TextElement{
 
+	public String toString(){
+		return content;
+	}
+		
 		public LogicElement(String content){
 			super(content);
 		}

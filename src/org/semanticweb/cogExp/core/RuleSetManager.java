@@ -184,7 +184,7 @@ public enum RuleSetManager {
     			AdditionalDLRules.APPLRANGE,
     			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
     			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
-    			AdditionalDLRules.R0, // introduce trivial subsumptions
+    			// AdditionalDLRules.R0, // introduce trivial subsumptions
     			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
     			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
     			INLG2012NguyenEtAlRules.RULE42,
@@ -253,7 +253,7 @@ public enum RuleSetManager {
 	    SequentInferenceRule[] ELInitNonredundant = {
 	    		AdditionalDLRules.SIMPLETERMINATION,
 	    		SequentTerminationAxiom.INSTANCE,
-    			AdditionalDLRules.EQUIVEXTRACT,   // <--- should be off
+    			// AdditionalDLRules.EQUIVEXTRACT,   // <--- should be off
     			INLG2012NguyenEtAlRules.RULE1neo,
     			INLG2012NguyenEtAlRules.RULE1,
     			// AdditionalDLRules.SUBCLANDEQUIVELIM, // REDUNDANT
@@ -270,7 +270,7 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE35, // handle disjointness
     			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
     			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
-    			AdditionalDLRules.R0, // introduce trivial subsumptions  // <--- off?
+    			// AdditionalDLRules.R0, // introduce trivial subsumptions  // <--- off?
     			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
     			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
     			INLG2012NguyenEtAlRules.RULE42,
@@ -313,7 +313,7 @@ public enum RuleSetManager {
 			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
 			// INLG2012NguyenEtAlRules.RULE42
 			AdditionalDLRules.ONLYSOME,
-			AdditionalDLRules.UNIONINTRO
+			// AdditionalDLRules.UNIONINTRO  <--- is slow!
     };
     
     ArrayList<SequentInferenceRule> ontopand = new ArrayList<SequentInferenceRule>(Arrays.asList(ontopandInit));

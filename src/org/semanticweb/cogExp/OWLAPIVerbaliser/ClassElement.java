@@ -21,7 +21,9 @@ public class ClassElement extends TextElement{
 		super(content);
 	}
 	
-	
+	public String toString(){
+		return content;
+	}
 	
 	public String getToolTipText(){
 		return tooltiptext;

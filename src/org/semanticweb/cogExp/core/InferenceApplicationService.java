@@ -733,7 +733,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 				if (detectedRules.get(0).getName().equals("INLG2012NguyenEtAlRule1"))	
 					{
 					applySequentInferenceRule(initialtree,bindings.get(0),detectedRules.get(0));
-					System.out.println(current_rule.getName() + "-->" + bindings.get(0).getNewAntecedent());
+					// System.out.println(current_rule.getName() + "-->" + bindings.get(0).getNewAntecedent());
 					}
 				else{
 					/*

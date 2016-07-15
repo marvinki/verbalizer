@@ -1176,7 +1176,7 @@ RULE5{ //SubClass(X,Y) and SubClass(X,Z) --> Subclass(X,Y^Z)
 				forms.add(OWLFormula.createFormulaSubclassOf(p1,p3));
 				if (AlreadyTriedCache.INSTANCE.wasTried(INLG2012NguyenEtAlRules.RULE5,
 						forms)){
-					System.out.println("skipping");
+					// System.out.println("skipping");
 					continue;
 				}	
 					
@@ -2882,7 +2882,7 @@ RULE14{
 	}, // END RULE14
 	*/
 	
-	// $9
+	// $11
 	RULE15{ //SubCla(X,\exists r. Y) and SubCla(Y,Z) --> SubCla(X, \exists r. Z)
 		
 		@Override
@@ -2950,6 +2950,18 @@ RULE14{
 					for(OWLFormula cand2 : candidates2_pre){
 						if (cand2.getArgs().get(1).equals(cand2.getArgs().get(0)))
 							continue; // abort trivial case
+						
+						// Skip if this was already tried.
+						List<OWLFormula> forms = new LinkedList<OWLFormula>();
+						forms.add(cand1);
+						forms.add(cand2);
+						
+						if (AlreadyTriedCache.INSTANCE.wasTried(INLG2012NguyenEtAlRules.RULE15,
+								forms)){
+							// System.out.println("skipping");
+							continue;
+						}	
+						
 						// if (cand2.getArgs().get(1).getHead().equals(OWLSymb.TOP))
 						// 	continue; // throw out unproductive case <-- we get incomplete if we do that.
 						 // if (cand2.getArgs().get(1).getHead().equals(OWLSymb.TOP) && cand1.getArgs().get(0).equals(cand1.getArgs().get(1)))
@@ -3006,9 +3018,11 @@ RULE14{
 											SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(cand2));
 											binding.insertPosition("A2", position2);
 											results.add(binding);
+											continue; // <--- to not cache this case as unsuccessful!
 									} // endif allclear
 							} // endif alreadycontained
 						} // endif containsSubformula
+						AlreadyTriedCache.INSTANCE.setTried(INLG2012NguyenEtAlRules.RULE15, forms);
 					} // end loop candidates2	
 				} // end try
 				catch (Exception e){}

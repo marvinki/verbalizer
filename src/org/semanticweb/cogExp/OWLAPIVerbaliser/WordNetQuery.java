@@ -79,8 +79,10 @@ public enum WordNetQuery {
 		// errorWriter.write("get Types called with " + str + ", data base " + database.toString() + "\n");
 		// errorWriter.write("file instance " + database.getFileInstance() + "\n");
 		String[] arr = str.split(_space);  
+		
 	    int[] types = new int[5]; 
 	    String lastword = arr[arr.length-1];
+	    
 		Synset[] synsets = database.getSynsets(lastword); // getting synsets for last word
 		// errorWriter.write("synsets " + synsets + "\n");
 		for (int i = 0; i < synsets.length; i++) {
@@ -98,5 +100,22 @@ public enum WordNetQuery {
 		return types;
 	}
 	
+	public boolean isPlural(String str){
+		Synset[] synsets = database.getSynsets(str,SynsetType.NOUN);
+		// System.out.println(synsets);
+		if (synsets.length<1)
+			return false;
+		boolean exactfound = false;
+		for (int i = 0; i < synsets.length; i++) {
+		    NounSynset nounSynset = (NounSynset)(synsets[i]); 
+		    String[] wordforms = nounSynset.getWordForms();
+		    if (wordforms[0].equals(str))
+		    	exactfound = true;
+		    // System.out.println(Arrays.toString(wordforms));
+		}
+		if (exactfound)
+			return false;
+		else return true;
+	}
 	
 }

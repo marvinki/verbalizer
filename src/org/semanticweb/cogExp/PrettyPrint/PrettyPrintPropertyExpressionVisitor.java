@@ -30,7 +30,9 @@ public class PrettyPrintPropertyExpressionVisitor implements OWLPropertyExpressi
 	}
 	
 	public String visit(OWLDataPropertyExpression arg0) {
-		return "na4";
+		OWLDataProperty dataprop = arg0.asOWLDataProperty();
+		String frag = dataprop.getIRI().getFragment();
+		return frag;
 	}
 	
 	public String visit(OWLObjectProperty arg0) {

@@ -22,6 +22,8 @@ public class TextElementSequence {
 		for(TextElement elem : sequence){
 			if (elem.content.startsWith(","))
 				needsep = false;
+			if (elem.content.startsWith("."))
+				needsep = false;
 			if (needsep)
 				result += " ";
 			result += elem.toText();
@@ -35,6 +37,8 @@ public class TextElementSequence {
 		boolean needsep = false;
 		for(TextElement elem : sequence){
 			if (elem.content.startsWith(","))
+				needsep = false;
+			if (elem.content.startsWith("."))
 				needsep = false;
 			if (needsep)
 				result += " ";
@@ -95,6 +99,49 @@ public class TextElementSequence {
 	
 	public List<TextElement> getTextElements(){
 		return sequence;
+	}
+	
+	public void pluralise(){
+		TextElement previous = null;
+		boolean somethingthat = false;
+		for (int i=0; i<sequence.size();i++){
+			TextElement current_element = sequence.get(i);
+			if (current_element.toString().contains("Something that")){
+				somethingthat = true;
+			}
+			// System.out.println("pluralise looking at :" + current_element.toString());
+			if (previous instanceof ClassElement && !somethingthat){
+				ClassElement previousClass = (ClassElement) previous;
+				String previousString = previousClass.toString();
+				String[] arr = previousString.split(" ");  	
+			    String lastword = arr[arr.length-1];
+			    // System.out.println("pluralise checking plurality of :" + lastword);
+			    if (WordNetQuery.INSTANCE.isPlural(lastword)){
+			    	// System.out.println("yes, plural.");
+			    	// System.out.println("Current element " + current_element);
+			    	if (current_element instanceof LogicElement){
+			    		LogicElement currLogic = (LogicElement) current_element;
+			    		String currString = current_element.toString();
+			    		// System.out.println("current element: " + currString);
+			    		if (currString.equals("is")){
+			    			sequence.remove(i);
+			    			sequence.add(i,new LogicElement("are"));
+			    		}
+			    	} 
+			    	if (current_element instanceof RoleElement){
+			    		RoleElement currRole = (RoleElement) current_element;
+			    		String currString = current_element.toString();
+			    		// System.out.println("current element: " + currString);
+			    		// System.out.println("checking " + currString.substring(0,2) + "<");
+			    		if (currString.substring(0,2).equals("is")){
+			    			sequence.remove(i);
+			    			sequence.add(i,new RoleElement("are" + currString.substring(2) ));
+			    		}
+			    	} 
+			    }
+			}
+			previous = current_element;
+		}
 	}
 	
 }

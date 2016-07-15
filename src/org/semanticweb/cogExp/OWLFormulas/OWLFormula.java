@@ -427,7 +427,9 @@ public class OWLFormula {
 		return (head.equals(OWLSymb.TOP));
 	}
 	
-	
+	public boolean isBot(){
+		return (head.equals(OWLSymb.BOT));
+	}
 	
 	public static boolean containsSubformula(OWLFormula exp, OWLFormula subformula){
 		if (subformula.equals(exp)) return true;

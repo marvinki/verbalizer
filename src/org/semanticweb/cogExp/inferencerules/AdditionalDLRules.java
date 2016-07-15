@@ -29,7 +29,8 @@ import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
 
 public enum AdditionalDLRules implements SequentInferenceRule{
-	
+
+	//$1
 SIMPLETERMINATION{	
 	
 	@Override
@@ -90,7 +91,7 @@ SIMPLETERMINATION{
 	
 
 
-
+//$2
 R0{
 		
 		@Override
@@ -160,7 +161,7 @@ R0{
 		
 	}, // END R0
 	
-	
+//$3
 TOPINTRO{
 		
 		@Override
@@ -223,6 +224,7 @@ TOPINTRO{
 		
 	}, // END TOPINTRO
 
+//$4
 BOTINTRO{
 		
 		@Override
@@ -284,7 +286,7 @@ BOTINTRO{
 		
 	}, // END TOPINTRO
 	
-	
+//$5
 	ELEXISTSMINUS{	@Override
 	public java.lang.String getName(){return "ELEXISTSMINUS";};
 	@Override
@@ -380,6 +382,7 @@ BOTINTRO{
 	
 }, // ELEXISTSMINUS
 
+	//$6
 FORALLMINUS{	@Override
 public java.lang.String getName(){return "FORALLMINUS";};
 @Override
@@ -456,6 +459,7 @@ public List<RuleKind> qualifyRule(){
 
 }, // ELEXISTSMINUS
 
+//$7
 // union minus applies to unions on the right
 UNIONMINUS{	@Override
 public java.lang.String getName(){return "UNIONMINUS";};
@@ -549,6 +553,7 @@ public List<RuleKind> qualifyRule(){
 
 // for a formula of the form "A subcl B union C" in the antecedent, create two premise sequents where the original axiom is 
 // replaced by "A subcl B" and "A subcl C", respectively
+// $8
 UNIONELIM{	@Override
 public java.lang.String getName(){return "UNIONELIM";};
 @Override
@@ -639,7 +644,7 @@ public List<RuleKind> qualifyRule(){
 
 }, // ELEXISTSMINUS
 
-
+//$9
 EQUIVEXTRACT{	@Override
 public java.lang.String getName(){return "EQUIVEXTRACT";};
 @Override
@@ -754,7 +759,7 @@ public List<RuleKind> qualifyRule(){
 
 }, // EQUIVEXTRACT
 
-
+//$10
 UNIONINTRO{	@Override
 public java.lang.String getName(){return "UNIONINTRO";};
 @Override
@@ -911,7 +916,7 @@ public List<RuleKind> qualifyRule(){
 	
 
 	// \forall r.\bot \subset X ^ \exists r.\top \subset X --> \top \subset X
-
+	// $11
 		DEFDOMAIN{	@Override
 		public java.lang.String getName(){return "AdditionalDLRules-DefinitionOfDomain";};
 		@Override
@@ -985,7 +990,7 @@ public List<RuleKind> qualifyRule(){
 				
 			}, // END DEFDOMAIN
 		
-		
+		//$12
 		APPLRANGE{	@Override
 				public java.lang.String getName(){return "AdditionalDLRules-ApplicationOfRange";};
 				@Override
@@ -1084,7 +1089,7 @@ public List<RuleKind> qualifyRule(){
 						}
 						
 					}, // END DEFDOMAIN
-		
+		//$13
 		SUBCLANDEQUIVELIM{ // SubCla(X,Y) and Equiv(Y,Z) --> SubCla(X,Z)  (order of equiv does not matter)
 			
 			@Override
@@ -1388,7 +1393,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 		
 		
 
-		
+		//$14
 		RULE5MULTI{	@Override
 		public java.lang.String getName(){return "R5M";};
 		@Override
@@ -1527,6 +1532,8 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 
 		}, // end Rule5Multi
 		
+		
+		// $15
 		RULE5BIN{	@Override
 			public java.lang.String getName(){return "R5M";};
 			@Override
@@ -1670,7 +1677,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 
 			}, // end Rule5Multi
 		
-		
+		//$16
 		FORALLUNION{ // SubCla(X,\forall r.Y or Z) and SubCla(Y,W) and SubCla(Z,W) --> SubCla(X, \forall r.W)
 			
 			@Override
@@ -1802,7 +1809,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 					
 		}, // END RULE23
 		
-
+		//$17
 		PROPCHAIN{ // SUBPROPERTYOF ((SUBPROPERTYCHAIN r1, r2, ... rn),s)  A subclassof \exists r1 . B ... --> A subclassof \exists s. Z
 			
 			@Override
@@ -1959,7 +1966,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 			
 		}, // END RULEPROPCHAIN
 		
-		
+		//$18
 		ONLYSOME{	
 		@Override
 		public java.lang.String getName(){return "ONLYSOME";};
@@ -1991,6 +1998,9 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 					if (form.getArgs().get(0).equals((form.getArgs().get(1)))){
 						continue;
 					}
+					if (form.getArgs().get(0).isBot()){
+						continue;
+					}
 					// now check for onlysomes
 					if (expressions!=null && expressions.size()>0){
 						// System.out.println("DEBUG --- add cand1 " + form);
@@ -1998,6 +2008,9 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 					}
 					// System.out.println("DEBUG ---2--- " + form);
 					expressions = detectOnlysome(args.get(0));
+					if (form.getArgs().get(1).isTop()){
+						continue;
+					}
 					if (expressions!=null && expressions.size()>0){
 						// System.out.println("DEBUG --- add cand2 " + form);
 						prem2_candidates.add(form);
@@ -2011,34 +2024,46 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 				for (OWLFormula form2 : prem2_candidates){
 					List<OWLFormula> expressions1 = detectOnlysome(form1.getArgs().get(1));
 					List<OWLFormula> expressions2 = detectOnlysome(form2.getArgs().get(0));
+					// if the result would be a tautology, throw this out.
+					if (form1.getArgs().get(0).equals(form2.getArgs().get(1))){
+						continue;
+					}
+					
 					
 					// now need to find all necessary subsumptions
-					boolean exists = false;
+					boolean exists = true;
 					Set<OWLFormula> witness_formulas = new HashSet<OWLFormula>();
 					// System.out.println(" ONLYSOME DEBUG expressions1 " + expressions1);
 					for (OWLFormula exp1 : expressions1){
 						for (OWLFormula exp2 : expressions2){
 							if (s.alreadyContainedInAntecedent(OWLFormula.createFormula(OWLSymb.SUBCL,exp1,exp2))){
-								exists = true;
+								// exists = true;
 								witness_formulas.add(OWLFormula.createFormula(OWLSymb.SUBCL,exp1,exp2));
+							} else {
+								exists = false;
 							}
 						}
 					}
 					if (!exists) 
 						continue;
-					exists = false;
+					exists = true;
 					// System.out.println(" ONLYSOME DEBUG expressions2 " + expressions2);
 					for (OWLFormula exp2 : expressions2){
 						for (OWLFormula exp1 : expressions1){
 							if (s.alreadyContainedInAntecedent(OWLFormula.createFormula(OWLSymb.SUBCL,exp1,exp2))){
-								exists = true;
+								// exists = true;
 								witness_formulas.add(OWLFormula.createFormula(OWLSymb.SUBCL,exp1,exp2));
+							}
+							else{
+								exists = false;
 							}
 						}
 					}
 					if (!exists) 
 						continue;
-					// System.out.println(" ONLYSOME DEBUG witnesses " + witness_formulas);
+					 // System.out.println(" ONLYSOME DEBUG expressions1 " + expressions1);
+					 // System.out.println(" ONLYSOME DEBUG expressions2 " + expressions2);
+					 // System.out.println(" ONLYSOME DEBUG witnesses " + witness_formulas);
 					// check if potential conclusion is trivial
 					if (form1.getArgs().get(0).equals(form2.getArgs().get(1)))
 						continue;
@@ -2061,6 +2086,10 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 					SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, list2);
 					binding.insertPosition("A2", position2);
 					
+					
+					// System.out.println("OS FORMULA 1 : " + VerbalisationManager.prettyPrint(s.antecedentGetFormula(s.antecedentFormulaGetID(form1))));
+					// System.out.println("OS FORMULA 2 : " + VerbalisationManager.prettyPrint(s.antecedentGetFormula(s.antecedentFormulaGetID(form2))));
+					
 					int i = 3;
 					
 					// System.out.println("treating witness formulas : " + witness_formulas);
@@ -2073,6 +2102,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						List<Integer> list3 = new ArrayList<Integer>();
 						// System.out.println(" DEBUG WIT " + s.alreadyContainedInAntecedent(wit) + " " + s.antecedentFormulaGetID(realwit));
 						list3.add(s.antecedentFormulaGetID(realwit));
+						// System.out.println("OS WITNESS : " + VerbalisationManager.prettyPrint(s.antecedentGetFormula(s.antecedentFormulaGetID(realwit))));
 						SequentPosition position3 = new SequentSinglePosition(SequentPart.ANTECEDENT, list3);
 						binding.insertPosition("A" + i, position3);
 						i++;
@@ -2251,7 +2281,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 	}
 	
 	
-	private static List<OWLFormula> detectOnlysome(OWLFormula formula){
+	public static List<OWLFormula> detectOnlysome(OWLFormula formula){
 		// System.out.println("trying the onlysome detector on " + formula);
 		if (!formula.getHead().equals(OWLSymb.INT)) 
 				return null;

@@ -115,8 +115,55 @@ public class GentzenTree {
 					// System.out.println("Gentzen Tree DEBUG ONLYSOME " + premises.size());
 					int id1 = premises.get(0);
 					OWLFormula formula1 = formulas.get(premises.get(0));
-					premises.remove(0);
-					premises.add(premises.size(),id1);
+					int f1id;
+					int id2 = premises.get(1);
+					OWLFormula formula2 = formulas.get(premises.get(1));
+					int f2id;
+					OWLFormula conclusion = formulas.get(step.getConclusion());
+					// figure out which is the "subclass" formula
+					OWLFormula subclassOnlysome;
+					OWLFormula superclassOnlysome;
+					// System.out.println(premises);
+					/*
+					for (int k : premises){
+						System.out.println(VerbalisationManager.prettyPrint(formulas.get(k)));
+					}
+					*/
+					// System.out.println(conclusion.getArgs().get(0));
+					// System.out.println(formula2.getArgs().get(0));
+					if (conclusion.getArgs().get(0).equals(formula2.getArgs().get(0))){
+						subclassOnlysome = formula2;
+						superclassOnlysome = formula1;
+						f1id= id2;
+						f2id= id1;
+					}
+					else{
+						subclassOnlysome = formula1;
+						superclassOnlysome = formula2;
+						f1id= id1;
+						f2id= id2;
+						// premises.remove(1);
+						// premises.add(premises.size(),id2); //<-- put the second formula in last position (the second onlysome formula)
+					}
+					// System.out.println(premises);
+					// System.out.println("ONLYSOME subclassOnlysome :" + subclassOnlysome);
+					// System.out.println("ONLYSOME superclassOnlysome :" + superclassOnlysome);
+					List<OWLFormula> expressions = AdditionalDLRules.detectOnlysome(subclassOnlysome.getArgs().get(1));
+					List<Integer> forms = new ArrayList<Integer>();
+					for (OWLFormula form :expressions){
+						for (int j: premises){
+							OWLFormula premform = formulas.get(j);
+							if (premform.getArgs().get(0).equals(form)){
+								forms.add(j);
+							}
+						}
+					}
+					premises.removeAll(premises);
+					premises.add(id1); 
+					premises.addAll(forms);
+					premises.add(id2); 
+					
+					
 				}
 		// Reordering for RULE12
 		if (infrule.equals(INLG2012NguyenEtAlRules.RULE12)){

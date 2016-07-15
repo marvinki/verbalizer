@@ -185,6 +185,7 @@ public enum ConversionManager {
 				OWLInteger owlint = (OWLInteger) owlintform.getHead();
 				int cardinality = owlint.getValue();
 				result = dataFactory.getOWLObjectExactCardinality(cardinality, propEx);
+				break;
 			case SUBPROPERTYOF:
 				if (tail.get(0).getHead().equals(OWLSymb.SUBPROPERTYCHAIN)){
 					List<OWLObjectPropertyExpression> props = new ArrayList<OWLObjectPropertyExpression>();
@@ -196,6 +197,7 @@ public enum ConversionManager {
 					result = dataFactory.getOWLSubPropertyChainOfAxiom(props, subp2);
 				}
 				else{
+					System.out.println("DBG conversion, converting : " + formula);
 					OWLObjectPropertyExpression subp1 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(0));
 					OWLObjectPropertyExpression subp2 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(1));
 					result = dataFactory.getOWLSubObjectPropertyOfAxiom(subp1,subp2);

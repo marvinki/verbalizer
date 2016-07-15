@@ -75,6 +75,7 @@ public enum VerbalisationManager {
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator){
 		textOWLObjectVisit.setObfuscator(obfuscator);
 		verbOWLObjectVisit.setObfuscator(obfuscator);
+		// System.out.println("dealing with owl object " + ob);
 		TextElementSequence seq = new TextElementSequence( ob.accept(textOWLObjectVisit));
 		return seq;
 	}
@@ -202,6 +203,7 @@ public enum VerbalisationManager {
 				if (textOWLObjectVisit.getObfuscator()!=null){
 					str = textOWLObjectVisit.getObfuscator().obfuscateRole(str);
 				}
+		/* 		
 		if (VerbaliseOWLObjectVisitor.detectLowCamelCase(str))
 			str = VerbaliseOWLObjectVisitor.removeCamelCase(str);
 		// heuristic!
@@ -209,6 +211,8 @@ public enum VerbalisationManager {
 			str =  VerbaliseOWLObjectVisitor.removeUnderscores(str);
 		if(str.indexOf("_")>=0)
 			str =  VerbaliseOWLObjectVisitor.removeUnderscores(str);
+			*/
+				str = treatCamelCaseAndUnderscores(str);
 		if(str.indexOf("^^xsd:string")>=0)
 			str = str.substring(1,str.length()-13);
 		// detect if name is of the form "_ of" 
@@ -256,6 +260,8 @@ public enum VerbalisationManager {
 		}
 		if (VerbalisationManager.INSTANCE.getPropertyNLString(property).indexOf("[X]")>=0)
 			result += VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+		result = treatCamelCaseAndUnderscores(result);
+		System.out.println("DEBUG PROPERTY |" + result + "|");
 		return result;
 	}
 	
@@ -307,12 +313,13 @@ public enum VerbalisationManager {
 			result.add(new RoleElement(p2));
 		}
 			// result += VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+		
 		return result;
 	}
 	
 	
 	public static String aOrAnIfy(String str){
-		// System.out.println("a or an " + str);
+		// System.out.println("a or an |" + str);
 		// first check if there are any determiners present; if so, leave unchanged
 		if (     (str.length()>1 && str.substring(0,2).equals("a" + _space))
 			 ||  (str.length()>2 && str.substring(0,3).equals("an" + _space))
@@ -326,7 +333,16 @@ public enum VerbalisationManager {
 			isNoun = true;
 		if (str.contains("publisher"))
 			isNoun = true;
-		if (!WordNetQuery.INSTANCE.isDisabled() && !(WordNetQuery.INSTANCE.isType(str,SynsetType.NOUN)>0) &&!isNoun){
+		// System.out.println(WordNetQuery.INSTANCE.isType(str,SynsetType.NOUN)>0);
+		/*
+		System.out.println("0:" + WordNetQuery.INSTANCE.getTypes(str)[0]); // noun
+		System.out.println("1:" + WordNetQuery.INSTANCE.getTypes(str)[1]); // verb
+	    System.out.println("2:" + WordNetQuery.INSTANCE.getTypes(str)[2]); // adjective
+		System.out.println("3:" + WordNetQuery.INSTANCE.getTypes(str)[3]); // adverb
+	    System.out.println("4:" + WordNetQuery.INSTANCE.getTypes(str)[4]); // adjective_satellite
+	    */
+		int[] types = WordNetQuery.INSTANCE.getTypes(str);
+		if (!WordNetQuery.INSTANCE.isDisabled() && !(types[0]>0) &&!isNoun){
 			// System.out.println("NOT A NOUN");
 			str = lowerCaseFirstLetter(str);
 			// System.out.println("not using article");
@@ -335,6 +351,10 @@ public enum VerbalisationManager {
 		// Check if gerund, if so, leave unchanged!
 		if (str.indexOf("ing")>0 && !str.equals("Ring")  && !str.equals("ring") && !str.contains(" ring") && !str.contains("Ring"))
 			return str.toLowerCase();
+		// Plural does not get an article
+		if (WordNetQuery.INSTANCE.isPlural(str)){
+			return str;
+		}
 		if (str.substring(0,1).equals("a") 
 		    || str.substring(0,1).equals("u") 
 			|| str.substring(0,1).equals("e")
@@ -351,10 +371,82 @@ public enum VerbalisationManager {
 			// System.out.println("NOUN");
 			str = "a" + _space + str;
 		}
+		// System.out.println("returning >>" + str);
 		return str.toLowerCase();
 	}
 		
 	
+	public static String treatCamelCaseAndUnderscores(String str){
+		String resultstring = "";
+		List<String> tokens = new ArrayList<String>();
+		// detect tokens delineated by ' ', '_' and camelcasing "aA"
+		String currenttoken = "";
+		String lastChar = "";
+		for (int i=0; i<str.length(); i++){
+				// detect THE END
+				if (i== str.length()-1){
+					currenttoken = currenttoken + str.substring(i,i+1);
+					tokens.add(currenttoken);
+					break;
+				}
+				// detect seperator
+				if (str.substring(i,i+1).equals("_")
+						|| str.substring(i,i+1).equals(" ")
+						){
+					tokens.add(currenttoken);
+					currenttoken = "";
+					lastChar = "";
+					continue;
+				}
+				// detect camelcasing
+				if (Character.isUpperCase(str.charAt(i))
+						&& lastChar.length()>0 && Character.isLowerCase(lastChar.charAt(0))
+						){
+						tokens.add(currenttoken);
+						currenttoken = str.substring(i,i+1);
+						lastChar = currenttoken;
+						continue;
+				}
+				currenttoken = currenttoken + str.substring(i,i+1);
+				lastChar = str.substring(i,i+1);
+		}
+		// now postprocess all tokens
+		List<String> processedtokens = new ArrayList<String>();
+		for (String token : tokens){
+			// if acronym (both first letters are capitals), do nothing
+			if (token.length()>1 && Character.isUpperCase(str.charAt(0)) && Character.isUpperCase(str.charAt(1)) ){
+				processedtokens.add(token);
+				continue;
+			}
+			// now lowercase
+			token = token.substring(0,1).toLowerCase() + token.substring(1,token.length()); 
+			// now find hypens and lowercase
+			int ind = 0;
+			while(ind<token.length()){
+				int foundint = token.substring(ind).indexOf("-");
+				// System.out.println(token.charAt(foundint+1));
+				if (foundint<0 || foundint+1>token.length())
+					break;
+				token = token.substring(0,foundint) + "-" + Character.toLowerCase(token.charAt(foundint+1)) + token.substring(foundint+2);
+				ind = foundint+1;
+			}
+			processedtokens.add(token);
+		}
+		// now join all tokens together
+		for (int i = 0; i< processedtokens.size(); i++){
+			if (i ==  processedtokens.size()-1){
+				resultstring += processedtokens.get(i);
+			} 
+			else{
+			resultstring += processedtokens.get(i) + _space;
+			}
+		}
+		// System.out.println("DEBUG TREATED " + resultstring);
+		return resultstring;
+		
+	}
+	
+	/* OLD--- in case the new thing does not work as well
 	public static String treatCamelCaseAndUnderscores(String str){
 		if (VerbaliseOWLObjectVisitor.detectUnderCamel(str))
 				return VerbaliseOWLObjectVisitor.removeUnderCamel(str);
@@ -363,6 +455,7 @@ public enum VerbalisationManager {
 		}
 		return VerbaliseOWLObjectVisitor.removeUnderscores(str);
 	}
+	*/
 	
 	
 	public java.lang.String getClassNLString(OWLClass classname){
@@ -410,8 +503,12 @@ public enum VerbalisationManager {
 			str= str.substring(i+1,j-1);
 		} else{
 			// str= str.substring(i+1,str.length()-1);
-		}
-			System.out.println("returning (1) " + str);
+		}	str = treatCamelCaseAndUnderscores(str);
+			// System.out.println("returning (1) " + str);
+			// Cheating
+			if (str.equals("exercise")){
+				return "an exercise";
+			}
 			return str;
 		}
 		if (str==""){
@@ -432,6 +529,8 @@ public enum VerbalisationManager {
 			if (str.contains("red") || str.contains("Red") || str.contains("green") || str.contains("Green"))
 				isUncountable = true;
 			// put indeterminate determiner
+			// 
+			// System.out.println("DEBGU --  " + str);
 			if (!isUncountable)
 				str = aOrAnIfy(str);
 			return str;
@@ -900,6 +999,7 @@ public enum VerbalisationManager {
 					if (someexpr.getFiller() instanceof OWLObjectSomeValuesFrom){
 						String somethingstr = "something that ";
 						OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) someexpr.getFiller();
+						// System.out.println("DEBUG (1) -- getting domain");
 						OWLClass cl = (OWLClass) VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 						VerbaliseOWLObjectVisitor visitor = new VerbaliseOWLObjectVisitor();
 						if (cl!=null){somethingstr = cl.accept(visitor) + " that ";}
@@ -940,6 +1040,7 @@ public enum VerbalisationManager {
 		java.lang.String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(commonpropexpr);
 		result += part2;
 		}
+		result = treatCamelCaseAndUnderscores(result);
 		return result + ", but nothing else";
 	}
 	
@@ -961,11 +1062,14 @@ public enum VerbalisationManager {
 						LogicElement somethingst = new LogicElement("something that");
 						List<TextElement> somethingstr = new ArrayList<TextElement>();
 						OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) someexpr.getFiller();
+						// System.out.println("DEBUG (2) -- getting domain for " + some1.getProperty().getNamedProperty());
 						OWLClass cl = (OWLClass) VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
+						// System.out.println(cl);
 						if (cl!=null){
 							somethingstr.addAll(cl.accept(textOWLObjectVisit));
 							somethingstr.add(new LogicElement("that"));
-							}
+							} else 
+								somethingstr.add(somethingst);
 						str.addAll(0,somethingstr);
 					}
 					substrings.add(str);
@@ -1023,10 +1127,12 @@ public enum VerbalisationManager {
 				props.add(ax.getSuperProperty().getNamedProperty());
 			}
 		}
+		// System.out.println("props :" + props);
 		// second loop: now find also all other axioms
 		for (OWLObjectProperty prop1 : props){
-			axioms = ontology.getAxioms(prop1);
+			axioms.addAll(ontology.getAxioms(prop1,true));
 		}
+		// System.out.println(axioms);
 		// now actually hunt for the class expression
 		for (OWLObjectPropertyAxiom axiom : axioms){
 			if (axiom instanceof OWLObjectPropertyDomainAxiom){
@@ -1086,6 +1192,8 @@ public enum VerbalisationManager {
 		 BlackBoxExplanation bBexplanator=new BlackBoxExplanation(ontology, factory,reasoner);
 		 HSTExplanationGenerator explanationGenerator=new HSTExplanationGenerator(bBexplanator);
 		 OWLDataFactory dataFactory= OWLAPIManagerManager.INSTANCE.getDataFactory();
+	
+		 long startJustfinding = System.currentTimeMillis();
 		 
 		 Set<OWLAxiom> explanation = new HashSet<OWLAxiom>();	  
 		 // System.out.println("checking axiom " + axiom);
@@ -1104,6 +1212,8 @@ public enum VerbalisationManager {
 		 return null;
 	 }
 	 
+	 long endJustfinding = System.currentTimeMillis();
+	 System.out.println("Justification finding took: " + (endJustfinding - startJustfinding) + "ms");
 	
 	 
 	// convert to internal format
@@ -1121,13 +1231,17 @@ public enum VerbalisationManager {
 				
 	 	GentzenTree tree;
 		
+	 	 long startTreecompute = System.currentTimeMillis();
+	 	
 		try {  // Settings!
 			tree = InferenceApplicationService.computeProofTree(axiomFormula, justificationFormulas, maxsteps, maxtime, ruleset);
 					// 1000, 20000, "EL");
 	} catch(Exception e){
 		e.printStackTrace();
 		return null;}
-
+		
+		long endTreecompute = System.currentTimeMillis();
+		System.out.println("Tree computation took: " + (endTreecompute - startTreecompute) + "ms");
 	return tree;
 	}
 	
