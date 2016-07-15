@@ -331,13 +331,6 @@ public ExplanationResult explainInPlugin(OWLAxiom axiom) {
 		}
 		TextExplanationResult result = new TextExplanationResult(panel);
 		
-		// trying out stuff
-		OWLObjectRenderer objectrenderer = modelmanager.getOWLObjectRenderer();
-		
-		
-		OWLModelManagerEntityRenderer renderer = modelmanager.getOWLEntityRenderer();
-		// OWLObjectListPanel olp = new OWLObjectListPanel();
-		
 		panel.setBackground(Color.WHITE);
 		System.out.println(panel.getHeight());
 		
