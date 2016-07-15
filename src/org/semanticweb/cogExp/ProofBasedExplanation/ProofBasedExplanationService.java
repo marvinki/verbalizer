@@ -60,35 +60,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 		return true;
 	}
 
-	@Override
-	public ExplanationResult explain(OWLAxiom axiom) {
-		
-		
-		OWLModelManager modelmanager = getOWLModelManager();		
-		OWLReasoner reasoner = modelmanager.getOWLReasonerManager().getCurrentReasoner();
-		OWLReasonerFactory factory = modelmanager.getOWLReasonerManager().getCurrentReasonerFactory().getReasonerFactory();
-		OWLOntology ontology = modelmanager.getActiveOntology();
-		
-		
-		String explanation = 
-	    getExplanationResult(axiom,
-			   reasoner,
-			   factory,
-		 	   ontology,
-		 	   true,
-		 	   false,
-		 	   false // null obfuscator
-		 	   );
-		 	   
-		
-	  
-		JPanel panel = new JPanel();
-		JTextArea textfield = new JTextArea(explanation);
-		panel.add(textfield);
-		TextExplanationResult result = new TextExplanationResult(panel);
-		
-		return result;
-	}
+	
 	
 	public void dispose() throws Exception {
 		// Do nothing.
@@ -270,7 +242,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 	}
 		
 	
-public ExplanationResult explainInPlugin(OWLAxiom axiom) {
+public ExplanationResult explain(OWLAxiom axiom) {
 		
 		
 		OWLModelManager modelmanager = getOWLModelManager();		
