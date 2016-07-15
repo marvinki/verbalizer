@@ -278,41 +278,10 @@ public ExplanationResult explainInPlugin(OWLAxiom axiom) {
 		OWLReasonerFactory factory = modelmanager.getOWLReasonerManager().getCurrentReasonerFactory().getReasonerFactory();
 		OWLOntology ontology = modelmanager.getActiveOntology();
 		
-		/*
-		String explanation = 
-	    getExplanationResult(axiom,
-			   reasoner,
-			   factory,
-		 	   ontology,
-		 	   true
-		 	   );
-		*/
-		 	   
-		
-		/*
-		JTextPane text = new JTextPane();
-		text.setContentType("text/html");
-		Font font = new Font("Serif", Font.ITALIC, 20);
-		
-		StyledDocument document = text.getStyledDocument();
-    
-		String fontfamily = text.getFont().getFamily();
-		
-		// setJTextPaneFont(text, font, Color.blue);
-		// text.setText("<html><body style=\"font-family: " + fontfamily + "\"<b>This is some text!</b></html>");
-		text.setText("<html><body style=\"font-family: " + fontfamily + "\">" + explanation + "</html>");
-		// text.setText("foo");
-		// text.setToolTipText("footip");
-	*/
 		
 		/* Outer panel, with vertical layout */
 		
 		JPanel panel = new JPanel();
-		// panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		// JTextArea textfield = new JTextArea(explanation);
-		// panel.add(textfield);
-		
-		
 		
 		TextElementSequence sequence = 
 			    getExplanationResultAsSequence(axiom,
@@ -324,17 +293,10 @@ public ExplanationResult explainInPlugin(OWLAxiom axiom) {
 				 	   );
 				 	   
 		
-		// panel.add(text);
-		
 		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
 		flowLayout.setHgap(0);
 		BoxLayout verticalLayout = new BoxLayout(panel,BoxLayout.Y_AXIS);
-		
-		// panel.setLayout(flowLayout);
 		panel.setLayout(verticalLayout);
-		// panel.setPreferredSize(new Dimension(300, 200));
-		
-		
 		JPanel innerpanel = new JPanel();
 		boolean justskipped = false;
 		innerpanel.setLayout(flowLayout);
