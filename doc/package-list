@@ -1,1 +1,4 @@
+org.semanticweb.cogExp.GentzenTree
 org.semanticweb.cogExp.OWLAPIVerbaliser
+org.semanticweb.cogExp.ProofBasedExplanation
+org.semanticweb.cogExp.core
