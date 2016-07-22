@@ -44,7 +44,7 @@ public enum ConversionManager {
 	
 	/** Translates OWLAPI OWLObjects to (internal) OWLFormula representation
 	 * 
-	 * @param one OWLObject from OWLAPI
+	 * @param owlobject 			an OWLObject from OWLAPI
 	 * @return the corresponding OWLFormula object
 	 */
 	public static OWLFormula fromOWLAPI(OWLObject owlobject){
@@ -53,7 +53,13 @@ public enum ConversionManager {
 	
 	/** converts the OWLFormula to OWL-API formula 
 	 * 
-	 * @return		the formula as (OWL-API) OWLObject
+	 * @param formula		TODO add description	
+	 * @return	the formula as (OWL-API) OWLObject
+	 * 
+	 */
+	
+	/*
+	 * TODO add description
 	 */
 	public static OWLObject toOWLAPI(OWLFormula formula){
 		OWLAtom head = formula.getHead();

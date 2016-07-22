@@ -283,7 +283,7 @@ public class OWLFormula {
 	/** Creates an OWLFormula that represents a single class variable
 	 * 
 	 * @param name		the name of the variable
-	 * @return
+	 * @return TODO add description
 	 */
 	public static OWLFormula createFormulaVar(String name){
 		OWLVar varname = new OWLVar(name);
@@ -293,7 +293,7 @@ public class OWLFormula {
 	/** Creates an OWLFormula that represents a role variable
 	 * 
 	 * @param name		the name of the role variable
-	 * @return
+	 * @return add description
 	 */
 	public static OWLFormula createFormulaRoleVar(String name){
 		OWLRoleVar varname = new OWLRoleVar(name);
@@ -305,7 +305,7 @@ public class OWLFormula {
 	 * 
 	 * @param name		class name
 	 * @param uri		uri (full, including class name)
-	 * @return
+	 * @return add description
 	 */
 	public static OWLFormula createFormulaClass(String name, String uri){
 		OWLClassName classname = new OWLClassName(name,uri);
@@ -316,7 +316,7 @@ public class OWLFormula {
 	 * 
 	 * @param name	role name
 	 * @param uri	uri (full, including role name)
-	 * @return
+	 * @return add description
 	 */
 	public static OWLFormula createFormulaRole(String name, String uri){
 		OWLRoleName rolename = new OWLRoleName(name,uri);
