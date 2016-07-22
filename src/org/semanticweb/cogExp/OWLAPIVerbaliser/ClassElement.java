@@ -13,15 +13,27 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+/**
+ * represents any class
+ * @author marvinki (doc by fp)
+ *
+ */
 public class ClassElement extends TextElement{
 	
 	private String tooltiptext = "footext";
-
+	
+	/**
+	 * @param content name
+	 */
 	public ClassElement(String content){
 		super(content);
 	}
 	
-	public String toString(){
+	
+	/**
+	 * @return returns the content as plain string 
+	 */
+	public String toString(){		
 		return content;
 	}
 	
@@ -29,6 +41,11 @@ public class ClassElement extends TextElement{
 		return tooltiptext;
 	}
 	
+	/**
+	 * 
+	 * @param content name
+	 * @param tooltiptext optional additional text
+	 */
 	public ClassElement(String content, String tooltiptext){
 		super(content);
 		this.tooltiptext = tooltiptext;
