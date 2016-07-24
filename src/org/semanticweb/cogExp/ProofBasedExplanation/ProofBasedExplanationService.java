@@ -72,9 +72,16 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 * @param reasoner		-- the reasoner to be employed for justification finding
 	 * @param factory		-- the reasoner factory of the employed reasoner
 	 * @param ontology		-- the current ontology
-	 * @param dict			-- the path pointing to the installation of WordNet (indicate the path of the "dict" subdirectory)
+	 * @param enableDict	-- TODO add explanation (also correct asHTML and odf)
+	 * @param asHTML		-- wether or not get HTML output 
+	 * @param obf			-- wether or not get clear/readable Text
 	 * @return				-- a text string containing the explanation
 	 */
+	
+	/*
+	 * TODO here
+	 */
+	
 	public static String getExplanationResult(OWLAxiom axiom, 
 											  OWLReasoner reasoner, 
 											  OWLReasonerFactory factory, 
@@ -129,8 +136,13 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 * @param reasoner		-- the reasoner to be employed for justification finding
 	 * @param factory		-- the reasoner factory of the employed reasoner
 	 * @param ontology		-- the current ontology
-	 * @param rulenames     -- a flag to indicate whether rule names shall be output
+	 * @param asHTML		TODO add explanation
+	 * @param obf			TODO add explanation			
 	 * @return				-- a text string containing the explanation
+	 */
+	
+	/*
+	 * TODO add some @param
 	 */
 	public static String getExplanationResult(OWLAxiom axiom, 
 											  OWLReasoner reasoner,
@@ -142,6 +154,15 @@ public class ProofBasedExplanationService extends ExplanationService{
 		return getExplanationResult(axiom, reasoner, factory, ontology,false,asHTML, obf);
 	}
 	
+	
+	/** computes a GentzenTree of two classes with respect to an specified ontology
+	 * 
+	 * @param subclass			subclass as String	
+	 * @param superclass		superclass as String	
+	 * @param ontologyname		path to the ontology as string
+	 * @return	a GentzenTree object 
+	 * @see GentzenTree
+	 */
 	public static GentzenTree computeTree(String subclass, String superclass, String ontologyname){
 		Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		rootlogger.setLevel(Level.OFF);
@@ -224,8 +245,13 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 * @param reasoner		-- the reasoner to be employed for justification finding
 	 * @param factory		-- the reasoner factory of the employed reasoner
 	 * @param ontology		-- the current ontology
-	 * @param dict			-- the path pointing to the installation of WordNet (indicate the path of the "dict" subdirectory)
+	 * @param enableDict	TODO add description
+	 * @param inferenceruleset TODO add description
 	 * @return				-- a text string containing the explanation
+	 */
+	
+	/*
+	 * TODO add some @param
 	 */
 	public static TextElementSequence getExplanationResultAsSequence(OWLAxiom axiom, OWLReasoner reasoner, OWLReasonerFactory factory, OWLOntology ontology, Boolean enableDict, String inferenceruleset){
 		String tmpdir = "";

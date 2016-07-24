@@ -99,7 +99,7 @@ public enum VerbalisationManager {
 	
 	/** Pretty print an OWL-API class expression (to DL syntax)
 	 * 
-	 * @param class expression
+	 * @param ce class expression
 	 * @return pretty printed string for class expression
 	 */
 	public static String prettyPrint(OWLClassExpression ce){
@@ -108,7 +108,7 @@ public enum VerbalisationManager {
 	
 	/** Pretty print an OWL-API subclass relationship (to DL syntax)
 	 * 
-	 * @param subclass axiom
+	 * @param oa subclass axiom
 	 * @return pretty printed string for subclass axiom
 	 */
 	public static String prettyPrint(OWLSubClassOfAxiom oa){
@@ -117,7 +117,7 @@ public enum VerbalisationManager {
 	
 	/** Pretty print an OWL-API Object (to DL syntax)
 	 * 
-	 * @param object
+	 * @param oo object
 	 * @return pretty printed string for object
 	 */
 	public static String prettyPrint(OWLObject oo){
@@ -126,7 +126,7 @@ public enum VerbalisationManager {
 	
 	/** Pretty print an OWLFormula (to DL syntax)
 	 * 
-	 * @param formula
+	 * @param form formula
 	 * @return pretty printed string for formula
 	 */
 	public static String prettyPrint(OWLFormula form){
@@ -845,7 +845,7 @@ public enum VerbalisationManager {
 	
 	/**
 	 * 
-	 * @param exprs
+	 * @param exprs List of expressions
 	 * @return a list of groups of existential expressions with the same property expressions
 	 */
 	public static List<List<OWLClassExpression>> groupMultipleExistsPatterns(List<OWLClassExpression> exprs){

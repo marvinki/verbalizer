@@ -318,13 +318,14 @@ public enum VerbaliseTreeManager {
 	
 	/** outputs verbalization of one proof step as a string. TODO: implement verbalization rules as rules (with their proper interface, etc)
 	 * 
+	 * @param tree 							(TODO: add description)
 	 * @param rule							employed SequentInferenceRule
 	 * @param premiseformulas				list of premise formulas
 	 * @param additions_to_antecedent		list of formulas added to antecedent in current step
 	 * @param additions_to_succedent		list of formulas added to succedent in current step
 	 * @param previousconclusion			(TODO: add description)
 	 * @param before_previousconclusion		(TODO: add description)
-	 * @return
+	 * @return a Statement					(TODO: add description)
 	 */
 	public static String verbaliseStatementNL(GentzenTree tree, SequentInferenceRule rule, 
 			List<Object> premiseformulas, 

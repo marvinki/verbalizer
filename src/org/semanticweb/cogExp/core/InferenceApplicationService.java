@@ -1308,13 +1308,19 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 	 
 	 /** Takes a conclusion, the required axioms, and returns a proof for the conclusion (as a Gentzen style tree)
 	  * 
-	  * @param conclusion -- the OWLFormula to be shown
-	  * @param axioms -- the set of axioms from which the conclusion is to be derived
-	  * @param loopLimit -- cutoff maximum number of inference applications during proof search
-	  * @param ruleset -- the set of inference rules to be used
-	  * @return a Gentzen style proof tree showing the conclusion
-	  * @throws ProofNotFoundException
-	  * @throws Exception
+	  * @param conclusion 				-- the OWLFormula to be shown
+	  * @param axioms 					-- the set of axioms from which the conclusion is to be derived
+	  * @param loopLimit 				-- cutoff maximum number of inference applications during proof search
+	  * @param timeLimit				TODO add description
+	  * @param ruleset 					-- the set of inference rules to be used
+	  * 
+	  * @return 						a Gentzen style proof tree showing the conclusion
+	  * @throws ProofNotFoundException 	TODO add descirpition
+	  * @throws Exception 				TODO add description
+	  */
+	 
+	 /*
+	  * TODO add description
 	  */
 	 public static GentzenTree computeProofTree(OWLFormula conclusion, List<OWLFormula> axioms, int loopLimit, long timeLimit, String ruleset) throws ProofNotFoundException,Exception{
 		 	

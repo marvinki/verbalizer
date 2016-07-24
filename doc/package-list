@@ -1,0 +1,8 @@
+org.semanticweb.cogExp.FormulaConverter
+org.semanticweb.cogExp.GentzenTree
+org.semanticweb.cogExp.OWLAPIVerbaliser
+org.semanticweb.cogExp.OWLFormulas
+org.semanticweb.cogExp.PrettyPrint
+org.semanticweb.cogExp.ProofBasedExplanation
+org.semanticweb.cogExp.core
+org.semanticweb.cogExp.inferencerules
