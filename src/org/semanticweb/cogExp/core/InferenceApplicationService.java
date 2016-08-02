@@ -763,7 +763,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 							){
 					RuleBindingForNode rbnewfn = new RuleBindingForNode(newopennode.getId(),rbnew);
 					applySequentInferenceRule(initialtree,rbnewfn,detectedRules.get(h));
-				    // System.out.println(detectedRules.get(h).getName() + "-->" + rbnewfn.getNewAntecedent());
+				    // System.out.println(detectedRules.get(h).getName() + "-->" + rbnewfn.getNewAntecedent().prettyPrint());
 					/*
 					if (rbnewfn.getNewAntecedent()!=null && rbnewfn.getNewAntecedent().toString().contains("Spatial")
 							// && rbnewfn.getNewAntecedent().toString().contains("419")

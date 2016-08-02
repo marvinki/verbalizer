@@ -2,25 +2,17 @@ package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
 
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.protege.editor.owl.ui.explanation.ExplanationService;
-import org.protege.editor.owl.ui.renderer.OWLModelManagerEntityRenderer;
-import org.protege.editor.owl.ui.renderer.OWLObjectRenderer;
-import org.semanticweb.cogExp.ProofBasedExplanation.TextExplanationResult;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.Obfuscator;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
@@ -34,7 +26,6 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
@@ -72,9 +63,9 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 * @param reasoner		-- the reasoner to be employed for justification finding
 	 * @param factory		-- the reasoner factory of the employed reasoner
 	 * @param ontology		-- the current ontology
-	 * @param enableDict	-- TODO add explanation (also correct asHTML and odf)
-	 * @param asHTML		-- wether or not get HTML output 
-	 * @param obf			-- wether or not get clear/readable Text
+	 * @param enableDict	-- whether to use WordNet (to take into account nouns/adjectives and plural forms in class names)
+	 * @param asHTML		-- whether or not get HTML output 
+	 * @param obf			-- whether or not get clear/readable Text
 	 * @return				-- a text string containing the explanation
 	 */
 	
@@ -222,7 +213,8 @@ public class ProofBasedExplanationService extends ExplanationService{
 					50000,
 					60000,
 					"OP");	
-		} catch (OWLOntologyCreationException e) {
+		// } catch (OWLOntologyCreationException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
