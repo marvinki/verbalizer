@@ -50,7 +50,7 @@ public class Begehung {
   	
 	
   	// Now specify which axiom is to be explained;
-	OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(WT_ChestTIRETTriceps, Upper_Body_Training_Template);
+	// OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(WT_ChestTIRETTriceps, Upper_Body_Training_Template);
 		
 	// WordNetQuery.INSTANCE.disableDict();
 	String tmpdir = "";

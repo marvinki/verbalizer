@@ -2930,7 +2930,20 @@ RULE14{
 		public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 			List<RuleBinding> results = new ArrayList<RuleBinding>();
 			List<OWLFormula> candidates = s.findMatchingFormulasInAntecedent(prem1);
+			Set<OWLFormula> badConcls = new HashSet<OWLFormula>();
 			// System.out.println(candidates);
+			// System.out.println("Candidate existential restrictions " + candidates.size());
+			HashMap<OWLFormula,List<OWLFormula>> subclassesCache = new HashMap<OWLFormula,List<OWLFormula>>();
+			int examinedCount = 0;
+			int tautologicalCount = 0;
+			int skippedCount = 0;
+			int fetchedCount = 0;
+			// debug
+			/* 
+			for (int i = 0 ; i < candidates.size(); i++){
+				System.out.println(VerbalisationManager.prettyPrint(candidates.get(i)));
+			} */
+				
 			for (int i = 0 ; i < candidates.size(); i++){
 				if (candidates.get(i).getArgs().get(0).getHead().equals(OWLSymb.BOT))
 					continue; // throw out unproductive case
@@ -2939,17 +2952,28 @@ RULE14{
 					// System.out.println("cand1 " + cand1.prettyPrint());
 					// List<Pair<OWLFormula,OWLFormula>> matcher = candidates.get(i).match(prem1);
 					// OWLFormula prem_2 = prem2.applyMatcher(matcher);
+					OWLFormula pivot = candidates.get(i).getArgs().get(1).getArgs().get(1);
+					List<OWLFormula>  candidates2_pre;
+					if (subclassesCache.containsKey(pivot)){
+						candidates2_pre = subclassesCache.get(pivot);
+						fetchedCount++;
+					} else{
 					OWLFormula prem_2 = OWLFormula.createFormula(OWLSymb.SUBCL,
-											candidates.get(i).getArgs().get(1).getArgs().get(1),
+											pivot,
 											OWLFormula.createFormulaVar("v3"));
 				    // System.out.println(" prem_2  " + prem_2);
 					// System.out.println(prem_2bis);
-					List<OWLFormula>  candidates2_pre = s.findMatchingFormulasInAntecedent(prem_2);
+					candidates2_pre = s.findMatchingFormulasInAntecedent(prem_2);
+					subclassesCache.put(pivot,candidates2_pre);
+					}
 					// s.reportAntecedent();
 					// System.out.println(" 2nd candidates " + candidates2_pre);
 					for(OWLFormula cand2 : candidates2_pre){
-						if (cand2.getArgs().get(1).equals(cand2.getArgs().get(0)))
+						examinedCount++;
+						if (cand2.getArgs().get(1).equals(cand2.getArgs().get(0))){
+							tautologicalCount++;
 							continue; // abort trivial case
+						}
 						
 						// Skip if this was already tried.
 						List<OWLFormula> forms = new LinkedList<OWLFormula>();
@@ -2959,6 +2983,7 @@ RULE14{
 						if (AlreadyTriedCache.INSTANCE.wasTried(INLG2012NguyenEtAlRules.RULE15,
 								forms)){
 							// System.out.println("skipping");
+							skippedCount++;
 							continue;
 						}	
 						
@@ -2971,6 +2996,7 @@ RULE14{
 						// 	continue; // abort trivial case <-- above.
 						// }
 						// restriction to avoid cyclicity: SECOND FORMULA MAY NOT BE CYCLIC!!!
+						// if (!testImpactContainsSubformula(cand2.getArgs().get(1),cand2.getArgs().get(0))){
 						if (!OWLFormula.containsSubformula(cand2.getArgs().get(1),cand2.getArgs().get(0))){
 							// now filter out those conclusions that already exist
 							OWLFormula conclusion = OWLFormula.createFormula(OWLSymb.SUBCL,
@@ -2983,29 +3009,39 @@ RULE14{
 							// System.out.println(" 2nd candidate filtered " + cand2);
 							// System.out.println("(1) considering binding for " + conclusion);
 							// System.out.println(s.alreadyContainedInAntecedent(conclusion));
-							// System.out.println("prem 1 " + cand1);
-							// System.out.println("prem 2 " + cand2);
+							// System.out.println("prem 1 " + cand1.prettyPrint());
+							// System.out.println("prem 2 " + cand2.prettyPrint());
 							// System.out.println("conclusion " + conclusion.prettyPrint());
+							if (badConcls.contains(conclusion))
+								continue;
 							if (!s.alreadyContainedInAntecedent(conclusion) && 
 									// constructed conclusion (the superclass) must be of relevance!!!
-									((s.antecedentContainsOrDeeplyContains(conclusion.getArgs().get(1))) || 
+									((testImpactContainsOrDeeplyContains(s,conclusion.getArgs().get(1))) ||
+									// ((s.antecedentContainsOrDeeplyContains(conclusion.getArgs().get(1))) || 
 								    (s.succedentContainsOrDeeplyContains(conclusion.getArgs().get(1)))))	{
+									// s.reportAntecedent();
+									// System.out.println("good!");
 									// further restriction to avoid cyclicity: subsumed of second formula may not be subclass of cyclic part
 									// find all further subsumed formulas of subsumed formula (according to current status)
 								
 									// now also check cyclicity with those 
 									// System.out.println("entering if");
 									boolean allclear = true;
-									if (isCyclicBinaryExistsChain(cand2.getArgs().get(1),null))
+									boolean chain = false;
+									if (isCyclicBinaryExistsChain(cand2.getArgs().get(1),null)){
 										allclear = false;
+										chain = true;
+									}
 									if (!cand2.getArgs().get(0).isClassFormula()){
 										List<OWLFormula> furtherSubsumed = s.findMatchingFormulasInAntecedent(OWLFormula.createFormula(OWLSymb.SUBCL,OWLFormula.createFormulaVar("v4"), cand2.getArgs().get(0)));
+										// System.out.println("further subsumed " + furtherSubsumed.size());
 										for (OWLFormula subcand : furtherSubsumed){
 											// System.out.println("Dealing with " + cand2 + " subcand " + subcand);
 											// System.out.println("Rule 15 checking out also " + subcand.getArgs().get(0) + " in " + cand2.getArgs().get(1));
 											if (OWLFormula.containsSubformula(cand2.getArgs().get(1),subcand.getArgs().get(0)))
 												// System.out.println("Rule 15 found " + subcand.getArgs().get(0) + " in " + cand.getArgs().get(1));	
 												allclear = false;
+												break;
 										}
 									}
 									if (allclear){
@@ -3020,17 +3056,52 @@ RULE14{
 											results.add(binding);
 											continue; // <--- to not cache this case as unsuccessful!
 									} // endif allclear
-							} // endif alreadycontained
+									else{
+										if (chain)
+											AlreadyTriedCache.INSTANCE.setTried(INLG2012NguyenEtAlRules.RULE15, forms);
+									}
+							}  // endif alreadycontained
+							else{
+								if (s.alreadyContainedInAntecedent(conclusion)){
+									// conclusion already derived
+									AlreadyTriedCache.INSTANCE.setTried(INLG2012NguyenEtAlRules.RULE15, forms);
+								}
+								// System.out.println("not good!");
+								badConcls.add(conclusion);
+							}
 						} // endif containsSubformula
-						AlreadyTriedCache.INSTANCE.setTried(INLG2012NguyenEtAlRules.RULE15, forms);
+						else{
+							// cand2 is cyclic
+							AlreadyTriedCache.INSTANCE.setTried(INLG2012NguyenEtAlRules.RULE15, forms);
+						}
+						// AlreadyTriedCache.INSTANCE.setTried(INLG2012NguyenEtAlRules.RULE15, forms);
 					} // end loop candidates2	
 				} // end try
 				catch (Exception e){}
 			} // end for
+				// Statistics
+			// System.out.println("Examined " + examinedCount + " tautological " + tautologicalCount + " skipped " + skippedCount + " fetched " + fetchedCount);
+			
+			
 				return results;
 		}
 		
+		public boolean testImpactContainsSubformula(OWLFormula a, OWLFormula b){
+			// throw new RuntimeException();
+			// for (int i =0; i<1000;i++)
+			// 	System.out.print(".");
+			// System.out.println(".");
+			return OWLFormula.containsSubformula(a,b);
+		}
 		
+		public boolean testImpactContainsOrDeeplyContains(Sequent s, OWLFormula a){
+			// throw new RuntimeException();
+			// for (int i =0; i<1000;i++)
+			// 	System.out.print(".");
+			// System.out.println(".");
+			return s.subexprInSequent(a);
+			// return s.antecedentContainsOrDeeplyContains(a);
+		}
 	
 		// not used at the moment.
 		public List<Pair<Integer,Integer>> findPremFormulas(Sequent s){
@@ -3058,7 +3129,8 @@ RULE14{
 				candidates2_pre = s.findMatchingFormulasInAntecedent(prem_2);
 				// restriction to avoid cyclicity: SECOND FORMULA MAY NOT BE CYCLIC!!!
 				for(OWLFormula cand : candidates2_pre){
-					if (!OWLFormula.containsSubformula(cand.getArgs().get(1),cand.getArgs().get(0))){
+					if (!testImpactContainsSubformula(cand.getArgs().get(1),cand.getArgs().get(0))){
+					//if (!OWLFormula.containsSubformula(cand.getArgs().get(1),cand.getArgs().get(0))){
 						// further restriction to avoid cyclicity: subsumed of second formula may not be subclass of cyclic part
 						// find all further subsumed formulas of subsumed formula (according to current status)
 						List<OWLFormula> furtherSubsumed = 
