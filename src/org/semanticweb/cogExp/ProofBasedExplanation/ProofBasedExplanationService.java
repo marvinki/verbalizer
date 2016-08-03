@@ -279,7 +279,7 @@ public ExplanationResult explain(OWLAxiom axiom) {
 					   factory,
 				 	   ontology,
 				 	   true,
-				 	   "EL"
+				 	   "OP"
 				 	   );
 				 	   
 		
