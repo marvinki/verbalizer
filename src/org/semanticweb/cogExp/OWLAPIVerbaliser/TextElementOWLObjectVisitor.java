@@ -351,7 +351,8 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass())){
 			leftstring = new ArrayList<TextElement>();
 			leftstring.add(somethingthatElement);
-			leftstring.addAll(VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass())); 
+			TextElementSequence seq = VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass());
+			leftstring.addAll(seq.getTextElements()); 
 			leftstring.add(commaElement);
 		}
 		if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
@@ -435,7 +436,8 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		}
 		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
 				&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
-			leftstring.addAll(VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass()));
+			TextElementSequence seq = VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
+			leftstring.addAll(seq.getTextElements());
 			return leftstring;
 			// 		leftstring + " " +
 			// VerbalisationManager.pseudoNLStringMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
@@ -570,7 +572,8 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		} else{
 			if (checkMultipleExistsAndForallPattern(arg0)){
 				resultList.add(somethingthatElement);
-				resultList.addAll(VerbalisationManager.textualiseMultipleExistsAndForallPattern(arg0));
+				TextElementSequence seq = VerbalisationManager.textualiseMultipleExistsAndForallPattern(arg0);
+				resultList.addAll(seq.getTextElements());
 				// System.out.println("visit intersect (2): " + new TextElementSequence(resultList).toString());
 				return resultList;
 			} else{

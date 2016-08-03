@@ -23,6 +23,10 @@ public class TextElement {
 		this.content = content;
 	}
 	
+	public TextElement(){
+		this.content = "";
+	}
+	
 	/**
 	 * @return returns the content as plain string 
 	 */

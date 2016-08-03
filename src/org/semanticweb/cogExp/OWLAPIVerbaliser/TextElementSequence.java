@@ -5,9 +5,10 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
-public class TextElementSequence {
+public class TextElementSequence extends TextElement{
 
 	private List<TextElement> sequence = new ArrayList<TextElement>();
+	
 	
 	public TextElementSequence(List<TextElement> sequence){
 		this.sequence = sequence;

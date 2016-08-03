@@ -1045,9 +1045,11 @@ public enum VerbalisationManager {
 	}
 	
 	
-	public static List<TextElement> textualiseMultipleExistsAndForallPattern (OWLObjectIntersectionOf ints){
+	public static TextElementSequence textualiseMultipleExistsAndForallPattern (OWLObjectIntersectionOf ints){
 		// System.out.println("ints " + ints);
-		List<TextElement> result = new ArrayList<TextElement>();
+		TextElementSequence result = new TextElementSequence();
+		List<TextElement> l = new ArrayList<>();
+		
 		List<OWLClassExpression> exprs = VerbaliseOWLObjectVisitor.collectAndExpressions(ints);
 		List<List<TextElement>> substrings = new ArrayList<List<TextElement>>();
 		OWLObjectPropertyExpression commonpropexpr = null;
@@ -1079,35 +1081,54 @@ public enum VerbalisationManager {
 				}
 				
 		}
+		
+		
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(commonpropexpr);
-		List<TextElement> middlepart = new ArrayList<TextElement>();
+//		List<TextElement> middlepart = new ArrayList<TextElement>();
+		/**
+		 * attempt to test TextSequenceList
+		 */
+		
+		TextSequenceList middlepart = new TextSequenceList();
 		boolean needsep = false;
 	    boolean innersep = false;
 	    if (exprs.indexOf(exprs)<exprs.size()-1)
 			innersep = true;
 		for (List<TextElement> str : substrings){
-			if (needsep && !innersep){
-				middlepart.add(new LogicElement("and"));
-			}
-			if (needsep && innersep){
-				middlepart.add(new LogicElement(","));
-			}
-			middlepart.addAll(str);
+			
+			TextElementSequence str_seq = new TextElementSequence(str);
+			
+			
+			middlepart.add(str_seq);
+//			if (needsep && !innersep){
+//				middlepart.add(new LogicElement("and"));
+//			}
+//			if (needsep && innersep){
+//				middlepart.add(new LogicElement(","));
+//			}
+//			middlepart.addAll(str);
 			needsep = true;
+			
+			
 		}
+				
 		if(propstring.indexOf("[X]")<1){
 			result.add(new RoleElement(propstring));
-			result.addAll(middlepart);
+			result.add(middlepart.toTextElement());
 		}
 		else {
 		java.lang.String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(commonpropexpr);
 		result.add(new RoleElement(part1));
-		result.addAll(middlepart);
+		result.add(middlepart.toTextElement());
 		// if pattern was used, need to end the expression
 		java.lang.String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(commonpropexpr);
 		result.add(new RoleElement(part2));
 		}
-		result.add(new LogicElement("but nothing else"));
+		
+		
+		LogicElement le = new LogicElement("but nothing else");
+		result.add(le);
+
 		return result;
 	}
 	
