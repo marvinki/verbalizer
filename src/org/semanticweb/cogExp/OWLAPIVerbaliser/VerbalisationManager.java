@@ -72,6 +72,11 @@ public enum VerbalisationManager {
 		return seq;
 	}
 	
+	
+	/*
+	 * FIXME fgda
+	 */
+	
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator){
 		textOWLObjectVisit.setObfuscator(obfuscator);
 		verbOWLObjectVisit.setObfuscator(obfuscator);
@@ -1114,12 +1119,12 @@ public enum VerbalisationManager {
 				
 		if(propstring.indexOf("[X]")<1){
 			result.add(new RoleElement(propstring));
-			result.add(middlepart.toTextElement());
+			result.add(middlepart);
 		}
 		else {
 		java.lang.String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(commonpropexpr);
 		result.add(new RoleElement(part1));
-		result.add(middlepart.toTextElement());
+		result.add(middlepart);
 		// if pattern was used, need to end the expression
 		java.lang.String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(commonpropexpr);
 		result.add(new RoleElement(part2));

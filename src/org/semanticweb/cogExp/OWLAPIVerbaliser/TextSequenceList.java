@@ -9,7 +9,7 @@ import java.util.List;
  * @author fpaffrath
  *
  */
-public class TextSequenceList extends TextElementSequence{
+public class TextSequenceList extends TextElement{
 	
 	private List<TextElementSequence> list = new ArrayList<TextElementSequence>();
 
@@ -22,6 +22,8 @@ public class TextSequenceList extends TextElementSequence{
 	}
 
 	
+
+	
 	public TextSequenceList(){}
 	
 	
@@ -29,9 +31,9 @@ public class TextSequenceList extends TextElementSequence{
 	 * @param index the index of the desired element
 	 * @return the element at index
 	 */
-	public TextElementSequence getElement(int index){
+	public TextElement getElement(int index){
 		
-		TextElementSequence element = new TextElementSequence();
+		TextElement element = new TextElement();
 		
 		try{
 			element = list.get(index);
@@ -68,8 +70,16 @@ public class TextSequenceList extends TextElementSequence{
 	/**
 	 * @param element to add at the end
 	 */
-	public void add(TextElementSequence element){
-		list.add(element);
+	public void add(TextElementSequence sequence){
+		this.list.add(sequence);
+	}
+	
+	/**
+	 * 
+	 * @param element
+	 */
+	public void add(TextElement element){
+		list.add(new TextElementSequence(element));
 	}
 	
 	
@@ -85,13 +95,26 @@ public class TextSequenceList extends TextElementSequence{
 		return listSequence;
 	}
 	
+	/**
+	 * @return todo
+	 */
+	@Override
+	public String toHTML(){
+		String listSequence = "<ul>";
+		for(int i=0; i<list.size(); i++){
+				 listSequence = listSequence + "<li>" + list.get(i).toHTML() + "</li>" ;
+		}
+		return listSequence + "</ul>";
+	}
+	
 	
 	/**
 	 * 
 	 * @return all elements of the list concatinated as one single TextElement
 	 */
-	public TextElement toTextElement(){
-		TextElement te = new TextElement(toString());
-		return te;
-	}
+	
+//	public TextElement toTextElement(){
+//		TextElement te = new TextElement(this.toString());
+//		return te;
+//	}
 }

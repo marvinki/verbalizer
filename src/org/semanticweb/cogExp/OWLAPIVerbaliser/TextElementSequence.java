@@ -14,6 +14,10 @@ public class TextElementSequence extends TextElement{
 		this.sequence = sequence;
 	}
 	
+	public TextElementSequence(TextElement element){
+		this.sequence.add(element);
+	}
+	
 	public TextElementSequence(){
 	}
 	
@@ -27,7 +31,7 @@ public class TextElementSequence extends TextElement{
 				needsep = false;
 			if (needsep)
 				result += " ";
-			result += elem.toText();
+			result += elem.toString();
 			needsep = true;
 		}
 		return result;

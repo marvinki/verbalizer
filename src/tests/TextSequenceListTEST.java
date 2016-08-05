@@ -52,7 +52,7 @@ public class TextSequenceListTEST {
 		
 		TextSequenceList testList = new TextSequenceList();
 		try{
-		TextElementSequence testElement = testList.getElement(1);
+		TextElement testElement = testList.getElement(1);
 		System.out.println("\n...testing empty TextSequenceList element.toString():\n");
 		System.out.println(testElement.toString());
 		}catch (Exception e) {
@@ -70,7 +70,7 @@ public class TextSequenceListTEST {
 		
 		
 		
-		TextElementSequence testElement2 = testList.getElement(1);
+		TextElement testElement2 = testList.getElement(1);
 		System.out.println("\n...testing element2 TextSequenceList element.toString():\n");
 		System.out.println(testElement2.toString());
 		

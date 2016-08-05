@@ -30,7 +30,7 @@ public class TextElement {
 	/**
 	 * @return returns the content as plain string 
 	 */
-	public String toText(){
+	public String toString(){
 		return content;
 	}
 
