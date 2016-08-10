@@ -78,6 +78,13 @@ public enum VerbaliseTreeManager {
 			} 
 			*/
 			
+			// Debugging only!
+						
+						if(step.getInfrule().equals(AdditionalDLRules.ONLYSOME)){
+								System.out.println("onlysome premises " + premiseids);
+						} 
+						
+			
 			List<Integer> axiompremiseids = step.getAxiomPremises();
 			List<OWLFormula> premises = tree.idsToFormulas(premiseids);
 			OWLFormula conclusion = tree.getFormulas().get(step.getConclusion());
@@ -169,6 +176,7 @@ public enum VerbaliseTreeManager {
 			
 	
 	public static String verbaliseNL(GentzenTree tree, boolean withrulenames, boolean asHTML, Obfuscator obfuscator){
+		// System.out.println("verbaliseNL called");
 		List<Integer> order = tree.computePresentationOrder();
 		String result = "";
 		// Variables to remember previous states' information
@@ -196,6 +204,7 @@ public enum VerbaliseTreeManager {
 			List<Integer> axiompremiseids = step.getAxiomPremises();
 			List<OWLFormula> premises = tree.idsToFormulas(premiseids);
 			OWLFormula conclusion = tree.getFormulas().get(step.getConclusion());
+			// System.out.println("DEBUG -- premises " + axiompremiseids);
 			// System.out.println("DEBUG -- premises " + premises);
 			// System.out.println("DEBUG -- conclusion " + conclusion);
 			SequentInferenceRule infrule = step.getInfrule();
@@ -232,9 +241,11 @@ public enum VerbaliseTreeManager {
 				previousconclusion = conclusion;
 				continue;
 			}
+			/* <-- what the hell was that?
 			if (infrule.equals(AdditionalDLRules.ONLYSOME)){
 				premiseids.addAll(axiompremiseids);
 			}
+			*/
 			// now transform back from OWL Formula to OWLAPI (this should become redundant)
 			List<Object> premiseformulas = new ArrayList<Object>();
 			for (OWLFormula prem: premises){
@@ -751,6 +762,28 @@ public enum VerbaliseTreeManager {
 				// get only axiom that has been added
 				OWLSubClassOfAxiom addition = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
 				TextElementSequence seq = new TextElementSequence();
+				boolean needsep = false;
+				List<OWLSubClassOfAxiom> premforms = new ArrayList<OWLSubClassOfAxiom>();
+				for (Object prem : premiseformulas){
+					OWLSubClassOfAxiom premSub = (OWLSubClassOfAxiom) prem;
+					OWLFormula premForm = ConversionManager.INSTANCE.fromOWLAPI(premSub);
+					
+					// System.out.println("prem sub " + premSub);
+					if (tree.isAxiom(premForm)){
+						premforms.add(premSub);}
+				}
+				for (OWLSubClassOfAxiom premSub : premforms){
+						if (needsep)
+							seq.add(new LogicElement(","));
+							needsep = true;
+							if (premforms.indexOf(premSub)==premforms.size()-1){
+								seq.add(new LogicElement("and finally,"));
+							}
+						seq.concat(VerbalisationManager.textualise(premSub));
+					}
+				
+				if (needsep)
+					seq.add(new LogicElement("."));
 				seq.add(new LogicElement("Thus,"));
 				seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 				// String result = "";
@@ -978,7 +1011,7 @@ public enum VerbaliseTreeManager {
 				if (seq.getTextElements().get(0).toString().contains("forearms")
 						&& superseq.getTextElements().get(0).toString().contains("is")
 						){
-					System.out.println("action");
+					// System.out.println("action");
 					String supStr = superseq.getTextElements().get(0).toString();
 					superseq.getTextElements().remove(0);
 					RoleElement sr = new RoleElement("are" + supStr.substring(2));

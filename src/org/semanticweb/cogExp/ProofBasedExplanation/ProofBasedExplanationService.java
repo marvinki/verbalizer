@@ -33,7 +33,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
-import org.slf4j.LoggerFactory;
+// import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -155,8 +155,8 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 * @see GentzenTree
 	 */
 	public static GentzenTree computeTree(String subclass, String superclass, String ontologyname){
-		Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-		rootlogger.setLevel(Level.OFF);
+		// Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		// rootlogger.setLevel(Level.OFF);
 		
 		GentzenTree tree = null;
 		
@@ -193,9 +193,17 @@ public class ProofBasedExplanationService extends ExplanationService{
 			 }
 		 }
 		 
+		 if (subcl==null)
+			 System.out.println("Class not found in ontology: " + subclass);
+		 
+		 if (supercl==null)
+			 System.out.println("Class not found in ontology: " + superclass);
+		 
 		 if (subcl==null || supercl==null){
 			 return null;
 		 }
+		 
+		 
 		 
 		 OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(subcl, supercl);
 		

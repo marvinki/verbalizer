@@ -305,7 +305,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	public List<TextElement> visit(OWLSubClassOfAxiom arg0) {
 		// System.out.println("-------");
 		// define some elements that will be used later
-		LogicElement somethingthatElement = new LogicElement("something that");
+		LogicElement somethingthatElement = new LogicElement("something that"); // <------- USED.
 		LogicElement thatElement =  new LogicElement("that");
 		LogicElement commaElement =  new LogicElement(",");
 		LogicElement isElement =  new LogicElement("is");
@@ -324,7 +324,22 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				//somethingthat = cl.toString() + " that ";
 				somethingthat =cl.accept(this); 
 				somethingthat.add(thatElement);
-			}
+			} 
+			
+			/* else {
+				OWLObjectPropertyExpression prop = some1.getProperty();
+				String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(prop);
+				System.out.println("Checking if property is noun: " + propstring);
+				if (WordNetQuery.INSTANCE.detectIsNounPlusPreposition(propstring)){
+					propstring = propstring.replace("is ","");
+					LogicElement propAsNoun = new LogicElement(VerbalisationManager.aOrAnIfy(propstring));
+					somethingthat = new ArrayList<TextElement>();
+					somethingthat.add(propAsNoun);
+					leftstring = some1.getFiller().accept(this);//  new ArrayList<TextElement>();
+				}
+				
+			} // end else
+			*/
 		}
 		if (arg0.getSubClass() instanceof OWLObjectIntersectionOf){
 			OWLObjectIntersectionOf intsect =  (OWLObjectIntersectionOf) arg0.getSubClass();
@@ -651,6 +666,20 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				String tooltiptext = cl.asOWLClass().getIRI().toString();
 				middle.add(new ClassElement(cl.toString()));// = cl.toString();
 			}else{
+					OWLObjectPropertyExpression prop = some1.getProperty();
+					String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(prop);
+					// System.out.println("Checking if property is noun: " + propstring);
+					if (WordNetQuery.INSTANCE.detectIsNounPlusPreposition(propstring)){
+						propstring = propstring.replace("is ","");
+						LogicElement propAsNoun = new LogicElement(VerbalisationManager.aOrAnIfy(propstring));
+						middle = new ArrayList<TextElement>();
+						middle.add(new LogicElement("a"));
+						middle.add(propAsNoun);
+						middle.addAll(some1.getFiller().accept(this));//  new ArrayList<TextElement>();
+						// System.out.println("middle " + middle);
+						List<TextElement> result = VerbalisationManager.textualiseProperty(property,fillerstrs,middle);
+						return result;
+					} else	
 			middle.add(new LogicElement("something that"));
 			}
 		}
