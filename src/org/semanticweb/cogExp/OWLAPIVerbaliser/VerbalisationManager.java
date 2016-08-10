@@ -14,6 +14,10 @@ import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLAxiomVisitor;
 import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLObjectVisitor;
 import org.semanticweb.cogExp.core.InferenceApplicationService;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
+import org.semanticweb.owl.explanation.api.Explanation;
+import org.semanticweb.owl.explanation.api.ExplanationGenerator;
+import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
+import org.semanticweb.owl.explanation.api.ExplanationManager;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -1189,17 +1193,41 @@ public enum VerbalisationManager {
 	
 	public static GentzenTree computeGentzenTree(OWLAxiom axiom, OWLReasoner reasoner, OWLReasonerFactory factory, OWLOntology ontology, int maxsteps, long maxtime, String ruleset){
 		VerbalisationManager.INSTANCE.setOntology(ontology);
+		 
+		  // Old explanation generator
 		 BlackBoxExplanation bBexplanator=new BlackBoxExplanation(ontology, factory,reasoner);
 		 HSTExplanationGenerator explanationGenerator=new HSTExplanationGenerator(bBexplanator);
 		 OWLDataFactory dataFactory= OWLAPIManagerManager.INSTANCE.getDataFactory();
+		 
+	     ExplanationGeneratorFactory<OWLAxiom> genFac = ExplanationManager.createExplanationGeneratorFactory(factory);
+			// Now create the actual explanation generator for our ontology
+		 ExplanationGenerator<OWLAxiom> gen = genFac.createExplanationGenerator(ontology);
 	
 		 long startJustfinding = System.currentTimeMillis();
 		 
 		 Set<OWLAxiom> explanation = new HashSet<OWLAxiom>();	  
 		 // System.out.println("checking axiom " + axiom);
+		 
 	 if (axiom instanceof OWLSubClassOfAxiom){
-		   explanation = explanationGenerator.getExplanation(dataFactory.getOWLObjectIntersectionOf(((OWLSubClassOfAxiom) axiom).getSubClass(), ( (OWLSubClassOfAxiom) axiom).getSuperClass().getObjectComplementOf()));
+		   // Set<Set<OWLAxiom>>explanations = explanationGenerator.getExplanations(dataFactory.getOWLObjectIntersectionOf(((OWLSubClassOfAxiom) axiom).getSubClass(), ( (OWLSubClassOfAxiom) axiom).getSuperClass().getObjectComplementOf()));
+		 Set<Explanation<OWLAxiom>>explanations = gen.getExplanations(axiom);
+		 int numberOfAxioms = 100000;
+		   for (Explanation<OWLAxiom> expl : explanations){
+			  
+			   Set<OWLAxiom> set = expl.getAxioms();
+			   // System.out.println("set size " + set.size());
+			   if (set.size()<numberOfAxioms){
+				   numberOfAxioms = set.size();
+				   explanation = set;
+			   }
+		   }
 	 }
+	 /*
+		 if (axiom instanceof OWLSubClassOfAxiom){
+			 explanation = explanationGenerator.getExplanation(dataFactory.getOWLObjectIntersectionOf(((OWLSubClassOfAxiom) axiom).getSubClass(), ( (OWLSubClassOfAxiom) axiom).getSuperClass().getObjectComplementOf()));
+		 }
+		 */
+		 
 	 if (axiom instanceof OWLObjectPropertyDomainAxiom){
 		 OWLObjectPropertyDomainAxiom propDomainAx = (OWLObjectPropertyDomainAxiom) axiom;
 		   explanation = 
@@ -1213,7 +1241,7 @@ public enum VerbalisationManager {
 	 }
 	 
 	 long endJustfinding = System.currentTimeMillis();
-	 System.out.println("Justification finding took: " + (endJustfinding - startJustfinding) + "ms");
+	 // System.out.println("Justification finding took: " + (endJustfinding - startJustfinding) + "ms");
 	
 	 
 	// convert to internal format
@@ -1225,7 +1253,7 @@ public enum VerbalisationManager {
 		 for (OWLAxiom ax: explanation){
 			 justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 			 
-			 System.out.println("VerbalisationManager: adding: " + ConversionManager.fromOWLAPI(ax).prettyPrint());
+			 // System.out.println("VerbalisationManager: adding: " + ConversionManager.fromOWLAPI(ax).prettyPrint());
 		 }
 			} catch (Exception e) {
 				return null;
@@ -1243,7 +1271,7 @@ public enum VerbalisationManager {
 		return null;}
 		
 		long endTreecompute = System.currentTimeMillis();
-		System.out.println("Tree computation took: " + (endTreecompute - startTreecompute) + "ms");
+		// System.out.println("Tree computation took: " + (endTreecompute - startTreecompute) + "ms");
 	return tree;
 	}
 	

@@ -32,15 +32,17 @@ public class Begehung {
 	
 	// load an ontology through the OWL API
 	/// ---------------> ENTER HERE THE PATH TO THE ONTOLOGY!	
-	File file = new File("/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_complete.rdf");
+	// File file = new File("/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_complete.rdf");
+	// File file = new File("/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_demo.rdf");
 	
-	OWLOntology clusterOntology = 
-			OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);	
+	
+	// OWLOntology clusterOntology = 
+	//		OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);	
 	
 	// indicate a reasoner and a reasoner factory to be used for justification finding (here we use ELK)
 	OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
 	Logger.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
-	OWLReasoner reasoner = reasonerFactory.createReasoner(clusterOntology);
+	// OWLReasoner reasoner = reasonerFactory.createReasoner(clusterOntology);
     
     // indicate the IRIs of some relevant classes/roles in the ontology
   	OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
@@ -70,7 +72,12 @@ public class Begehung {
 	// System.out.println(listResult);
 	
 	System.out.println("start searchin'");
-	GentzenTree tree2 = ProofBasedExplanationService.computeTree("WT_UpperBody", "Upper_Body_Training_Template", "/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_complete.rdf");
+	// GentzenTree tree2 = ProofBasedExplanationService.computeTree("WT_Chest-Triceps", "Upper_Body_Training_Template", "/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_demo.rdf");
+	
+	// WT_UpperBody
+	// WT_Chest-Triceps
+	
+	GentzenTree tree2 = ProofBasedExplanationService.computeTree("WT_Chest-Triceps", "Upper_Body_Training_Template", "/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_demo.rdf");
 	String result2 = VerbaliseTreeManager.verbaliseNL(tree2, false, false,null);
 	System.out.println(result2);
 	

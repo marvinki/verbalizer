@@ -101,6 +101,10 @@ public enum WordNetQuery {
 	}
 	
 	public boolean isPlural(String str){
+		// known exceptions
+		if (str.equals("workout")){
+			return false;
+		}
 		Synset[] synsets = database.getSynsets(str,SynsetType.NOUN);
 		// System.out.println(synsets);
 		if (synsets.length<1)
@@ -116,6 +120,40 @@ public enum WordNetQuery {
 		if (exactfound)
 			return false;
 		else return true;
+	}
+	
+	public boolean detectIsNounPlusPreposition(String str){
+		String[] words = str.split(" ");
+		if (words.length==3 && words[0].equals("is")){
+			Synset[] synsets = database.getSynsets(words[1],SynsetType.NOUN);
+			// System.out.println(synsets);
+			if (synsets.length<1)
+				return false;
+			return true;
+		}
+		if (words.length==2){
+			Synset[] synsets = database.getSynsets(words[0],SynsetType.NOUN);
+			// System.out.println(synsets);
+			if (synsets.length<1)
+				return false;
+		} 
+		if (words[1].equals("of"))
+			return true;
+		return false;
+	}
+	
+	public boolean detectNounPlusPreposition(String str){
+		String[] words = str.split(" ");
+		
+		if (words.length==2){
+			Synset[] synsets = database.getSynsets(words[0],SynsetType.NOUN);
+			// System.out.println(synsets);
+			if (synsets.length<1)
+				return false;
+		} 
+		if (words[1].equals("of"))
+			return true;
+		return false;
 	}
 	
 }

@@ -328,7 +328,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 		// Left hand side
 		String leftstring = "";
 		leftstring = arg0.getSubClass().accept(this);
-		String somethingthat = "something that ";
+		String somethingthat = "SOMETHING that ";
 		if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
 			OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) arg0.getSubClass();
 			OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
