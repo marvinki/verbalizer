@@ -20,10 +20,16 @@ Bundle-ClassPath: .,
  lib/log4j.jar,
  lib/DictTmp.jar,
  lib/owlapi-osgidistribution-4.1.0.jar,
- lib/elk-owlapi.jar
-Require-Bundle: ch.qos.logback.classic;bundle-version="1.1.3",
+ lib/elk-owlapi.jar,
+ lib/jfact-1.2.2.jar,
+ resource/
+Require-Bundle: org.protege.editor.owl;bundle-version="5.0.1",
+ org.protege.editor.core.application;bundle-version="5.0.1",
+ graphviz-java-api;bundle-version="1.0.0",
+ ch.qos.logback.classic;bundle-version="1.1.3",
  ch.qos.logback.core;bundle-version="1.1.3",
  org.protege.editor.owl;bundle-version="5.0.1",
  org.protege.editor.core.application;bundle-version="5.0.1",
- org.semanticweb.owl.owlapi;bundle-version="4.2.5"
+ org.semanticweb.owl.owlapi;bundle-version="4.2.5",
+ org.slf4j.api;bundle-version="1.7.2"
 
