@@ -276,8 +276,20 @@ public String visit(OWLSameIndividualAxiom arg0) {
 }
 
 public String visit(OWLSubPropertyChainOfAxiom arg0) {
-	// TODO Auto-generated method stub
-	return null;
+	String result = "";
+	List<OWLObjectPropertyExpression> propertylist = arg0.getPropertyChain();
+	OWLObjectPropertyExpression superexpression = arg0.getSuperProperty();
+	boolean needscirc = false;
+	for (OWLObjectPropertyExpression expr : propertylist){
+		String exprString = expr.accept(ppPropertyExpressionVisit);
+		if (needscirc)
+			result = result + "○";
+		needscirc=true;
+		result = result + exprString;
+	}
+	result = result + "⊑" + superexpression.accept(ppPropertyExpressionVisit);
+	
+	return result;
 }
 
 public String visit(OWLInverseObjectPropertiesAxiom arg0) {
