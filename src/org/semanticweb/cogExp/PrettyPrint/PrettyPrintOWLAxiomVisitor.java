@@ -288,7 +288,6 @@ public String visit(OWLSubPropertyChainOfAxiom arg0) {
 		result = result + exprString;
 	}
 	result = result + "⊑" + superexpression.accept(ppPropertyExpressionVisit);
-	
 	return result;
 }
 
