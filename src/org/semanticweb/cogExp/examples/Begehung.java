@@ -78,7 +78,7 @@ public class Begehung {
 	// WT_Chest-Triceps
 	
 	GentzenTree tree2 = ProofBasedExplanationService.computeTree("WT_Chest-Triceps", "Upper_Body_Training_Template", "/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_demo.rdf");
-	String result2 = VerbaliseTreeManager.verbaliseNL(tree2, false, false,null);
+	String result2 = VerbaliseTreeManager.verbaliseNL(tree2, false, true,null);
 	System.out.println(result2);
 	
 	// String explanation = VerbalisationManager.verbalizeAxiom(axiom, reasoner, reasonerFactory, clusterOntology, false,false);
