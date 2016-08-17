@@ -8,9 +8,9 @@ package org.semanticweb.cogExp.OWLFormulas;
  *
  */
 public enum OWLSymb implements OWLAtom{
-	SUBCL, INT, UNION, EXISTS, FORALL, TOP, BOT, NEG, EQUIV, RANGE, DOMAIN, DATADOMAIN, DATAHASVALUE, DATASOMEVALUESFROM, OBJECTHASVALUE, 
+	SUBCL, INT, UNION, EXISTS, FORALL, TOP, BOT, NEG, EQUIV, RANGE, DOMAIN, DATADOMAIN, DATAHASVALUE, DATASOMEVALUESFROM, DATAALLVALUESFROM, OBJECTHASVALUE, 
 	TRANSITIVE, FUNCTIONAL, FUNCTIONALDATA, IRREFLEXIVE, INVERSEOBJPROP, INVFUNCTIONAL, DISJ, SUBPROPERTYCHAIN, SUBPROPERTYOF, EQUIVOBJPROP, ONEOF, DATAONEOF, 
-	OBJECTMINCARDINALITY, OBJECTMAXCARDINALITY, OBJECTEXACTCARDINALITY; 
+	OBJECTMINCARDINALITY, OBJECTMAXCARDINALITY, OBJECTEXACTCARDINALITY,DATAMINCARDINALITY, DATAMAXCARDINALITY, DATAEXACTCARDINALITY; 
 	
 	/** Returns a pretty printed string for a symbol
 	 * 
@@ -42,9 +42,13 @@ public enum OWLSymb implements OWLAtom{
 			case OBJECTHASVALUE:     output="objhasval"; break;
 			case DATAHASVALUE:     output="datahasval"; break;
 			case DATASOMEVALUESFROM:     output="datasomeval"; break;
+			case DATAALLVALUESFROM:     output="dataallval"; break;
 			case OBJECTMINCARDINALITY:     output="objectmincardinality"; break;
 			case OBJECTMAXCARDINALITY:     output="objectmaxcardinality"; break;
 			case OBJECTEXACTCARDINALITY:   output="objectexactcardinality"; break;
+			case DATAMINCARDINALITY:     output="datamincardinality"; break;
+			case DATAMAXCARDINALITY:     output="datamaxcardinality"; break;
+			case DATAEXACTCARDINALITY:   output="dataexactcardinality"; break;
 			case ONEOF:     output="oneof"; break;
 			case DATAONEOF:     output="dataoneof"; break;
 			case DISJ:     output="disj"; break;

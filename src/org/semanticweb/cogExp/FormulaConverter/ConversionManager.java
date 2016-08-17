@@ -192,6 +192,41 @@ public enum ConversionManager {
 				int cardinality = owlint.getValue();
 				result = dataFactory.getOWLObjectExactCardinality(cardinality, propEx);
 				break;
+			case OBJECTMINCARDINALITY:
+				OWLObjectPropertyExpression propEx2 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(1));
+				OWLFormula owlintform2 = tail.get(0);
+				OWLInteger owlint2 = (OWLInteger) owlintform2.getHead();
+				int cardinality2 = owlint2.getValue();
+				result = dataFactory.getOWLObjectMinCardinality(cardinality2, propEx2);
+				break;
+			case OBJECTMAXCARDINALITY:
+				OWLObjectPropertyExpression propEx3 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(1));
+				OWLFormula owlintform3 = tail.get(0);
+				OWLInteger owlint3 = (OWLInteger) owlintform3.getHead();
+				int cardinality3 = owlint3.getValue();
+				result = dataFactory.getOWLObjectMaxCardinality(cardinality3, propEx3);
+				break;
+			case DATAEXACTCARDINALITY:
+				OWLDataPropertyExpression datapropEx = (OWLDataPropertyExpression) toOWLAPI(tail.get(1));
+				OWLFormula owlintform4 = tail.get(0);
+				OWLInteger owlint4 = (OWLInteger) owlintform4.getHead();
+				int cardinality4 = owlint4.getValue();
+				result = dataFactory.getOWLDataExactCardinality(cardinality4, datapropEx);
+				break;
+			case DATAMINCARDINALITY:
+				OWLDataPropertyExpression datapropEx2 = (OWLDataPropertyExpression) toOWLAPI(tail.get(1));
+				OWLFormula owlintform5 = tail.get(0);
+				OWLInteger owlint5 = (OWLInteger) owlintform5.getHead();
+				int cardinality5 = owlint5.getValue();
+				result = dataFactory.getOWLDataExactCardinality(cardinality5, datapropEx2);
+				break;
+			case DATAMAXCARDINALITY:
+				OWLDataPropertyExpression datapropEx3 = (OWLDataPropertyExpression) toOWLAPI(tail.get(1));
+				OWLFormula owlintform6 = tail.get(0);
+				OWLInteger owlint6 = (OWLInteger) owlintform6.getHead();
+				int cardinality6 = owlint6.getValue();
+				result = dataFactory.getOWLDataMaxCardinality(cardinality6, datapropEx3);
+				break;
 			case SUBPROPERTYOF:
 				if (tail.get(0).getHead().equals(OWLSymb.SUBPROPERTYCHAIN)){
 					List<OWLObjectPropertyExpression> props = new ArrayList<OWLObjectPropertyExpression>();
