@@ -79,10 +79,11 @@ public enum VerbaliseTreeManager {
 			*/
 			
 			// Debugging only!
-						
+						/* 
 						if(step.getInfrule().equals(AdditionalDLRules.ONLYSOME)){
 								System.out.println("onlysome premises " + premiseids);
 						} 
+						*/
 						
 			
 			List<Integer> axiompremiseids = step.getAxiomPremises();

@@ -54,7 +54,7 @@ public class OWLFormula {
 	
 	private void computeBFLinearisation(LinkedList<OWLFormula> queue, LinkedList<OWLAtom> accumulator){
 		// leaf
-		if (queue.size()==0){
+		if (queue.size()==0 || queue==null){
 			return;
 		}
 		// pop node from queue

@@ -130,7 +130,7 @@ public enum DatabaseManager {
          // sql = sql.replace("/", "\\/");
          // sql = sql.replace("'", "\\'");
          
-         System.out.println(sql);
+         // System.out.println(sql);
          
          
          stmt.executeUpdate(sql);
@@ -427,17 +427,17 @@ public enum DatabaseManager {
 		int solved = 0;
 		int unsolved = 0;
 		int total = 0;
-		int[] listingsteps = new int[30];
-		int[] verbsteps = new int[30];
-		int[] longlistingsteps = new int[30];
-		int[] timesPerListing = new int[30];
-		int[] timesPerVerbs= new int[30];
+		int[] listingsteps = new int[50];
+		int[] verbsteps = new int[50];
+		int[] longlistingsteps = new int[50];
+		int[] timesPerListing = new int[50];
+		int[] timesPerVerbs= new int[50];
 		int timesSum = 0;
 		Set<String> usedRules = new HashSet<String>();
 		
-		int[] longlistingsToVerbsCompression = new int[30];
-		int[] longlistingsToListingsCompression = new int[30];
-		int[] listingsToVerbsCompression = new int[30];
+		int[] longlistingsToVerbsCompression = new int[50];
+		int[] longlistingsToListingsCompression = new int[50];
+		int[] listingsToVerbsCompression = new int[50];
 		
 		for (List<String> line : result){
 			if (line.get(0).equals("1")){

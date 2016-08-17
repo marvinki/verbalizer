@@ -35,7 +35,7 @@ public class LoadDriver {
 	            // DEFAULT COLLATE utf8_general_ci;
 	            
 	            //
-	            // CREATE TABLE OCCURENCES (subclass VARCHAR(256), superclass VARCHAR(256), ontologypath VARCHAR (256));
+	            // CREATE TABLE OCCURENCES (subclass VARCHAR(256), superclass VARCHAR(256), ontologypath VARCHAR (256), UNIQUE KEY(subclass, superclass, ontologypath));
 	            //
 	            //
 	            

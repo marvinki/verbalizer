@@ -79,8 +79,9 @@ import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
 public class CoverageStoreEvaluatorCompressionDB {
 	
-	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-	private OWLDataFactory dataFactory=manager.getOWLDataFactory();
+	static private OWLOntologyManager manager = getImportKnowledgeableOntologyManger();
+			// OWLManager.createOWLOntologyManager();
+	static private OWLDataFactory dataFactory=manager.getOWLDataFactory();
 	
 	public static Statistic runOntology(String filestring, int timelimit1) throws OWLOntologyCreationException{
 		// Read file
@@ -104,24 +105,11 @@ public class CoverageStoreEvaluatorCompressionDB {
 		if (ontologyfile.contains("Ontology-"))
 			corpus = "TONES";
 		
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		// OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		java.io.File file = new java.io.File(ontologyfile);
 		FileDocumentSource source = new FileDocumentSource(file);
 		
-		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/Hydrology/v2.0/Hydrology.owl"),
-		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-Hydrology.owl")));
-
 		
-		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/Rabbit/v1.0/Rabbit.owl"),
-		           IRI.create("file:///Users/marvin/Downloads/hydrology/rabbit.owl")));
-		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/Topography/v0.1/Topography.owl"),
-		           IRI.create("file:///Users/marvin/Downloads/hydrology/topography.owl")));
-		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/SpatialRelations/v0.2/SpatialRelations.owl"),
-		           IRI.create("file:///Users/marvin/Downloads/hydrology/spatialrelations.owl")));
-		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/MereologicalRelations/v0.2/MereologicalRelations.owl"),
-		           IRI.create("file:///Users/marvin/Downloads/hydrology/mereologicalrelations.owl")));
-		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/NetworkRelations/v0.2/NetworkRelations.owl"),
-		           IRI.create("file:///Users/marvin/Downloads/hydrology/networkrelations.owl")));
 		
 		OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
 		
@@ -285,7 +273,7 @@ public class CoverageStoreEvaluatorCompressionDB {
     			if (solved){
     				// System.out.println("already in database: " + subAx.accept(ppvisitor));
     				// System.out.println("already in database: " + subAx.toString());
-    				System.out.println(queryResult);
+    				// System.out.println(queryResult);
     				continue;
     			}
     			
@@ -306,6 +294,12 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    		if (occurenceResult!=null && occurenceResult.length()>0){
 	    			System.out.println("found another occurence of: " + subAx.toString());
 	    			System.out.println("in database: " + occurenceResult);
+	    			System.out.println("checking if " + ontologyfile + " in " + occurenceResult);
+	    			if (occurenceResult.contains(ontologyfile)){
+	    				// in this case, we do not want to duplicate the existing occurence entry
+	    				System.out.println("Found that occurence already recorded.");
+	    				continue;
+	    			}
 	    			DatabaseManager.INSTANCE.addOccurence(subAx.getSubClass().toString(),subAx.getSuperClass().toString(),ontologyfile);
 	    			continue;
 	    		}
@@ -346,6 +340,8 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				if (prem==null || prem.accept(ppvisitor)==null){
 	    					System.out.println("detected unhandled premise: " + prem);
 	    					unhandledPremise = true;
+	    					// if (true)
+	    					// 	throw new RuntimeException();
 	    				}
 	    				
 	    				long endPreproc = System.currentTimeMillis();
@@ -411,6 +407,8 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				continue;
 	    			}	
 	    			
+	    			// System.out.println("increasing nontrivCounter!");
+	    			// System.out.println("subAx: " + subAx);
 	    			nontrivCounter +=1;
 	    			
 	    			// org.semanticweb.cogExp.core.Sequent sequent2 = sequent.clone();
@@ -472,7 +470,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree, currentrules, 840000, timelimit1 * 1000);
 	    				
 	    				// InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 5);
-	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 5);
+	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 10);
 	    				
 	    				// System.out.println("exiting loop");
 	    				}
@@ -484,6 +482,8 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				System.out.println("open nodes remain.");
 	    				System.out.println("unproved sub ax: " + subAx);
 	    				System.out.println("Explanations : " + explanation);
+	    				// if (true)
+	    				// 	throw new RuntimeException();
 	    				unprovenConclusions.add(subAx);
 	    				justsForUnprovenConclusions.add(explanation);
 	    				// prooftree.print(); 
@@ -933,7 +933,8 @@ public class CoverageStoreEvaluatorCompressionDB {
 		}
 	    */
 	    
-	    
+	    System.out.println("nontrivconter: " + nontrivCounter);
+	    System.out.println("verbalised subsumption counter: " + verbalizedSubsumptionCounter);
 	    
 	    Statistic resultStatistic = new Statistic(ontologyfile, nontrivCounter, 
 	    		verbalizedSubsumptionCounter, timedoutCounter, intAvg, 
@@ -1100,7 +1101,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		
 			
 			// Statistic stats = runOntology("/Users/marvin/marvin_work_ulm/resources/ontologies/ore2015_pool_sample/el/pool/" + line);
-			Statistic stats = runOntology(storedfilesStem + line,3); // <---- time limit (in seconds)
+			Statistic stats = runOntology(storedfilesStem + line,10); // <---- time limit (in seconds)
 			
 			
 			// create individual detailed log file	
@@ -1920,7 +1921,10 @@ public class CoverageStoreEvaluatorCompressionDB {
 		
 		OWLOntologyLoaderConfiguration loaderConfiguration = new OWLOntologyLoaderConfiguration();
 		
-		str = "Ontology(\n" + str + ")";
+		str = "Ontology(" + str + ")";
+		
+		
+		// System.out.println("Trying to parse: " + str);
 		
 		InputStream in = new ByteArrayInputStream(str.getBytes());
 		StreamDocumentSource streamSource = new StreamDocumentSource(in);
@@ -1928,7 +1932,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		// OWLOntologyDocumentSource toBeParsed = new OWLOntologyDocumentSource();
 		
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLOntology newontology;
+		OWLOntology newontology = null;
 		
 		OWLAxiom a = null;
 		
@@ -1948,6 +1952,14 @@ public class CoverageStoreEvaluatorCompressionDB {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
+			// str = str.replace("ObjectIntersectionOf(","");
+			// str = str.substring(9,str.length()-2);
+			
+			// parseAxiomFunctional(str,newontology);
+			
+			 if (true)
+		    	throw new RuntimeException();
 		}
 		
 		/*
@@ -1980,5 +1992,35 @@ public class CoverageStoreEvaluatorCompressionDB {
 		return i;
 	}
  
+	public static OWLOntologyManager getImportKnowledgeableOntologyManger(){
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.loa-cnr.it/ontologies/DUL.owl"),
+		           IRI.create("http://www.ontologydesignpatterns.org/ont/dul/DUL.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/Hydrology/v2.0/Hydrology.owl"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-Hydrology.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/Rabbit/v1.0/Rabbit.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/hydrology/rabbit.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/Topography/v0.1/Topography.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/hydrology/topography.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/SpatialRelations/v0.2/SpatialRelations.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/hydrology/spatialrelations.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/MereologicalRelations/v0.2/MereologicalRelations.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/hydrology/mereologicalrelations.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/NetworkRelations/v0.2/NetworkRelations.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/hydrology/networkrelations.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/Hydrology/v2.0/Hydrology.owl"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-Hydrology.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/Rabbit/v1.0/Rabbit.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/hydrology/rabbit.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/Topography/v0.1/Topography.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/hydrology/topography.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/SpatialRelations/v0.2/SpatialRelations.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/hydrology/spatialrelations.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/MereologicalRelations/v0.2/MereologicalRelations.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/hydrology/mereologicalrelations.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/NetworkRelations/v0.2/NetworkRelations.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/hydrology/networkrelations.owl")));
+		return manager;
+	}
 	
 }
