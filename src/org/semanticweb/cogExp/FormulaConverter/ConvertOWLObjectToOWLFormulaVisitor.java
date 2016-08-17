@@ -263,9 +263,11 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 		int cardinality = arg0.getCardinality();
 		OWLFormula cardform = new OWLFormula(new OWLInteger(cardinality));
 		OWLDataRange filler = arg0.getFiller();
+		OWLDataRan dataran = ConversionManager.datarangeToDataran(filler);
+		OWLFormula dataranForm = new OWLFormula(dataran);
 		OWLDataPropertyExpression property = arg0.getProperty();
 		return OWLFormula.createFormula(OWLSymb.DATAEXACTCARDINALITY,
-				cardform,property.accept(this),filler.accept(this));
+				cardform,property.accept(this),dataranForm);
 	}
 
 	public OWLFormula visit(OWLDataMaxCardinality arg0) {
