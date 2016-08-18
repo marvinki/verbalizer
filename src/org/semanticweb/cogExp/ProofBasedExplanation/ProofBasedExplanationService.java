@@ -260,6 +260,11 @@ public class ProofBasedExplanationService extends ExplanationService{
 	}
 		
 	
+/* 
+ * you can find the abstract ExplanationResult class as well as the 
+ * abstract explanation function (in the ExplanationService class)
+ * in the org.protege.editor.owl.ui.explanation package
+ */
 public ExplanationResult explain(OWLAxiom axiom) {
 		
 		
@@ -269,7 +274,12 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		OWLOntology ontology = modelmanager.getActiveOntology();
 		
 		
+		//this.getOWLEditorKit().getOWLWorkspace().setTitle("test Title");
+	
+		
+		
 		/* Outer panel, with vertical layout */
+		
 		
 		JPanel panel = new JPanel();
 		

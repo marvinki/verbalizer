@@ -73,9 +73,8 @@ public enum VerbalisationManager {
 	}
 	
 	
-	/*
-	 * FIXME fgda
-	 */
+
+
 	
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator){
 		textOWLObjectVisit.setObfuscator(obfuscator);
@@ -1273,6 +1272,25 @@ public enum VerbalisationManager {
 	return tree;
 	}
 	
+	
+	/**
+	 * 
+	 * @param axiom axiom that is to be verbalised
+	 * @param reasoner respective reasoner
+	 * @param factory respective reasoner factory
+	 * @param ontology respective ontology
+	 * @param maxsteps maximum steps to be taken when evaluating the result
+	 * @param maxtime maximum time to be taken when evaluating the result
+	 * @param ruleset the ruleset to be used
+	 * @param asHTML <code>true</code> if the output string should contain HTML tags
+	 * @param obf <code>true</code> if the output is to be obfuscated
+	 * @return returns the verbalised axiom as string
+	 */
+	
+	/*
+	 * TODO for marvin:
+	 * double check the javadoc section
+	 */
 	public static String verbalizeAxiom(OWLAxiom axiom, OWLReasoner reasoner, OWLReasonerFactory factory, OWLOntology ontology, int maxsteps, long maxtime, String ruleset, boolean asHTML, boolean obf){
 		
 		 VerbalisationManager.INSTANCE.setOntology(ontology);
