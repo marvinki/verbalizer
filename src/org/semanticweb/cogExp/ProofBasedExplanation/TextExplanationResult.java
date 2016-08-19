@@ -18,6 +18,12 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		add(panel);
 	}
 	
+	public TextExplanationResult(JPanel panel, String toolTip){
+		jpanel = panel;
+		jpanel.setToolTipText(toolTip);
+		setLayout(new BorderLayout());
+		add(panel);
+	}
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub	

@@ -3,6 +3,8 @@ package org.semanticweb.cogExp.OWLAPIVerbaliser;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JLabel;
+
 /**
  * contains zero or more TextElementSequences. All you can do is create a list,
  * add and get/set to elements in this List.
@@ -135,5 +137,30 @@ public class TextSequenceList extends TextElement {
 		}
 
 		return listSequence;
+	}
+
+	
+	/**
+	 * 
+	 * @return returns the content of the TextSequenceList as list of JLabels.
+	 * The elements are seperated by ", ". Between the last and the Element before that there's
+	 * an " and ". The Text of the last JLabel ends with ", ".
+	 * All JLabels concatenated make the sentence: 
+	 * " Text_1, Text_2, ..., Text_n-1 and Textn, "
+	 */
+	@Override
+	public List<JLabel> toJLabel(){
+		List<JLabel> result = new ArrayList<JLabel>();
+		
+		
+		result.add(new JLabel(list.get(0).toString()));
+		
+		for (int i = 1; i < list.size()-2; i++) 
+			result.add(new JLabel(", " + list.get(i).toString()));
+		
+		result.add(new JLabel(" and " + list.get(list.size()-1).toString() + ", "));
+		
+		return result;
+	
 	}
 }

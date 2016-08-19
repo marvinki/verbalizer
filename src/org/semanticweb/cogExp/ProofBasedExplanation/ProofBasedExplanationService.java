@@ -256,7 +256,9 @@ public class ProofBasedExplanationService extends ExplanationService{
 			}
 			WordNetQuery.INSTANCE.setDict(tmpdir);
 		}
+	
 		return VerbalisationManager.verbalizeAxiomAsSequence(axiom, reasoner, factory, ontology,100, 10000, inferenceruleset,true,false); // <--- 
+	
 	}
 		
 	
@@ -292,6 +294,7 @@ public ExplanationResult explain(OWLAxiom axiom) {
 				 	   "OP"
 				 	   );
 				 	   
+		//System.out.println("Sequence: "+ sequence.toString());
 		
 		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
 		flowLayout.setHgap(0);
@@ -326,7 +329,7 @@ public ExplanationResult explain(OWLAxiom axiom) {
 				}
 				innerpanel.add(label);
 				previoustext = label.getText();
-				System.out.println("inserting label |" + label.getText() + "|");
+				//System.out.println("inserting label |" + label.getText() + "|");
 			// }
 		}
 		TextExplanationResult result = new TextExplanationResult(panel);
