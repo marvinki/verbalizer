@@ -152,14 +152,25 @@ public class TextSequenceList extends TextElement {
 	public List<JLabel> toJLabel(){
 		List<JLabel> result = new ArrayList<JLabel>();
 		
+		result.addAll(list.get(0).generateLabels()); 
 		
-		result.add(new JLabel(list.get(0).toString()));
+		for (int i = 1; i < list.size()-2; i++){ // add a seperator (", ") between the statements
+			result.add(new JLabel(", "));
+			result.addAll(list.get(i).generateLabels());
+		}
 		
-		for (int i = 1; i < list.size()-2; i++) 
-			result.add(new JLabel(", " + list.get(i).toString()));
+		result.add(new JLabel(" and "));	//add the seperator " and " between the last statement and the one before that
+		result.addAll(list.get(list.size()-1).generateLabels());
+		result.add(new JLabel(", "));
+		/*
 		
-		result.add(new JLabel(" and " + list.get(list.size()-1).toString() + ", "));
+		for(TextElementSequence sequence : list){
+			result.addAll(sequence.generateLabels());
+			result.add(new JLabel(" "));
+		}
+				
 		
+		*/
 		return result;
 	
 	}
