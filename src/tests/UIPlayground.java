@@ -18,14 +18,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.text.EditorKit;
+
 
 public class UIPlayground {	
 	public UIPlayground(){
 		JFrame frame = new JFrame();
 		
 		frame.setTitle("my title");
-		
+		Dimension d = new Dimension(300, 400);
 		
 		JPanel container = new JPanel();
 //		container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
@@ -33,22 +33,27 @@ public class UIPlayground {
 		GridLayout gl = new GridLayout(2, 0);
 		gl.setVgap(0);
 		gl.setHgap(0);
-		gl.minimumLayoutSize(frame);
-		
+
 //		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 		container.setLayout(gl);
+		
+		
+		
 		
 		JPanel panel = new JPanel();
 		JPanel panel2 = new JPanel();
 		
 		
-		FlowLayout layout = new FlowLayout(); 
+		ModifiedFlowLayout layout = new ModifiedFlowLayout(); 
 		layout.setAlignment(FlowLayout.LEADING);
 		
 	
 		
 		panel.setLayout(layout);
 		panel2.setLayout(layout);
+		
+		panel.setSize(d);
+		panel2.setSize(d);
 		
 		JLabel label = new JLabel("Dies ist ein viel zu langer Text für dieses ");
 		label.setForeground(Color.red);
@@ -69,18 +74,22 @@ public class UIPlayground {
 		container.add(panel);
 		container.add(panel2);
 		
-//		 JScrollPane scrollPane = new JScrollPane (container, 
-//		            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-//		            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-//		 scrollPane.setLayout(new FlowLayout());
+	
+		container.setSize(d);
+		
+		JScrollPane scrollPane = new JScrollPane (container, 
+		            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 
 //		 frame.add(panel);
-		 frame.add(container);
+		 frame.add(scrollPane);
 //		 frame.add(panel2);
 		 
-		 frame.setSize(container.getMinimumSize());
+		frame.setSize(300,400);
 		frame.setVisible(true);
 	}
 	
@@ -90,28 +99,3 @@ public class UIPlayground {
 	}
 
 }
-/*	
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		JFrame fr = new JFrame("Title");
-		ExplanationPanel ep = new ExplanationPanel("first String");
-		ExplanationPanel ep2 = new ExplanationPanel("second String\n");
-		ExplanationPanel ep3 = new ExplanationPanel("first String with Tooltip","tooltip");
-		
-		//TextArea area = new TextArea();
-		
-		
-		fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
-		ep.setVisible(true);
-		fr.getContentPane().add(ep);
-		
-		
-		fr.setSize(400, 300);
-		ep.setVisible(true);
-		fr.setVisible(true);
-		
-	}
-
-}
-*/
