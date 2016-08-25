@@ -7,16 +7,30 @@ import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
-
+/**
+ * represents any textual element of verbalizer
+ * @author marvinki (doc by fp)
+ *
+ */
 public class TextElement {
 	
 	protected String content;
-		
+	/**
+	 * 
+	 * @param content name
+	 */
 	public TextElement(String content){
 		this.content = content;
 	}
 	
-	public String toText(){
+	public TextElement(){
+		this.content = "";
+	}
+	
+	/**
+	 * @return returns the content as plain string 
+	 */
+	public String toString(){
 		return content;
 	}
 
