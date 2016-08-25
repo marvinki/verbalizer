@@ -637,6 +637,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			    for (ProofNode opennode : open_nodes){
 			    	
 			    	Sequent seq = (Sequent) opennode.getContent();
+			    	// System.out.println(seq.getStatistics());
 			    	if (seq instanceof IncrementalSequent){
 			    		seq = ((IncrementalSequent) seq).amputateDepth(bfsLevel);
 			    	} else{
@@ -754,6 +755,9 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 					RuleBindingForNode rb = bindings.get(h);
 					Sequent seqnew = (Sequent) newopennode.getContent();
 					Sequent oldseq = (Sequent) initialtree.getProofNode(rb.getNodeId()).getContent();
+					
+					// System.out.println(seqnew.getStatistics());
+					
 					RuleBinding rbnew = rb.convert(oldseq, seqnew);
 					if ( rbnew!=null && (rbnew.getNewAntecedent()==null 
 							|| !seqnew.alreadyContainedInAntecedent(rbnew.getNewAntecedent()))

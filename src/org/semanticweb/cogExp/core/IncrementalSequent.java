@@ -39,6 +39,14 @@ public class IncrementalSequent extends Sequent{
 		mastersequent = new Sequent();
 	}
 	
+	@Override
+	public String getStatistics(){
+		// System.out.println("calling statistics for inc id " + id);
+		String result = "Incremental sequent id " + id + " Mastersequent statistics: " + mastersequent.getStatistics();
+		result = result + " Incremental antecedents: " + antecedents.size() + " succedents: " + succedents.size();		
+		return result;
+	}
+	
 	public int antecedentGetHighestContainedTermID(){
 		return mastersequent.antecedentGetHighestContainedTermID();
 	}

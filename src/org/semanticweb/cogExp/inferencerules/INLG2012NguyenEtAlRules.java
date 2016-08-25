@@ -800,6 +800,8 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 		if (exp.getHead().equals(OWLSymb.INT))
 			intsubexprs.add(exp);
 	}
+	// System.out.println("PROFILE intsubexprs size " + intsubexprs.size());
+	
 	
 	// s.reportSubexpressionFormulas();
 	// s.reportAntecedent();
@@ -824,6 +826,7 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 				bins.put(cands.getArgs().get(0),newset);
 				}
 			}
+			// System.out.println("PROFILE: bins size "  + bins.size());
 			Set<OWLFormula> keys = bins.keySet();
 			for (OWLFormula p1 : keys){
 				// if (p1.getHead().toString().contains("VT608"))

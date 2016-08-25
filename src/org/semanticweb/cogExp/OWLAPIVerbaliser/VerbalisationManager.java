@@ -419,28 +419,34 @@ public enum VerbalisationManager {
 				currenttoken = currenttoken + str.substring(i,i+1);
 				lastChar = str.substring(i,i+1);
 		}
+		// System.out.println("waypoint (7)");
 		// now postprocess all tokens
 		List<String> processedtokens = new ArrayList<String>();
 		for (String token : tokens){
+			// System.out.println("token: " + token);
 			// if acronym (both first letters are capitals), do nothing
 			if (token.length()>1 && Character.isUpperCase(str.charAt(0)) && Character.isUpperCase(str.charAt(1)) ){
 				processedtokens.add(token);
 				continue;
 			}
 			// now lowercase
-			token = token.substring(0,1).toLowerCase() + token.substring(1,token.length()); 
+			if (token.length()>0)
+				token = token.substring(0,1).toLowerCase() + token.substring(1,token.length()); 
 			// now find hypens and lowercase
 			int ind = 0;
 			while(ind<token.length()){
 				int foundint = token.substring(ind).indexOf("-");
-				// System.out.println(token.charAt(foundint+1));
-				if (foundint<0 || foundint+1>token.length())
+				// System.out.println(token + " " + token.charAt(foundint+1) + " " + foundint);
+				int originalfoundint = foundint;
+				foundint = foundint + ind;
+				if (originalfoundint<0 || foundint+1>token.length())
 					break;
 				token = token.substring(0,foundint) + "-" + Character.toLowerCase(token.charAt(foundint+1)) + token.substring(foundint+2);
 				ind = foundint+1;
 			}
 			processedtokens.add(token);
 		}
+		// System.out.println("waypoint (8)");
 		// now join all tokens together
 		for (int i = 0; i< processedtokens.size(); i++){
 			if (i ==  processedtokens.size()-1){
@@ -498,21 +504,27 @@ public enum VerbalisationManager {
 						// annotation.getValue().toString();
 			}
 		}
+		// System.out.println("waypoint (1) " + str);
 		// remove unnecessary stuff
 					if (str.indexOf("@e")>0)
 						str = str.substring(0,str.length()-3);
 		}
+		// System.out.println("waypoint (2) " + str);
 		if (!str.equals("") || !str2.equals(""))
 			hasLabel = true;
 		// search for the type tag of the annotation (e.g. ^^xsd:string)
-		if (str!=""){
+		if (!str.equals("")){
 			int i = str.indexOf("\"");
-		if (str.contains("^")){
-			int j = str.indexOf("^");
-			str= str.substring(i+1,j-1);
-		} else{
-			// str= str.substring(i+1,str.length()-1);
-		}	str = treatCamelCaseAndUnderscores(str);
+			if (str.contains("^")){
+				int j = str.indexOf("^");
+				str= str.substring(i+1,j-1);
+			} else{
+				// System.out.println("waypoint (3)");
+				// str= str.substring(i+1,str.length()-1);
+			}	
+		// System.out.println("waypoint (4)");
+		
+		str = treatCamelCaseAndUnderscores(str);
 			// System.out.println("returning (1) " + str);
 			// Cheating
 			if (str.equals("exercise")){
@@ -520,6 +532,7 @@ public enum VerbalisationManager {
 			}
 			return str;
 		}
+		// System.out.println("waypoint (5)");
 		if (str==""){
 			str = ppCEvisit.visit(classname);
 			// System.out.println("DBG " + str);
@@ -529,6 +542,7 @@ public enum VerbalisationManager {
 			// System.out.println("DEBUG after prettyprint " + str);
 			// check if camelcasing was used
 			str = treatCamelCaseAndUnderscores(str);
+			// System.out.println("DEBUG after treat " + str);
 			boolean isUncountable = false;
 			// heuristically check cases where noun might be uncountable
 			if (str.contains("ium"))

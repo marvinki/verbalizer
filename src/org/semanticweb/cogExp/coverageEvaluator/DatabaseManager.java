@@ -287,7 +287,51 @@ public enum DatabaseManager {
 		return result;	
 	}
 	
-	
+	public List<List<String>> getExplanationsExclusive(String ontology){
+		List<List<String>> result = new ArrayList<List<String>>();
+		// String query = "select * from explanations;";
+		
+		String query = "select * from explanations where " 
+				      + " ontologypath = '" 
+				       + ontology  
+				       + "';";
+		
+		
+		// System.out.println("query string: "+ query);
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			
+			// System.out.println("after executing query");
+			
+			List<String> items = Arrays.asList("solved", "explanation", "listing", "longlisting",
+					"verbsteps", "listingsteps", "longlistingsteps", "time", "equivextract", 
+					"subclandequivelim", "r0", "r1", "r1neo", "r2", "r3", "r5", "r5new", 
+					"r5multi", "r6", "r6neo", "r12", "r12new", "r15", "r23", "r23repeat",
+					 "r34", "r35", "r37", "r42", "botintro", "topintro", "defdomain", 
+					 "elexistsminus", "applrange", "propchain", "forallunion");
+			
+			
+			while (rs.next()){
+				List results = new ArrayList<String>();
+				for (String item : items){
+					// System.out.println(" getting item " + item + " found " + rs.getString(item));
+					results.add(rs.getString(item));
+				}
+				result.add(results);
+			}
+			
+			// prevent memory leak
+			rs.close();
+			stmt.close();
+			
+		} catch(Exception e){
+			// System.out.println("exception" + e);
+			System.out.println(e.getMessage());
+		}
+		return result;	
+	}
 	
 	public void deleteExplanation(
 			String subclass, 
@@ -423,7 +467,7 @@ public enum DatabaseManager {
 	
 	
 	public String constructStatisticLineFromDB(String ontology){
-		List<List<String>> result = getExplanationsInclusive(ontology);
+		List<List<String>> result = getExplanationsExclusive(ontology);
 		int solved = 0;
 		int unsolved = 0;
 		int total = 0;

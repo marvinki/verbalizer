@@ -78,10 +78,23 @@ import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
 
 public class CoverageStoreEvaluatorCompressionDB {
-	
-	static private OWLOntologyManager manager = getImportKnowledgeableOntologyManger();
+	static private OWLOntologyManager manager =OWLManager.createOWLOntologyManager();
+	// static private OWLOntologyManager manager = getImportKnowledgeableOntologyManger();
 			// OWLManager.createOWLOntologyManager();
 	static private OWLDataFactory dataFactory=manager.getOWLDataFactory();
+	static private OWLOntology tmpOntology = createOntology();
+	
+	
+	public static OWLOntology createOntology(){
+		OWLOntology ontology = null;
+		try {
+			ontology = manager.createOntology();
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ontology;
+	}
 	
 	public static Statistic runOntology(String filestring, int timelimit1) throws OWLOntologyCreationException{
 		// Read file
@@ -115,6 +128,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		
 		
 		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
+		System.out.println("Ontology loaded. Reading justifications.");
 		
 		
 		
@@ -125,9 +139,24 @@ public class CoverageStoreEvaluatorCompressionDB {
 		boolean inJustReadingMode = false;
 		boolean inConclusionReadingMode = false;
 		List<OWLAxiom> currentjusts = null;
+		int parsedcount = 0;
+		int percentachieved = 0;
+		System.out.println("Lines to read: " + lines.size());
+		
+		int originalsize = lines.size();
+		
 		for (String line : lines){
+			// String line = lines.get(0);
+			// lines.remove(0);
 			// System.out.println("Line: " + line);
 			// System.out.println("Just reading mode: " + inJustReadingMode);
+			// System.out.println("parsedcount: " + parsedcount);
+			if ((parsedcount*10000)/(originalsize*100)>percentachieved){
+				percentachieved = (parsedcount*10000)/(originalsize*100);
+				System.out.printf("\r");
+				System.out.print(percentachieved + "%");
+			}
+			parsedcount++;
 			if (line.contains("CONCLUSION")){
 				inJustReadingMode=false;
 				inConclusionReadingMode=true;
@@ -466,11 +495,15 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				
 	    				// also disable Rule3 (if no domain) and subclandequiv (if no equiv), and rule 34 (if no disjointness)
 	    				 // 412 -- 900000
-	    				// System.out.println("entering loop");
+	    				System.out.println("entering loop no 1.");
 	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree, currentrules, 840000, timelimit1 * 1000);
 	    				
+	    				if (prooftree.getOpenNodes().size()==0){
+	    				System.out.println("entering loop no 2.");
 	    				// InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 5);
-	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 10);
+	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 3);
+	    				}
+	    				System.out.println("Done looping.");
 	    				
 	    				// System.out.println("exiting loop");
 	    				}
@@ -528,15 +561,19 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    			
 		    	 
 	    			try {
+	    				System.out.println("Eliminating irrelevant parts 1");
 	    				org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree, node.getId());
 	    			} catch (Exception e) {
+	    				System.out.println("Error while eliminating irrelevant parts 1");
 	    				e.printStackTrace();
 				 		}
 			    	 // 
 	    			
 	    			try {
+	    				System.out.println("Eliminating irrelevant parts 2");
 	    				org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree2, node2.getId());
 	    			} catch (Exception e) {
+	    				System.out.println("Error while eliminating irrelevant parts 2");
 	    				e.printStackTrace();
 				 		}
 	    			
@@ -545,20 +582,26 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    			org.semanticweb.cogExp.GentzenTree.GentzenTree gentzenTree;
 	    			org.semanticweb.cogExp.GentzenTree.GentzenTree gentzenTree2;
 					try {
-						// System.out.println("before gentzening");
+						System.out.println("before gentzening no 1.");
 						gentzenTree = prooftree.toGentzen();
+						System.out.println("before gentzening no 2.");
 						gentzenTree2 = prooftree2.toGentzen();
-						// System.out.println("after gentzening");
+						System.out.println("after gentzening");
 						
 						
 						VerbalisationManager.INSTANCE.featureClassAgg = false;
 						VerbalisationManager.INSTANCE.featureRoleAgg = false;
 						VerbalisationManager.INSTANCE.featureAttribute = false;
+					
 						
 						String result = VerbaliseTreeManager.verbaliseNL(gentzenTree, true, false,null);
+						System.out.println("Done result.");
 						String result2 = VerbaliseTreeManager.verbaliseNL(gentzenTree2, true, false,null);
+						System.out.println("Done result2.");
 						String result3 = VerbaliseTreeManager.listOutput(gentzenTree);
+						System.out.println("Done result3.");
 						String result4 = VerbaliseTreeManager.listOutput(gentzenTree2);
+						System.out.println("Done result4.");
 						proofListings.add(result3);
 						longVerbalizations.add(result2);
 						longProofListings.add(result4);
@@ -567,6 +610,9 @@ public class CoverageStoreEvaluatorCompressionDB {
 		    			// System.out.println(result);
 						
 						int additional = 0;
+						
+						System.out.println("Verbalization done.");
+						
 						
 						// CALCULATE ADDITIONAL R5MULTI STEPS
 						if (result.contains("[args:")){
@@ -802,6 +848,8 @@ public class CoverageStoreEvaluatorCompressionDB {
 		    			
 		    			DatabaseManager.INSTANCE.deleteExplanation(subAx.getSubClass().toString(), 
 		    					subAx.getSuperClass().toString(), ontologyfile);
+		    			
+		    			System.out.println("before DB insert.");
 		    			
 		    			DatabaseManager.INSTANCE.insertExplanation(
 		    					subAx.getSubClass().toString(), 
@@ -1101,7 +1149,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		
 			
 			// Statistic stats = runOntology("/Users/marvin/marvin_work_ulm/resources/ontologies/ore2015_pool_sample/el/pool/" + line);
-			Statistic stats = runOntology(storedfilesStem + line,10); // <---- time limit (in seconds)
+			Statistic stats = runOntology(storedfilesStem + line,5); // <---- time limit (in seconds)
 			
 			
 			// create individual detailed log file	
@@ -1913,10 +1961,10 @@ public class CoverageStoreEvaluatorCompressionDB {
 	
 	public static OWLAxiom parseAxiomFunctional(String str, OWLOntology ont){
 		
-		// System.out.println("Trying to parse: " + str);
+		//System.out.println("Trying to parse: " + str);
 		
-		OWLFunctionalSyntaxOWLParserFactory parserFactory = new OWLFunctionalSyntaxOWLParserFactory();
-		OWLFunctionalSyntaxOWLParser parser = new OWLFunctionalSyntaxOWLParser();
+		// OWLFunctionalSyntaxOWLParserFactory parserFactory = new OWLFunctionalSyntaxOWLParserFactory();
+		OWLFunctionalSyntaxOWLParser parser = OWLAPIManagerManager.INSTANCE.getFunctionalSyntaxParser();
 		
 		
 		OWLOntologyLoaderConfiguration loaderConfiguration = new OWLOntologyLoaderConfiguration();
@@ -1931,22 +1979,25 @@ public class CoverageStoreEvaluatorCompressionDB {
 		
 		// OWLOntologyDocumentSource toBeParsed = new OWLOntologyDocumentSource();
 		
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLOntology newontology = null;
+		OWLOntologyManager manager = OWLAPIManagerManager.INSTANCE.getOntologyManager();
+		
 		
 		OWLAxiom a = null;
 		
 		try {
-			newontology = manager.createOntology();
+			
+		manager.removeAxioms(tmpOntology, tmpOntology.getAxioms());
+		
+		OWLDocumentFormat format = parser.parse(streamSource, tmpOntology, loaderConfiguration);
 		
 		
-		OWLDocumentFormat format = parser.parse(streamSource, newontology, loaderConfiguration);
-		
-		
-		
-		Set<OWLAxiom> axioms = newontology.getAxioms();
+		Set<OWLAxiom> axioms = tmpOntology.getAxioms();
 		for (OWLAxiom ax : axioms){
 			a = ax;
+			in.close();
+			streamSource = null;
+			axioms = null;
+			break;
 		}
 		
 		} catch (Exception e) {
@@ -1976,6 +2027,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		// System.out.println("Parsed: " + a);
 		// if (true)
 		// throw new RuntimeException();
+	
 		
     return a;
 	}

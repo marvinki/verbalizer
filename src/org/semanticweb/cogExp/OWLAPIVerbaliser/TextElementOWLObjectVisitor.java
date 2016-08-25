@@ -691,6 +691,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	}
 	
 	public List<TextElement> visit(OWLEquivalentClassesAxiom arg0) {
+		System.out.println("visiting OWLEquivalentClassesAxiom " + arg0);
 		List<TextElement> result = new ArrayList<TextElement>();
 		OWLClass classexp = null;
 		List<OWLClassExpression> exprs =  ((OWLEquivalentClassesAxiom) arg0).getClassExpressionsAsList();
@@ -700,9 +701,11 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				break;
 			}
 		}
+		System.out.println("visiting OWLEquivalentClassesAxiom (1)" + classexp);
 		if (classexp!=null){
 			result.add(new LogicElement("According to its definition,"));
 			result.addAll(classexp.accept(this));
+			System.out.println(" visiting OWLEquivalentClassesAxiom " + classexp.accept(this).toString());
 			result.add(new LogicElement("is"));
 			boolean firstp = true;
 			for (OWLClassExpression ex:exprs){
@@ -733,6 +736,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				}	
 			}	
 		}
+		System.out.println("result " + result);
 		return result;
 	}
 

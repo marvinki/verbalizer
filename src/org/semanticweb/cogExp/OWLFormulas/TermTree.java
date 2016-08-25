@@ -17,6 +17,11 @@ public class TermTree {
 	private HashMap<Integer,OWLFormula> termIds = new HashMap<Integer,OWLFormula>();
 	private HashMap<OWLFormula,Integer> formulaToIDMapping = new HashMap<OWLFormula, Integer>();
 	
+	
+	public String getStatistics(){
+		return ("Items: " + termIds.keySet().size());
+	}
+	
 	public TermTree(OWLFormula formula) throws Exception{
 		insert(formula);
 	} 
