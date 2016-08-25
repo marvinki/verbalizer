@@ -303,6 +303,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	
 	// VERBALIZE SUBCLASSOFAXIOM
 	public List<TextElement> visit(OWLSubClassOfAxiom arg0) {
+		// System.out.println("-------");
 		// define some elements that will be used later
 		LogicElement somethingthatElement = new LogicElement("something that");
 		LogicElement thatElement =  new LogicElement("that");
@@ -318,6 +319,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
 			OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) arg0.getSubClass();
 			OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
+			// System.out.println("SUBCLASS SOMEOF DEBUG " + some1 + " " + cl);
 			if (cl!=null){
 				//somethingthat = cl.toString() + " that ";
 				somethingthat =cl.accept(this); 
@@ -349,12 +351,15 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass())){
 			leftstring = new ArrayList<TextElement>();
 			leftstring.add(somethingthatElement);
-			leftstring.addAll(VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass())); 
+			TextElementSequence seq = VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass());
+			leftstring.addAll(seq.getTextElements()); 
 			leftstring.add(commaElement);
 		}
 		if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
 			// leftstring = new ArrayList<TextElement>();
-			leftstring.add(0,somethingthatElement);
+			// System.out.println("leftstring " + leftstring);
+			leftstring.addAll(0,somethingthat);
+			// leftstring.add(0,somethingthatElement);
 		}
 		List<TextElement> middlestring = new ArrayList<TextElement>();
 		if (!(arg0.getSuperClass() instanceof OWLObjectSomeValuesFrom) 
@@ -431,7 +436,8 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		}
 		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
 				&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
-			leftstring.addAll(VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass()));
+			TextElementSequence seq = VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
+			leftstring.addAll(seq.getTextElements());
 			return leftstring;
 			// 		leftstring + " " +
 			// VerbalisationManager.pseudoNLStringMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
@@ -540,7 +546,12 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 			for(OWLClassExpression allelse : allelseExps){
 				if (!isFirst)
 					seq4.add(new LogicElement("and")) ;
-				seq4.concat(new TextElementSequence(allelse.accept(this)));
+				List<TextElement> allelseString = allelse.accept(this);
+				if (allelseString == null){
+					seq.add(new LogicElement("{NULL}"));
+				}else{
+					seq4.concat(new TextElementSequence(allelse.accept(this)));
+				}
 				isFirst = false;
 			}
 		}
@@ -561,7 +572,8 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		} else{
 			if (checkMultipleExistsAndForallPattern(arg0)){
 				resultList.add(somethingthatElement);
-				resultList.addAll(VerbalisationManager.textualiseMultipleExistsAndForallPattern(arg0));
+				TextElementSequence seq = VerbalisationManager.textualiseMultipleExistsAndForallPattern(arg0);
+				resultList.addAll(seq.getTextElements());
 				// System.out.println("visit intersect (2): " + new TextElementSequence(resultList).toString());
 				return resultList;
 			} else{
