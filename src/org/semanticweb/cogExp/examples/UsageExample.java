@@ -62,7 +62,10 @@ public class UsageExample {
 			);
 	
 	WordNetQuery.INSTANCE.disableDict();
-	String explanation = VerbalisationManager.verbalizeAxiom(axiom, reasoner, reasonerFactory, tinyExampleOntology, false,false);
+	// String explanation = VerbalisationManager.verbalizeAxiom(axiom, reasoner, reasonerFactory, tinyExampleOntology, false,false);
+	
+	GentzenTree tree = VerbalisationManager.computeTree(axiom,ontologyfile.toString());
+	String explanation = VerbalisationManager.computeVerbalization(tree, false, null);
 	
 	
 	System.out.println("Explanation for \"" + VerbalisationManager.verbalise(axiom) + "\":\n");

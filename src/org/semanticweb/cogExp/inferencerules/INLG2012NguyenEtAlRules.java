@@ -1176,7 +1176,7 @@ RULE5{ //SubClass(X,Y) and SubClass(X,Z) --> Subclass(X,Y^Z)
 				forms.add(OWLFormula.createFormulaSubclassOf(p1,p3));
 				if (AlreadyTriedCache.INSTANCE.wasTried(INLG2012NguyenEtAlRules.RULE5,
 						forms)){
-					System.out.println("skipping");
+					// System.out.println("skipping");
 					continue;
 				}	
 					
