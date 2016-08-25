@@ -271,7 +271,7 @@ public enum VerbalisationManager {
 		if (VerbalisationManager.INSTANCE.getPropertyNLString(property).indexOf("[X]")>=0)
 			result += VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 		result = treatCamelCaseAndUnderscores(result);
-		System.out.println("DEBUG PROPERTY |" + result + "|");
+		// System.out.println("DEBUG PROPERTY |" + result + "|");
 		return result;
 	}
 	
@@ -351,7 +351,9 @@ public enum VerbalisationManager {
 		System.out.println("3:" + WordNetQuery.INSTANCE.getTypes(str)[3]); // adverb
 	    System.out.println("4:" + WordNetQuery.INSTANCE.getTypes(str)[4]); // adjective_satellite
 	    */
-		int[] types = WordNetQuery.INSTANCE.getTypes(str);
+		int[] types = null;
+		if (!WordNetQuery.INSTANCE.isDisabled()) 
+			types = WordNetQuery.INSTANCE.getTypes(str);
 		if (!WordNetQuery.INSTANCE.isDisabled() && !(types[0]>0) &&!isNoun){
 			// System.out.println("NOT A NOUN");
 			str = lowerCaseFirstLetter(str);
@@ -362,7 +364,7 @@ public enum VerbalisationManager {
 		if (str.indexOf("ing")>0 && !str.equals("Ring")  && !str.equals("ring") && !str.contains(" ring") && !str.contains("Ring"))
 			return str.toLowerCase();
 		// Plural does not get an article
-		if (WordNetQuery.INSTANCE.isPlural(str)){
+		if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isPlural(str)){
 			return str;
 		}
 		if (str.substring(0,1).equals("a") 
@@ -1244,7 +1246,7 @@ public enum VerbalisationManager {
 	 }
 	 
 	 long endJustfinding = System.currentTimeMillis();
-	 System.out.println("Justification finding took: " + (endJustfinding - startJustfinding) + "ms");
+	 // System.out.println("Justification finding took: " + (endJustfinding - startJustfinding) + "ms");
 	
 	 
 	// convert to internal format
@@ -1256,7 +1258,7 @@ public enum VerbalisationManager {
 		 for (OWLAxiom ax: explanation){
 			 justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 			 
-			 System.out.println("VerbalisationManager: adding: " + ConversionManager.fromOWLAPI(ax).prettyPrint());
+			 // System.out.println("VerbalisationManager: adding: " + ConversionManager.fromOWLAPI(ax).prettyPrint());
 		 }
 			} catch (Exception e) {
 				return null;
@@ -1274,7 +1276,7 @@ public enum VerbalisationManager {
 		return null;}
 		
 		long endTreecompute = System.currentTimeMillis();
-		System.out.println("Tree computation took: " + (endTreecompute - startTreecompute) + "ms");
+		// System.out.println("Tree computation took: " + (endTreecompute - startTreecompute) + "ms");
 	return tree;
 	}
 	
