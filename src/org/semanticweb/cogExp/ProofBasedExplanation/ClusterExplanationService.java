@@ -6,10 +6,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -105,6 +108,200 @@ public class ClusterExplanationService {
 	}
 	
 	
+	public static String listInferredAxioms(List<String> input){
+		System.out.println("[Retrieving list of superclasses]");
+			// find classname
+			String classnameString = input.get(1);
+			String ontologyname = input.get(2).replaceAll("\"", "");
+				
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			java.io.File file = new java.io.File(ontologyname);
+			FileDocumentSource source = new FileDocumentSource(file);
+			OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
+			loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+			loaderconfig = loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
+						
+			OWLOntology ontology;
+			String result = "";
+			try {
+				ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
+				System.out.println("[done loading ontology]");
+	   				
+				OWLClass classname = null;
+			
+				/* 
+			 Set<OWLClass> classes = ontology.getClassesInSignature();
+				for (OWLClass cl : classes){
+				 // System.out.println(cl.toString());
+				 if (cl.getIRI().getFragment().equals(classnameString)){
+					 classname = cl;
+					}
+			 }
+				 
+			System.out.println("[identified class]: " + classname);
+				*/
+				
+		    OWLReasonerFactory reasonerFactory2 = new JFactFactory();
+		    SimpleConfiguration configuration = new SimpleConfiguration(50000);
+			OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology,configuration);
+			// List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+			// gens.add(new InferredSubClassAxiomGenerator());
+			 
+		    // Put the inferred axioms into a fresh empty ontology.
+		    OWLOntologyManager outputOntologyManager = OWLManager.createOWLOntologyManager();
+			OWLOntology infOnt = outputOntologyManager.createOntology();
+			Set<OWLAxiom> previousaxioms = ontology.getAxioms();
+			// System.out.println("Previous axioms " + previousaxioms.size());
+			InferredOntologyGenerator iog = new InferredOntologyGenerator(reasonerJFact);
+			    
+			OWLDataFactory dataFactory2=manager.getOWLDataFactory();
+			iog.fillOntology(dataFactory2, ontology);
+			// iog.fillOntology(outputOntologyManager, infOnt);
+			Set<OWLAxiom> newaxioms = ontology.getAxioms();
+			System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
+			
+			newaxioms.removeAll(previousaxioms);
+			
+	        for (OWLAxiom ax: newaxioms){
+			    	if (!previousaxioms.contains(ax)){
+			    		if (ax instanceof OWLSubClassOfAxiom){
+			    			System.out.println("subcl " + ax);
+			    			OWLSubClassOfAxiom subclax = (OWLSubClassOfAxiom) ax;
+			    			if (subclax.getSubClass().toString().contains(classnameString)){
+			    				System.out.println(subclax.getSuperClass());
+			    				result += subclax.getSuperClass().toString() + " ";
+			    			}
+			    		}
+			    		else{
+			    			System.out.println("sth else " + ax);
+			    		}
+			    	}
+			    	else{
+			    		// System.out.println("something else " + ax);
+			    	}
+			    }
+				 
+				} catch (Exception e){
+					e.printStackTrace();
+				}
+			System.out.println("Returning list: " + result);
+		return result;
+		
+	}
+	
+	public static void handleDotRequest(String dotTree){
+		try{
+		// Temporary file for graphics
+			String property = "java.io.tmpdir";
+		    String tempDir = System.getProperty(property);
+		    File newTempfile = new File(tempDir + File.separator + "graph.png");
+		    
+		    Path dotpath = Paths.get(tempDir + File.separator + "graph.dot");
+		    File dotfile = new File(dotpath.toString());
+		    System.out.println("dotfile generated in: " + dotfile);
+		    if(!dotfile.exists()){
+				dotfile.createNewFile();
+			}
+		    Writer dotWriter = new BufferedWriter(new OutputStreamWriter(
+		    	    new FileOutputStream(dotfile.toString()), "UTF-8"));
+		    
+		    // PrintWriter dotWriter = new PrintWriter(dotfile.toString());
+		    dotWriter.write(dotTree);
+		    dotWriter.close();
+		    
+		    // Temporary file for png
+		    Path pngpath = Paths.get(tempDir + File.separator + "graph.png");
+		    File pngfile = new File(pngpath.toString());
+		    if(!pngfile.exists()){
+				pngfile.createNewFile();
+			}
+		    
+		    // make the external call
+		    createGraph(dotfile,pngfile);
+		      
+		   // System.out.println("pngfile: " + pngpath.toString());
+		    
+		    // Image_Panel panel = new Image_Panel(pngfile.toString());
+		    System.out.println("Trying to access png image at path: " + pngfile.getPath());
+		    Image_Panel panel = new Image_Panel(pngfile.getPath());
+	        ImageZoom zoom = new ImageZoom(panel,panel.getScale());
+	        JFrame f = new JFrame();
+	        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	        f.getContentPane().add(zoom.getUIPanel(), "North");
+	        f.getContentPane().add(new JScrollPane(panel));
+	        int initHeight = (int) (panel.getPreferredSize().getHeight() * 1.2);
+	        int initWidth = (int) (panel.getPreferredSize().getWidth() * 1.2);
+	        // System.out.println(panel.getPreferredSize().getHeight());
+	        f.setSize(initWidth,initHeight);
+	        f.setLocation(200,200);
+	        f.setVisible(true);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		return;
+		
+	}
+	
+	
+	
+	public static String handleCluster1Request(String input) throws IOException, OWLOntologyCreationException {
+		
+		String output = "";
+		
+		 Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+	     rootlogger.setLevel(Level.OFF);
+		 OWLReasonerFactory reasonerFactory = new JFactFactory();
+	  	 OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
+	  	
+		String tmpdir = "";
+		try {
+			tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		WordNetQuery.INSTANCE.setDict(tmpdir);
+		List<String> list = new ArrayList<String>();
+   		Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(input);
+   		while (m.find())
+   			   list.add(m.group(1));
+   			// String[] inputs = temp.split(" ");
+   		if (list.size()==3 && list.get(0).contains("list")){
+   				output = listInferredAxioms(list);			
+   		}
+   			if (list.size()>3){
+   				GentzenTree tree = ProofBasedExplanationService.computeTree(list.get(0), 
+   																			list.get(1),
+   																			list.get(2).replaceAll("\"", ""));
+   				if (tree==null){
+   					System.out.println("ERROR. Subsumption could not be proven.");
+   					output = "ERROR. Subsumption could not be proven.";
+   				}
+   				String result = VerbaliseTreeManager.verbaliseNL(tree, false, true,null); // <-- 2nd arg labels, 3rd arg html
+   				String resultPlain = VerbaliseTreeManager.verbaliseNL(tree, false, false,null); // <-- 2nd arg labels, 3rd arg html
+   				
+   				String dotTree = tree.toDOT();
+   				
+   				handleDotRequest(dotTree);
+   					
+   				PrintWriter htmlwriter = new PrintWriter(list.get(3) + "/text.html", "UTF-8");
+   				htmlwriter.write(result);
+   				htmlwriter.close();
+   				
+   				PrintWriter plainwriter = new PrintWriter(list.get(3) + "/plaintext.txt", "UTF-8");
+   				plainwriter.write(resultPlain);
+   				plainwriter.close();
+   				output = resultPlain;
+   				
+   				System.out.println(result);
+   			} else {
+   				System.out.println("Please enter two class expressions, the path to the ontology, and a path for the output");
+   			}	
+   	return output;
+   	
+   }
+	
+	
 	public static void main(String[] args) throws IOException, OWLOntologyCreationException {
 		
 		
@@ -156,9 +353,9 @@ public class ClusterExplanationService {
 		
 		// list WT_Chest-Triceps "/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_complete.rdf"
 		
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		
     	boolean cont = true;
-    	BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     	while (cont) {
     		// System.out.print("Input something: ");
     		String temp = in.readLine();
@@ -332,6 +529,9 @@ public class ClusterExplanationService {
     		}
     			// System.out.println(temp);
     	}
+    	
+    	return;
+    	
     }
 	
 }

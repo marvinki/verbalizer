@@ -84,7 +84,7 @@ public String visit(OWLAnnotationPropertyRangeAxiom arg0) {
 
 public String visit(OWLSubClassOfAxiom arg0) {
 	return  arg0.getSubClass().accept(ppClassExpressionVisit)  
-			+ "⊑" 
+			+ "⊑" + "FOOOOO" 
 			+  arg0.getSuperClass().accept(ppClassExpressionVisit);
 }
 
