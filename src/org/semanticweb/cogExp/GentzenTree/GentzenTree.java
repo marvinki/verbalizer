@@ -291,7 +291,7 @@ public class GentzenTree {
 					+ rulelabel +  "\"];\n";
 		}
 		// return "";
-		return "digraph " + VerbalisationManager.prettyPrint(formulas.get(getStepByID(order.get(order.size()-1)).getConclusion())) + "\n { ratio=compress \n" + result + "}";
+		return "digraph " + "explanation " + "\n { ratio=compress \n" + result + "}";
 	}
 	
 }

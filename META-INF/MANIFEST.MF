@@ -21,4 +21,5 @@ Bundle-ClassPath: .,
  lib/DictTmp.jar,
  lib/owlapi-osgidistribution-4.1.0.jar,
  lib/elk-owlapi.jar
+Require-Bundle: graphviz-java-api;bundle-version="1.0.0"
 
