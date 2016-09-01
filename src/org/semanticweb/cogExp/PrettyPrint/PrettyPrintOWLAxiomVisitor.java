@@ -64,6 +64,8 @@ public class PrettyPrintOWLAxiomVisitor implements OWLAxiomVisitorEx<String>{
 	private PrettyPrintPropertyExpressionVisitor ppPropertyExpressionVisit = new PrettyPrintPropertyExpressionVisitor();
 	private PrettyPrintIndividualVisitor ppIndividualVisit = new PrettyPrintIndividualVisitor();
 	
+	// private static final String SUBCLSYMB = 
+	
 public String visit(OWLSubAnnotationPropertyOfAxiom arg0) {
 	OWLAnnotationProperty subProp = arg0.getSubProperty();
 	OWLAnnotationProperty supProp = arg0.getSuperProperty();
@@ -84,7 +86,7 @@ public String visit(OWLAnnotationPropertyRangeAxiom arg0) {
 
 public String visit(OWLSubClassOfAxiom arg0) {
 	return  arg0.getSubClass().accept(ppClassExpressionVisit)  
-			+ "⊑" + "FOOOOO" 
+			+ "⊑"
 			+  arg0.getSuperClass().accept(ppClassExpressionVisit);
 }
 

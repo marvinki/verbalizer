@@ -68,6 +68,7 @@ public class UsageExample {
 	System.out.println("Explanation for \"" + VerbalisationManager.verbalise(axiom) + "\":\n");
 	System.out.println(explanation);
 	
+	System.out.println(VerbalisationManager.treatCamelCaseAndUnderscores("Stage_IV_Enteropathy-type_T-Cell_Lymphoma"));
 	
 	
 	}

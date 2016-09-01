@@ -350,7 +350,9 @@ public enum VerbalisationManager {
 		System.out.println("3:" + WordNetQuery.INSTANCE.getTypes(str)[3]); // adverb
 	    System.out.println("4:" + WordNetQuery.INSTANCE.getTypes(str)[4]); // adjective_satellite
 	    */
-		int[] types = WordNetQuery.INSTANCE.getTypes(str);
+		int[] types = null;
+		if  (!WordNetQuery.INSTANCE.isDisabled())
+			types = WordNetQuery.INSTANCE.getTypes(str);
 		if (!WordNetQuery.INSTANCE.isDisabled() && !(types[0]>0) &&!isNoun){
 			// System.out.println("NOT A NOUN");
 			str = lowerCaseFirstLetter(str);
@@ -361,7 +363,7 @@ public enum VerbalisationManager {
 		if (str.indexOf("ing")>0 && !str.equals("Ring")  && !str.equals("ring") && !str.contains(" ring") && !str.contains("Ring"))
 			return str.toLowerCase();
 		// Plural does not get an article
-		if (WordNetQuery.INSTANCE.isPlural(str)){
+		if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isPlural(str)){
 			return str;
 		}
 		if (str.substring(0,1).equals("a") 
@@ -439,7 +441,7 @@ public enum VerbalisationManager {
 				// System.out.println(token + " " + token.charAt(foundint+1) + " " + foundint);
 				int originalfoundint = foundint;
 				foundint = foundint + ind;
-				if (originalfoundint<0 || foundint+1>token.length())
+				if (originalfoundint<0 || foundint+2>token.length())
 					break;
 				token = token.substring(0,foundint) + "-" + Character.toLowerCase(token.charAt(foundint+1)) + token.substring(foundint+2);
 				ind = foundint+1;

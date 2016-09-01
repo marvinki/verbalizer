@@ -329,7 +329,8 @@ public class TermTree {
 				// System.out.println(" list is of null size");
 				return new ArrayList<OWLFormula>(); 
 			}
-			if (list.size()==1){ // base case
+			if (list.size()==1){ // base case (last atom to be matched)
+				// System.out.println("base case");
 				HashSet<TermNode> children = node.getAlternatives();
 				// base case with var
 				if(list.get(0) instanceof OWLVar || list.get(0) instanceof OWLRoleVar){
@@ -410,10 +411,10 @@ public class TermTree {
 					}
 				}
 					if (right_child == null){ // not found
-						 // System.out.println("child not found");
+						// System.out.println("child not found");
 						return new ArrayList<OWLFormula>(); 
 					} else{ // was found
-						 // System.out.println("child was found");
+						// System.out.println("child was found: " + right_child);
 						list.remove(0);
 						List<OWLFormula> results = matchCandidates(formula,list,right_child);
 						// System.out.println("recursive result" + results);
@@ -424,8 +425,9 @@ public class TermTree {
 		}
 		
 		public List<OWLFormula> findMatchingFormulas (OWLFormula formula){ 
+			// System.out.println("Called findMatchingFormulas for " + formula);
 				List<OWLFormula> candidates = matchCandidates(formula);
-				// System.out.println("tried to match formula " + formula);
+				
 				// System.out.println("candidates for matching: "+ candidates);
 				ArrayList<OWLFormula> results = new ArrayList<OWLFormula>();
 				for (OWLFormula candidate : candidates){
@@ -438,6 +440,7 @@ public class TermTree {
 						// do nothing if does not match
 					}
 				}
+				// System.out.println("tried to match formula " + formula);
 				// System.out.println("findMatchingFormulas returning results " + results);
 				return results;
 		}
