@@ -179,7 +179,7 @@ public enum VerbaliseTreeManager {
 	public static String verbaliseNL(GentzenTree tree, boolean withrulenames, boolean asHTML, Obfuscator obfuscator){
 		// System.out.println("verbaliseNL called");
 		List<Integer> order = tree.computePresentationOrder();
-		System.out.println("order: " + order);
+		// System.out.println("order: " + order);
 		String result = "";
 		// Variables to remember previous states' information
 		int previous_step = -1;
@@ -192,11 +192,11 @@ public enum VerbaliseTreeManager {
 		if (order.size()==1) 
 			singletonStep = true;
 		for(int i: order){
-			System.out.println("verbaliseNL at step no. " + i);
+			// System.out.println("verbaliseNL at step no. " + i);
 			// Get all information on this step
 			GentzenStep step = tree.getTreesteps().get(i);
 			List<Integer> premiseids = step.getPremises();
-			System.out.println("premiseids " + premiseids);
+			// System.out.println("premiseids " + premiseids);
 			
 			// Debugging only!
 			/*
@@ -209,8 +209,8 @@ public enum VerbaliseTreeManager {
 			List<OWLFormula> premises = tree.idsToFormulas(premiseids);
 			OWLFormula conclusion = tree.getFormulas().get(step.getConclusion());
 			// System.out.println("DEBUG -- premises " + axiompremiseids);
-			System.out.println("DEBUG -- premises " + premises);
-			System.out.println("DEBUG -- conclusion " + conclusion);
+			// System.out.println("DEBUG -- premises " + premises);
+			// System.out.println("DEBUG -- conclusion " + conclusion);
 			SequentInferenceRule infrule = step.getInfrule();
 			//
 			// Debug
@@ -266,15 +266,15 @@ public enum VerbaliseTreeManager {
 					beforeprevconc = ConversionManager.toOWLAPI(before_previousconclusion);
 			// Debug
 			
-			System.out.println("DEBUG");
-			System.out.println(infrule);
+			// System.out.println("DEBUG");
+			// System.out.println(infrule);
 			// System.out.println(premiseformulas);
-			System.out.println(additions_to_antecedent);
+			// System.out.println(additions_to_antecedent);
 			// System.out.println("DEBUG -- additions_to_antecedent " + additions_to_antecedent);
 			
 			String output;
 			if (asHTML){
-				System.out.println("HTML CASE");
+				// System.out.println("HTML CASE");
 				TextElementSequence seq = textualiseStatementNL(tree, infrule,
 						premiseformulas,
 						additions_to_antecedent,
@@ -286,13 +286,13 @@ public enum VerbaliseTreeManager {
 				
 			}
 			else{
-				System.out.println("TEXT CASE");
+				// System.out.println("TEXT CASE");
 				
 				TextElementSequence seq = textualiseStatementNL(tree, infrule,
 						premiseformulas,
 						additions_to_antecedent,
 						additions_to_succedent,prevconc,beforeprevconc,obfuscator);
-				System.out.println("seq " + seq);
+				// System.out.println("seq " + seq);
 				seq.makeUppercaseStart();
 				seq.pluralise(); // <--- introduce plurals
 				output = seq.toString();

@@ -1237,9 +1237,10 @@ public enum VerbalisationManager {
 		VerbalisationManager.INSTANCE.setOntology(ontology);
 		 
 		  // Old explanation generator
-		 BlackBoxExplanation bBexplanator=new BlackBoxExplanation(ontology, factory,reasoner);
-		 HSTExplanationGenerator explanationGenerator=new HSTExplanationGenerator(bBexplanator);
-		 OWLDataFactory dataFactory= OWLAPIManagerManager.INSTANCE.getDataFactory();
+		 // BlackBoxExplanation bBexplanator=new BlackBoxExplanation(ontology, factory,reasoner);
+		 // HSTExplanationGenerator explanationGenerator=new HSTExplanationGenerator(bBexplanator);
+		
+		OWLDataFactory dataFactory= OWLAPIManagerManager.INSTANCE.getDataFactory();
 		 
 	     ExplanationGeneratorFactory<OWLAxiom> genFac = ExplanationManager.createExplanationGeneratorFactory(factory);
 			// Now create the actual explanation generator for our ontology
@@ -1264,6 +1265,8 @@ public enum VerbalisationManager {
 			   }
 		   }
 	 }
+	 
+	 
 	 /*
 		 if (axiom instanceof OWLSubClassOfAxiom){
 			 explanation = explanationGenerator.getExplanation(dataFactory.getOWLObjectIntersectionOf(((OWLSubClassOfAxiom) axiom).getSubClass(), ( (OWLSubClassOfAxiom) axiom).getSuperClass().getObjectComplementOf()));
@@ -1272,18 +1275,15 @@ public enum VerbalisationManager {
 		 
 	 if (axiom instanceof OWLObjectPropertyDomainAxiom){
 		 OWLObjectPropertyDomainAxiom propDomainAx = (OWLObjectPropertyDomainAxiom) axiom;
-		   explanation = 
-				   explanationGenerator.getExplanation(
-						   dataFactory.getOWLObjectIntersectionOf(
-								   dataFactory.getOWLObjectSomeValuesFrom(propDomainAx.getProperty(), dataFactory.getOWLThing()),
-								   propDomainAx.getDomain().getObjectComplementOf()));
+		 Set<Explanation<OWLAxiom>>explanations = gen.getExplanations(axiom);
+		  
 	 }
 	 if (explanation.size()==0){
 		 return null;
 	 }
 	 
 	 long endJustfinding = System.currentTimeMillis();
-	 // System.out.println("Justification finding took: " + (endJustfinding - startJustfinding) + "ms");
+	 System.out.println("Justification finding took: " + (endJustfinding - startJustfinding) + "ms");
 	
 	 
 	// convert to internal format
@@ -1293,6 +1293,9 @@ public enum VerbalisationManager {
 		 axiomFormula = ConversionManager.fromOWLAPI(axiom);
 		 
 		 for (OWLAxiom ax: explanation){
+			 if (ax.equals(axiom)){
+				 System.out.println("Trivial justification!");
+			 }
 			 justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 			 
 			 // System.out.println("VerbalisationManager: adding: " + ConversionManager.fromOWLAPI(ax).prettyPrint());
@@ -1313,7 +1316,7 @@ public enum VerbalisationManager {
 		return null;}
 		
 		long endTreecompute = System.currentTimeMillis();
-		// System.out.println("Tree computation took: " + (endTreecompute - startTreecompute) + "ms");
+		System.out.println("Tree computation took: " + (endTreecompute - startTreecompute) + "ms");
 	return tree;
 	}
 	
@@ -1372,7 +1375,10 @@ public enum VerbalisationManager {
 			// 2: show rule names
 			// 3: HTML/text
 			
+			long startVerbalising = System.currentTimeMillis();
 			String result = VerbaliseTreeManager.verbaliseNL(tree, false,asHTML,obfuscator); // parameter for rule names!
+			long endVerbalising = System.currentTimeMillis();
+			System.out.println("Verbalisation took: " + (endVerbalising - startVerbalising) + "ms");
 			return result;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -1444,7 +1450,10 @@ public enum VerbalisationManager {
 			// 2: show rule names
 			// 3: HTML/text
 			
+			long startVerbalising = System.currentTimeMillis();
 			TextElementSequence textElementSequence = VerbaliseTreeManager.verbaliseTextElementSequence(tree, false, obfuscator);
+			long endVerbalising = System.currentTimeMillis();
+			System.out.println("Verbalisation took: " + (endVerbalising - startVerbalising) + "ms");
 			
 			//String result = VerbaliseTreeManager.verbaliseNL(tree, false,asHTML,obfuscator); // parameter for rule names!
 			//LogicElement element = new LogicElement(result);

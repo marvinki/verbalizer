@@ -966,7 +966,7 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 						
 						if (containsAll && goodConjunct!=null){
 							//  if (p1.getHead().toString().contains("TO_0000639"))
-							System.out.println("good conjunct " + goodConjunct);
+							// System.out.println("good conjunct " + goodConjunct);
 							OWLFormula conclusion = OWLFormula.createFormula(OWLSymb.SUBCL,p1,goodConjunct);
 							
 							/*

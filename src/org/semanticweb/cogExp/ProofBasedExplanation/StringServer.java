@@ -21,6 +21,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
@@ -145,11 +146,14 @@ public class StringServer {
     					
     		String result = "";
     		try {
-    			ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
+    			 ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
+    			 System.out.println("Done loading ontology " + ontology.getOntologyID() + ". Now loading reasoner.");
     			 reasonerFactory = new JFactFactory();
     			 SimpleConfiguration configuration = new SimpleConfiguration(50000);
     		     reasoner = reasonerFactory.createReasoner(ontology,configuration);
+    		     // reasoner.precomputeInferences();
     		} catch (Exception e){
+    			e.printStackTrace();
     			System.out.println("Failed to load ontology at " + ontologyfile);
     		}
     	}

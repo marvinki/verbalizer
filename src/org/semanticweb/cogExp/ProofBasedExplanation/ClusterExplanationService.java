@@ -41,6 +41,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
@@ -75,6 +76,7 @@ public class ClusterExplanationService {
 		this.ontology = ontology;
 		this.reasonerFactory = reasonerFactory;
 		this.reasoner = reasoner;
+		
 		// inferredAxioms = inferAxioms(ontology);
 	}
 	
@@ -135,21 +137,30 @@ public class ClusterExplanationService {
 			Set<OWLAxiom> previousaxioms = ontology.getAxioms();
 			// System.out.println("Previous axioms " + previousaxioms.size());
 			InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
-			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();    
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
+			try {
+				OWLOntology newontology = manager.createOntology();
+			
 			OWLDataFactory dataFactory2=manager.getOWLDataFactory();
-			iog.fillOntology(dataFactory2, ontology);
+			iog.fillOntology(dataFactory2, newontology);
 			// iog.fillOntology(outputOntologyManager, infOnt);
-			Set<OWLAxiom> newaxioms = ontology.getAxioms();
+			newaxioms = newontology.getAxioms();
 			System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
 			
 			newaxioms.removeAll(previousaxioms);
+			} catch (OWLOntologyCreationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			return newaxioms;
 	}
 	
 	
 	
 	public void precomputeAxioms(){
-		Set<OWLAxiom> newaxioms;
+		Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
 		Set<OWLAxiom> previousaxioms = new HashSet<OWLAxiom>();
 		if (inferredAxioms.size()>0){
 			System.out.println("[Using cached axioms]");
@@ -165,12 +176,11 @@ public class ClusterExplanationService {
 	 
     // Put the inferred axioms into a fresh empty ontology.
     OWLOntologyManager outputOntologyManager = OWLManager.createOWLOntologyManager();
-	try {
+	
+    
+    try {
 		OWLOntology infOnt = outputOntologyManager.createOntology();
-	} catch (OWLOntologyCreationException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	
 	previousaxioms = ontology.getAxioms();
 	// System.out.println("Previous axioms " + previousaxioms.size());
 	InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
@@ -178,9 +188,13 @@ public class ClusterExplanationService {
 	
 	OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	OWLDataFactory dataFactory2=manager.getOWLDataFactory();
-	iog.fillOntology(dataFactory2, ontology);
+	iog.fillOntology(dataFactory2, infOnt);
 	// iog.fillOntology(outputOntologyManager, infOnt);
-	newaxioms = ontology.getAxioms();
+	newaxioms = infOnt.getAxioms();
+	} catch (OWLOntologyCreationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	newaxioms.removeAll(previousaxioms);
 	}
 	
@@ -301,11 +315,11 @@ public class ClusterExplanationService {
 		    
 		    Path dotpath = Paths.get(tempDir + File.separator + "graph.dot");
 		    File dotfile = new File(dotpath.toString());
-		    System.out.println("dotfile generated in: " + dotfile);
+		    System.out.println("Dotfile generated in: " + dotfile);
 		    if(!dotfile.exists()){
 				dotfile.createNewFile();
 			}
-		    Writer dotWriter = new BufferedWriter(new OutputStreamWriter(
+		    Writer dotWriter = new PrintWriter(new OutputStreamWriter(
 		    	    new FileOutputStream(dotfile.toString()), "UTF-8"));
 		    
 		    // PrintWriter dotWriter = new PrintWriter(dotfile.toString());
@@ -453,10 +467,12 @@ public class ClusterExplanationService {
    				// System.out.println(VerbaliseTreeManager.listOutput(tree));
    				// System.out.println(tree.getStepsInOrder());
    				// System.out.println(tree.computePresentationOrder());
+   				long startVerbalising = System.currentTimeMillis();
    				String result = VerbaliseTreeManager.verbaliseNL(tree, false, true,null); // <-- 2nd arg labels, 3rd arg html
    				printstream.println(result);
    				String resultPlain = VerbaliseTreeManager.verbaliseNL(tree, false, false,null); // <-- 2nd arg labels, 3rd arg html
-   				
+   				long endVerbalising = System.currentTimeMillis();
+   				System.out.println("Verbalisation took: " + (endVerbalising - startVerbalising) + "ms");
    				String dotTree = tree.toDOT();
    				
    				handleDotRequest(dotTree);
