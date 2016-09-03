@@ -11,6 +11,7 @@ import org.semanticweb.cogExp.core.SequentInferenceRule;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
+import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLAxiomVisitor;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 
 public class GentzenTree {
@@ -357,34 +358,49 @@ public class GentzenTree {
 			String rulelabel = step.getInfrule().getShortName();
 			for (Integer prem : premises){
 				String nodelabel = VerbalisationManager.prettyPrint(formulas.get(prem));
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.SUBCLSYMB), "&#x2291;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.EQUIVSYMB), "&#x2261;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.INTSYMB), "&#x2293;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.UNIONSYMB), "&#x2294;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.EXISTSSYMB), "&#x2203;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.FORALLSYMB), "&#x2200;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.CIRCSYMB), "&#x25CB;");
 				if (nodelabel.length()>30){
 					int i = 0;
-					int fin = 0;
-					while(i<nodelabel.length()/2){
-						int tmp = nodelabel.indexOf("⊓",i+1);
-						if (tmp>0)
-						{
-							i = tmp;
-							fin = i;
+					int skip = 30;
+					while(i<nodelabel.length()){
+						int tmp1 = nodelabel.indexOf("&#x2291;",i+2);
+						int tmp2 = nodelabel.indexOf("&#x2261;",i+2);
+						int tmp3 = nodelabel.indexOf("&#x2293;",i+2);
+						int tmp4 = nodelabel.indexOf("&#x2294;",i+2);
+						System.out.println("tmp1 " + tmp1 + " tmp2 " + tmp2 + " tmp3 " + tmp3 + " tmp4 " + tmp4 + " i " + i);
+						if (tmp1<skip) 
+							tmp1=5000;
+						if (tmp2<skip) 
+							tmp2=5000;
+						if (tmp3<skip) 
+							tmp3=5000;
+						if (tmp4<skip) 
+							tmp4=5000;
+						int min = Math.min(tmp1,Math.min(tmp2,Math.min(tmp3,tmp4)));
+						System.out.println("min " + min); 
+						if (min<5000 && min>skip){
+							nodelabel = nodelabel.substring(0, min) + "\n" +  nodelabel.substring(min, nodelabel.length());
 						}
-						tmp = nodelabel.indexOf("⊑",i+1);
-						if (tmp>0){
-							i = tmp;
-							fin = i;
-						}
-						i++;
+						i = i + min;
 					}
-					nodelabel = nodelabel.substring(0, fin) + "\n" +  nodelabel.substring(fin, nodelabel.length());
 				}
+					
+				
 				
 				result +=  "n" + prem.toString() + " -> " + stepname + "R" + conclusion + ";\n"; 
 				//
-				result += "n" + prem.toString() + "[shape=rectangle,label=\"" 
+				result += "n" + prem.toString() + "[fontname=fixedsys,shape=rectangle,charset=\"utf-8\",label=\"" 
 				+ nodelabel  + "\"];\n";
 			}
 			result +=  stepname + "R" + conclusion + " -> " + "n" + conclusion + ";\n";
 			result += "n" 
-			+ conclusion + "[shape=rectangle,label=\"" 
+			+ conclusion + "[fontname=fixedsys,shape=rectangle,charset=\"utf-8\",label=\"" 
 					+ VerbalisationManager.prettyPrint(formulas.get(conclusion))  + "\"];\n";
 			result += stepname + "R" 
 					+ conclusion + "[color=lightblue,style=filled,label=\"" 
@@ -392,7 +408,7 @@ public class GentzenTree {
 		}
 		// return "";
 		// return "digraph " + VerbalisationManager.prettyPrint(formulas.get(getStepByID(order.get(order.size()-1)).getConclusion())) + "\n { ratio=compress \n" + result + "}";
-		return "digraph proof" + "\n { ratio=compress \n" + result + "}";
+		return "digraph proof" + "\n { fontname=calibri ratio=compress \n" + result + "}";
 	}
 	
 }

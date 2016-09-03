@@ -2,10 +2,12 @@ package org.semanticweb.cogExp.ProofBasedExplanation;
 
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -139,7 +141,15 @@ public class StringServer {
     		String ontologyfile = args[1];
     		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
     		java.io.File file = new java.io.File(ontologyfile);
+    		// System.out.println("Ontologyfile exists?: "+ file.exists());
+    		// System.out.println("Ontologyfile can read?: "+ file.canRead());
     		FileDocumentSource source = new FileDocumentSource(file);
+    		// System.out.println("Reader available?: "+ source.isReaderAvailable());
+    		/// sReader reader = source.getReader();
+    		// System.out.println("Absolute path "+ file.getAbsolutePath());
+    		// System.out.println("Is file: "+ file.isFile());
+    		// FileInputStream inputStr = new FileInputStream(file.getAbsolutePath());
+    		// inputStr.close();
     		OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
     		loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
     		loaderconfig = loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
@@ -147,6 +157,7 @@ public class StringServer {
     		String result = "";
     		try {
     			 ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
+    			 // manager.loadOntologyFromOntologyDocument(file);
     			 System.out.println("Done loading ontology " + ontology.getOntologyID() + ". Now loading reasoner.");
     			 reasonerFactory = new JFactFactory();
     			 SimpleConfiguration configuration = new SimpleConfiguration(50000);

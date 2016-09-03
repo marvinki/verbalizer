@@ -37,7 +37,7 @@ public class PrettyPrintClassExpressionVisitor implements OWLClassExpressionVisi
 			boolean firstp = true;
 			resultstring = resultstring + "(";
 			for (OWLClassExpression exp: arg0.getOperandsAsList()){
-				if (!firstp){ resultstring = resultstring + "⊓";}
+				if (!firstp){ resultstring = resultstring + PrettyPrintOWLAxiomVisitor.INTSYMB;}
 				firstp = false;
 				resultstring = resultstring + exp.accept(this);
 			}
@@ -50,7 +50,7 @@ public class PrettyPrintClassExpressionVisitor implements OWLClassExpressionVisi
 			boolean firstp = true;
 			resultstring = resultstring + "(";
 			for (OWLClassExpression exp: arg0.getOperandsAsList()){
-				if (!firstp){ resultstring = resultstring + "⊔";}
+				if (!firstp){ resultstring = resultstring + PrettyPrintOWLAxiomVisitor.UNIONSYMB;}
 				firstp = false;
 				resultstring = resultstring + exp.accept(this);
 			}
@@ -60,11 +60,11 @@ public class PrettyPrintClassExpressionVisitor implements OWLClassExpressionVisi
 
 		
 		public String visit(OWLObjectComplementOf arg0) {
-			return "¬" + "(" + arg0.getOperand().accept(this) + ")";
+			return PrettyPrintOWLAxiomVisitor.INTSYMB + "(" + arg0.getOperand().accept(this) + ")";
 		}
 
 		public String visit(OWLObjectSomeValuesFrom svf) {
-			String resultstring = "∃" 
+			String resultstring = PrettyPrintOWLAxiomVisitor.EXISTSSYMB
 					+ svf.getProperty().accept(ppPropVisit) // .visit(svf.getProperty()) 
 					+ "." + svf.getFiller().accept(this);
 			return resultstring;
@@ -72,7 +72,7 @@ public class PrettyPrintClassExpressionVisitor implements OWLClassExpressionVisi
 		
 		
 		public String visit(OWLObjectAllValuesFrom arg0) {
-			String resultstring = "∀" 
+			String resultstring = PrettyPrintOWLAxiomVisitor.FORALLSYMB
 					+ arg0.getProperty().accept(ppPropVisit) 
 					+ "." + arg0.getFiller().accept(this);
 			return resultstring;
