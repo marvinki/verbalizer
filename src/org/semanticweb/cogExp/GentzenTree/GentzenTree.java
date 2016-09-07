@@ -367,13 +367,13 @@ public class GentzenTree {
 				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.CIRCSYMB), "&#x25CB;");
 				if (nodelabel.length()>30){
 					int i = 0;
-					int skip = 30;
+					int skip = 25;
 					while(i<nodelabel.length()){
 						int tmp1 = nodelabel.indexOf("&#x2291;",i+2);
 						int tmp2 = nodelabel.indexOf("&#x2261;",i+2);
 						int tmp3 = nodelabel.indexOf("&#x2293;",i+2);
 						int tmp4 = nodelabel.indexOf("&#x2294;",i+2);
-						// System.out.println("tmp1 " + tmp1 + " tmp2 " + tmp2 + " tmp3 " + tmp3 + " tmp4 " + tmp4 + " i " + i);
+						System.out.println("i " + i + " tmp1 " + tmp1 + " tmp2 " + tmp2 + " tmp3 " + tmp3 + " tmp4 " + tmp4 + " i " + i);
 						if (tmp1<skip) 
 							tmp1=5000;
 						if (tmp2<skip) 
@@ -383,11 +383,11 @@ public class GentzenTree {
 						if (tmp4<skip) 
 							tmp4=5000;
 						int min = Math.min(tmp1,Math.min(tmp2,Math.min(tmp3,tmp4)));
-						// System.out.println("min " + min); 
+						System.out.println("min " + min); 
 						if (min<5000 && min>skip){
 							nodelabel = nodelabel.substring(0, min) + "\n" +  nodelabel.substring(min, nodelabel.length());
 						}
-						i = i + min;
+						i = min;
 					}
 				}
 					

@@ -20,9 +20,13 @@ public class ZoomWindow
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.getContentPane().add(zoom.getUIPanel(), "North");
         f.getContentPane().add(new JScrollPane(panel));
+        // Relative size
         int initHeight = (int) (panel.getPreferredSize().getHeight() * 1.2);
         int initWidth = (int) (panel.getPreferredSize().getWidth() * 1.2);
-        System.out.println(panel.getPreferredSize().getHeight());
+       
+        // int initHeight = (int) panel.getHeight();
+       //  int initWidth = (int) panel.getWidth();
+        // System.out.println(panel.getPreferredSize().getHeight());
         f.setSize(initWidth,initHeight);
         f.setLocation(200,200);
         f.setVisible(true);
@@ -38,9 +42,9 @@ class Image_Panel extends JPanel
     public Image_Panel(String filename)
     {
         loadImage(filename);
-        // scale = 1.0;
+        scale = 1.0;
         // System.out.println(image.getWidth());
-        scale = 1600.0/image.getWidth();
+        // scale = 1600.0/image.getWidth();
         // System.out.println("scale: " +scale);
         setBackground(Color.white);
     }

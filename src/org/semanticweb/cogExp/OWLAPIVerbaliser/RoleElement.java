@@ -20,7 +20,7 @@ public class RoleElement extends TextElement{
 	}
 
 	public String toHTML(){
-		return "<font color=Maroon>" + " " + content + "</font>";  // <-- the space is there on purpose 
+		return "<font color=Maroon>" + content + "</font>";  // <-- there was a space there on purpose 
 	}
 	
 	/**

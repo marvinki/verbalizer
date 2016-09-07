@@ -185,4 +185,7 @@ public class StringServer {
         StringServer server = new StringServer(port,clusterExplanationService);
         server.connect();
     }
+    
+    // WT_UpperBody Upper_Body_Training_Template "/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_demo.rdf" /Users/marvin
+    
 } 

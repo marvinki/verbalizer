@@ -46,7 +46,7 @@ public class TextElementSequence extends TextElement{
 			if (elem.content.startsWith("."))
 				needsep = false;
 			if (needsep)
-				result += " ";
+				result += "<font>&nbsp;</font>";  // <--- spaces
 			result += elem.toHTML();
 			needsep = true;
 		}

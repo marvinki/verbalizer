@@ -96,96 +96,116 @@ public class CoverageStoreEvaluatorCompressionDB {
 		return ontology;
 	}
 	
+	
+	
+	public static OWLOntology fetchOntology(String ontologyfile){
+		
+		// OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		java.io.File file = new java.io.File(ontologyfile);
+		FileDocumentSource source = new FileDocumentSource(file);
+			
+		OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
+		
+		
+		OWLOntology ontology = null;
+		try {
+			ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Ontology loaded. Reading justifications.");
+		
+		return ontology;
+	}
+	
+	public static String readJustifications(String filestring, List<OWLAxiom> conclusions, List<List<OWLAxiom>> justifications){
+		// Read file
+				Path path = Paths.get(filestring);
+				List<String> lines = new ArrayList<String>();	
+				try {
+					lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				String ontologyfile = lines.get(0);
+				OWLOntology ontology = fetchOntology(ontologyfile);
+				
+				
+				// OWLOntology ontology = manager.loadOntologyFromOntologyDocument(file);
+				VerbalisationManager.INSTANCE.setOntology(ontology);
+				
+				// reading...!
+				boolean inJustReadingMode = false;
+				boolean inConclusionReadingMode = false;
+				List<OWLAxiom> currentjusts = null;
+				int parsedcount = 0;
+				int percentachieved = 0;
+				System.out.println("Lines to read: " + lines.size());
+				
+				int originalsize = lines.size();
+				
+				for (String line : lines){
+					// String line = lines.get(0);
+					// lines.remove(0);
+					// System.out.println("Line: " + line);
+					// System.out.println("Just reading mode: " + inJustReadingMode);
+					// System.out.println("parsedcount: " + parsedcount);
+					if ((parsedcount*10000)/(originalsize*100)>percentachieved){
+						percentachieved = (parsedcount*10000)/(originalsize*100);
+						System.out.printf("\r");
+						System.out.print(percentachieved + "%");
+					}
+					parsedcount++;
+					if (line.contains("CONCLUSION")){
+						inJustReadingMode=false;
+						inConclusionReadingMode=true;
+						continue;
+					}
+					if (inConclusionReadingMode){
+						conclusions.add(parseAxiomFunctional(line,ontology));
+						inJustReadingMode=false;
+						inConclusionReadingMode=false;
+						continue;
+					}
+					if (line.contains("JUSTS")){
+						inJustReadingMode=true;
+						currentjusts = new ArrayList<OWLAxiom>();
+						justifications.add(currentjusts);
+						continue;
+					}
+					if (line.contains("STATS")){
+						inJustReadingMode=false;
+					}
+					if (line.contains("FAILED")){
+						break; // we're done!
+					}
+					if (line.length()<2){
+						inJustReadingMode=false;
+					}
+					if (inJustReadingMode)
+						currentjusts.add(parseAxiomFunctional(line,ontology));
+				}
+				// return ontology;
+				return ontologyfile;
+	}
+	
 	public static Statistic runOntology(String filestring, int timelimit1) throws OWLOntologyCreationException{
 		// Read file
-		Path path = Paths.get(filestring);
-		List<String> lines = new ArrayList<String>();	
-		try {
-			lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		
 		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
 		List<List<OWLAxiom>> justifications = new ArrayList<List<OWLAxiom>>();
 		
-		String ontologyfile = lines.get(0);
+		String ontologyfile = readJustifications(filestring,conclusions,justifications);
+		
 		
 		String corpus = "unkonwn";
 		if (ontologyfile.contains("ore_ont"))
 			corpus = "ore2015";
 		if (ontologyfile.contains("Ontology-"))
 			corpus = "TONES";
-		
-		// OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		java.io.File file = new java.io.File(ontologyfile);
-		FileDocumentSource source = new FileDocumentSource(file);
-		
-		
-		
-		OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
-		
-		
-		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
-		System.out.println("Ontology loaded. Reading justifications.");
-		
-		
-		
-		// OWLOntology ontology = manager.loadOntologyFromOntologyDocument(file);
-		VerbalisationManager.INSTANCE.setOntology(ontology);
-		
-		// reading...!
-		boolean inJustReadingMode = false;
-		boolean inConclusionReadingMode = false;
-		List<OWLAxiom> currentjusts = null;
-		int parsedcount = 0;
-		int percentachieved = 0;
-		System.out.println("Lines to read: " + lines.size());
-		
-		int originalsize = lines.size();
-		
-		for (String line : lines){
-			// String line = lines.get(0);
-			// lines.remove(0);
-			// System.out.println("Line: " + line);
-			// System.out.println("Just reading mode: " + inJustReadingMode);
-			// System.out.println("parsedcount: " + parsedcount);
-			if ((parsedcount*10000)/(originalsize*100)>percentachieved){
-				percentachieved = (parsedcount*10000)/(originalsize*100);
-				System.out.printf("\r");
-				System.out.print(percentachieved + "%");
-			}
-			parsedcount++;
-			if (line.contains("CONCLUSION")){
-				inJustReadingMode=false;
-				inConclusionReadingMode=true;
-				continue;
-			}
-			if (inConclusionReadingMode){
-				conclusions.add(parseAxiomFunctional(line,ontology));
-				inJustReadingMode=false;
-				inConclusionReadingMode=false;
-				continue;
-			}
-			if (line.contains("JUSTS")){
-				inJustReadingMode=true;
-				currentjusts = new ArrayList<OWLAxiom>();
-				justifications.add(currentjusts);
-				continue;
-			}
-			if (line.contains("STATS")){
-				inJustReadingMode=false;
-			}
-			if (line.contains("FAILED")){
-				break; // we're done!
-			}
-			if (line.length()<2){
-				inJustReadingMode=false;
-			}
-			if (inJustReadingMode)
-				currentjusts.add(parseAxiomFunctional(line,ontology));
-		}
 		
 		/*
 		for (int i = 0; i<conclusions.size();i++)
@@ -267,9 +287,12 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    List<SequentInferenceRule> nonredundantInferenceRules = RuleSetManager.INSTANCE.getRuleSet("ELnonredundant");
 	    
 	    
+	    int nonredundantProblems = 0;
+	    
 	   for(int i = 0; i<realaxioms.size(); i++){
 	   //  for(OWLAxiom ax : realaxioms){  //int i = 0; i<realaxioms.size(); i++){
 	    	OWLAxiom ax = realaxioms.get(i);
+	    	System.out.println("Problematic nonredundant axioms so far: " +  nonredundantProblems);
 	    	// System.out.println("Working on conclusion " + ax);
 	    	remainingAxioms--;
 	    	if (remainingAxioms%10==0){
@@ -498,10 +521,13 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				System.out.println("entering loop no 1.");
 	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree, currentrules, 840000, timelimit1 * 1000);
 	    				
+	    				INLG2012NguyenEtAlRules.RULE12.clearCaches();
+	    				INLG2012NguyenEtAlRules.RULE15.clearCaches();
+	    				
 	    				if (prooftree.getOpenNodes().size()==0){
 	    				System.out.println("entering loop no 2.");
 	    				// InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 5);
-	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 3);
+	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 5);
 	    				}
 	    				System.out.println("Done looping.");
 	    				
@@ -555,6 +581,16 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				System.out.println("Unproven axiom : " + subAx);
 	    				System.out.println("Explanation " + explanation);
 
+	    				nonredundantProblems = nonredundantProblems + 1;
+	    				
+	    				try {
+							System.out.println("now gentzening the first tree.");
+							org.semanticweb.cogExp.GentzenTree.GentzenTree gentzenTree = prooftree.toGentzen();
+							System.out.println(VerbaliseTreeManager.listOutput(gentzenTree));
+	    				}catch(Exception e){
+	    					e.printStackTrace();
+	    				}
+	    				
 	    				continue;
 	    				// throw new RuntimeException();
 	    			}
@@ -1149,7 +1185,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		
 			
 			// Statistic stats = runOntology("/Users/marvin/marvin_work_ulm/resources/ontologies/ore2015_pool_sample/el/pool/" + line);
-			Statistic stats = runOntology(storedfilesStem + line,5); // <---- time limit (in seconds)
+			Statistic stats = runOntology(storedfilesStem + line,30); // <---- time limit (in seconds)
 			
 			
 			// create individual detailed log file	
