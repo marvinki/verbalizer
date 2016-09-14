@@ -800,6 +800,8 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 		if (exp.getHead().equals(OWLSymb.INT))
 			intsubexprs.add(exp);
 	}
+	// System.out.println("PROFILE intsubexprs size " + intsubexprs.size());
+	
 	
 	// s.reportSubexpressionFormulas();
 	// s.reportAntecedent();
@@ -824,6 +826,7 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 				bins.put(cands.getArgs().get(0),newset);
 				}
 			}
+			// System.out.println("PROFILE: bins size "  + bins.size());
 			Set<OWLFormula> keys = bins.keySet();
 			for (OWLFormula p1 : keys){
 				// if (p1.getHead().toString().contains("VT608"))
@@ -890,19 +893,32 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 							// if (conjunct.size()>2)
 							// 	System.out.println("conjunct: " + conjunct);
 							
+							/*
 							if (p1.getHead().toString().contains("Spatial") && p2.toString().contains("C131")
 									&& p3.toString().contains("409") && p3.toString().contains("419") && conjunct.size()>2
 									){
 							// System.out.println("constructed conjuncts " + conjuncts);
 							// System.out.println("conjunct " + conjunct);
 							}
+							*/
 							
 							
-								// Check if found conjuncts are contained in subexpression conjunct
+								// Check if found conjuncts are contained (in the right order) in subexpression conjunct
 								boolean allIn = true;
+								int conjunctpointer = 0;
 								for (OWLFormula elem : conjuncts){
-									if (!conjunct.contains(elem))
+									boolean found = false;
+									while (conjunctpointer < conjunct.size()){
+										if (conjunct.get(conjunctpointer).equals(elem)){
+											found = true;
+											break;
+										}
+										conjunctpointer++;
+									}
+									if (!found)
 										allIn = false;
+									// if (!conjunct.contains(elem))
+									// 	allIn = false;
 								}
 								if (allIn && conjuncts_p2.size() + conjuncts_p3.size()  ==conjunct.size()){
 									containsAll = true;
@@ -934,6 +950,7 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 						System.out.println(goodConjunct);
 						*/
 						
+						/*
 						 if (containsAll && goodConjunct!=null && p1.getHead().toString().contains("Spatial")
 								&& cand1.toString().contains("C131")
 								&& cand1.toString().contains("C409")
@@ -945,7 +962,7 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 							System.out.println("p3 " + p3);
 						System.out.println("found good conjunct " + goodConjunct);
 						}
-						
+						*/
 						
 						if (containsAll && goodConjunct!=null){
 							//  if (p1.getHead().toString().contains("TO_0000639"))
@@ -2441,6 +2458,7 @@ RULE11{ //SubCla(X,\exists r. Y) and SubCla((>1,r,Y),Z) --> SubCla(X,Z)
 								catch (Exception e){
 									System.out.println(" Rule 12: this should not happen");
 								} // end try-catch
+								// System.out.println(cands + " matched with " + candidates2);
 							bins.put(cands.getArgs().get(1),candidates2);
 							} // end if
 						}
