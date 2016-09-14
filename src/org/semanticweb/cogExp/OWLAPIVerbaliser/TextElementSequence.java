@@ -61,9 +61,11 @@ public class TextElementSequence extends TextElement{
 				needsep = false;
 			if (needsep)
 				labels.add(new JLabel(" ")); 
+			
 			labels.addAll(elem.toJLabel());
 			needsep = true;
 		}
+		
 		return labels;
 	}
 	

@@ -228,8 +228,13 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLDataAllValuesFrom arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		OWLDataPropertyExpression prop = arg0.getProperty();
+		OWLDataRange filler = arg0.getFiller();
+		OWLFormula formulaprop = OWLFormula.createFormulaDataProperty(prop.asOWLDataProperty().getIRI().getFragment(), 
+				prop.asOWLDataProperty().getIRI().toString());
+		OWLFormula formulafiller = filler.accept(this);
+		System.out.println("returning " + OWLFormula.createFormula(OWLSymb.DATAALLVALUESFROM,formulaprop, formulafiller));
+		return OWLFormula.createFormula(OWLSymb.DATAALLVALUESFROM,formulaprop, formulafiller);
 	}
 
 	public OWLFormula visit(OWLDataHasValue odhv) {
@@ -246,18 +251,32 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLDataMinCardinality arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		int cardinality = arg0.getCardinality();
+		OWLFormula cardform = new OWLFormula(new OWLInteger(cardinality));
+		OWLDataRange filler = arg0.getFiller();
+		OWLDataPropertyExpression property = arg0.getProperty();
+		return OWLFormula.createFormula(OWLSymb.DATAMINCARDINALITY,
+				cardform,property.accept(this),filler.accept(this));
 	}
 
 	public OWLFormula visit(OWLDataExactCardinality arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		int cardinality = arg0.getCardinality();
+		OWLFormula cardform = new OWLFormula(new OWLInteger(cardinality));
+		OWLDataRange filler = arg0.getFiller();
+		OWLDataRan dataran = ConversionManager.datarangeToDataran(filler);
+		OWLFormula dataranForm = new OWLFormula(dataran);
+		OWLDataPropertyExpression property = arg0.getProperty();
+		return OWLFormula.createFormula(OWLSymb.DATAEXACTCARDINALITY,
+				cardform,property.accept(this),dataranForm);
 	}
 
 	public OWLFormula visit(OWLDataMaxCardinality arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		int cardinality = arg0.getCardinality();
+		OWLFormula cardform = new OWLFormula(new OWLInteger(cardinality));
+		OWLDataRange filler = arg0.getFiller();
+		OWLDataPropertyExpression property = arg0.getProperty();
+		return OWLFormula.createFormula(OWLSymb.DATAMAXCARDINALITY,
+				cardform,property.accept(this),filler.accept(this));
 	}
 
 	public OWLFormula visit(OWLSubClassOfAxiom axiom) {

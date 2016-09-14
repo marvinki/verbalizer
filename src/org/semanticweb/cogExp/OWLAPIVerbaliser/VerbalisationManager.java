@@ -18,6 +18,9 @@ import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owl.explanation.api.ExplanationGenerator;
 import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
 import org.semanticweb.owl.explanation.api.ExplanationManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.FileDocumentSource;
+import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -34,12 +37,18 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
+
+import org.semanticweb.elk.owlapi.ElkReasonerFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
@@ -76,10 +85,6 @@ public enum VerbalisationManager {
 		return seq;
 	}
 	
-	
-	/*
-	 * FIXME fgda
-	 */
 	
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator){
 		textOWLObjectVisit.setObfuscator(obfuscator);
@@ -270,7 +275,9 @@ public enum VerbalisationManager {
 		if (VerbalisationManager.INSTANCE.getPropertyNLString(property).indexOf("[X]")>=0)
 			result += VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 		result = treatCamelCaseAndUnderscores(result);
-		System.out.println("DEBUG PROPERTY |" + result + "|");
+
+		// System.out.println("DEBUG PROPERTY |" + result + "|");
+
 		return result;
 	}
 	
@@ -350,6 +357,7 @@ public enum VerbalisationManager {
 		System.out.println("3:" + WordNetQuery.INSTANCE.getTypes(str)[3]); // adverb
 	    System.out.println("4:" + WordNetQuery.INSTANCE.getTypes(str)[4]); // adjective_satellite
 	    */
+
 		int[] types = null;
 		if  (!WordNetQuery.INSTANCE.isDisabled())
 			types = WordNetQuery.INSTANCE.getTypes(str);
@@ -363,6 +371,7 @@ public enum VerbalisationManager {
 		if (str.indexOf("ing")>0 && !str.equals("Ring")  && !str.equals("ring") && !str.contains(" ring") && !str.contains("Ring"))
 			return str.toLowerCase();
 		// Plural does not get an article
+
 		if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isPlural(str)){
 			return str;
 		}
@@ -1283,7 +1292,9 @@ public enum VerbalisationManager {
 	 }
 	 
 	 long endJustfinding = System.currentTimeMillis();
-	 System.out.println("Justification finding took: " + (endJustfinding - startJustfinding) + "ms");
+
+	 // System.out.println("Justification finding took: " + (endJustfinding - startJustfinding) + "ms");
+
 	
 	 
 	// convert to internal format
@@ -1298,7 +1309,6 @@ public enum VerbalisationManager {
 			 }
 			 justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 			 
-			 // System.out.println("VerbalisationManager: adding: " + ConversionManager.fromOWLAPI(ax).prettyPrint());
 		 }
 			} catch (Exception e) {
 				return null;
@@ -1316,10 +1326,31 @@ public enum VerbalisationManager {
 		return null;}
 		
 		long endTreecompute = System.currentTimeMillis();
-		System.out.println("Tree computation took: " + (endTreecompute - startTreecompute) + "ms");
+
+		// System.out.println("Tree computation took: " + (endTreecompute - startTreecompute) + "ms");
+
 	return tree;
 	}
 	
+	
+	/**
+	 * 
+	 * @param axiom axiom that is to be verbalised
+	 * @param reasoner respective reasoner
+	 * @param factory respective reasoner factory
+	 * @param ontology respective ontology
+	 * @param maxsteps maximum steps to be taken when evaluating the result
+	 * @param maxtime maximum time to be taken when evaluating the result
+	 * @param ruleset the ruleset to be used
+	 * @param asHTML <code>true</code> if the output string should contain HTML tags
+	 * @param obf <code>true</code> if the output is to be obfuscated
+	 * @return returns the verbalised axiom as string
+	 */
+	
+	/*
+	 * TODO for marvin:
+	 * double check the javadoc section
+	 */
 	public static String verbalizeAxiom(OWLAxiom axiom, OWLReasoner reasoner, OWLReasonerFactory factory, OWLOntology ontology, int maxsteps, long maxtime, String ruleset, boolean asHTML, boolean obf){
 		
 		 VerbalisationManager.INSTANCE.setOntology(ontology);
@@ -1468,6 +1499,78 @@ public enum VerbalisationManager {
 			return resultSequence;
 		} 
 		
+	}
+	
+	public static OWLClass retrieveClassByName(String classname, OWLOntology ontology){
+		Set<OWLClass> classes = ontology.getClassesInSignature();
+		OWLClass resultclass = null;
+		 for (OWLClass cl : classes){
+			 // System.out.println(cl.toString());
+			 if (cl.getIRI().getFragment().equals(classname)){
+				 resultclass = cl;
+			 }
+		 }
+		 if (resultclass==null){
+			 System.out.println("Class not found in ontology: " + classname);
+			 return null;
+			 };
+		return resultclass;
+	}
+	
+	
+	public static GentzenTree computeTree(OWLSubClassOfAxiom axiom, String ontologyname){
+		// Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		// rootlogger.setLevel(Level.OFF);
+		
+		GentzenTree tree = null;
+		
+		// load ontology
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		java.io.File file = new java.io.File(ontologyname);
+		FileDocumentSource source = new FileDocumentSource(file);
+		OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
+		loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+		loaderconfig = loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
+				
+		OWLOntology ontology;
+		try {
+			ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
+			VerbalisationManager.INSTANCE.setOntology(ontology);
+		
+		// construct axiom
+	  	OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		//  OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(subclass, superclass);
+		
+		// get reasoner
+		 
+		 
+		 OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
+		 Logger.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
+		 OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
+		  
+		
+		 
+		 tree = VerbalisationManager.computeGentzenTree(axiom, 
+					reasoner, 
+					reasonerFactory, 
+					ontology, 
+					50000,
+					60000,
+					"OP");	
+		// } catch (OWLOntologyCreationException e) {
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		return tree;
+	}
+	
+	public static String computeVerbalization(GentzenTree tree, boolean asHTML, Obfuscator obfuscator){
+		WordNetQuery.INSTANCE.disableDict();
+		String result = VerbaliseTreeManager.verbaliseNL(tree, false,asHTML,obfuscator); 
+		return result;
 	}
 	
 	

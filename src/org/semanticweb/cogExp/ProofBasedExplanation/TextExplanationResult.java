@@ -3,6 +3,8 @@ package org.semanticweb.cogExp.ProofBasedExplanation;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
@@ -16,6 +18,21 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		jpanel = panel;
 		setLayout(new BorderLayout());
 		add(panel);
+	}
+	
+	public TextExplanationResult(JPanel panel, boolean scrollable){
+		JScrollPane scrollPane = getScrollPane(panel);	
+		scrollPane.setViewportView(jpanel);
+		setLayout(new BorderLayout());
+		add(scrollPane);
+	}
+	
+	
+	private JScrollPane getScrollPane(JPanel panel){		
+			JScrollPane scrollPane = new JScrollPane (panel, 
+		            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			return scrollPane;
 	}
 	
 	@Override

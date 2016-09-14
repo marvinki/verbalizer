@@ -52,7 +52,11 @@ public class TextElement {
 		}
 	}
 	
-	
+	/**
+	 * 
+	 * @return returns the content of the TextElement as list of JLabels,
+	 * the elements have no white spaces at their ending or beginning
+	 */
 	public List<JLabel> toJLabel(){
 		List<JLabel> result = new ArrayList<JLabel>();
 		String name = content;
@@ -60,9 +64,12 @@ public class TextElement {
 			 name = content.substring(0,name.length()-1);
 		if (name.startsWith(" "))
 			 name = name.substring(1,name.length());
+		
 		JLabel label = new JLabel(name);
 		result.add(label);
 		return result;
 	}
+	
+	
 	
 }
