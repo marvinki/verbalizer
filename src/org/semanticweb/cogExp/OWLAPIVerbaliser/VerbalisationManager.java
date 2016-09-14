@@ -86,6 +86,7 @@ public enum VerbalisationManager {
 	}
 	
 	
+
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator){
 		textOWLObjectVisit.setObfuscator(obfuscator);
 		verbOWLObjectVisit.setObfuscator(obfuscator);

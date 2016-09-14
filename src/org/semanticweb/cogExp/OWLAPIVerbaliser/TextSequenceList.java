@@ -143,10 +143,10 @@ public class TextSequenceList extends TextElement {
 	/**
 	 * 
 	 * @return returns the content of the TextSequenceList as list of JLabels.
-	 * The elements are seperated by ", ". Between the last and the Element before that there's
+	 * The elements are separated by ", ". Between the last and the Element before that there's
 	 * an " and ". The Text of the last JLabel ends with ", ".
 	 * All JLabels concatenated make the sentence: 
-	 * " Text_1, Text_2, ..., Text_n-1 and Textn, "
+	 * " Text_1, Text_2, ..., Text_n-1 and Text_n, "
 	 */
 	@Override
 	public List<JLabel> toJLabel(){
@@ -154,23 +154,15 @@ public class TextSequenceList extends TextElement {
 		
 		result.addAll(list.get(0).generateLabels()); 
 		
-		for (int i = 1; i < list.size()-2; i++){ // add a seperator (", ") between the statements
+		for (int i = 1; i < list.size()-2; i++){ // add a separator (", ") between the statements
 			result.add(new JLabel(", "));
 			result.addAll(list.get(i).generateLabels());
 		}
 		
-		result.add(new JLabel(" and "));	//add the seperator " and " between the last statement and the one before that
+		result.add(new JLabel(" and "));	//add the separator " and " between the last statement and the one before that
 		result.addAll(list.get(list.size()-1).generateLabels());
 		result.add(new JLabel(", "));
-		/*
 		
-		for(TextElementSequence sequence : list){
-			result.addAll(sequence.generateLabels());
-			result.add(new JLabel(" "));
-		}
-				
-		
-		*/
 		return result;
 	
 	}
