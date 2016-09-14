@@ -1,6 +1,5 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,12 +30,12 @@ import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import uk.ac.manchester.cs.jfact.JFactFactory;
 
 public class StringServer {
-    private final ServerSocket server;
-    private final Socket socket;
-    private ClusterExplanationService service = null;
-    
-    public StringServer(int port, ClusterExplanationService service) throws IOException {
-    	String tmpdir = "";
+	private final ServerSocket server;
+	// private final Socket socket;
+	private ClusterExplanationService service = null;
+
+	public StringServer(int port, ClusterExplanationService service) throws IOException {
+		String tmpdir = "";
 		try {
 			tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
 		} catch (IOException e) {
@@ -44,148 +43,165 @@ public class StringServer {
 			e.printStackTrace();
 		}
 		WordNetQuery.INSTANCE.setDict(tmpdir);
-        server = new ServerSocket(port);
-        this.service = service;
-        socket = server.accept();
-        Runtime.getRuntime().addShutdownHook(new Thread(){public void run(){
-            try {
-                socket.close();
-                System.out.println("The server is shut down!");
-            } catch (IOException e) { /* failed */ }
-        }});
-        
-       
-        
-    }
-    
-    
+		server = new ServerSocket(port);
+		this.service = service;
+		while (true) {
+			final Socket socket = server.accept();
+			/*Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					try {
+						socket.close();
+						System.out.println("The server is shut down!");
+					} catch (IOException e) {
+						/* failed  }
+				}
+			});*/
+			
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// Socket socket = null;
+					try {
+						handle(socket);
+					}
 
-    private void connect() {
+					catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
 
-        while (true) {
-            // Socket socket = null;
-            try {
-                handle(socket);
-            }
+	}
 
-            catch (IOException e) {
-                e.printStackTrace();
-            } 
-        }
-    }
+	/*private void connect() {
 
-    private void handle(Socket socket) throws IOException {
-        BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket
-                .getInputStream()));
-        PrintStream outputStream = new PrintStream(socket.getOutputStream());
-        String s;
-        
-        // while(inputReader.ready()) {
-        int idlecount = 0;
-        while (socket!=null && socket.isConnected()){
-        	if(inputReader.ready()){
-        		s = inputReader.readLine();
-        		if (s==null){
-        			System.out.println("We've lost connection");
-        			break;
-        		}
-        			
-        		System.out.println("[Reading input: " +s + "]");
-        		String output = "";
-        		try {
-        			output = service.handleCluster1Request(s,outputStream);
-        		} catch (OWLOntologyCreationException e) {
-        			// TODO Auto-generated catch block
-        			e.printStackTrace();
-        		}
-        		// outputStream.println(output);
-        		// System.out.println("input reader ready? " + inputReader.ready() + " socket:  " + socket + " is closed "+ socket.isClosed());
-        		System.out.println("[Waiting]");
-        	} else {
-        		// System.out.println("idlecount " + idlecount);
-        		try {
+		while (true) {
+			// Socket socket = null;
+			try {
+				handle(socket);
+			}
+
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}*/
+
+	private void handle(Socket socket) throws IOException {
+		BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		PrintStream outputStream = new PrintStream(socket.getOutputStream());
+		String s;
+
+		// while(inputReader.ready()) {
+		int idlecount = 0;
+		while (socket != null && socket.isConnected()) {
+			if (inputReader.ready()) {
+				s = inputReader.readLine();
+				if (s == null) {
+					System.out.println("We've lost connection");
+					break;
+				}
+
+				System.out.println("[Reading input: " + s + "]");
+				String output = "";
+				try {
+					output = service.handleCluster1Request(s, outputStream);
+				} catch (OWLOntologyCreationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// outputStream.println(output);
+				// System.out.println("input reader ready? " +
+				// inputReader.ready() + " socket: " + socket + " is closed "+
+				// socket.isClosed());
+				System.out.println("[Waiting]");
+			} else {
+				// System.out.println("idlecount " + idlecount);
+				try {
 					Thread.sleep(1);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-        		/*
-        		idlecount++;
-        		if (idlecount>1000){
-        			outputStream.println("PROBING THE CONNECTION!!!");
-        			if (outputStream.checkError()){
-        				idlecount = 0;
-        				break;
-        				}
-        			}
-        			*/
-        	}
-        	
-        }
-        System.out.println("Socket connection lost.");
-        inputReader.close();
-        outputStream.close();
-        socket.close();
-    }
+				/*
+				 * idlecount++; if (idlecount>1000){
+				 * outputStream.println("PROBING THE CONNECTION!!!"); if
+				 * (outputStream.checkError()){ idlecount = 0; break; } }
+				 */
+			}
 
-    public static void main(String[] args) throws IOException {
-    	int port = 3111;
-    	System.out.println("[Server preparation. Please wait.]");
-    	if (args.length>0 && args[0]!=null){
-    		port = Integer.parseInt(args[0]);
-    	}
-    	OWLOntology ontology = null;
-    	OWLReasonerFactory reasonerFactory = null;
-    	OWLReasoner reasoner = null;
-    	if (args.length>1 && args[1]!=null){
-    		String ontologyfile = args[1];
-    		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-    		java.io.File file = new java.io.File(ontologyfile);
-    		// System.out.println("Ontologyfile exists?: "+ file.exists());
-    		// System.out.println("Ontologyfile can read?: "+ file.canRead());
-    		FileDocumentSource source = new FileDocumentSource(file);
-    		// System.out.println("Reader available?: "+ source.isReaderAvailable());
-    		/// sReader reader = source.getReader();
-    		// System.out.println("Absolute path "+ file.getAbsolutePath());
-    		// System.out.println("Is file: "+ file.isFile());
-    		// FileInputStream inputStr = new FileInputStream(file.getAbsolutePath());
-    		// inputStr.close();
-    		OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
-    		loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
-    		loaderconfig = loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
-    					
-    		String result = "";
-    		try {
-    			 ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
-    			 // manager.loadOntologyFromOntologyDocument(file);
-    			 System.out.println("Done loading ontology " + ontology.getOntologyID() + ". Now loading reasoner.");
-    			 reasonerFactory = new JFactFactory();
-    			 SimpleConfiguration configuration = new SimpleConfiguration(50000);
-    		     reasoner = reasonerFactory.createReasoner(ontology,configuration);
-    		     // reasoner.precomputeInferences();
-    		} catch (Exception e){
-    			e.printStackTrace();
-    			System.out.println("Failed to load ontology at " + ontologyfile);
-    		}
-    	}
-    	
-    	ClusterExplanationService clusterExplanationService = new ClusterExplanationService(ontology,reasoner,reasonerFactory);
-    	// if (args.length>1 && args[1]!=null){
-    	// 	clusterExplanationService.precomputeAxioms();
-    	// }
-    	
-        
-        try {
+		}
+		System.out.println("Socket connection lost.");
+		inputReader.close();
+		outputStream.close();
+		socket.close();
+	}
+
+	public static void main(String[] args) throws IOException {
+		int port = 3111;
+		System.out.println("[Server preparation. Please wait.]");
+		if (args.length > 0 && args[0] != null) {
+			port = Integer.parseInt(args[0]);
+		}
+		OWLOntology ontology = null;
+		OWLReasonerFactory reasonerFactory = null;
+		OWLReasoner reasoner = null;
+		if (args.length > 1 && args[1] != null) {
+			String ontologyfile = args[1];
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			java.io.File file = new java.io.File(ontologyfile);
+			// System.out.println("Ontologyfile exists?: "+ file.exists());
+			// System.out.println("Ontologyfile can read?: "+ file.canRead());
+			FileDocumentSource source = new FileDocumentSource(file);
+			// System.out.println("Reader available?: "+
+			// source.isReaderAvailable());
+			/// sReader reader = source.getReader();
+			// System.out.println("Absolute path "+ file.getAbsolutePath());
+			// System.out.println("Is file: "+ file.isFile());
+			// FileInputStream inputStr = new
+			// FileInputStream(file.getAbsolutePath());
+			// inputStr.close();
+			OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration();
+			loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+			loaderconfig = loaderconfig
+					.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
+
+			String result = "";
+			try {
+				ontology = manager.loadOntologyFromOntologyDocument(source, loaderconfig);
+				// manager.loadOntologyFromOntologyDocument(file);
+				System.out.println("Done loading ontology " + ontology.getOntologyID() + ". Now loading reasoner.");
+				reasonerFactory = new JFactFactory();
+				SimpleConfiguration configuration = new SimpleConfiguration(50000);
+				reasoner = reasonerFactory.createReasoner(ontology, configuration);
+				// reasoner.precomputeInferences();
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Failed to load ontology at " + ontologyfile);
+			}
+		}
+
+		ClusterExplanationService clusterExplanationService = new ClusterExplanationService(ontology, reasoner,
+				reasonerFactory);
+		// if (args.length>1 && args[1]!=null){
+		// clusterExplanationService.precomputeAxioms();
+		// }
+
+		try {
 			clusterExplanationService.handleCluster1Request("precompute", null);
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        System.out.println("[Explanation generator listening on port " + port + ".]");
-        StringServer server = new StringServer(port,clusterExplanationService);
-        server.connect();
-    }
-    
-    // WT_UpperBody Upper_Body_Training_Template "/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_demo.rdf" /Users/marvin
-    
-} 
+		System.out.println("[Explanation generator listening on port " + port + ".]");
+		StringServer server = new StringServer(port, clusterExplanationService);
+		// server.connect();
+	}
+
+	// WT_UpperBody Upper_Body_Training_Template
+	// "/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in
+	// rdf-xml format/cluster6ontology_demo.rdf" /Users/marvin
+
+}
