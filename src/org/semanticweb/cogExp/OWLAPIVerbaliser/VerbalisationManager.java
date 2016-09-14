@@ -82,12 +82,15 @@ public enum VerbalisationManager {
 	}
 	
 	
-
-<<<<<<< HEAD
-=======
-
-	
->>>>>>> 5011b9e0d80ac34fe8e7fd7253efb5dc919efc98
+	/* TODO
+	 * delete the following comment
+	 */
+//
+//<<<<<<< HEAD
+//=======
+//
+//	
+//>>>>>>> 5011b9e0d80ac34fe8e7fd7253efb5dc919efc98
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator){
 		textOWLObjectVisit.setObfuscator(obfuscator);
 		verbOWLObjectVisit.setObfuscator(obfuscator);
