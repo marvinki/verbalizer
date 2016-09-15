@@ -64,6 +64,14 @@ public class PrettyPrintOWLAxiomVisitor implements OWLAxiomVisitorEx<String>{
 	private PrettyPrintPropertyExpressionVisitor ppPropertyExpressionVisit = new PrettyPrintPropertyExpressionVisitor();
 	private PrettyPrintIndividualVisitor ppIndividualVisit = new PrettyPrintIndividualVisitor();
 	
+    public static final char SUBCLSYMB =  Character.toChars(0x2291)[0];
+    public static final char EQUIVSYMB =  Character.toChars(0x2261)[0];
+    public static final char INTSYMB =  Character.toChars(0x2293)[0];
+    public static final char UNIONSYMB =  Character.toChars(0x2294)[0];
+    public static final char EXISTSSYMB =  Character.toChars(0x2203)[0];
+    public static final char FORALLSYMB =  Character.toChars(0x2200)[0];
+    public static final char CIRCSYMB =  Character.toChars(0x25CB)[0];
+	
 public String visit(OWLSubAnnotationPropertyOfAxiom arg0) {
 	OWLAnnotationProperty subProp = arg0.getSubProperty();
 	OWLAnnotationProperty supProp = arg0.getSuperProperty();
@@ -84,7 +92,7 @@ public String visit(OWLAnnotationPropertyRangeAxiom arg0) {
 
 public String visit(OWLSubClassOfAxiom arg0) {
 	return  arg0.getSubClass().accept(ppClassExpressionVisit)  
-			+ "⊑" 
+			+ SUBCLSYMB
 			+  arg0.getSuperClass().accept(ppClassExpressionVisit);
 }
 
@@ -183,7 +191,7 @@ public String visit(OWLFunctionalObjectPropertyAxiom arg0) {
 
 public String visit(OWLSubObjectPropertyOfAxiom arg0) {
 	return arg0.getSubProperty().accept(ppPropertyExpressionVisit) 
-			+  "⊑" + arg0.getSuperProperty().accept(ppPropertyExpressionVisit);
+			+  SUBCLSYMB + arg0.getSuperProperty().accept(ppPropertyExpressionVisit);
 }
 
 public String visit(OWLDisjointUnionAxiom arg0) {
@@ -220,7 +228,7 @@ public String visit(OWLEquivalentDataPropertiesAxiom arg0) {
 	Set<OWLDataPropertyExpression> exprs =  ((OWLEquivalentDataPropertiesAxiom) arg0).getProperties();
     boolean firstp = true;
 	for (OWLDataPropertyExpression exp : exprs){
-		if (!firstp) {resultstring = resultstring + "?≡?";}
+		if (!firstp) {resultstring = resultstring + EQUIVSYMB;}
 		firstp = false;
 		resultstring = resultstring + ppPropertyExpressionVisit.visit(exp);
 	}
@@ -237,7 +245,7 @@ public String visit(OWLEquivalentClassesAxiom arg0) {
 	List<OWLClassExpression> exprs =  ((OWLEquivalentClassesAxiom) arg0).getClassExpressionsAsList();
     boolean firstp = true;
 	for (OWLClassExpression exp : exprs){
-		if (!firstp) {resultstring = resultstring + "≡";}
+		if (!firstp) {resultstring = resultstring + EQUIVSYMB;}
 		firstp = false;
 		resultstring = resultstring + exp.accept(ppClassExpressionVisit);
 	}
@@ -276,8 +284,19 @@ public String visit(OWLSameIndividualAxiom arg0) {
 }
 
 public String visit(OWLSubPropertyChainOfAxiom arg0) {
-	// TODO Auto-generated method stub
-	return null;
+	String result = "";
+	List<OWLObjectPropertyExpression> propertylist = arg0.getPropertyChain();
+	OWLObjectPropertyExpression superexpression = arg0.getSuperProperty();
+	boolean needscirc = false;
+	for (OWLObjectPropertyExpression expr : propertylist){
+		String exprString = expr.accept(ppPropertyExpressionVisit);
+		if (needscirc)
+			result = result + CIRCSYMB;
+		needscirc=true;
+		result = result + exprString;
+	}
+	result = result + SUBCLSYMB + superexpression.accept(ppPropertyExpressionVisit);
+	return result;
 }
 
 public String visit(OWLInverseObjectPropertiesAxiom arg0) {
