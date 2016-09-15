@@ -54,7 +54,7 @@ public class OWLFormula {
 	
 	private void computeBFLinearisation(LinkedList<OWLFormula> queue, LinkedList<OWLAtom> accumulator){
 		// leaf
-		if (queue.size()==0){
+		if (queue.size()==0 || queue==null){
 			return;
 		}
 		// pop node from queue
@@ -196,6 +196,7 @@ public class OWLFormula {
 	
 	// the "other" formula needs to be more general (more vars)
 	public List<Pair<OWLFormula,OWLFormula>> match(OWLFormula otherformula) throws Exception{
+		// System.out.println("trying to match " + this + " and " + otherformula);
 		// ArrayList<Pair<OWLFormula,OWLFormula>> matcher = new ArrayList<Pair<OWLFormula,OWLFormula>>();
 		// if we are at a variable, we construct matcher
 		if (otherformula.head instanceof OWLVar){		
@@ -221,6 +222,8 @@ public class OWLFormula {
 		// now the heads match, are the matchers for the subformulas compatible?
 		LinkedList<List<Pair<OWLFormula,OWLFormula>>> submatchers = new LinkedList<List<Pair<OWLFormula,OWLFormula>>>();
 		if (tail!=null){
+			if (this.tail.size()!=otherformula.tail.size())
+				throw new Exception("formulas do not match");
 			for (int i=0; i<this.tail.size(); i++){
 				List<Pair<OWLFormula,OWLFormula>> submatcher = this.tail.get(i).match(otherformula.tail.get(i));
 				submatchers.add(submatcher);
@@ -283,7 +286,7 @@ public class OWLFormula {
 	/** Creates an OWLFormula that represents a single class variable
 	 * 
 	 * @param name		the name of the variable
-	 * @return
+	 * @return TODO add description
 	 */
 	public static OWLFormula createFormulaVar(String name){
 		OWLVar varname = new OWLVar(name);
@@ -293,7 +296,7 @@ public class OWLFormula {
 	/** Creates an OWLFormula that represents a role variable
 	 * 
 	 * @param name		the name of the role variable
-	 * @return
+	 * @return add description
 	 */
 	public static OWLFormula createFormulaRoleVar(String name){
 		OWLRoleVar varname = new OWLRoleVar(name);
@@ -305,7 +308,7 @@ public class OWLFormula {
 	 * 
 	 * @param name		class name
 	 * @param uri		uri (full, including class name)
-	 * @return
+	 * @return add description
 	 */
 	public static OWLFormula createFormulaClass(String name, String uri){
 		OWLClassName classname = new OWLClassName(name,uri);
@@ -316,7 +319,7 @@ public class OWLFormula {
 	 * 
 	 * @param name	role name
 	 * @param uri	uri (full, including role name)
-	 * @return
+	 * @return add description
 	 */
 	public static OWLFormula createFormulaRole(String name, String uri){
 		OWLRoleName rolename = new OWLRoleName(name,uri);
@@ -427,7 +430,9 @@ public class OWLFormula {
 		return (head.equals(OWLSymb.TOP));
 	}
 	
-	
+	public boolean isBot(){
+		return (head.equals(OWLSymb.BOT));
+	}
 	
 	public static boolean containsSubformula(OWLFormula exp, OWLFormula subformula){
 		if (subformula.equals(exp)) return true;
