@@ -48,7 +48,11 @@ public class ProofBasedExplanationService extends ExplanationService{
 
 	@Override
 	public boolean hasExplanation(OWLAxiom axiom) {
-		return true;
+		if(axiom instanceof OWLSubClassOfAxiom){
+			return true;
+		}else{
+		return false;
+		}
 	}
 
 	

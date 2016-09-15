@@ -1,8 +1,20 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+/** TODO
+ * just for testing, delete this 5 imports (JFrame, JPanel,...,Toolkit) when not needed anymore
+ */
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -86,6 +98,34 @@ public class ClassElement extends TextElement{
 		labellist.add(articlelabel);
 		labellist.add(spacelabel);
 		labellist.add(contentlabel);
+		
+		contentlabel.addMouseListener(new MouseAdapter()  
+		{  
+		    public void mouseClicked(MouseEvent e)  
+		    {  
+		       /**
+		        * run this code when mouse is clicked
+		        */
+		       JFrame frame = new JFrame("Class Frame");
+		       JPanel panel = new JPanel();
+		       
+		       panel.add(articlelabel);		      
+		       panel.add(spacelabel);
+		       panel.add(contentlabel);
+		       
+		       frame.add(panel);
+		       
+		       frame.setSize(500, 50);
+			       
+		       Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		       int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+		       int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+		       frame.setLocation(x, y);
+		       
+		       frame.setVisible(true);
+		    }  
+		}); 
+		
 		return labellist;
 	}
 	
