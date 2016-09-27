@@ -16,6 +16,8 @@ import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 
+import com.fasterxml.jackson.core.base.GeneratorBase;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -39,9 +41,18 @@ public class ClassElement extends TextElement{
 	 */
 	public ClassElement(String content){
 		super(content);
+		
 	}
-	
-	
+		
+	/**
+	 * 
+	 * @param content name
+	 * @param tooltiptext optional additional text
+	 */
+	public ClassElement(String content, String tooltiptext){
+		super(content);
+		this.tooltiptext = tooltiptext;
+	}
 	/**
 	 * @return returns the content as plain string 
 	 */
@@ -52,17 +63,7 @@ public class ClassElement extends TextElement{
 	public String getToolTipText(){
 		return tooltiptext;
 	}
-	
-	/**
-	 * 
-	 * @param content name
-	 * @param tooltiptext optional additional text
-	 */
-	public ClassElement(String content, String tooltiptext){
-		super(content);
-		this.tooltiptext = tooltiptext;
-	}
-	
+		
 	@Override
 	public List<JLabel> toJLabel(){
 		List<JLabel> labellist = new ArrayList<JLabel>();
@@ -106,6 +107,8 @@ public class ClassElement extends TextElement{
 		       /**
 		        * run this code when mouse is clicked
 		        */
+		    	System.out.println("mouse clicked on class label\n");
+		    		       
 		       JFrame frame = new JFrame("Class Frame");
 		       JPanel panel = new JPanel();
 		       
@@ -123,7 +126,9 @@ public class ClassElement extends TextElement{
 		       frame.setLocation(x, y);
 		       
 		       frame.setVisible(true);
+		       
 		    }  
+		    
 		}); 
 		
 		return labellist;
