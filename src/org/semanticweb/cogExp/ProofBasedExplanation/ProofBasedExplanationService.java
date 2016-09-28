@@ -1,13 +1,8 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.protege.editor.owl.model.OWLModelManager;
@@ -279,27 +274,20 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		OWLReasonerFactory factory = modelmanager.getOWLReasonerManager().getCurrentReasonerFactory().getReasonerFactory();
 		OWLOntology ontology = modelmanager.getActiveOntology();
 		
-		
 		//this.getOWLEditorKit().getOWLWorkspace().setTitle("test Title");
 	
-		
-		
-		/* Outer panel, with vertical layout */
-		
-		
 		JPanel panel = new JPanel();
 		
-		TextElementSequence sequence = 
-			    getExplanationResultAsSequence(axiom,
-					   reasoner,
-					   factory,
-				 	   ontology,
-				 	   true,
-				 	   "OP"
-				 	   );
+		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
+					   													ontology, true, "OP");
 				 	   
-		//System.out.println("Sequence: "+ sequence.toString());
 		
+		/* TODO
+		 * Since all layouting should be done in TextEplanationResult, 
+		 * this should not be needed any further:
+		 */
+		
+		/*
 		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
 		flowLayout.setHgap(0);
 		BoxLayout verticalLayout = new BoxLayout(panel,BoxLayout.Y_AXIS);
@@ -308,6 +296,7 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		boolean justskipped = false;
 		innerpanel.setLayout(flowLayout);
 		innerpanel.setBackground(Color.WHITE);
+		
 		panel.add(innerpanel);
 		innerpanel.add(new JLabel(" "));
 		String previoustext = "placeholder";
@@ -336,13 +325,17 @@ public ExplanationResult explain(OWLAxiom axiom) {
 				//System.out.println("inserting label |" + label.getText() + "|");
 			// }
 		}
+		
 		TextExplanationResult result = new TextExplanationResult(panel);
 		
-		panel.setBackground(Color.WHITE);
-		System.out.println(panel.getHeight());
+		*/
 		
+		TextExplanationResult result = new TextExplanationResult(panel);
 		
-		return result;
+		/*
+		
+		*/		
+		return result.getResult(sequence);
 	}
 	
 
