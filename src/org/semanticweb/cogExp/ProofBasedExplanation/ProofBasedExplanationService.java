@@ -331,11 +331,13 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		*/
 		
 		TextExplanationResult result = new TextExplanationResult(panel);
+		result = result.getResult(sequence);
 		
+		System.out.println("Resultsize: "+result.getWidth()+", "+result.getHeight());
 		/*
 		
 		*/		
-		return result.getResult(sequence);
+		return result;
 	}
 	
 
