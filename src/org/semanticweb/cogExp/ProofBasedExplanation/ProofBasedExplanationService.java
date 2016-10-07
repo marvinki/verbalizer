@@ -276,8 +276,7 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		JPanel panel = new JPanel();
 		
 		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
-					   													ontology, true, "OP");
-				 	   
+					   													ontology, true, "OP");		 	   
 		
 		/* TODO
 		 * Since all layouting should be done in TextEplanationResult, 
