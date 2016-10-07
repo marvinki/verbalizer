@@ -268,14 +268,11 @@ public class ProofBasedExplanationService extends ExplanationService{
  */
 public ExplanationResult explain(OWLAxiom axiom) {
 		
-		
 		OWLModelManager modelmanager = getOWLModelManager();		
 		OWLReasoner reasoner = modelmanager.getOWLReasonerManager().getCurrentReasoner();
 		OWLReasonerFactory factory = modelmanager.getOWLReasonerManager().getCurrentReasonerFactory().getReasonerFactory();
 		OWLOntology ontology = modelmanager.getActiveOntology();
 		
-		//this.getOWLEditorKit().getOWLWorkspace().setTitle("test Title");
-	
 		JPanel panel = new JPanel();
 		
 		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
@@ -332,11 +329,7 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		
 		TextExplanationResult result = new TextExplanationResult(panel);
 		result = result.getResult(sequence);
-		
-		System.out.println("Resultsize: "+result.getWidth()+", "+result.getHeight());
-		/*
-		
-		*/		
+			
 		return result;
 	}
 	

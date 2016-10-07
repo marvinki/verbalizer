@@ -1,33 +1,40 @@
 /**
  * 
  */
-package tests;
+package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.fasterxml.jackson.core.io.SegmentedStringWriter;
-
 /**
+ * a CustomJPanels are properly sized Jpanels for the
+ * TextExplanationResult ...
  * @author fpaffrath
  *
  */
 public class CustomJPanel extends JPanel {
 
 	/**
-	 * 
+	 * a CustomJPanels are properly sized Jpanels for the
+	 * TextExplanationResult
+	 */
+	private static final long serialVersionUID = -5704255319127525196L;
+
+
+	/**
+	 * inherited
 	 */
 	public CustomJPanel() {
 		// TODO Auto-generated constructor stub
 	}
 
 	/**
-	 * @param layout
+	 * inherited
+	 * @param layout inherited
 	 */
 	public CustomJPanel(LayoutManager layout) {
 		super(layout);
@@ -35,7 +42,8 @@ public class CustomJPanel extends JPanel {
 	}
 
 	/**
-	 * @param isDoubleBuffered
+	 * inherited
+	 * @param isDoubleBuffered inherited
 	 */
 	public CustomJPanel(boolean isDoubleBuffered) {
 		super(isDoubleBuffered);
@@ -43,8 +51,9 @@ public class CustomJPanel extends JPanel {
 	}
 
 	/**
-	 * @param layout
-	 * @param isDoubleBuffered
+	 * inherited
+	 * @param layout inherited
+	 * @param isDoubleBuffered inherited
 	 */
 	public CustomJPanel(LayoutManager layout, boolean isDoubleBuffered) {
 		super(layout, isDoubleBuffered);
@@ -52,10 +61,17 @@ public class CustomJPanel extends JPanel {
 	}
 	
 	
+	/**
+	 * computes the needed size for the width of the Container cont.
+	 * 
+	 * @param cont Container of the CustomJPanel 
+	 * @return the Dimension with the same Width of the Container and 
+	 * 		the adapted Height.
+	 *
+	 */
 	public Dimension computeBestSize(Container cont){
 	
 	int maxWidth = cont.getWidth();
-	System.out.println("Max Width: " +maxWidth);
 	int vspace = 3;
 	int fontHeight = getFontMetrics(getFont()).getHeight()+
 			2*vspace;
@@ -71,7 +87,6 @@ public class CustomJPanel extends JPanel {
 		Component comp = getComponent(i);
 		
 		totalWidth += Math.ceil(comp.getPreferredSize().getWidth());
-		//System.out.println("Total Width: " +totalWidth);
 		if(totalWidth >= maxWidth){
 			System.out.println("longer");
 			Height += fontHeight;
