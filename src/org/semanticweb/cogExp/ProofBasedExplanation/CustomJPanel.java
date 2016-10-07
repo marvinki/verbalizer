@@ -81,19 +81,20 @@ public class CustomJPanel extends JPanel {
 	
 	int n = getComponentCount();
 	int totalWidth = 0;
+	int rigthPadding = 50;
 	
 	for(int i=0; i<n; i++){
 		setSize(d);
 		Component comp = getComponent(i);
-		
-		totalWidth += Math.ceil(comp.getPreferredSize().getWidth());
-		if(totalWidth >= maxWidth){
+				
+		totalWidth += Math.ceil(comp.getMaximumSize().getWidth());
+		if(totalWidth >= maxWidth-rigthPadding){
 			System.out.println("longer");
 			Height += fontHeight;
 			d.setSize(maxWidth, Height);
 			totalWidth = 0;
-			continue;
 		}
+		
 	}
 	
 	return d;	

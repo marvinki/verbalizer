@@ -75,7 +75,42 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		 * TODO maybe revision of the labels/sequence could be reduced by 
 		 * proper generation
 		 */
+		/*
+		boolean justskipped = false;
+		String previoustext = "placeholder";
+		for (JLabel label : labels){
+			// if (!label.getText().equals(" ")){
+				// label.setBorder(BorderFactory.createLineBorder(Color.black));
+				if (label.getText().equals(" ") && justskipped){
+					justskipped = false;
+					continue;
+				}
+				if ((label.getText().equals(" ") || label.getText().equals("")) && previoustext.equals(" ")){
+					continue;
+				}
+				
+				innerpanel.add(label);
+				previoustext = label.getText();
+				
+				if(label.getText().equals("\n")){
+					
+					Dimension d = innerpanel.computeBestSize(content);
+					constraint.gridy++;
+				
+					innerpanel.setPreferredSize(d);
+					content.add(innerpanel, constraint);
+					
+					innerpanel = new CustomJPanel(flowLayout); // removeAll
+					innerpanel.setBackground(Color.WHITE);
+				}
+				//System.out.println("inserting label |" + label.getText() + "|");
+			// }
+		}*/
+		
+		
 		for (int i=0; i<labels.size(); i++){
+			
+			
 			
 			// check if colons are set correctly and fix it if necessary
 			if(!(i>=labels.size()-1) && labels.get(i).getText().equals(".")&&
