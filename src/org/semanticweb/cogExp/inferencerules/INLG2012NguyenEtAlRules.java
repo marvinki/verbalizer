@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -799,6 +800,7 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 	for (OWLFormula exp: subexprsdash){
 		if (exp.getHead().equals(OWLSymb.INT))
 			intsubexprs.add(exp);
+			// System.out.println("Subexprs " + exp.prettyPrint());
 	}
 	// System.out.println("PROFILE intsubexprs size " + intsubexprs.size());
 	
@@ -829,19 +831,24 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 			// System.out.println("PROFILE: bins size "  + bins.size());
 			Set<OWLFormula> keys = bins.keySet();
 			for (OWLFormula p1 : keys){
-				// if (p1.getHead().toString().contains("VT608"))
-				// System.out.println("Current p1 " + p1);
+				// if (p1.getHead().toString().contains("holoenzyme"))
+				//  System.out.println("Current p1 " + p1);
 			Set<OWLFormula> pool = bins.get(p1);
 			for (OWLFormula cand1 : pool){
-				//  if (p1.getHead().toString().contains("VT608")
-				// 		 && cand1.toString().contains("OBA"))
-				//      System.out.println("Cand1 " + cand1);
+				
+			        /*
+				   if (p1.getHead().toString().contains("holoenzyme")
+				  		 && cand1.toString().contains("macro"))
+				      System.out.println("Cand1 " + cand1.prettyPrint());
+				      */
 				     
 				for (OWLFormula cand2 : pool){
-					//  if (p1.getHead().toString().contains("VT608")
-					// 		 && cand2.toString().contains("CHEBI")
-					// 		 )
-					//       System.out.println("Cand2 " + cand2);
+					/*
+					if (p1.getHead().toString().contains("holoenzyme")
+				     		 && cand2.toString().contains("polymer")
+						 )
+					     System.out.println("Cand2 " + cand2.prettyPrint());
+					     */
 					      
 					OWLFormula p2 = cand1.getArgs().get(1);
 					OWLFormula p3 = cand2.getArgs().get(1);
@@ -858,7 +865,7 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 						
 						if (AlreadyTriedCache.INSTANCE.wasTried(INLG2012NguyenEtAlRules.RULE5,
 								forms)){
-							// System.out.println("skipping");
+						   // System.out.println("Rule5new: skipping previously tried case");
 							continue;
 						}	
 						
@@ -867,9 +874,15 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 						OWLFormula goodConjunct = null;
 						List<OWLFormula> conjuncts_p2 = p2.getConjuncts();
 						List<OWLFormula> conjuncts_p3 = p3.getConjuncts();
-						Set<OWLFormula> conjuncts = new HashSet<OWLFormula>();
+						List<OWLFormula> conjuncts = new ArrayList<OWLFormula>(); // <------- PROBLEM WHEN USING SET HERE -- the order is not maintained!
 						conjuncts.addAll(conjuncts_p2);
 						conjuncts.addAll(conjuncts_p3);
+						
+						//remove duplicates if any
+						Set setItems = new LinkedHashSet(conjuncts);
+						conjuncts.clear();
+						conjuncts.addAll(setItems);
+						
 						// we check that the combined conjuncts do not have overlap
 						if (conjuncts.size() != conjuncts_p2.size() + conjuncts_p3.size())
 						{
@@ -882,10 +895,10 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 						// System.out.println("conjuncts p_3" + conjuncts_p3);
 						
 						/*
-						if (p1.getHead().toString().contains("VT608") && p2.toString().contains("OBA")
-								&& p3.toString().contains("affects") && p3.toString().contains("attribute")
+						if (p1.getHead().toString().contains("holoenzyme") && p2.toString().contains("macromol")
+								&& p3.toString().contains("polymer") 
 								)
-						System.out.println("interesting");
+						System.out.println("interesting: " + p2.prettyPrint() + " " + p3.prettyPrint());
 						*/
 							
 						for (OWLFormula intexpr : intsubexprs){
@@ -894,13 +907,14 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 							// 	System.out.println("conjunct: " + conjunct);
 							
 							/*
-							if (p1.getHead().toString().contains("Spatial") && p2.toString().contains("C131")
-									&& p3.toString().contains("409") && p3.toString().contains("419") && conjunct.size()>2
+							if (p1.getHead().toString().contains("holoenzyme") && p2.toString().contains("macromol")
+									&& p3.toString().contains("poly") && conjunct.size()==2
 									){
-							// System.out.println("constructed conjuncts " + conjuncts);
-							// System.out.println("conjunct " + conjunct);
+							  System.out.println("constructed conjuncts " + conjuncts);
+							 System.out.println("conjunct " + conjunct);
 							}
 							*/
+							
 							
 							
 								// Check if found conjuncts are contained (in the right order) in subexpression conjunct
@@ -966,7 +980,7 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 						
 						if (containsAll && goodConjunct!=null){
 							//  if (p1.getHead().toString().contains("TO_0000639"))
-							// System.out.println("good conjunct " + goodConjunct);
+							// System.out.println("good conjunct " + VerbalisationManager.prettyPrint(goodConjunct));
 							OWLFormula conclusion = OWLFormula.createFormula(OWLSymb.SUBCL,p1,goodConjunct);
 							
 							/*
@@ -1044,7 +1058,7 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 							// if (s instanceof IncrementalSequent && ((IncrementalSequent) s).getMasterSequent().alreadyContainedInAntecedent(conclusion))
 							// 	notcontained = false; 
 							if (notcontained){
-								// System.out.println("Rule 5 debug generated binding with conclusion " + conclusion);
+								// System.out.println("Rule 5 debug generated binding with conclusion " + VerbalisationManager.prettyPrint(conclusion));
 								RuleBinding binding = new RuleBinding(conclusion,null);
 								SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(cand1));
 								SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(cand2));

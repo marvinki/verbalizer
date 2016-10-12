@@ -64,4 +64,8 @@ public enum AlreadyTriedCache {
 		formid = 0;
 	}
 	
+	public String toString(){
+		return "Already tried cache contains " + triedStore.size() + " entries";
+	}
+	
 }

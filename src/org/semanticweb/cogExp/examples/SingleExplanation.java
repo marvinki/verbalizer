@@ -49,8 +49,16 @@ public class SingleExplanation {
 	// String subclass = "<http://www.mindswap.org/ontologies/tambis-full.owl#gene-promoter>";
 	// String superclass = "<http://www.mindswap.org/ontologies/tambis-full.owl#protein-name>";
 	
-	String subclass = "<http://www.mindswap.org/ontologies/tambis-full.owl#holoenzyme>";
-	String superclass = "<http://www.mindswap.org/ontologies/tambis-full.owl#rna>";
+	// Below is done; found mistake.
+	// String subclass = "<http://www.mindswap.org/ontologies/tambis-full.owl#holoenzyme>";
+	// String superclass = "<http://www.mindswap.org/ontologies/tambis-full.owl#rna>";
+	
+	// coenzyme-requiring-holoenzyme⊑holoprotein
+	// gene⊑modification-site
+	String subclass = "<http://www.mindswap.org/ontologies/tambis-full.owl#gene>";
+	String superclass = "<http://www.mindswap.org/ontologies/tambis-full.owl#modification-site>";
+	
+	
 	
 	// <http://www.mindswap.org/ontologies/tambis-full.owl#holoenzyme> <http://www.mindswap.org/ontologies/tambis-full.owl#rna>
 	
@@ -107,6 +115,8 @@ public class SingleExplanation {
 	sequent.setHighestInitAxiomid(1000);
 	
 	long startLoop = System.currentTimeMillis();
+	
+	System.out.println(prooftree.toString());
 	
 	InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree, rulesNonred, 840000, 400000);
 	

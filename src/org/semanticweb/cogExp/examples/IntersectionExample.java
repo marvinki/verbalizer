@@ -98,7 +98,9 @@ public class IntersectionExample {
 	
 	InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree, nonredundantInferenceRules, 840000, 100000);
 	
-	System.out.println(prooftree.getOpenNodes());
+	// System.out.println(prooftree.getOpenNodes());
+	
+	System.out.println(prooftree.toString());
 	
 	try {
 		System.out.println("Eliminating irrelevant parts 1");

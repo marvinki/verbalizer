@@ -398,7 +398,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				
 	    				long endPreproc = System.currentTimeMillis();
 	    				
-	    			
+	    				
 	    				
 	    				// System.out.println("preproc " + (endPreproc - startPreproc));
 	    				try {
@@ -432,6 +432,16 @@ public class CoverageStoreEvaluatorCompressionDB {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+	    			
+	    			// below is for debugging only!
+    				/*
+    				for(OWLAxiom just:explanation){
+    					System.out.println("Prem: " + VerbalisationManager.prettyPrint(just));	
+    				}
+    				System.out.println("Conclusion: " + VerbalisationManager.prettyPrint(ax));
+    					*/
+    				
+    				// <--- end debugging
 	    			
 	    			if(unhandledPremise){
 	    				System.out.println("unhandled premise.");
@@ -475,6 +485,8 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    			org.semanticweb.cogExp.core.ProofTree<org.semanticweb.cogExp.core.ProofNode<org.semanticweb.cogExp.core.Sequent<OWLFormula>,java.lang.String, org.semanticweb.cogExp.core.SequentPosition>> prooftree2 = new org.semanticweb.cogExp.core.ProofTree<org.semanticweb.cogExp.core.ProofNode<org.semanticweb.cogExp.core.Sequent<OWLFormula>,java.lang.String,org.semanticweb.cogExp.core.SequentPosition>>(node2);
 		          
 	    		 
+	    			System.out.println(prooftree2.toString());
+	    			
 	    			// ProofNode<Sequent<OWLObject>,java.lang.String,SequentPosition> node = new ProofNode<Sequent<OWLObject>,java.lang.String,SequentPosition>(sequent,null,0);
 	    			// ProofTree<ProofNode<Sequent<OWLObject>,java.lang.String, SequentPosition>> prooftree = new ProofTree<ProofNode<Sequent<OWLObject>,java.lang.String,SequentPosition>>(node);
 		          
@@ -580,8 +592,13 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				System.out.println("... this is strange, because prooftree 1 seems to be ok");
 	    				System.out.println("Unproven axiom : " + subAx);
 	    				System.out.println("Explanation " + explanation);
-
+	    				System.out.println(prooftree2.toString());
+	    				// throw new RuntimeException();
 	    				nonredundantProblems = nonredundantProblems + 1;
+	    				continue;
+	    				/*
+	    				
+	    				
 	    				
 	    				try {
 							System.out.println("now gentzening the first tree.");
@@ -593,6 +610,9 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				
 	    				continue;
 	    				// throw new RuntimeException();
+	    				 * 
+	    				 * 
+	    				 */
 	    			}
 	    			
 		    	 
@@ -1185,7 +1205,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		
 			
 			// Statistic stats = runOntology("/Users/marvin/marvin_work_ulm/resources/ontologies/ore2015_pool_sample/el/pool/" + line);
-			Statistic stats = runOntology(storedfilesStem + line,30); // <---- time limit (in seconds)
+			Statistic stats = runOntology(storedfilesStem + line,100); // <---- time limit (in seconds)
 			
 			
 			// create individual detailed log file	

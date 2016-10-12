@@ -145,6 +145,11 @@ public enum VerbalisationManager {
 	 * @return pretty printed string for formula
 	 */
 	public static String prettyPrint(OWLFormula form){
+		OWLObject ob = ConversionManager.toOWLAPI(form);
+		if (ob==null){
+			System.out.println("warning: unconverted formula " + form);
+			return "";
+		}
 		return prettyPrint(ConversionManager.toOWLAPI(form));
 	}
 	
@@ -319,7 +324,11 @@ public enum VerbalisationManager {
 				result.add(new LogicElement("and"));
 				// result += _space + "and" + _space;
 			}
-			result.addAll(str);
+			if (str==null){
+				System.out.println("Empty filler!");
+			}
+			else
+				result.addAll(str);
 			needsep = true;
 		}
 		if (VerbalisationManager.INSTANCE.getPropertyNLString(property).indexOf("[X]")>=0){
@@ -331,6 +340,7 @@ public enum VerbalisationManager {
 		}
 			// result += VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 		
+		System.out.println(result.toString());
 		return result;
 	}
 	

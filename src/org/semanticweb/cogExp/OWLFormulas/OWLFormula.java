@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.core.Pair;
+import org.semanticweb.owlapi.model.OWLObject;
 
 
 public class OWLFormula {
@@ -460,6 +461,11 @@ public class OWLFormula {
 	}
 	
 	public String prettyPrint(){
+		OWLObject ob = ConversionManager.toOWLAPI(this);
+		if (ob==null){
+			System.out.println(" warn warn: unconvertable formula  " + this);
+			return "";
+		}
 		return VerbalisationManager.prettyPrint(ConversionManager.toOWLAPI(this));
 	}
 	

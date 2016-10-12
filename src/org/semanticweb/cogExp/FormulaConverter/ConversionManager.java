@@ -248,6 +248,10 @@ public enum ConversionManager {
 				result = dataFactory.getOWLNothing();
 			}
 		} else {
+			if (head instanceof OWLInteger){
+				return null;
+			}
+			else
 			result = toOWLAPI(head);
 		}
 		return result;

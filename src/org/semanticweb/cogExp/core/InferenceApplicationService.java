@@ -618,6 +618,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 	public ProofTree runSimpleLoop(ProofTree initialtree,List<SequentInferenceRule> rules, int limit, long timelimit, boolean...saturate){
 		
 		AlreadyTriedCache.INSTANCE.reset();
+		System.out.println(AlreadyTriedCache.INSTANCE.toString());
 		
 		Pair<List<RuleBindingForNode>,List<SequentInferenceRule>> bindings_dash_save = null;
 		long starttime = System.currentTimeMillis();
@@ -679,6 +680,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 				// System.out.println("BFS LEVEL NOW: " + bfsLevel);
 				/// HACKY!
 				if (bfsLevel > 30){
+					System.out.println("simpleLoop: Reached BFS bounds.");
 					return initialtree;
 				}
 				// 
@@ -863,6 +865,9 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		}
 		
 		long endtime = System.currentTimeMillis();
+		if (System.currentTimeMillis()-starttime >timelimit){
+			System.out.println("simpleLoop: Timelimit reached");
+		} 
 		// System.out.println("Time taken was " + (endtime - starttime) + "ms.");
 					return null;
 	}

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormulaComparator;
 import org.semanticweb.cogExp.OWLFormulas.TermTree;
@@ -264,6 +265,20 @@ public class IncrementalSequent extends Sequent{
 	
 	public TermTree getAntecedentTree(){
 		return mastersequent.antecedent;
+	}
+	
+	public String toString(){
+		String result = "=Incremental Sequent= \nAntecedents \n";
+		Set<OWLFormula> antecedentformulas = this.getAllAntecedentOWLFormulas();
+		for (OWLFormula form: antecedentformulas){
+			result += VerbalisationManager.prettyPrint(form) + "\n";
+		}
+		result += "\nSuccedent: \n";
+		Set<OWLFormula> succformulas = this.getAllSuccedentOWLFormulas();
+		for (OWLFormula form: succformulas){
+			result += VerbalisationManager.prettyPrint(form) + "\n";
+		}
+		return result;
 	}
 	
 }
