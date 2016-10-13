@@ -120,7 +120,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 			labels.removeIf(l -> l.getText().equals(""));		
 		}
 		
-		// packing Labels in Panels of proper size
+		// packing Labels in Panels 
 		for(JLabel label : labels){
 			System.out.println("Label : |"+label.getText()+"|");
 			// concatenate labels and put them into a panel if line is broken

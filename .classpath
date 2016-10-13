@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
@@ -13,15 +13,15 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/jaws-bin.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/DictTmp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/elk-owlapi.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jfact-1.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/DictTmp.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/jfact-1.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-5.0.8-bin.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/log4j.over.slf4j"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/slf4j.api"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

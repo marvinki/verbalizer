@@ -159,7 +159,7 @@ public class TextSequenceList extends TextElement {
 			result.addAll(list.get(i).generateLabels());
 		}
 		
-		result.add(new JLabel(" and "));	//add the separator " and " between the last statement and the one before that
+		result.add(new JLabel("and"));	//add the separator " and " between the last statement and the one before that
 		result.addAll(list.get(list.size()-1).generateLabels());
 		result.add(new JLabel(", "));
 		
