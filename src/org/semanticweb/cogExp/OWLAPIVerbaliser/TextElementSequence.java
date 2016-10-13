@@ -59,9 +59,10 @@ public class TextElementSequence extends TextElement{
 		for (TextElement elem : sequence){
 			if (elem.content.startsWith(","))
 				needsep = false;
+			if (elem.content.startsWith("."))
+				needsep = false;
 			if (needsep)
-				labels.add(new JLabel(" ")); 
-			
+				labels.add(new JLabel(" "));
 			labels.addAll(elem.toJLabel());
 			needsep = true;
 		}
@@ -127,7 +128,6 @@ public class TextElementSequence extends TextElement{
 			    	// System.out.println("yes, plural.");
 			    	// System.out.println("Current element " + current_element);
 			    	if (current_element instanceof LogicElement){
-			    		LogicElement currLogic = (LogicElement) current_element;
 			    		String currString = current_element.toString();
 			    		// System.out.println("current element: " + currString);
 			    		if (currString.equals("is")){
@@ -136,7 +136,6 @@ public class TextElementSequence extends TextElement{
 			    		}
 			    	} 
 			    	if (current_element instanceof RoleElement){
-			    		RoleElement currRole = (RoleElement) current_element;
 			    		String currString = current_element.toString();
 			    		// System.out.println("current element: " + currString);
 			    		// System.out.println("checking " + currString.substring(0,2) + "<");

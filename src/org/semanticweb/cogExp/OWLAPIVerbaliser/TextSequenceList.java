@@ -154,7 +154,7 @@ public class TextSequenceList extends TextElement {
 		
 		result.addAll(list.get(0).generateLabels()); 
 		
-		for (int i = 1; i < list.size()-2; i++){ // add a separator (", ") between the statements
+		for (int i = 1; i <= list.size()-2; i++){ // add a separator (", ") between the statements
 			result.add(new JLabel(", "));
 			result.addAll(list.get(i).generateLabels());
 		}

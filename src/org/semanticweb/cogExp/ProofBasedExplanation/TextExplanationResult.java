@@ -2,16 +2,23 @@ package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.List;
+import java.util.function.Predicate;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
@@ -70,6 +77,12 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		innerpanel.add(new JLabel(""));
 		
 		List<JLabel> labels = sequence.generateLabels();
+		System.out.println(sequence.toString());
+//		System.out.println("toList: ");
+//	
+//		for(JLabel label: labels){
+//			System.out.println(label.getText());
+//		}
 		
 		/*
 		 * TODO maybe revision of the labels/sequence could be reduced by 
@@ -78,42 +91,51 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		
 		// revision of the labels/sequences
 		for (int i=0; i<labels.size(); i++){
-				
 			// check if colons are set correctly and fix it if necessary
-			if(!(i>=labels.size()-1) && labels.get(i).getText().equals(".")&&
-					 					labels.get(i+1).getText().equals(" ")){
-				innerpanel.add(labels.get(i));
-				labels.set(i+1, new JLabel(""));
-				continue;
+			if(i<labels.size()-1 && 
+					labels.get(i).getText().equals(".")){
+				
+				if(labels.get(i+1).getText().equals(" ")){
+					labels.set(i+1, new JLabel(""));
+				}
+				
+				if(i>0 && labels.get(i-1).getText().equals(" ")){
+					labels.set(i-1, new JLabel(""));
+				}
 			}
-			
 			// check if there are double spaces and correct if necessary
 			if(labels.get(i).getText().equals(" ") ||
-			   labels.get(i).getText().equals("") ||
+			   labels.get(i).getText().equals("")  ||
 			   labels.get(i).getText().equals(", ") ){
 				
-				if(i<=0 && labels.get(i-1).getText().equals(" ")){
+				if(i<=0 && labels.get(i-1).getText().equals(" ")){				
 					labels.set(i-1, new JLabel(""));
 				}
 				if(!(i>=labels.size()-1) && labels.get(i+1).getText().equals(" ")){
 					labels.set(i+1, new JLabel(""));
 				}
 			}
-				
+			
+			//clean the list
+			labels.removeIf(l -> l.getText().equals(""));		
+		}
+		
+		// packing Labels in Panels of proper size
+		for(JLabel label : labels){
+			System.out.println("Label : |"+label.getText()+"|");
 			// concatenate labels and put them into a panel if line is broken
-			innerpanel.add(labels.get(i));
-			
-			if(labels.get(i).getText().equals("\n")){
+				innerpanel.add(label);
+				if(label.getText().equals("\n")){								
+					Dimension d = innerpanel.computeBestSize(content);
+					constraint.gridy++;
 				
-				Dimension d = innerpanel.computeBestSize(content);
-				constraint.gridy++;
+					innerpanel.setPreferredSize(d);
+					content.add(innerpanel, constraint);
+					
+					innerpanel = new CustomJPanel(flowLayout); // removeAll
+					innerpanel.setBackground(Color.WHITE);
+				}
 			
-				innerpanel.setPreferredSize(d);
-				content.add(innerpanel, constraint);
-				
-				innerpanel = new CustomJPanel(flowLayout); // removeAll
-				innerpanel.setBackground(Color.WHITE);
-			}
 			
 		}
 		

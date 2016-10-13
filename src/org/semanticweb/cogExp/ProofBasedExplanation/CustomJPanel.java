@@ -11,7 +11,7 @@ import java.awt.LayoutManager;
 import javax.swing.JPanel;
 
 /**
- * a CustomJPanels are properly sized Jpanels for the
+ * a CustomJPanels are properly sized JPanels for the
  * TextExplanationResult ...
  * @author fpaffrath
  *
@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 public class CustomJPanel extends JPanel {
 
 	/**
-	 * a CustomJPanels are properly sized Jpanels for the
+	 * a CustomJPanels are properly sized JPanels for the
 	 * TextExplanationResult
 	 */
 	private static final long serialVersionUID = -5704255319127525196L;

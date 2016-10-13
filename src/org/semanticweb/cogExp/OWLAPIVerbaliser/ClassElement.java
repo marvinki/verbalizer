@@ -1,7 +1,6 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -13,19 +12,14 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
-
-import com.fasterxml.jackson.core.base.GeneratorBase;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
 /**
  * represents any class
@@ -173,7 +167,6 @@ public class ClassElement extends TextElement{
 		}
 		String str = article + "<font color=blue>" + name + "</font>"; 
 		
-		StyledDocument document = textPane.getStyledDocument();
 		Style style = textPane.addStyle("_style", null);
         StyleConstants.setForeground(style, Color.blue);
        
@@ -181,16 +174,7 @@ public class ClassElement extends TextElement{
         text1.setToolTipText(tooltiptext);
         
         textPane.insertComponent(text1);
-		
-        /*
-		try {
-			document.insertString(document.getLength(), str, style);
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-		
+				
 		return; 
 	}
 	
