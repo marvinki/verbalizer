@@ -276,57 +276,10 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		JPanel panel = new JPanel();
 		
 		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
-					   													ontology, true, "OP");		 	   
-		
-		/* TODO
-		 * Since all layouting should be done in TextEplanationResult, 
-		 * this should not be needed any further:
-		 */
-		
-		/*
-		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
-		flowLayout.setHgap(0);
-		BoxLayout verticalLayout = new BoxLayout(panel,BoxLayout.Y_AXIS);
-		panel.setLayout(verticalLayout);
-		JPanel innerpanel = new JPanel();
-		boolean justskipped = false;
-		innerpanel.setLayout(flowLayout);
-		innerpanel.setBackground(Color.WHITE);
-		
-		panel.add(innerpanel);
-		innerpanel.add(new JLabel(" "));
-		String previoustext = "placeholder";
-		
-		List<JLabel> labels = sequence.generateLabels();
-		for (JLabel label : labels){
-			// if (!label.getText().equals(" ")){
-				// label.setBorder(BorderFactory.createLineBorder(Color.black));
-				if (label.getText().equals(" ") && justskipped){
-					justskipped = false;
-					continue;
-				}
-				if ((label.getText().equals(" ") || label.getText().equals("")) && previoustext.equals(" ")){
-					continue;
-				}
-				if (label.getText().equals("\n")){
-					innerpanel = new JPanel();
-					innerpanel.setLayout(flowLayout);
-					innerpanel.setBackground(Color.WHITE);
-					if (!label.equals(labels.get(labels.size()-1)))
-						panel.add(innerpanel);
-					justskipped = true;
-				}
-				innerpanel.add(label);
-				previoustext = label.getText();
-				//System.out.println("inserting label |" + label.getText() + "|");
-			// }
-		}
-		
+					   													ontology, true, "OP");		 	   	
 		TextExplanationResult result = new TextExplanationResult(panel);
 		
-		*/
 		
-		TextExplanationResult result = new TextExplanationResult(panel);
 		result = result.getResult(sequence);
 			
 		return result;

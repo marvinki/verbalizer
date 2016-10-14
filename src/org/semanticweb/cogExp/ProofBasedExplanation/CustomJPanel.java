@@ -16,6 +16,7 @@ import javax.swing.JPanel;
  * @author fpaffrath
  *
  */
+
 public class CustomJPanel extends JPanel {
 
 	/**
@@ -25,11 +26,24 @@ public class CustomJPanel extends JPanel {
 	private static final long serialVersionUID = -5704255319127525196L;
 
 
+	private int vspace = 3;	// upper and lower spacing
+	private int fontHeight = getFontMetrics(getFont()).getHeight()+ // height of a line
+			2*vspace;
+	private int height = fontHeight; // actual (assumed to be best) height
+		
+	private int maxWidth ; // desired width (width of the container)
+	private int width = 0; // actual width of a line
+	private int rspace = 50; // spacing to the right 
+	
+	Dimension d = new Dimension(maxWidth, height);
+	
+
 	/**
 	 * inherited
 	 */
 	public CustomJPanel() {
-		// TODO Auto-generated constructor stub
+		// TODO constructor for CustomJPanel, s.t. if nothing else is given:
+		//		take e.g. the screen size to estimate the Dimensions
 	}
 
 	/**
@@ -38,7 +52,9 @@ public class CustomJPanel extends JPanel {
 	 */
 	public CustomJPanel(LayoutManager layout) {
 		super(layout);
-		// TODO Auto-generated constructor stub
+		// TODO constructor for CustomJPanel:
+		//		no matter what LayoutManager is assigned,
+		//		take FlowLayout.
 	}
 
 	/**
@@ -69,19 +85,9 @@ public class CustomJPanel extends JPanel {
 	 *
 	 */
 	public Dimension computeBestSize(Container cont){
-	
-	
-	int vspace = 3;	// upper and lower spacing
-	int fontHeight = getFontMetrics(getFont()).getHeight()+ // height of a line
-			2*vspace;
-	int height = fontHeight; // actual (assumed to be best) height
-		
-	int maxWidth = cont.getWidth(); // desired width (width of the container)
-	int width = 0; // actual width of a line
-	int rspace = 50; // spacing to the right 
-	
-	Dimension d = new Dimension(maxWidth, height);
-		
+	// take the containers width as maximal width of this panel
+	maxWidth = cont.getWidth();
+
 	// count components and add new line (add height to the panel) when 
 	// needed.
 	for(int i=0; i<getComponentCount(); i++){
@@ -91,7 +97,7 @@ public class CustomJPanel extends JPanel {
 		width += Math.ceil(comp.getMaximumSize().getWidth());
 		
 		if(width >= maxWidth-rspace){
-			System.out.println("longer");
+//			System.out.println("longer");
 			height += fontHeight;
 			d.setSize(maxWidth, height);
 			width = 0;
