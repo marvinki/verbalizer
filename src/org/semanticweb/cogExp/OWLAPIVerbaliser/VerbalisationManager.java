@@ -1242,6 +1242,7 @@ public enum VerbalisationManager {
 								   propDomainAx.getDomain().getObjectComplementOf()));
 	 }
 	 if (explanation.size()==0){
+		 System.out.println("no justification found!");
 		 return null;
 	 }
 	 
@@ -1258,7 +1259,7 @@ public enum VerbalisationManager {
 		 for (OWLAxiom ax: explanation){
 			 justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 			 
-			 // System.out.println("VerbalisationManager: adding: " + ConversionManager.fromOWLAPI(ax).prettyPrint());
+			 System.out.println("VerbalisationManager: adding: " + ConversionManager.fromOWLAPI(ax).prettyPrint());
 		 }
 			} catch (Exception e) {
 				return null;
