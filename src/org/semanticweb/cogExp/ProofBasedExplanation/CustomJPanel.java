@@ -33,7 +33,7 @@ public class CustomJPanel extends JPanel {
 		
 	private int maxWidth ; // desired width (width of the container)
 	private int width = 0; // actual width of a line
-	private int rspace = 50; // spacing to the right 
+	private int rspace = getInsets().left+getInsets().right; // spacing to the right 
 	
 	Dimension d = new Dimension(maxWidth, height);
 	
@@ -87,23 +87,27 @@ public class CustomJPanel extends JPanel {
 	public Dimension computeBestSize(Container cont){
 	// take the containers width as maximal width of this panel
 	maxWidth = cont.getWidth();
-
 	// count components and add new line (add height to the panel) when 
-	// needed.
+	// needed.	
 	for(int i=0; i<getComponentCount(); i++){
-		setSize(d);
+					
 		Component comp = getComponent(i);
-				
-		width += Math.ceil(comp.getMaximumSize().getWidth());
+		// TODO revise this implementation (following line)
+		width += Math.ceil(comp.getMaximumSize().getWidth())+5; // the +5 incorporates the spaces between each Label- this is poor implementation and has to be revised
 		
 		if(width >= maxWidth-rspace){
-//			System.out.println("longer");
+			
 			height += fontHeight;
 			d.setSize(maxWidth, height);
-			width = 0;
+			
+//			System.out.println("longer: "+ width+ ", "+height);
+			
+			width = (int) Math.ceil(comp.getMaximumSize().getWidth());
+		}
+		else{
+			d.setSize(maxWidth, height);
 		}	
 	}
-	
 	return d;	
 	}
 

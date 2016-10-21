@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.List;
+
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,14 +42,23 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		constraint.weighty = 0;
 		
 		content.setLayout(contentLayout);
-		// set the width and height of the content panel depending on the screen size
-		contentSize = new Dimension((int)getToolkit().getScreenSize().getWidth()/4,
-											  0);
-		
-		
+		// try to set the width and height of the content panel depending on the size of
+		// the parent if the parent exists.
+		// else, set it depending on the screen size
+		try{
+			contentSize = new Dimension(getParent().getPreferredSize());
+			//TODO maybe set the border somewhere else or restructure this class
+			setBorder(BorderFactory.createLineBorder(Color.black));
+		}catch(Exception e){
+			contentSize = new Dimension((int)getToolkit().getScreenSize().getWidth()/4, 0);
+			setBorder(BorderFactory.createLineBorder(Color.red));
+		}
 		content.setSize(contentSize);
+		
+		
 		// must be set s.t. the scroll pane works properly
 		this.setLayout(new BorderLayout());
+		
 	}
 	
 	
@@ -70,14 +81,17 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		List<JLabel> labels = sequence.generateLabels();
 		
 //		System.out.println(sequence.toString());
-		
+		System.out.print(" ");
 		// packing Labels in Panels 
 		for(JLabel label : labels){
-			System.out.println("Label : |"+label.getText()+"|");
+			System.out.print(""+label.getText()+" ");
 			// concatenate labels and put them into a panel if line is broken
 			innerpanel.add(label);
 				if(label.getText().equals("\n")){								
 					Dimension d = innerpanel.computeBestSize(content);
+					
+//					System.out.println("Panel size: "+d.getWidth()+", "+d.getHeight());
+					
 					refreshContentsize(d);
 					
 					constraint.gridy++;
@@ -93,6 +107,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		}
 		
 		content.setPreferredSize(contentSize);
+		
 		this.add(getScrollPane(content));
 		
 		return this;
@@ -108,6 +123,8 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 			JScrollPane scrollPane = new JScrollPane (panel, 
 		            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 		            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			
+			
 			return scrollPane;
 	}
 	

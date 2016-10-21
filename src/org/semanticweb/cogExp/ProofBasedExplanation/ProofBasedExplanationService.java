@@ -268,6 +268,10 @@ public class ProofBasedExplanationService extends ExplanationService{
  */
 public ExplanationResult explain(OWLAxiom axiom) {
 		
+		System.out.println(
+				"----------------------------  starting verbalization  -------------------------"
+				);
+	
 		OWLModelManager modelmanager = getOWLModelManager();		
 		OWLReasoner reasoner = modelmanager.getOWLReasonerManager().getCurrentReasoner();
 		OWLReasonerFactory factory = modelmanager.getOWLReasonerManager().getCurrentReasonerFactory().getReasonerFactory();
@@ -282,6 +286,7 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		
 		result = result.getResult(sequence);
 			
+		System.out.println("result");
 		return result;
 	}
 	
