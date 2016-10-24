@@ -1388,6 +1388,12 @@ public enum VerbalisationManager {
 		TextElementSequence resultSequence = new TextElementSequence();
 		
 		 VerbalisationManager.INSTANCE.setOntology(ontology);
+		 
+		 /*
+		  * TODO add a TextElement for Null ontology received
+		  * as soon as there is an proper test 
+		  * or delete this if statement
+		  */
 		 if (ontology==null){
 			 LogicElement element = new LogicElement("Failure! Null ontology received!");
 			 resultSequence.add(element);
@@ -1396,8 +1402,7 @@ public enum VerbalisationManager {
 		 
 		 GentzenTree tree = computeGentzenTree(axiom,  reasoner, factory, ontology, maxsteps, maxtime, ruleset);
 		 if (tree==null){
-			 LogicElement element = new LogicElement("Failure! Empty tree!");
-			 resultSequence.add(element);
+			 resultSequence.add(new EmptyTreeElement());
 			 return resultSequence;
 		 }
 		
@@ -1406,12 +1411,17 @@ public enum VerbalisationManager {
 			axiomFormula = ConversionManager.fromOWLAPI(axiom);
 			List<SequentInferenceRule> rules = tree.getInfRules();
 			if (rules.size()==0){
-				String result = "That's already stated in the ontology. ";
-				result += VerbaliseTreeManager.makeUppercaseStart(VerbalisationManager.verbalise(ConversionManager.toOWLAPI(axiomFormula))) + ".";
+//				String result = "That's already stated in the ontology. ";
+//				result += VerbaliseTreeManager.makeUppercaseStart(VerbalisationManager.verbalise(ConversionManager.toOWLAPI(axiomFormula))) + ".";
 				// for (OWLFormula just : justificationFormulas){
 				// 	result += just.toString() + "; ";
 				// }
-				LogicElement element = new LogicElement(result);
+				NoRulesElement element = new NoRulesElement(VerbaliseTreeManager
+																.makeUppercaseStart(
+																		VerbalisationManager
+																		.verbalise(
+																				ConversionManager
+																				.toOWLAPI(axiomFormula))));
 				resultSequence.add(element);
 				return resultSequence;
 			}
