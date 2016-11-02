@@ -13,6 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+
+import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 
@@ -23,7 +25,7 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
  */
 public class TextExplanationResult extends ExplanationResult{ // implements OWLModelManagerListener{
 
-	
+	private OWLEditorKit editorKit;
 	private static final long serialVersionUID = 1944836708820525384L;
 
 	private JPanel content = new JPanel();
@@ -32,7 +34,8 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	private Dimension contentSize;
 	
 	
-	public TextExplanationResult(JPanel panel){
+	public TextExplanationResult(JPanel panel,OWLEditorKit ek){
+		editorKit = ek;
 		// set constraints for GridBagLayout
 		constraint.fill = GridBagConstraints.HORIZONTAL;
 		constraint.anchor = GridBagConstraints.FIRST_LINE_START;
@@ -137,6 +140,15 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		}
 			
 	}
+	
+	@Override
+    public Dimension getPreferredSize() {
+	
+        Dimension workspaceSize = editorKit.getWorkspace().getSize();
+        int width = (int) (workspaceSize.getWidth() * 0.8);
+        int height = (int) (workspaceSize.getHeight() * 0.7);
+        return new Dimension(width, height);
+}
 	
 	@Override
 	public void dispose() {

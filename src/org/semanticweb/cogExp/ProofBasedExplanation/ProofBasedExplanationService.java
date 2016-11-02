@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
+import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.protege.editor.owl.ui.explanation.ExplanationService;
@@ -272,16 +273,18 @@ public ExplanationResult explain(OWLAxiom axiom) {
 				"----------------------------  starting verbalization  -------------------------"
 				);
 	
-		OWLModelManager modelmanager = getOWLModelManager();		
+		OWLModelManager modelmanager = getOWLModelManager();	
 		OWLReasoner reasoner = modelmanager.getOWLReasonerManager().getCurrentReasoner();
 		OWLReasonerFactory factory = modelmanager.getOWLReasonerManager().getCurrentReasonerFactory().getReasonerFactory();
 		OWLOntology ontology = modelmanager.getActiveOntology();
+		OWLEditorKit editorKit = getOWLEditorKit();
+		
 		
 		JPanel panel = new JPanel();
 		
 		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
 					   													ontology, true, "OP");		 	   	
-		TextExplanationResult result = new TextExplanationResult(panel);
+		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
 		
 		
 		result = result.getResult(sequence);
