@@ -9,11 +9,13 @@ import java.awt.GridBagLayout;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
@@ -35,32 +37,45 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	
 	
 	public TextExplanationResult(JPanel panel,OWLEditorKit ek){
-		editorKit = ek;
+		this.editorKit = ek;
 		// set constraints for GridBagLayout
-		constraint.fill = GridBagConstraints.HORIZONTAL;
-		constraint.anchor = GridBagConstraints.FIRST_LINE_START;
+		constraint.fill = GridBagConstraints.BOTH;
+		constraint.anchor = GridBagConstraints.PAGE_START;
 		constraint.gridx = 0;
 		constraint.gridy = 0;	
 		constraint.weightx = 0;
 		constraint.weighty = 0;
 		
+		
+		
 		content.setLayout(contentLayout);
 		// try to set the width and height of the content panel depending on the size of
 		// the parent if the parent exists.
-		// else, set it depending on the screen size
+		// else, set it depending on the Workspace size
 		try{
-			contentSize = new Dimension(getParent().getPreferredSize());
+			
+			contentSize = getPreferredSize();
+			if(contentSize.getHeight()<=0||contentSize.getWidth()<=0){
+				contentSize = new Dimension(100, 100);
+			}
 			//TODO maybe set the border somewhere else or restructure this class
-			setBorder(BorderFactory.createLineBorder(Color.black));
+			//setBorder(BorderFactory.createLineBorder(Color.black));
+			
+			
 		}catch(Exception e){
-			contentSize = new Dimension((int)getToolkit().getScreenSize().getWidth()/4, 0);
+			
+			contentSize = new Dimension(ProtegeManager
+					.getInstance()
+					.getFrame(editorKit.getWorkspace())
+					.getSize());
+//			contentSize = new Dimension((int)getToolkit().getScreenSize().getWidth()/4, 0);
 			setBorder(BorderFactory.createLineBorder(Color.red));
 		}
 		content.setSize(contentSize);
 		
 		
 		// must be set s.t. the scroll pane works properly
-		this.setLayout(new BorderLayout());
+		this.setLayout(new BorderLayout(0,0));
 		
 	}
 	
@@ -126,8 +141,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 			JScrollPane scrollPane = new JScrollPane (panel, 
 		            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 		            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			
-			
+	
 			return scrollPane;
 	}
 	
@@ -135,19 +149,24 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	 * @param size
 	 */
 	private void refreshContentsize(Dimension size){
-		if(contentSize.height+size.height<getToolkit().getScreenSize().getHeight()/2){
-			contentSize.height += size.height;
-		}
+//		if(contentSize.height+size.height<ProtegeManager.getInstance()
+//														.getFrame(editorKit.getWorkspace())
+//														.getSize().getHeight()
+//				){
+//			contentSize.height += size.height;
+//		}
+		setPreferredSize(size);
 			
 	}
 	
 	@Override
     public Dimension getPreferredSize() {
 	
-        Dimension workspaceSize = editorKit.getWorkspace().getSize();
-        int width = (int) (workspaceSize.getWidth() * 0.8);
-        int height = (int) (workspaceSize.getHeight() * 0.7);
-        return new Dimension(width, height);
+//        Dimension workspaceSize = editorKit.getWorkspace().getSize();
+//        int width = (int) (workspaceSize.getWidth() * 0.8);
+//        int height = (int) (workspaceSize.getHeight() * 0.7);
+//        return new Dimension(width, height);
+		return contentSize;
 }
 	
 	@Override
