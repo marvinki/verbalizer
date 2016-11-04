@@ -210,8 +210,7 @@ public String visit(OWLAnnotationAssertionAxiom arg0) {
 }
 
 public String visit(OWLSymmetricObjectPropertyAxiom arg0) {
-	// TODO Auto-generated method stub
-	return null;
+	return "symmetricobjectproperty(" + arg0.getProperty().accept(ppPropertyExpressionVisit) +")";
 }
 
 public String visit(OWLDataPropertyRangeAxiom arg0) {

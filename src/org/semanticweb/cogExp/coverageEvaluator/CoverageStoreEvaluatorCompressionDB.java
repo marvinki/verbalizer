@@ -323,7 +323,7 @@ public class CoverageStoreEvaluatorCompressionDB {
     			
     			// if this has been done before
     			if (solved){
-    				// System.out.println("already in database: " + subAx.accept(ppvisitor));
+    				System.out.println("Found as solved in database: " + subAx.accept(ppvisitor));
     				// System.out.println("already in database: " + subAx.toString());
     				// System.out.println(queryResult);
     				continue;
@@ -341,6 +341,8 @@ public class CoverageStoreEvaluatorCompressionDB {
     			// make GCs work easier
     			queryResult = null;
     			
+    			/****** WE ARE BEING WASTEFUL!
+    			
     			// if this is identical to an axiom in a different database
     			String occurenceResult = DatabaseManager.INSTANCE.findOccurence(subAx.getSubClass().toString(),subAx.getSuperClass().toString());
 	    		if (occurenceResult!=null && occurenceResult.length()>0){
@@ -356,6 +358,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    			continue;
 	    		}
     			
+    			*/
 	    		// String conclstring = subAx.accept(ppvisitor);
 	    		// long juststarttime = System.currentTimeMillis();
 	    		// Set<Set<OWLAxiom>> explanations = explanationGenerator.getExplanations(dataFactory.getOWLObjectIntersectionOf(subAx.getSubClass(), subAx.getSuperClass().getObjectComplementOf()),1);
@@ -1205,7 +1208,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		
 			
 			// Statistic stats = runOntology("/Users/marvin/marvin_work_ulm/resources/ontologies/ore2015_pool_sample/el/pool/" + line);
-			Statistic stats = runOntology(storedfilesStem + line,100); // <---- time limit (in seconds)
+			Statistic stats = runOntology(storedfilesStem + line,120); // <---- time limit (in seconds)
 			
 			
 			// create individual detailed log file	

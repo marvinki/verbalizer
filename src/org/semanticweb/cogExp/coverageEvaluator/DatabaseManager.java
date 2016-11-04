@@ -471,17 +471,17 @@ public enum DatabaseManager {
 		int solved = 0;
 		int unsolved = 0;
 		int total = 0;
-		int[] listingsteps = new int[50];
-		int[] verbsteps = new int[50];
-		int[] longlistingsteps = new int[50];
-		int[] timesPerListing = new int[50];
-		int[] timesPerVerbs= new int[50];
+		int[] listingsteps = new int[80];
+		int[] verbsteps = new int[80];
+		int[] longlistingsteps = new int[80]; // <--- 50 is not sufficient!!!
+		int[] timesPerListing = new int[80];
+		int[] timesPerVerbs= new int[80];
 		int timesSum = 0;
 		Set<String> usedRules = new HashSet<String>();
 		
-		int[] longlistingsToVerbsCompression = new int[50];
-		int[] longlistingsToListingsCompression = new int[50];
-		int[] listingsToVerbsCompression = new int[50];
+		int[] longlistingsToVerbsCompression = new int[80];
+		int[] longlistingsToListingsCompression = new int[80];
+		int[] listingsToVerbsCompression = new int[80];
 		
 		for (List<String> line : result){
 			if (line.get(0).equals("1")){

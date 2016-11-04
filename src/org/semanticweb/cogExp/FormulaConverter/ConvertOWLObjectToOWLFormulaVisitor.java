@@ -292,8 +292,9 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLAsymmetricObjectPropertyAxiom arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		OWLFormula f2 = OWLFormula.createFormula(OWLSymb.ASYMMETRICOBJECTPROPERTY,
+				arg0.getProperty().accept(this));
+		return f2;
 	}
 
 	public OWLFormula visit(OWLReflexiveObjectPropertyAxiom arg0) {
@@ -399,8 +400,10 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLSymmetricObjectPropertyAxiom arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		OWLFormula f2 = OWLFormula.createFormula(OWLSymb.SYMMETRICOBJECTPROPERTY,
+				arg0.getProperty().accept(this));
+		return f2;
+		
 	}
 
 	public OWLFormula visit(OWLDataPropertyRangeAxiom arg0) {
