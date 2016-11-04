@@ -4,6 +4,7 @@ import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.ProofBasedExplanation.ProofBasedExplanationService;
+import org.semanticweb.cogExp.ProofBasedExplanation.WordnetTmpdirManager;
 
 public class FpExample {
 
@@ -15,7 +16,7 @@ public class FpExample {
 
 		String tmpdir = "";
 		try {
-			tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+			tmpdir = WordnetTmpdirManager.makeTmpdir();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

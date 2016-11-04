@@ -907,22 +907,15 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 							// 	System.out.println("conjunct: " + conjunct);
 							
 							/*
-<<<<<<< HEAD
 							if (p1.getHead().toString().contains("holoenzyme") && p2.toString().contains("macromol")
 									&& p3.toString().contains("poly") && conjunct.size()==2
-=======
-							if (p1.getHead().toString().contains("Spatial") && p2.toString().contains("C131")
-									&& p3.toString().contains("409") && p3.toString().contains("419") && conjunct.size()>2
->>>>>>> plugin
+
 									){
 							  System.out.println("constructed conjuncts " + conjuncts);
 							 System.out.println("conjunct " + conjunct);
 							}
 							*/
-<<<<<<< HEAD
-							
-=======
->>>>>>> plugin
+
 							
 							
 								// Check if found conjuncts are contained (in the right order) in subexpression conjunct

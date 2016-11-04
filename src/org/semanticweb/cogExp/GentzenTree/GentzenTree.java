@@ -177,7 +177,8 @@ public class GentzenTree {
 					*/
 					// System.out.println(conclusion.getArgs().get(0));
 					// System.out.println(formula2.getArgs().get(0));
-
+						
+					/*
 					if (conclusion.getArgs().get(0).equals(formula2.getArgs().get(0))){
 						subclassOnlysome = formula2;
 						superclassOnlysome = formula1;

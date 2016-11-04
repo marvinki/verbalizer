@@ -13,6 +13,7 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.ProofBasedExplanation.ProofBasedExplanationService;
+import org.semanticweb.cogExp.ProofBasedExplanation.WordnetTmpdirManager;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -57,7 +58,7 @@ public class Begehung {
 	// WordNetQuery.INSTANCE.disableDict();
 	String tmpdir = "";
 	try {
-		tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+		tmpdir = WordnetTmpdirManager.makeTmpdir();
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

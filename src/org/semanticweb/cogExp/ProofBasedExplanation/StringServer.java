@@ -37,7 +37,7 @@ public class StringServer {
 	public StringServer(int port, ClusterExplanationService service) throws IOException {
 		String tmpdir = "";
 		try {
-			tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+			tmpdir = WordnetTmpdirManager.makeTmpdir();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
