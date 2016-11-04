@@ -11,6 +11,7 @@ import org.semanticweb.cogExp.core.SequentInferenceRule;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
+import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLAxiomVisitor;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 
 public class GentzenTree {
@@ -27,6 +28,20 @@ public class GentzenTree {
 	
 	public List<OWLFormula> getFormulas(){
 		return formulas;
+	}
+	
+	public boolean isAxiom(OWLFormula form){
+		// System.out.println("axioms : " + axioms);
+		// System.out.println("form : " + form);
+		if (formulas.contains(form)){
+			// System.out.println("contains");
+			// System.out.println("index  " + formulas.indexOf(form));
+			if (axioms.contains(formulas.indexOf(form))){
+				// System.out.println("gotit");
+					return true;
+			}
+		}
+		return false;
 	}
 	
 	public HashMap<Integer,GentzenStep> getTreesteps(){
@@ -56,6 +71,10 @@ public class GentzenTree {
 		for (OWLFormula prem: premises){
 			// make sure the formula is known
 			// System.out.println("DEBUG -- considering premise formulas " + prem);
+			/*
+			if (infrule.equals(AdditionalDLRules.ONLYSOME))
+				System.out.println("DEBUG -- considering premise formulas " + prem.prettyPrint());
+				*/
 			if (!formulas.contains(prem))
 				formulas.add(prem);
 			int id = formulas.indexOf(prem);
@@ -72,6 +91,10 @@ public class GentzenTree {
 		int conclusionid = formulas.indexOf(conclusion);
 		// now insert the actual step
 		// System.out.println("Inserting " + premiseids + " " +  conclusionid + " "+ infrule);
+		/*
+		if (infrule.equals(AdditionalDLRules.ONLYSOME))
+			 System.out.println("Inserting " + premiseids + " " +  conclusionid + " "+ infrule);
+		*/
 		GentzenStep step = new GentzenStep(premiseids,axiompremiseids, conclusionid,infrule);
 		// System.out.println("insert step key " + last_key);
 		treesteps.put(last_key,step);
@@ -113,16 +136,39 @@ public class GentzenTree {
 		// Reordering for ONLYSOME
 				if (infrule.equals(AdditionalDLRules.ONLYSOME)){
 					// System.out.println("Gentzen Tree DEBUG ONLYSOME " + premises.size());
+					/* 
 					int id1 = premises.get(0);
 					OWLFormula formula1 = formulas.get(premises.get(0));
 					int f1id;
 					int id2 = premises.get(1);
 					OWLFormula formula2 = formulas.get(premises.get(1));
 					int f2id;
+
+					*/
+					int f1id = -1000;
+					int f2id = -1000;
+					// determine which ones of the two premises are the onlysome formulas
 					OWLFormula conclusion = formulas.get(step.getConclusion());
+					// System.out.println("conclusion " + conclusion.prettyPrint());
+					// System.out.println(premises);
 					// figure out which is the "subclass" formula
-					OWLFormula subclassOnlysome;
-					OWLFormula superclassOnlysome;
+					OWLFormula subclassOnlysome = null;
+					OWLFormula superclassOnlysome = null;
+					// find subclassOnlysome
+					for (int subi=0; subi<premises.size();subi++ ){
+						// System.out.println("subi " + subi);
+						OWLFormula prem = formulas.get(premises.get(subi));
+						// System.out.println("prem (" + premises.get(subi) + ") : "  + prem.prettyPrint());
+						if (prem.getArgs().get(0).equals(conclusion.getArgs().get(0))){
+							subclassOnlysome = prem;
+							f1id=premises.get(subi);
+						}
+						if (prem.getArgs().get(1).equals(conclusion.getArgs().get(1))){
+							superclassOnlysome = prem;
+							f2id=premises.get(subi);
+						}
+					}
+					
 					// System.out.println(premises);
 					/*
 					for (int k : premises){
@@ -131,6 +177,9 @@ public class GentzenTree {
 					*/
 					// System.out.println(conclusion.getArgs().get(0));
 					// System.out.println(formula2.getArgs().get(0));
+
+					/*
+
 					if (conclusion.getArgs().get(0).equals(formula2.getArgs().get(0))){
 						subclassOnlysome = formula2;
 						superclassOnlysome = formula1;
@@ -145,10 +194,14 @@ public class GentzenTree {
 						// premises.remove(1);
 						// premises.add(premises.size(),id2); //<-- put the second formula in last position (the second onlysome formula)
 					}
-					// System.out.println(premises);
-					// System.out.println("ONLYSOME subclassOnlysome :" + subclassOnlysome);
-					// System.out.println("ONLYSOME superclassOnlysome :" + superclassOnlysome);
+
+					*/
+					// System.out.println("debug GentzenTree: " + premises);
+					// System.out.println("ONLYSOME subclassOnlysome :" + subclassOnlysome.prettyPrint());
+					// System.out.println("ONLYSOME superclassOnlysome :" + superclassOnlysome.prettyPrint());
 					List<OWLFormula> expressions = AdditionalDLRules.detectOnlysome(subclassOnlysome.getArgs().get(1));
+					// System.out.println("expressions: " + expressions);
+
 					List<Integer> forms = new ArrayList<Integer>();
 					for (OWLFormula form :expressions){
 						for (int j: premises){
@@ -159,9 +212,16 @@ public class GentzenTree {
 						}
 					}
 					premises.removeAll(premises);
-					premises.add(id1); 
+
+					// System.out.println("id1 " + f1id);
+					premises.add(f1id); 
+					// System.out.println("forms " + forms);
 					premises.addAll(forms);
-					premises.add(id2); 
+					// System.out.println("id2 " + f2id);
+					premises.add(f2id); 
+					// System.out.println("debug GentzenTree (2): " + premises);
+					// System.out.println("checking " + step.getPremises());
+
 					
 					
 				}
@@ -292,6 +352,7 @@ public class GentzenTree {
 	
 	public String toDOT(){
 		String result = "";
+		// System.out.println("to dot called ");
 		List<Integer> order = computePresentationOrder();
 		// System.out.println("computed presentation order " + order);
 		for (Integer index :order ){
@@ -304,41 +365,55 @@ public class GentzenTree {
 			String rulelabel = step.getInfrule().getShortName();
 			for (Integer prem : premises){
 				String nodelabel = VerbalisationManager.prettyPrint(formulas.get(prem));
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.SUBCLSYMB), "&#x2291;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.EQUIVSYMB), "&#x2261;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.INTSYMB), "&#x2293;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.UNIONSYMB), "&#x2294;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.EXISTSSYMB), "&#x2203;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.FORALLSYMB), "&#x2200;");
+				nodelabel = nodelabel.replace(Character.toString(PrettyPrintOWLAxiomVisitor.CIRCSYMB), "&#x25CB;");
 				if (nodelabel.length()>30){
 					int i = 0;
-					int fin = 0;
-					while(i<nodelabel.length()/2){
-						int tmp = nodelabel.indexOf("⊓",i+1);
-						if (tmp>0)
-						{
-							i = tmp;
-							fin = i;
+					int skip = 25;
+					while(i<nodelabel.length()){
+						int tmp1 = nodelabel.indexOf("&#x2291;",i+2);
+						int tmp2 = nodelabel.indexOf("&#x2261;",i+2);
+						int tmp3 = nodelabel.indexOf("&#x2293;",i+2);
+						int tmp4 = nodelabel.indexOf("&#x2294;",i+2);
+						if (tmp1<skip) 
+							tmp1=5000;
+						if (tmp2<skip) 
+							tmp2=5000;
+						if (tmp3<skip) 
+							tmp3=5000;
+						if (tmp4<skip) 
+							tmp4=5000;
+						int min = Math.min(tmp1,Math.min(tmp2,Math.min(tmp3,tmp4)));
+						if (min<5000 && min>skip){
+							nodelabel = nodelabel.substring(0, min) + "\n" +  nodelabel.substring(min, nodelabel.length());
 						}
-						tmp = nodelabel.indexOf("⊑",i+1);
-						if (tmp>0){
-							i = tmp;
-							fin = i;
-						}
-						i++;
+						i = min;
 					}
-					nodelabel = nodelabel.substring(0, fin) + "\n" +  nodelabel.substring(fin, nodelabel.length());
 				}
+					
+				
 				
 				result +=  "n" + prem.toString() + " -> " + stepname + "R" + conclusion + ";\n"; 
 				//
-				result += "n" + prem.toString() + "[shape=rectangle,label=\"" 
+				result += "n" + prem.toString() + "[fontname=fixedsys,shape=rectangle,charset=\"utf-8\",label=\"" 
 				+ nodelabel  + "\"];\n";
 			}
 			result +=  stepname + "R" + conclusion + " -> " + "n" + conclusion + ";\n";
 			result += "n" 
-			+ conclusion + "[shape=rectangle,label=\"" 
+			+ conclusion + "[fontname=fixedsys,shape=rectangle,charset=\"utf-8\",label=\"" 
 					+ VerbalisationManager.prettyPrint(formulas.get(conclusion))  + "\"];\n";
 			result += stepname + "R" 
 					+ conclusion + "[color=lightblue,style=filled,label=\"" 
 					+ rulelabel +  "\"];\n";
 		}
 		// return "";
-		return "digraph " + VerbalisationManager.prettyPrint(formulas.get(getStepByID(order.get(order.size()-1)).getConclusion())) + "\n { ratio=compress \n" + result + "}";
+		// return "digraph " + VerbalisationManager.prettyPrint(formulas.get(getStepByID(order.get(order.size()-1)).getConclusion())) + "\n { ratio=compress \n" + result + "}";
+		return "digraph proof" + "\n { fontname=calibri ratio=compress \n" + result + "}";
 	}
 	
 }
