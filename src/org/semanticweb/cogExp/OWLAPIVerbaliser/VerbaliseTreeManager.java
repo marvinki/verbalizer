@@ -183,19 +183,23 @@ public enum VerbaliseTreeManager {
 		String result = "";
 		// Variables to remember previous states' information
 		int previous_step = -1;
+		
 		OWLFormula previousconclusion = null;
 		OWLFormula before_previousconclusion = null;
-		Object printed_previousconclusion = null;
 		String previoustext = "";
 		List<String> previoustexts = new ArrayList<String>();
 		boolean singletonStep = false;
-		if (order.size()==1) 
+		
+		if (order.size()==1){
 			singletonStep = true;
+		}
+		
 		for(int i: order){
 			// System.out.println("verbaliseNL at step no. " + i);
 			// Get all information on this step
 			GentzenStep step = tree.getTreesteps().get(i);
 			List<Integer> premiseids = step.getPremises();
+
 			// System.out.println("premiseids " + premiseids);
 			
 			// Debugging only!
@@ -211,57 +215,50 @@ public enum VerbaliseTreeManager {
 			// System.out.println("DEBUG -- premises " + axiompremiseids);
 			// System.out.println("DEBUG -- premises " + premises);
 			// System.out.println("DEBUG -- conclusion " + conclusion);
+
 			SequentInferenceRule infrule = step.getInfrule();
-			//
-			// Debug
-			// result = result +=  " <<  " + infrule.getName() + " >> ";
-			//
-			// Check if rule is to be skipped
+			
 			if(infrule.equals(INLG2012NguyenEtAlRules.RULE23Repeat) && !singletonStep){
 				continue; // do not even advance the conclusions
 			}
-			/*
-			if (infrule.equals(INLG2012NguyenEtAlRules.RULE15) 
-					&& premises.contains(before_previousconclusion)
-					&& !singletonStep) 
-					{	
-				System.out.println("WE ARE SKIPPING SOMETHING (VERBALISATION)");
-				continue;
-			}
-			*/
+			
 			if (!singletonStep 
-				&& !VerbalisationManager.INSTANCE.featuresOFF	
-					&& (infrule.equals(AdditionalDLRules.ELEXISTSMINUS) 
-					|| infrule.equals(AdditionalDLRules.UNIONINTRO)
-					|| infrule.equals(AdditionalDLRules.DEFDOMAIN)
-					|| (infrule.equals(INLG2012NguyenEtAlRules.RULE2) && previous_step!=-1)
-					// || (infrule.equals(INLG2012NguyenEtAlRules.RULE5) && previous_step!=-1)
-					// || infrule.equals(INLG2012NguyenEtAlRules.RULE5)
-					|| (infrule.equals(AdditionalDLRules.R0) && !singletonStep)
-					|| (infrule.equals(AdditionalDLRules.TOPINTRO) && !singletonStep)
-					// || infrule.equals(AdditionalDLRules.EQUIVEXTRACT)
-					)){
+			&& !VerbalisationManager.INSTANCE.featuresOFF	
+			&& (infrule.equals(AdditionalDLRules.ELEXISTSMINUS) 
+			|| infrule.equals(AdditionalDLRules.UNIONINTRO)
+			|| infrule.equals(AdditionalDLRules.DEFDOMAIN)
+			|| (infrule.equals(INLG2012NguyenEtAlRules.RULE2) && previous_step!=-1)
+			|| (infrule.equals(AdditionalDLRules.R0) && !singletonStep)
+			|| (infrule.equals(AdditionalDLRules.TOPINTRO) && !singletonStep))){
+				
 				before_previousconclusion = previousconclusion;
 				previousconclusion = conclusion;
 				continue;
 			}
+
 			/* <-- what the hell was that?
 			if (infrule.equals(AdditionalDLRules.ONLYSOME)){
 				premiseids.addAll(axiompremiseids);
 			}
 			*/
+
 			// now transform back from OWL Formula to OWLAPI (this should become redundant)
 			List<Object> premiseformulas = new ArrayList<Object>();
 			for (OWLFormula prem: premises){
 				premiseformulas.add(ConversionManager.toOWLAPI(prem));
 			}
+			
 			List<Object> additions_to_antecedent = new ArrayList<Object>();
 			additions_to_antecedent.add(ConversionManager.toOWLAPI(conclusion));
 			List<Object> additions_to_succedent = new ArrayList<Object>();
 			Object prevconc = null;
-			if (previousconclusion!=null)
-					prevconc = ConversionManager.toOWLAPI(previousconclusion);
+			
+			if (previousconclusion!=null){
+				prevconc = ConversionManager.toOWLAPI(previousconclusion);
+			}
+			
 			Object beforeprevconc = null;
+
 			if (before_previousconclusion!=null)
 					beforeprevconc = ConversionManager.toOWLAPI(before_previousconclusion);
 			// Debug
@@ -271,58 +268,54 @@ public enum VerbaliseTreeManager {
 			// System.out.println(premiseformulas);
 			// System.out.println(additions_to_antecedent);
 			// System.out.println("DEBUG -- additions_to_antecedent " + additions_to_antecedent);
+
 			
 			String output;
+			
 			if (asHTML){
-				// System.out.println("HTML CASE");
 				TextElementSequence seq = textualiseStatementNL(tree, infrule,
-						premiseformulas,
-						additions_to_antecedent,
-						additions_to_succedent,prevconc,beforeprevconc,obfuscator);
+																premiseformulas,
+																additions_to_antecedent,
+																additions_to_succedent,
+																prevconc,beforeprevconc,
+																obfuscator);
 				seq.makeUppercaseStart();
 				seq.pluralise(); // <--- introduce plurals
-				output = seq.toString();
-				output = seq.toHTML();
-				
+				//output = seq.toString();
+				output = seq.toHTML();	
 			}
+			
 			else{
-				// System.out.println("TEXT CASE");
-				
 				TextElementSequence seq = textualiseStatementNL(tree, infrule,
+
 						premiseformulas,
 						additions_to_antecedent,
 						additions_to_succedent,prevconc,beforeprevconc,obfuscator);
 				// System.out.println("seq " + seq);
+
 				seq.makeUppercaseStart();
 				seq.pluralise(); // <--- introduce plurals
-				output = seq.toString();
-				/*
-			   output = 
-					verbaliseStatementNL(tree, infrule,
-					premiseformulas,
-					additions_to_antecedent,
-					additions_to_succedent,prevconc,beforeprevconc);
-					*/
-				
+				output = seq.toString();				
 			}
 				
 			if (!output.equals(previoustext)
-					&& ! previoustexts.contains(output)
-					) // Avoid duplicate use of equivextract, if different conclusions are extracted
-			{
+			&& ! previoustexts.contains(output)){
+				 // Avoid duplicate use of equivextract, if different conclusions are extracted
 				String linebr = "\n";
-				if (asHTML)
+				
+				if (asHTML){
 					linebr = "<br>";
+				}
 				
-					if (withrulenames)
+					if (withrulenames){
 						result = result + infrule.getName() + ">: " + output + "." + linebr;
-					else
+					}
+					
+					else{
 						result = result +  output + "." + linebr;
-				
+					}
 			}
-			// System.out.println(output);
-			// System.out.println(previoustext);
-			// Update the "previous" information
+			
 			before_previousconclusion = previousconclusion;
 			previousconclusion = conclusion;
 			previoustext = output;

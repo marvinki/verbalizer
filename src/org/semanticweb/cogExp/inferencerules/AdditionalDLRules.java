@@ -2087,6 +2087,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 					binding.insertPosition("A2", position2);
 					
 					
+
 					// System.out.println("OS FORMULA 1: " + VerbalisationManager.prettyPrint(s.antecedentGetFormula(s.antecedentFormulaGetID(form1))));
 					// System.out.println("OS FORMULA 2: " + VerbalisationManager.prettyPrint(s.antecedentGetFormula(s.antecedentFormulaGetID(form2))));
 					

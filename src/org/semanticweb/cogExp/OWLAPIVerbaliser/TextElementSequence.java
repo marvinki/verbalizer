@@ -53,18 +53,18 @@ public class TextElementSequence extends TextElement{
 		return result;
 	}
 	
+	/**
+	 * @return returns a list of JLabels of the TextElementSequence (without empty JLabels or spaces)
+	 */
 	public List<JLabel> generateLabels(){
+		// add each element in the sequence as JLabel to the List
 		ArrayList<JLabel> labels = new ArrayList<JLabel>();
-		boolean needsep = false;
 		for (TextElement elem : sequence){
-			if (elem.content.startsWith(","))
-				needsep = false;
-			if (needsep)
-				labels.add(new JLabel(" ")); 
-			
 			labels.addAll(elem.toJLabel());
-			needsep = true;
 		}
+		// clean Label List from spaces
+		labels.removeIf(l->l.getText().equals(" "));
+		labels.removeIf(l->l.getText().equals(""));
 		
 		return labels;
 	}
@@ -127,7 +127,6 @@ public class TextElementSequence extends TextElement{
 			    	// System.out.println("yes, plural.");
 			    	// System.out.println("Current element " + current_element);
 			    	if (current_element instanceof LogicElement){
-			    		LogicElement currLogic = (LogicElement) current_element;
 			    		String currString = current_element.toString();
 			    		// System.out.println("current element: " + currString);
 			    		if (currString.equals("is")){
@@ -136,7 +135,6 @@ public class TextElementSequence extends TextElement{
 			    		}
 			    	} 
 			    	if (current_element instanceof RoleElement){
-			    		RoleElement currRole = (RoleElement) current_element;
 			    		String currString = current_element.toString();
 			    		// System.out.println("current element: " + currString);
 			    		// System.out.println("checking " + currString.substring(0,2) + "<");

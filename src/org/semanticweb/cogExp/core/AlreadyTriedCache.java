@@ -66,6 +66,7 @@ public enum AlreadyTriedCache {
 	
 	public String toString(){
 		return "Already tried cache contains " + triedStore.size() + " entries";
+
 	}
 	
 }

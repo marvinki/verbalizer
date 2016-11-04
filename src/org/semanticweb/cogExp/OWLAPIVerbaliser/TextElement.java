@@ -7,6 +7,9 @@ import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
+
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
 /**
  * represents any textual element of verbalizer
  * @author marvinki (doc by fp)

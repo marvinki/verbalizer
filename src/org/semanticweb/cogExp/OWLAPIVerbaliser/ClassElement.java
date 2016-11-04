@@ -1,17 +1,25 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+/** TODO
+ * just for testing, delete this 5 imports (JFrame, JPanel,...,Toolkit) when not needed anymore
+ */
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
 /**
  * represents any class
@@ -27,9 +35,18 @@ public class ClassElement extends TextElement{
 	 */
 	public ClassElement(String content){
 		super(content);
+		
 	}
-	
-	
+		
+	/**
+	 * 
+	 * @param content name
+	 * @param tooltiptext optional additional text
+	 */
+	public ClassElement(String content, String tooltiptext){
+		super(content);
+		this.tooltiptext = tooltiptext;
+	}
 	/**
 	 * @return returns the content as plain string 
 	 */
@@ -40,17 +57,7 @@ public class ClassElement extends TextElement{
 	public String getToolTipText(){
 		return tooltiptext;
 	}
-	
-	/**
-	 * 
-	 * @param content name
-	 * @param tooltiptext optional additional text
-	 */
-	public ClassElement(String content, String tooltiptext){
-		super(content);
-		this.tooltiptext = tooltiptext;
-	}
-	
+		
 	@Override
 	public List<JLabel> toJLabel(){
 		List<JLabel> labellist = new ArrayList<JLabel>();
@@ -86,6 +93,38 @@ public class ClassElement extends TextElement{
 		labellist.add(articlelabel);
 		labellist.add(spacelabel);
 		labellist.add(contentlabel);
+		
+		contentlabel.addMouseListener(new MouseAdapter()  
+		{  
+		    public void mouseClicked(MouseEvent e)  
+		    {  
+		       /**
+		        * run this code when mouse is clicked
+		        */
+		    	System.out.println("mouse clicked on class label\n");
+		    		       
+		       JFrame frame = new JFrame("Class Frame");
+		       JPanel panel = new JPanel();
+		       
+		       panel.add(articlelabel);		      
+		       panel.add(spacelabel);
+		       panel.add(contentlabel);
+		       
+		       frame.add(panel);
+		       
+		       frame.setSize(500, 50);
+			       
+		       Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		       int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+		       int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+		       frame.setLocation(x, y);
+		       
+		       frame.setVisible(true);
+		       
+		    }  
+		    
+		}); 
+		
 		return labellist;
 	}
 	
@@ -128,7 +167,6 @@ public class ClassElement extends TextElement{
 		}
 		String str = article + "<font color=blue>" + name + "</font>"; 
 		
-		StyledDocument document = textPane.getStyledDocument();
 		Style style = textPane.addStyle("_style", null);
         StyleConstants.setForeground(style, Color.blue);
        
@@ -136,16 +174,7 @@ public class ClassElement extends TextElement{
         text1.setToolTipText(tooltiptext);
         
         textPane.insertComponent(text1);
-		
-        /*
-		try {
-			document.insertString(document.getLength(), str, style);
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-		
+				
 		return; 
 	}
 	

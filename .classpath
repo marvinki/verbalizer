@@ -13,8 +13,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/jaws-bin.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/DictTmp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/elk-owlapi.jar"/>
 	<classpathentry kind="lib" path="resource"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">

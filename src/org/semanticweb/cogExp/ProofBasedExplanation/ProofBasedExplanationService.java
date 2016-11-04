@@ -1,15 +1,11 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.protege.editor.owl.ui.explanation.ExplanationService;
@@ -48,7 +44,11 @@ public class ProofBasedExplanationService extends ExplanationService{
 
 	@Override
 	public boolean hasExplanation(OWLAxiom axiom) {
-		return true;
+		if(axiom instanceof OWLSubClassOfAxiom){
+			return true;
+		}else{
+		return false;
+		}
 	}
 
 	
@@ -369,75 +369,27 @@ public class ProofBasedExplanationService extends ExplanationService{
  */
 public ExplanationResult explain(OWLAxiom axiom) {
 		
-		
-		OWLModelManager modelmanager = getOWLModelManager();		
+		System.out.println(
+				"----------------------------  starting verbalization  -------------------------"
+				);
+	
+		OWLModelManager modelmanager = getOWLModelManager();	
 		OWLReasoner reasoner = modelmanager.getOWLReasonerManager().getCurrentReasoner();
 		OWLReasonerFactory factory = modelmanager.getOWLReasonerManager().getCurrentReasonerFactory().getReasonerFactory();
 		OWLOntology ontology = modelmanager.getActiveOntology();
-		
-		
-		//this.getOWLEditorKit().getOWLWorkspace().setTitle("test Title");
-	
-		
-		
-		/* Outer panel, with vertical layout */
+		OWLEditorKit editorKit = getOWLEditorKit();
 		
 		
 		JPanel panel = new JPanel();
 		
-		TextElementSequence sequence = 
-			    getExplanationResultAsSequence(axiom,
-					   reasoner,
-					   factory,
-				 	   ontology,
-				 	   true,
-				 	   "OP"
-				 	   );
-				 	   
-		//System.out.println("Sequence: "+ sequence.toString());
-		
-		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
-		flowLayout.setHgap(0);
-		BoxLayout verticalLayout = new BoxLayout(panel,BoxLayout.Y_AXIS);
-		panel.setLayout(verticalLayout);
-		JPanel innerpanel = new JPanel();
-		boolean justskipped = false;
-		innerpanel.setLayout(flowLayout);
-		innerpanel.setBackground(Color.WHITE);
-		panel.add(innerpanel);
-		innerpanel.add(new JLabel(" "));
-		String previoustext = "placeholder";
-		
-		List<JLabel> labels = sequence.generateLabels();
-		for (JLabel label : labels){
-			// if (!label.getText().equals(" ")){
-				// label.setBorder(BorderFactory.createLineBorder(Color.black));
-				if (label.getText().equals(" ") && justskipped){
-					justskipped = false;
-					continue;
-				}
-				if ((label.getText().equals(" ") || label.getText().equals("")) && previoustext.equals(" ")){
-					continue;
-				}
-				if (label.getText().equals("\n")){
-					innerpanel = new JPanel();
-					innerpanel.setLayout(flowLayout);
-					innerpanel.setBackground(Color.WHITE);
-					if (!label.equals(labels.get(labels.size()-1)))
-						panel.add(innerpanel);
-					justskipped = true;
-				}
-				innerpanel.add(label);
-				previoustext = label.getText();
-				//System.out.println("inserting label |" + label.getText() + "|");
-			// }
-		}
-		TextExplanationResult result = new TextExplanationResult(panel);
-		
-		panel.setBackground(Color.WHITE);
-		System.out.println(panel.getHeight());
+		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
+					   													ontology, true, "OP");		 	   	
+		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
 		
 		
+		result = result.getResult(sequence);
+			
+		System.out.println("result");
 		return result;
 	}
 	
