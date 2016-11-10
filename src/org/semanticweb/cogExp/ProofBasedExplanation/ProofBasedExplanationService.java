@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import uk.ac.manchester.cs.jfact.JFactFactory;
+//import uk.ac.manchester.cs.jfact.JFactFactory;
 
 public class ProofBasedExplanationService extends ExplanationService{
 
@@ -154,7 +154,8 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 * @return	a GentzenTree object 
 	 * @see GentzenTree
 	 */
-	public static GentzenTree computeTree(String subclass, String superclass, String ontologyname){
+	public static GentzenTree computeTree(String subclass, String superclass, String ontologyname,
+			OWLReasonerFactory reasonerFactory, OWLReasoner reasoner){
 		Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		rootlogger.setLevel(Level.OFF);
 		
@@ -200,15 +201,15 @@ public class ProofBasedExplanationService extends ExplanationService{
 		 OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(subcl, supercl);
 		
 		// get reasoner
-		 OWLReasonerFactory reasonerFactory2 = new JFactFactory();
-		 OWLReasonerConfiguration config = new SimpleConfiguration(30000);
-		 OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology,config);
+//		 OWLReasonerFactory reasonerFactory2 = new JFactFactory();
+//		 OWLReasonerConfiguration config = new SimpleConfiguration(30000);
+//		 OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology,config);
 		 
 		
 		 
 		 tree = VerbalisationManager.computeGentzenTree(axiom, 
-					reasonerJFact, 
-					reasonerFactory2, 
+					reasoner, 
+					reasonerFactory, 
 					ontology, 
 					50000,
 					60000,

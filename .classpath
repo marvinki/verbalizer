@@ -14,7 +14,6 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/jaws-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/elk-owlapi.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jfact-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/DictTmp.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
