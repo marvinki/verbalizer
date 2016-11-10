@@ -59,12 +59,30 @@ public class TextElementSequence extends TextElement{
 	public List<JLabel> generateLabels(){
 		// add each element in the sequence as JLabel to the List
 		ArrayList<JLabel> labels = new ArrayList<JLabel>();
+				
 		for (TextElement elem : sequence){
 			labels.addAll(elem.toJLabel());
 		}
-		// clean Label List from spaces
+		
+		//adding commas and periods to the leading label
+		for(int i = 1; i<labels.size(); i++){
+			if(labels.get(i).getText().equals(" , ")
+					||labels.get(i).getText().equals(" ,")
+					||labels.get(i).getText().equals(", ")
+					||labels.get(i).getText().equals(",")
+					||labels.get(i).getText().equals(".")){
+				labels.get(i-1).setText(labels.get(i-1).getText()+labels.get(i).getText());
+			}
+		}
+		
+		// clean Label List from surplus punctuation marks and spaces
 		labels.removeIf(l->l.getText().equals(" "));
 		labels.removeIf(l->l.getText().equals(""));
+		labels.removeIf(l->l.getText().equals(","));
+		labels.removeIf(l->l.getText().equals(" ,"));
+		labels.removeIf(l->l.getText().equals(", "));
+		labels.removeIf(l->l.getText().equals(" , "));
+		labels.removeIf(l->l.getText().equals("."));
 		
 		return labels;
 	}

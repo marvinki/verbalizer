@@ -100,10 +100,11 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		List<JLabel> labels = sequence.generateLabels();
 		
 //		System.out.println(sequence.toString());
-		System.out.print(" ");
+//		System.out.print(" ");
+
 		// packing Labels in Panels 
 		for(JLabel label : labels){
-			System.out.print(""+label.getText()+" ");
+//			System.out.print(""+label.getText()+" ");
 			// concatenate labels and put them into a panel if line is broken
 			innerpanel.add(label);
 				if(label.getText().equals("\n")){								
