@@ -68,8 +68,9 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 					.getInstance()
 					.getFrame(editorKit.getWorkspace())
 					.getSize());
+			contentSize.setSize(contentSize.getWidth()*0.8, contentSize.getHeight()*0.7);
 //			contentSize = new Dimension((int)getToolkit().getScreenSize().getWidth()/4, 0);
-			setBorder(BorderFactory.createLineBorder(Color.red));
+//			setBorder(BorderFactory.createLineBorder(Color.red));
 		}
 		content.setSize(contentSize);
 		
