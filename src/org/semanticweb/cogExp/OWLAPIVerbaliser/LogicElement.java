@@ -24,7 +24,7 @@ public class LogicElement extends TextElement{
 			try {
 				document.insertString(document.getLength(), content, null);
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

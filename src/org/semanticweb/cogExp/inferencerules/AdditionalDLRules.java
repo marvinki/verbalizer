@@ -862,7 +862,7 @@ public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 						}	
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		// System.out.println("prem 2 " + prem2 +  " Matcher: " + matcher);
@@ -2165,7 +2165,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 			try {
 				premises.addAll(computePremises(sequent,(SequentSinglePosition) it.next()));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -2237,7 +2237,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 					try {
 						sequent.addAntecedent((OWLFormula) formula);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						//  Auto-generated catch block
 						e.printStackTrace();
 					}
 					// depth bookkeeping
@@ -2249,7 +2249,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 					// sequent.addAntecedent(formula);
 					System.out.println("SOMETHING WENT QUITE WRONG");	
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					//  Auto-generated catch block
 					e.printStackTrace();
 				}}
 		}else {
@@ -2257,7 +2257,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 					// sequent.addSuccedent(formula);
 					System.out.println("SOMETHING WENT QUITE WRONG");	
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					//  Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

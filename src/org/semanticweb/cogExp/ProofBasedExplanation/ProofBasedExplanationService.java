@@ -26,9 +26,7 @@ import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
@@ -85,7 +83,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 			try {
 				tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}
 			WordNetQuery.INSTANCE.setDict(tmpdir);
@@ -112,7 +110,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 			try {
 				tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}
 			WordNetQuery.INSTANCE.setDict(tmpdir);
@@ -216,7 +214,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 					"OP");	
 		// } catch (OWLOntologyCreationException e) {
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -252,7 +250,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 			try {
 				tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}
 			WordNetQuery.INSTANCE.setDict(tmpdir);

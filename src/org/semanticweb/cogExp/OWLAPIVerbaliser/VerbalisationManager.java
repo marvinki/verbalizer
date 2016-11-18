@@ -81,16 +81,6 @@ public enum VerbalisationManager {
 		return seq;
 	}
 	
-	
-	/* TODO
-	 * delete the following comment
-	 */
-//
-//<<<<<<< HEAD
-//=======
-//
-//	
-//>>>>>>> 5011b9e0d80ac34fe8e7fd7253efb5dc919efc98
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator){
 		textOWLObjectVisit.setObfuscator(obfuscator);
 		verbOWLObjectVisit.setObfuscator(obfuscator);
@@ -1377,7 +1367,7 @@ public enum VerbalisationManager {
 			String result = VerbaliseTreeManager.verbaliseNL(tree, false,asHTML,obfuscator); // parameter for rule names!
 			return result;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return "failure";	
@@ -1463,7 +1453,7 @@ public enum VerbalisationManager {
 			//resultSequence.add(element);
 			return textElementSequence;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 			String result = e.toString();
 			LogicElement element = new LogicElement(result);
@@ -1531,7 +1521,7 @@ public enum VerbalisationManager {
 					"OP");	
 		// } catch (OWLOntologyCreationException e) {
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}

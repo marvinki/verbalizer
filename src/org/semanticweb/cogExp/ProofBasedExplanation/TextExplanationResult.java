@@ -8,8 +8,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -58,10 +56,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 			if(contentSize.getHeight()<=0||contentSize.getWidth()<=0){
 				contentSize = new Dimension(100, 100);
 			}
-			//TODO maybe set the border somewhere else or restructure this class
-			//setBorder(BorderFactory.createLineBorder(Color.black));
-			
-			
+	
 		}catch(Exception e){
 			
 			contentSize = new Dimension(ProtegeManager
@@ -69,9 +64,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 					.getFrame(editorKit.getWorkspace())
 					.getSize());
 			contentSize.setSize(contentSize.getWidth()*0.8, contentSize.getHeight());
-//			contentSize = new Dimension((int)getToolkit().getScreenSize().getWidth()/4, 0);
-//			setBorder(BorderFactory.createLineBorder(Color.red));
-			
+	
 			
 		}
 		content.setSize(contentSize);
@@ -101,20 +94,15 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 				
 		List<JLabel> labels = sequence.generateLabels();
 		
-//		System.out.println(sequence.toString());
-//		System.out.print(" ");
 
 		// packing Labels in Panels 
 		for(JLabel label : labels){
-//			System.out.print(""+label.getText()+" ");
 			// concatenate labels and put them into a panel if line is broken
 			Dimension d;
 			innerpanel.add(label);
 				if(label.getText().equals("\n")){								
 					d = innerpanel.computeBestSize(content);
-					
-//					System.out.println("Panel size: "+d.getWidth()+", "+d.getHeight());
-					
+									
 					refreshContentsize(d);
 					
 					constraint.gridy++;

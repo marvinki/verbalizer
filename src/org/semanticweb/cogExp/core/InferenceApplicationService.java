@@ -239,7 +239,7 @@ public void applySequentInferenceRule(ProofTree tree, RuleBindingForNode binding
 		assert(premiseSequents!=null);
 		// if (premiseSequents.size()==0) throw new UselessInferenceException();
 	} catch (Exception e) {
-		// TODO Auto-generated catch block
+		//  Auto-generated catch block
 		e.printStackTrace();
 	}
 	// System.out.println(premiseSequents.getSequents());
@@ -353,7 +353,7 @@ public void applySequentInferenceRuleToSaturate(ProofTree tree, RuleBindingForNo
 		assert(premiseSequents!=null);
 		// if (premiseSequents.size()==0) throw new UselessInferenceException();
 	} catch (Exception e) {
-		// TODO Auto-generated catch block
+		//  Auto-generated catch block
 		e.printStackTrace();
 	}
 	sequent = premiseSequents.getSequents().get(0);
@@ -370,7 +370,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		premiseSequents = rule.computePremises(sequent, binding.getRuleBinding());
 		// if (premiseSequents.size()==0) throw new UselessInferenceException();
 	} catch (Exception e) {
-		// TODO Auto-generated catch block
+		//  Auto-generated catch block
 		e.printStackTrace();
 	}
 	// the following should never happen, but we keep it nevertheless.
@@ -786,7 +786,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 						try {
 							((IncrementalSequent) seqnew_check).getAntecedentTree().insert(rbnewfn.getNewAntecedent());
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+							//  Auto-generated catch block
 							e.printStackTrace();
 						}
 						if (!seqnew_check.alreadyContainedInAntecedent(rbnewfn.getNewAntecedent())){
@@ -850,7 +850,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 	 			// System.out.println("COUNT " + count);
 				}
 			} catch (UselessInferenceException e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 				return initialtree;
 			}
@@ -968,7 +968,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		 			// System.out.println("COUNT " + count);
 				 // applySequentInferenceRuleToSaturate(initialtree,bindings.get(0),current_rule);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}
 			}

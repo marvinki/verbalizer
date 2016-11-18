@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/** TODO
+/** TODO - just for testing
  * just for testing, delete this 5 imports (JFrame, JPanel,...,Toolkit) when not needed anymore
  */
 import javax.swing.JFrame;

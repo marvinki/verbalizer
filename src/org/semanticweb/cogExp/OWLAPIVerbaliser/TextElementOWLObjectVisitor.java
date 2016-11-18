@@ -506,13 +506,13 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 			return seq2;
 		}
 		if (someExps.size()>0 && allExps.size()==0){
-			head = VerbalisationManager.INSTANCE.verbaliseComplexIntersection(arg0,obfuscator); // <-- TODO
+			head = VerbalisationManager.INSTANCE.verbaliseComplexIntersection(arg0,obfuscator); // <-- TODO - nothing to do
 			ClassElement headElement3 = new ClassElement(head);
 			TextElementSequence seq3 = new TextElementSequence();
 			seq3.add(headElement3);
 			return seq3;
 			/*
-			// TODO: this is not aggregating in case there is a multiple exists pattern
+			// TODO -this is not aggregating in case there is a multiple exists pattern
 			boolean isFirst = true;
 			for(OWLObjectSomeValuesFrom some : someExps){
 				if (!isFirst)
