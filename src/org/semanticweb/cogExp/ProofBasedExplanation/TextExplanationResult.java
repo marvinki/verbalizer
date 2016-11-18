@@ -68,9 +68,11 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 					.getInstance()
 					.getFrame(editorKit.getWorkspace())
 					.getSize());
-			contentSize.setSize(contentSize.getWidth()*0.8, contentSize.getHeight()*0.7);
+			contentSize.setSize(contentSize.getWidth()*0.8, contentSize.getHeight());
 //			contentSize = new Dimension((int)getToolkit().getScreenSize().getWidth()/4, 0);
 //			setBorder(BorderFactory.createLineBorder(Color.red));
+			
+			
 		}
 		content.setSize(contentSize);
 		
@@ -90,7 +92,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	public TextExplanationResult getResult(TextElementSequence sequence){
 		CustomJPanel innerpanel = new CustomJPanel();
 		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
-		
+		int height = 0;
 		
 		innerpanel.setLayout(flowLayout);
 		innerpanel.setBackground(Color.WHITE);
@@ -106,9 +108,10 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		for(JLabel label : labels){
 //			System.out.print(""+label.getText()+" ");
 			// concatenate labels and put them into a panel if line is broken
+			Dimension d;
 			innerpanel.add(label);
 				if(label.getText().equals("\n")){								
-					Dimension d = innerpanel.computeBestSize(content);
+					d = innerpanel.computeBestSize(content);
 					
 //					System.out.println("Panel size: "+d.getWidth()+", "+d.getHeight());
 					
@@ -118,17 +121,18 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 				
 					innerpanel.setPreferredSize(d);
 					content.add(innerpanel, constraint);
+					height += Math.ceil(d.getHeight());
 					
 					innerpanel = new CustomJPanel(flowLayout); // removeAll
 					innerpanel.setBackground(Color.WHITE);
 				}
-			
-			
 		}
 		
 		content.setPreferredSize(contentSize);
 		
 		this.add(getScrollPane(content));
+		System.out.println("height : "+height);
+		contentSize.setSize(contentSize.getWidth(), height);
 		
 		return this;
 	}
