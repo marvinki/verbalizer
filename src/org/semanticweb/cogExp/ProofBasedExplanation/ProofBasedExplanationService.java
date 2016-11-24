@@ -288,7 +288,9 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		
 		result = result.getResult(sequence);
 			
-		System.out.println("result");
+//		System.out.println("result");
+		
+		result.updateUI();
 		return result;
 	}
 	

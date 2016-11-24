@@ -953,7 +953,6 @@ public enum VerbaliseTreeManager {
 				if (seq.getTextElements().get(0).toString().contains("forearms")
 						&& superseq.getTextElements().get(0).toString().contains("is")
 						){
-					System.out.println("action");
 					String supStr = superseq.getTextElements().get(0).toString();
 					superseq.getTextElements().remove(0);
 					RoleElement sr = new RoleElement("are" + supStr.substring(2));

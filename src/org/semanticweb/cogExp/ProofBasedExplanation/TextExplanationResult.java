@@ -29,6 +29,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	private static final long serialVersionUID = 1944836708820525384L;
 
 	private JPanel content = new JPanel();
+	private JPanel result = new JPanel();
 	private GridBagLayout contentLayout  = new GridBagLayout();
 	private GridBagConstraints constraint = new GridBagConstraints();
 	private Dimension contentSize;
@@ -44,7 +45,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		constraint.weightx = 0;
 		constraint.weighty = 0;
 		
-		
+		this.result = panel;
 		
 		content.setLayout(contentLayout);
 		// try to set the width and height of the content panel depending on the size of
@@ -118,8 +119,9 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		
 		content.setPreferredSize(contentSize);
 		
-		this.add(getScrollPane(content));
-		System.out.println("height : "+height);
+		result.add(content);
+		this.add(getScrollPane(result));
+//		System.out.println("height : "+height);
 		contentSize.setSize(contentSize.getWidth(), height);
 		
 		return this;
@@ -168,5 +170,6 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		// TODO Auto-generated method stub	
 	}
 
+	
 
 }

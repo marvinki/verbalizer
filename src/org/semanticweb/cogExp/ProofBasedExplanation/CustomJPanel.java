@@ -63,7 +63,6 @@ public class CustomJPanel extends JPanel {
 	 */
 	public CustomJPanel(boolean isDoubleBuffered) {
 		super(isDoubleBuffered);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
