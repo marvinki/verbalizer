@@ -1,5 +1,8 @@
 package org.semanticweb.cogExp.PrettyPrint;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
@@ -185,7 +188,19 @@ public class PrettyPrintClassExpressionVisitor implements OWLClassExpressionVisi
 		}
 
 		public String visit(OWLClass arg0) {
-			return arg0.getIRI().getFragment();
+			String fragment = arg0.getIRI().getFragment();
+			if (arg0.toString().contains("/")){
+				// System.out.println(arg0.toString());
+				Pattern p = Pattern.compile("#(.*?)>");
+				Matcher m = p.matcher(arg0.toString());
+				boolean b = m.find();
+				// System.out.println("Matcher " + m.group(1));
+				return m.group(1);
+			}
+				
+			// System.out.println("pretty print visiting : " + arg0);
+			// System.out.println("Short form: " + arg0.getIRI().getScheme());
+			return fragment;
 		}
 	
 }
