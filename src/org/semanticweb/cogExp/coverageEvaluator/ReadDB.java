@@ -122,7 +122,7 @@ public class ReadDB {
 				"Ontology-subatomic-particle-complex.owl",
 				"Ontology-substance1.owl",
 				"Ontology-substance.owl",
-				"Ontology-tambis-patched",
+				"Ontology-tambis-patched.owl",
 				"Ontology-Thesaurus.07.12e.owl",
 				"Ontology-Thesaurus.08.02d.owl",
 				"Ontology-Thesaurus.08.08d.owl",

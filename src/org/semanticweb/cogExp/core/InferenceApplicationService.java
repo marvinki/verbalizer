@@ -677,7 +677,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			// System.out.println("after looping, binding size: " + bindings.size());    
 			if (bindings.size()==0){ 
 				bfsLevel=bfsLevel + 1;
-				// System.out.println("BFS LEVEL NOW: " + bfsLevel);
+				System.out.println("BFS LEVEL NOW: " + bfsLevel);
 				/// HACKY!
 				if (bfsLevel > 30){
 					System.out.println("simpleLoop: Reached BFS bounds.");

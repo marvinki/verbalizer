@@ -29,6 +29,7 @@ import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.semanticweb.cogExp.core.IncrementalSequent;
 import org.semanticweb.cogExp.core.InferenceApplicationService;
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
+import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPIManagerManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
@@ -78,8 +79,8 @@ import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
 
 public class CoverageStoreEvaluatorCompressionDB {
-	static private OWLOntologyManager manager =OWLManager.createOWLOntologyManager();
-	// static private OWLOntologyManager manager = getImportKnowledgeableOntologyManger();
+	// static private OWLOntologyManager manager =OWLManager.createOWLOntologyManager();
+	static private OWLOntologyManager manager = getImportKnowledgeableOntologyManger();
 			// OWLManager.createOWLOntologyManager();
 	static private OWLDataFactory dataFactory=manager.getOWLDataFactory();
 	static private OWLOntology tmpOntology = createOntology();
@@ -536,13 +537,23 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				System.out.println("entering loop no 1.");
 	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree, currentrules, 840000, timelimit1 * 1000);
 	    				
+	    				
+	    				try {
+							GentzenTree treedebug = prooftree.toGentzen();
+							System.out.println("used rules for first tree: " + treedebug.getInfRules());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	    				
+	    				
 	    				INLG2012NguyenEtAlRules.RULE12.clearCaches();
 	    				INLG2012NguyenEtAlRules.RULE15.clearCaches();
 	    				
 	    				if (prooftree.getOpenNodes().size()==0){
 	    				System.out.println("entering loop no 2.");
 	    				// InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 5);
-	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 5);
+	    				InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree2, nonredundantInferenceRules, 1840000, timelimit1 * 1000 * 120);
 	    				}
 	    				System.out.println("Done looping.");
 	    				
@@ -598,6 +609,10 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    				System.out.println(prooftree2.toString());
 	    				// throw new RuntimeException();
 	    				nonredundantProblems = nonredundantProblems + 1;
+	    				
+	    				
+	 
+	    				
 	    				continue;
 	    				/*
 	    				
@@ -953,6 +968,19 @@ public class CoverageStoreEvaluatorCompressionDB {
 		    					countRules(infRules,"Additional-Forall-Union"));
 		    			
 		    		
+		    			
+		    			List<String> queryResult2 = DatabaseManager.INSTANCE.getExplanation(
+		    					subAx.getSubClass().toString(), 
+		    					subAx.getSuperClass().toString(), 
+		    					ontologyfile);
+		    			
+		    			System.out.println("query result obtained + " + queryResult2);
+		    			
+		    			boolean solved2 = DatabaseManager.INSTANCE.getSolved(queryResult2);
+		    			System.out.println("Now solved? " + solved2);
+		    			if (!solved2)
+		    				throw new RuntimeException();
+		    			
 		    			/*
 		    			int timeQueried = DatabaseManager.INSTANCE.getTime(queryResult);
 		    			System.out.println("time? " + timeQueried);
@@ -1208,7 +1236,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		
 			
 			// Statistic stats = runOntology("/Users/marvin/marvin_work_ulm/resources/ontologies/ore2015_pool_sample/el/pool/" + line);
-			Statistic stats = runOntology(storedfilesStem + line,120); // <---- time limit (in seconds)
+			Statistic stats = runOntology(storedfilesStem + line,10); // <---- time limit (in seconds)
 			
 			
 			// create individual detailed log file	
@@ -2091,6 +2119,45 @@ public class CoverageStoreEvaluatorCompressionDB {
     return a;
 	}
 	
+	
+public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
+		
+		//System.out.println("Trying to parse: " + str);
+		
+		// OWLFunctionalSyntaxOWLParserFactory parserFactory = new OWLFunctionalSyntaxOWLParserFactory();
+		OWLFunctionalSyntaxOWLParser parser = OWLAPIManagerManager.INSTANCE.getFunctionalSyntaxParser();
+		
+		
+		OWLOntologyLoaderConfiguration loaderConfiguration = new OWLOntologyLoaderConfiguration();
+		
+		str = "Ontology(" + str + ")";
+		
+		
+		// System.out.println("Trying to parse: " + str);
+		
+		InputStream in = new ByteArrayInputStream(str.getBytes());
+		StreamDocumentSource streamSource = new StreamDocumentSource(in);
+		
+		// OWLOntologyDocumentSource toBeParsed = new OWLOntologyDocumentSource();
+		
+		OWLOntologyManager manager = OWLAPIManagerManager.INSTANCE.getOntologyManager();
+		
+		
+		Set<OWLAxiom> axioms = null;
+		
+		try {
+			
+		manager.removeAxioms(tmpOntology, tmpOntology.getAxioms());
+		
+		OWLDocumentFormat format = parser.parse(streamSource, tmpOntology, loaderConfiguration);
+		
+		
+			axioms = tmpOntology.getAxioms();
+		} catch(Exception e){}
+		
+    return axioms;
+	}
+	
 	public static int countRules(List<SequentInferenceRule> rules, String rulename){
 		int i = 0;
 		for (SequentInferenceRule rule : rules){
@@ -2131,6 +2198,56 @@ public class CoverageStoreEvaluatorCompressionDB {
 		           IRI.create("file:///Users/marvin/Downloads/hydrology/mereologicalrelations.owl")));
 		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.ordnancesurvey.co.uk/ontology/NetworkRelations/v0.2/NetworkRelations.owl"),
 		           IRI.create("file:///Users/marvin/Downloads/hydrology/networkrelations.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/nulo"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-nulo.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/bfo"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-bfo.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/bro"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-bro.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/annotation"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-annotation.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/bro-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-bro-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/biochemistry-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-biochemistry-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/chemistry-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-chemistry-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/organic-compound-complex"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-organic-compound-complex.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/organic-compound-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-organic-compound-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/chemistry-complex"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-chemistry-complex.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/organic-functional-group-complex"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-organic-functional-group-complex.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/atom-common"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-atom-common.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/organic-functional-group-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-organic-functional-group-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/element-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-element-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/periodic-table-complex"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-periodic-table-complex.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/periodic-table-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-periodic-table-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/molecule-complex"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-molecule-complex.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/molecule-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-molecule-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/atom-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-atom-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/property-complex"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-property-complex.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/property-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-property-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/unit-complex"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-unit-complex.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/unit-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-unit-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/yowl-primitive"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-yowl-primitive.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/goslim"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-goslim.owl")));
 		return manager;
 	}
 	

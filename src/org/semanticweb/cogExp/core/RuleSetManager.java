@@ -271,7 +271,7 @@ public enum RuleSetManager {
     			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
     			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
     			// AdditionalDLRules.R0, // introduce trivial subsumptions  // <--- off?
-    			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
+    		    AdditionalDLRules.DEFDOMAIN, // translate domain definition 
     			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
     			INLG2012NguyenEtAlRules.RULE42,
     			INLG2012NguyenEtAlRules.RULE23Repeat,

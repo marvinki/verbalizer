@@ -130,7 +130,7 @@ public enum DatabaseManager {
          // sql = sql.replace("/", "\\/");
          // sql = sql.replace("'", "\\'");
          
-         // System.out.println(sql);
+         System.out.println("insert statement " + sql);
          
          
          stmt.executeUpdate(sql);
@@ -344,12 +344,13 @@ public enum DatabaseManager {
 			String sql2 = "DELETE FROM EXPLANATIONS WHERE subclass = ' "
 					 + subclass + "' && superclass='" + superclass + "' && ontologypath='" + ontologypath + "';";
 				        
-		    // System.out.println(sql2);
+		    System.out.println("Executing delete statement  " + sql2);
 				       
 		    stmt2.executeUpdate(sql2);
 		    stmt2.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			System.out.println("we have an exception!");
 			e.printStackTrace();
 		}
 		return;
