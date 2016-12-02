@@ -1406,6 +1406,7 @@ public enum VerbalisationManager {
 				// for (OWLFormula just : justificationFormulas){
 				// 	result += just.toString() + "; ";
 				// }
+				System.out.println("NoRuleElement");
 				NoRulesElement element = new NoRulesElement(VerbaliseTreeManager
 																.makeUppercaseStart(
 																		VerbalisationManager
@@ -1413,6 +1414,7 @@ public enum VerbalisationManager {
 																				ConversionManager
 																				.toOWLAPI(axiomFormula))));
 				resultSequence.add(element);
+				System.out.println(resultSequence.toString());
 				return resultSequence;
 			}
 			

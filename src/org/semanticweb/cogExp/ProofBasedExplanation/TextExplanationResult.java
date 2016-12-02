@@ -6,17 +6,34 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 
 import org.protege.editor.core.ProtegeManager;
+import org.protege.editor.core.ui.list.MList;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
+import org.protege.editor.owl.ui.frame.OWLGeneralClassAxiomsFrame;
+import org.protege.editor.owl.ui.framelist.OWLFrameList;
+import org.protege.editor.owl.ui.list.OWLAxiomList;
+import org.protege.editor.core.ModelManager;
+
+import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
+import org.protege.editor.owl.ui.tree.OWLObjectTreeCellRenderer;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
+
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+
+import tests.MyRenderer;
 
 /**
  * Contains the result (with proper layout) of the verbalized Axioms. 
@@ -86,16 +103,17 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	public TextExplanationResult getResult(TextElementSequence sequence){
 		CustomJPanel innerpanel = new CustomJPanel();
 		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
+		/* Testing
 		int height = 0;
 		
 		innerpanel.setLayout(flowLayout);
 		innerpanel.setBackground(Color.WHITE);
 		
 		content.add(innerpanel,constraint);
-				
-		List<JLabel> labels = sequence.generateLabels();
 		
-
+		
+		List<JLabel> labels = sequence.generateLabels();
+		System.out.println("Format: "+sequence.toString());
 		// packing Labels in Panels 
 		for(JLabel label : labels){
 			// concatenate labels and put them into a panel if line is broken
@@ -123,7 +141,23 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		this.add(getScrollPane(result));
 //		System.out.println("height : "+height);
 		contentSize.setSize(contentSize.getWidth(), height);
+		*/
+		MyRenderer cr = new MyRenderer(editorKit);
 		
+		
+		List<JLabel> labels = sequence.generateLabels();
+		
+		OWLFrameList list = new OWLFrameList<OWLOntology>(editorKit,
+                new OWLGeneralClassAxiomsFrame(editorKit,
+                editorKit.getOWLModelManager().getOWLOntologyManager()));
+		
+		list.setCellRenderer(cr);
+		list.setRootObject(editorKit.getOWLModelManager().getActiveOntology());
+		
+			
+				
+		innerpanel.add(list);
+		this.add(innerpanel);
 		return this;
 	}
 	
