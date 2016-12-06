@@ -5,6 +5,8 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
+import org.protege.editor.owl.OWLEditorKit;
+
 public class NoRulesElement extends TextElement{
 	/**
 	 * Special TextElement that indicates that there's nothing to explain. 
@@ -73,9 +75,9 @@ public class NoRulesElement extends TextElement{
 	 * @see org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement#toJLabel()
 	 */
 	@Override
-	public List<JLabel> toJLabel() {
+	public List<JLabel> toJLabel(OWLEditorKit ek) {
 		// TODO Auto-generated method stub
-		return super.toJLabel();
+		return super.toJLabel(ek);
 	}
 
 }

@@ -529,7 +529,7 @@ public enum VerbalisationManager {
 		}
 		if (str==""){
 			str = ppCEvisit.visit(classname);
-			// System.out.println("DBG " + str);
+			// System.out.println("DBG after pretty print visit --- " + str);
 			if (verbOWLObjectVisit.getObfuscator()!=null){
 				str = verbOWLObjectVisit.getObfuscator().obfuscateName(str);
 			}

@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
+import org.protege.editor.owl.OWLEditorKit;
+import org.semanticweb.cogExp.ProofBasedExplanation.LinkedJLabel;
+
 public class TextElementSequence extends TextElement{
 
 	private List<TextElement> sequence = new ArrayList<TextElement>();
@@ -56,12 +59,12 @@ public class TextElementSequence extends TextElement{
 	/**
 	 * @return returns a list of JLabels of the TextElementSequence (without empty JLabels or spaces)
 	 */
-	public List<JLabel> generateLabels(){
+	public List<JLabel> generateLabels(OWLEditorKit ek){
 		// add each element in the sequence as JLabel to the List
 		ArrayList<JLabel> labels = new ArrayList<JLabel>();
 				
 		for (TextElement elem : sequence){
-			labels.addAll(elem.toJLabel());
+			labels.addAll(elem.toJLabel(ek));
 		}
 		
 		//adding commas and periods to the leading label

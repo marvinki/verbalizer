@@ -1,14 +1,25 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
+import java.awt.BorderLayout;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.AbstractListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.ListModel;
 
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.protege.editor.owl.ui.explanation.ExplanationService;
+import org.protege.editor.owl.ui.frame.OWLGeneralClassAxiomsFrame;
+import org.protege.editor.owl.ui.frame.cls.OWLClassDescriptionFrame;
+import org.protege.editor.owl.ui.framelist.OWLFrameList;
+import org.protege.editor.owl.ui.list.OWLAxiomList;
+import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.Obfuscator;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
@@ -32,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 //import uk.ac.manchester.cs.jfact.JFactFactory;
+import tests.CustomGUIList;
 
 public class ProofBasedExplanationService extends ExplanationService{
 
@@ -282,13 +294,16 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		JPanel panel = new JPanel();
 		
 		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
-					   													ontology, true, "OP");		 	   	
+					   													ontology, true, "OP");	
+		
+		
+		
+		
 		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
 		
-		
-		result = result.getResult(sequence);
+		result = result.getResult(sequence, editorKit);
 			
-//		System.out.println("result");
+		System.out.println("-- Generated text: --  " + sequence.toString());
 		
 		result.updateUI();
 		return result;

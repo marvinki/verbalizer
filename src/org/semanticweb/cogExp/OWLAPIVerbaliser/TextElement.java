@@ -8,6 +8,8 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
+import org.protege.editor.owl.OWLEditorKit;
+import org.semanticweb.cogExp.ProofBasedExplanation.LinkedJLabel;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 /**
@@ -60,7 +62,7 @@ public class TextElement {
 	 * @return returns the content of the TextElement as list of JLabels,
 	 * the elements have no white spaces at their ending or beginning
 	 */
-	public List<JLabel> toJLabel(){
+	public List<JLabel> toJLabel(OWLEditorKit ek){
 		List<JLabel> result = new ArrayList<JLabel>();
 		String name = content;
 		if (content.endsWith(" "))
@@ -72,7 +74,5 @@ public class TextElement {
 		result.add(label);
 		return result;
 	}
-	
-	
 	
 }

@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
+import org.protege.editor.owl.OWLEditorKit;
+
 /**
  * contains zero or more TextElementSequences. All you can do is create a list,
  * add and get/set to elements in this List.
@@ -149,18 +151,18 @@ public class TextSequenceList extends TextElement {
 	 * " Text_1, Text_2, ..., Text_n-1 and Text_n, "
 	 */
 	@Override
-	public List<JLabel> toJLabel(){
+	public List<JLabel> toJLabel(OWLEditorKit ek){
 		List<JLabel> result = new ArrayList<JLabel>();
 		
-		result.addAll(list.get(0).generateLabels()); 
+		result.addAll(list.get(0).generateLabels(ek)); 
 		
 		for (int i = 1; i <= list.size()-2; i++){ // add a separator (", ") between the statements
 			result.add(new JLabel(", "));
-			result.addAll(list.get(i).generateLabels());
+			result.addAll(list.get(i).generateLabels(ek));
 		}
 		
 		result.add(new JLabel("and"));	//add the separator " and " between the last statement and the one before that
-		result.addAll(list.get(list.size()-1).generateLabels());
+		result.addAll(list.get(list.size()-1).generateLabels(ek));
 		result.add(new JLabel(", "));
 		
 		return result;
