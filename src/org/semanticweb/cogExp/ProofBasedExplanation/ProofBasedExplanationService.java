@@ -45,6 +45,7 @@ import ch.qos.logback.classic.Logger;
 //import uk.ac.manchester.cs.jfact.JFactFactory;
 import tests.CustomGUIList;
 
+
 public class ProofBasedExplanationService extends ExplanationService{
 
 	@Override
@@ -284,11 +285,13 @@ public ExplanationResult explain(OWLAxiom axiom) {
 				"----------------------------  starting verbalization  -------------------------"
 				);
 	
+		
 		OWLModelManager modelmanager = getOWLModelManager();	
 		OWLReasoner reasoner = modelmanager.getOWLReasonerManager().getCurrentReasoner();
 		OWLReasonerFactory factory = modelmanager.getOWLReasonerManager().getCurrentReasonerFactory().getReasonerFactory();
 		OWLOntology ontology = modelmanager.getActiveOntology();
 		OWLEditorKit editorKit = getOWLEditorKit();
+		     
 		
 		
 		JPanel panel = new JPanel();
@@ -301,9 +304,9 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		
 		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
 		
-		result = result.getResult(sequence, editorKit);
-			
-		System.out.println("-- Generated text: --  " + sequence.toString());
+		
+		result = result.getResult(sequence,editorKit);
+		
 		
 		result.updateUI();
 		return result;
