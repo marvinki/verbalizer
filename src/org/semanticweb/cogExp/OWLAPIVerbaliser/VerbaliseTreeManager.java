@@ -769,7 +769,7 @@ public enum VerbaliseTreeManager {
 					seq.add(new LogicElement(","));
 					OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
 					seq.concat(VerbalisationManager.textualise(addition,obfuscator));
-					seq.add(new LogicElement(" [args: " + premiseformulas.size() + "]"));
+					// seq.add(new LogicElement(" [args: " + premiseformulas.size() + "]"));
 				}
 				else{
 					if (premiseformulas.contains(previousconclusion)
@@ -781,7 +781,7 @@ public enum VerbaliseTreeManager {
 						seq.add(new LogicElement("Therefore,"));
 						OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
 						seq.concat(VerbalisationManager.textualise(addition,obfuscator));
-						seq.add(new LogicElement(" [args: " + premiseformulas.size() + "]"));
+						// seq.add(new LogicElement(" [args: " + premiseformulas.size() + "]"));
 						return seq;
 						
 					} else {

@@ -103,25 +103,20 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	public TextExplanationResult getResult(TextElementSequence sequence, OWLEditorKit ek){
 		CustomJPanel innerpanel = new CustomJPanel();
 		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
-		/* Testing
+		
 		int height = 0;
 		
 		innerpanel.setLayout(flowLayout);
 		innerpanel.setBackground(Color.WHITE);
 		
 		content.add(innerpanel,constraint);
-<<<<<<< HEAD
+
 				
 		List<JLabel> labels = sequence.generateLabels(ek);
 
 		// System.out.println(labels.toString());
 
-=======
-		
-		
-		List<JLabel> labels = sequence.generateLabels();
-		System.out.println("Format: "+sequence.toString());
->>>>>>> branch 'plugin' of https://github.com/marvinki/verbalizer.git
+
 		// packing Labels in Panels 
 		for(JLabel label : labels){
 			// concatenate labels and put them into a panel if line is broken
@@ -149,7 +144,9 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		this.add(getScrollPane(result));
 //		System.out.println("height : "+height);
 		contentSize.setSize(contentSize.getWidth(), height);
-		*/
+		
+		
+		/*
 		MyRenderer cr = new MyRenderer(editorKit);
 		
 		
@@ -166,6 +163,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 				
 		innerpanel.add(list);
 		this.add(innerpanel);
+		*/
 		return this;
 	}
 	
