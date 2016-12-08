@@ -1,25 +1,15 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
-import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.AbstractListModel;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.ListModel;
-
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.protege.editor.owl.ui.explanation.ExplanationService;
-import org.protege.editor.owl.ui.frame.OWLGeneralClassAxiomsFrame;
-import org.protege.editor.owl.ui.frame.cls.OWLClassDescriptionFrame;
-import org.protege.editor.owl.ui.framelist.OWLFrameList;
-import org.protege.editor.owl.ui.list.OWLAxiomList;
-import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
+import org.protege.editor.owl.ui.prefix.GeneratePrefixFromOntologyAction;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.Obfuscator;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
@@ -43,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 //import uk.ac.manchester.cs.jfact.JFactFactory;
-import tests.CustomGUIList;
+//import tests.CustomGUIList;
 
 
 public class ProofBasedExplanationService extends ExplanationService{
@@ -162,8 +152,13 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 * @param subclass			subclass as String	
 	 * @param superclass		superclass as String	
 	 * @param ontologyname		path to the ontology as string
+	 * @param reasoner 			TODO
 	 * @return	a GentzenTree object 
 	 * @see GentzenTree
+	 */
+	
+	/*TODO add @param reasoner
+	 * 
 	 */
 	public static GentzenTree computeTree(String subclass, String superclass, String ontologyname,
 			OWLReasonerFactory reasonerFactory, OWLReasoner reasoner){
@@ -306,8 +301,7 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		
 		
 		result = result.getResult(sequence,editorKit);
-		
-		
+	
 		result.updateUI();
 		return result;
 	}

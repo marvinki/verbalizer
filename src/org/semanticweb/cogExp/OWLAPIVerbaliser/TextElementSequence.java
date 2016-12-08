@@ -57,6 +57,7 @@ public class TextElementSequence extends TextElement{
 	}
 	
 	/**
+	 * @param ek OWLEditorKit needed for LinkedJLabel
 	 * @return returns a list of JLabels of the TextElementSequence (without empty JLabels or spaces)
 	 */
 	public List<JLabel> generateLabels(OWLEditorKit ek){

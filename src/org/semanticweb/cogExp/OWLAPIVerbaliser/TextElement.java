@@ -9,9 +9,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.cogExp.ProofBasedExplanation.LinkedJLabel;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLEntity;
 /**
  * represents any textual element of verbalizer
  * @author marvinki (doc by fp)
@@ -58,7 +55,7 @@ public class TextElement {
 	}
 	
 	/**
-	 * 
+	 * @param ek OWLEditorKit
 	 * @return returns the content of the TextElement as list of JLabels,
 	 * the elements have no white spaces at their ending or beginning
 	 */

@@ -1,5 +1,7 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
+import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -77,7 +79,11 @@ public class NoRulesElement extends TextElement{
 	@Override
 	public List<JLabel> toJLabel(OWLEditorKit ek) {
 		// TODO Auto-generated method stub
-		return super.toJLabel(ek);
+		List<JLabel> labelList = new ArrayList<JLabel>();
+		labelList.addAll(super.toJLabel(ek));
+		labelList.add(new JLabel("\n"));
+		
+		return labelList;
 	}
 
 }
