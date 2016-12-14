@@ -8,8 +8,7 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLEntity;
+import org.protege.editor.owl.OWLEditorKit;
 /**
  * represents any textual element of verbalizer
  * @author marvinki (doc by fp)
@@ -50,17 +49,17 @@ public class TextElement {
 		try {
 			document.insertString(document.getLength(), content, null);
 		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	/**
-	 * 
+	 * @param ek OWLEditorKit
 	 * @return returns the content of the TextElement as list of JLabels,
 	 * the elements have no white spaces at their ending or beginning
 	 */
-	public List<JLabel> toJLabel(){
+	public List<JLabel> toJLabel(OWLEditorKit ek){
 		List<JLabel> result = new ArrayList<JLabel>();
 		String name = content;
 		if (content.endsWith(" "))
@@ -72,7 +71,5 @@ public class TextElement {
 		result.add(label);
 		return result;
 	}
-	
-	
 	
 }

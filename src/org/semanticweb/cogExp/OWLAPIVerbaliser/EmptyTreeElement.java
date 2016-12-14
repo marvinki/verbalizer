@@ -1,6 +1,12 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JLabel;
 import javax.swing.JTextPane;
+
+import org.protege.editor.owl.OWLEditorKit;
 
 public class EmptyTreeElement extends TextElement{
 
@@ -51,5 +57,14 @@ public class EmptyTreeElement extends TextElement{
 		super.addToDocument(textPane);
 	}
 
+	@Override
+	public List<JLabel> toJLabel(OWLEditorKit ek) {
+		// TODO Auto-generated method stub
+		List<JLabel> labelList = new ArrayList<JLabel>();
+		labelList.addAll(super.toJLabel(ek));
+		labelList.add(new JLabel("\n"));
+		
+		return labelList;
+	}
 
 }

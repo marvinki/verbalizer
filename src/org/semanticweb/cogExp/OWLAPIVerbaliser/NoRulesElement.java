@@ -1,9 +1,13 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
+import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
+
+import org.protege.editor.owl.OWLEditorKit;
 
 public class NoRulesElement extends TextElement{
 	/**
@@ -73,9 +77,13 @@ public class NoRulesElement extends TextElement{
 	 * @see org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement#toJLabel()
 	 */
 	@Override
-	public List<JLabel> toJLabel() {
+	public List<JLabel> toJLabel(OWLEditorKit ek) {
 		// TODO Auto-generated method stub
-		return super.toJLabel();
+		List<JLabel> labelList = new ArrayList<JLabel>();
+		labelList.addAll(super.toJLabel(ek));
+		labelList.add(new JLabel("\n"));
+		
+		return labelList;
 	}
 
 }

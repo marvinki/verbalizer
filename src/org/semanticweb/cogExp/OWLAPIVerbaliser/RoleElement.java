@@ -37,7 +37,7 @@ public class RoleElement extends TextElement{
 		try {
 			document.insertString(document.getLength(), str, null);
 		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

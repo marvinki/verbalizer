@@ -85,8 +85,6 @@ public enum VerbalisationManager {
 		return seq;
 	}
 	
-	
-
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator){
 		textOWLObjectVisit.setObfuscator(obfuscator);
 		verbOWLObjectVisit.setObfuscator(obfuscator);
@@ -559,7 +557,7 @@ public enum VerbalisationManager {
 		// System.out.println("waypoint (5)");
 		if (str==""){
 			str = ppCEvisit.visit(classname);
-			// System.out.println("DBG " + str);
+			// System.out.println("DBG after pretty print visit --- " + str);
 			if (verbOWLObjectVisit.getObfuscator()!=null){
 				str = verbOWLObjectVisit.getObfuscator().obfuscateName(str);
 			}
@@ -1305,6 +1303,7 @@ public enum VerbalisationManager {
 		  
 	 }
 	 if (explanation.size()==0){
+		 System.out.println("no justification found!");
 		 return null;
 	 }
 	 
@@ -1429,7 +1428,7 @@ public enum VerbalisationManager {
 			System.out.println("Verbalisation took: " + (endVerbalising - startVerbalising) + "ms");
 			return result;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return "failure";	
@@ -1468,6 +1467,7 @@ public enum VerbalisationManager {
 				// for (OWLFormula just : justificationFormulas){
 				// 	result += just.toString() + "; ";
 				// }
+				System.out.println("NoRuleElement");
 				NoRulesElement element = new NoRulesElement(VerbaliseTreeManager
 																.makeUppercaseStart(
 																		VerbalisationManager
@@ -1475,6 +1475,7 @@ public enum VerbalisationManager {
 																				ConversionManager
 																				.toOWLAPI(axiomFormula))));
 				resultSequence.add(element);
+				System.out.println(resultSequence.toString());
 				return resultSequence;
 			}
 			
@@ -1518,7 +1519,7 @@ public enum VerbalisationManager {
 			//resultSequence.add(element);
 			return textElementSequence;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 			String result = e.toString();
 			LogicElement element = new LogicElement(result);
@@ -1586,7 +1587,7 @@ public enum VerbalisationManager {
 					"OP");	
 		// } catch (OWLOntologyCreationException e) {
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}

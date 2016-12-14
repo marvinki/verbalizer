@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/** TODO
+/** TODO - just for testing
  * just for testing, delete this 5 imports (JFrame, JPanel,...,Toolkit) when not needed anymore
  */
 import javax.swing.JFrame;
@@ -20,6 +20,9 @@ import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+
+import org.protege.editor.owl.OWLEditorKit;
+import org.semanticweb.cogExp.ProofBasedExplanation.LinkedJLabel;
 
 /**
  * represents any class
@@ -59,7 +62,7 @@ public class ClassElement extends TextElement{
 	}
 		
 	@Override
-	public List<JLabel> toJLabel(){
+	public List<JLabel> toJLabel(OWLEditorKit ek){
 		List<JLabel> labellist = new ArrayList<JLabel>();
 		
 		String article = "";
@@ -84,7 +87,8 @@ public class ClassElement extends TextElement{
 		
 		
 		JLabel articlelabel = new JLabel(article);
-		JLabel contentlabel = new JLabel(name);
+		LinkedJLabel contentlabel = new LinkedJLabel(ek);
+		contentlabel.setText(name);
 		JLabel spacelabel = new JLabel(" ");
 		articlelabel.setBorder(new EmptyBorder(0,0,0,0));
 		contentlabel.setBorder(new EmptyBorder(0,0,0,0));

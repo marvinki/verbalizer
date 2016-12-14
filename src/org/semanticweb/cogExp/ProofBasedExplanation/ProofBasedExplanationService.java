@@ -1,14 +1,15 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.Set;
 
 import javax.swing.JPanel;
-
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.protege.editor.owl.ui.explanation.ExplanationService;
+import org.protege.editor.owl.ui.prefix.GeneratePrefixFromOntologyAction;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.Obfuscator;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
@@ -26,14 +27,15 @@ import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
-// import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import uk.ac.manchester.cs.jfact.JFactFactory;
+//import uk.ac.manchester.cs.jfact.JFactFactory;
+//import tests.CustomGUIList;
+
 
 public class ProofBasedExplanationService extends ExplanationService{
 
@@ -85,7 +87,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 			try {
 				tmpdir = WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}
 			WordNetQuery.INSTANCE.setDict(tmpdir);
@@ -112,7 +114,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 			try {
 				tmpdir = WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}
 			WordNetQuery.INSTANCE.setDict(tmpdir);
@@ -151,12 +153,18 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 * @param subclass			subclass as String	
 	 * @param superclass		superclass as String	
 	 * @param ontologyname		path to the ontology as string
+	 * @param reasoner 			TODO
 	 * @return	a GentzenTree object 
 	 * @see GentzenTree
 	 */
-	public static GentzenTree computeTree(String subclass, String superclass, String ontologyname){
-		// Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-		// rootlogger.setLevel(Level.OFF);
+	
+	/*TODO add @param reasoner
+	 * 
+	 */
+	public static GentzenTree computeTree(String subclass, String superclass, String ontologyname,
+			OWLReasonerFactory reasonerFactory, OWLReasoner reasoner){
+		Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		rootlogger.setLevel(Level.OFF);
 		
 		GentzenTree tree = null;
 		
@@ -300,22 +308,22 @@ public class ProofBasedExplanationService extends ExplanationService{
 		 OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(subcl, supercl);
 		
 		// get reasoner
-		 OWLReasonerFactory reasonerFactory2 = new JFactFactory();
-		 OWLReasonerConfiguration config = new SimpleConfiguration(30000);
-		 OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology,config);
+//		 OWLReasonerFactory reasonerFactory2 = new JFactFactory();
+//		 OWLReasonerConfiguration config = new SimpleConfiguration(30000);
+//		 OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology,config);
 		 
 		
 		 
 		 tree = VerbalisationManager.computeGentzenTree(axiom, 
-					reasonerJFact, 
-					reasonerFactory2, 
+					reasoner, 
+					reasonerFactory, 
 					ontology, 
 					50000,
 					60000,
 					"OP");	
 		// } catch (OWLOntologyCreationException e) {
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -351,7 +359,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 			try {
 				tmpdir = WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}
 			WordNetQuery.INSTANCE.setDict(tmpdir);
@@ -373,23 +381,29 @@ public ExplanationResult explain(OWLAxiom axiom) {
 				"----------------------------  starting verbalization  -------------------------"
 				);
 	
+		
 		OWLModelManager modelmanager = getOWLModelManager();	
 		OWLReasoner reasoner = modelmanager.getOWLReasonerManager().getCurrentReasoner();
 		OWLReasonerFactory factory = modelmanager.getOWLReasonerManager().getCurrentReasonerFactory().getReasonerFactory();
 		OWLOntology ontology = modelmanager.getActiveOntology();
 		OWLEditorKit editorKit = getOWLEditorKit();
+		     
 		
 		
 		JPanel panel = new JPanel();
 		
 		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
-					   													ontology, true, "OP");		 	   	
+					   													ontology, true, "OP");	
+		
+		
+		
+		
 		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
 		
 		
-		result = result.getResult(sequence);
-			
-		System.out.println("result");
+		result = result.getResult(sequence,editorKit);
+	
+		result.updateUI();
 		return result;
 	}
 	

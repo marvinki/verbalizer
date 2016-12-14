@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
-import org.semanticweb.cogExp.GentzenTree.GraphvizUtil;
+
 // import org.apache.log4j.Level;
 // import org.apache.log4j.Logger;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
@@ -67,7 +67,6 @@ public class UsageExample {
 	
 	// The proof tree is constructed 
 	GentzenTree tree = VerbalisationManager.computeTree(axiom,ontologyfile.toString());
-	GraphvizUtil.handleDotRequest(tree.toDOT());
 	
 	// Output the proof tree (each line is a rule application: rule name, conclusion, premises)
 	System.out.println("Prooftree \n" + VerbaliseTreeManager.listOutput(tree) + "\n");

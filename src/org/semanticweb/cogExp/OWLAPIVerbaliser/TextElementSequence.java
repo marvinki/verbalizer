@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
+import org.protege.editor.owl.OWLEditorKit;
+import org.semanticweb.cogExp.ProofBasedExplanation.LinkedJLabel;
+
 public class TextElementSequence extends TextElement{
 
 	private List<TextElement> sequence = new ArrayList<TextElement>();
@@ -54,17 +57,36 @@ public class TextElementSequence extends TextElement{
 	}
 	
 	/**
+	 * @param ek OWLEditorKit needed for LinkedJLabel
 	 * @return returns a list of JLabels of the TextElementSequence (without empty JLabels or spaces)
 	 */
-	public List<JLabel> generateLabels(){
+	public List<JLabel> generateLabels(OWLEditorKit ek){
 		// add each element in the sequence as JLabel to the List
 		ArrayList<JLabel> labels = new ArrayList<JLabel>();
+				
 		for (TextElement elem : sequence){
-			labels.addAll(elem.toJLabel());
+			labels.addAll(elem.toJLabel(ek));
 		}
-		// clean Label List from spaces
+		
+		//adding commas and periods to the leading label
+		for(int i = 1; i<labels.size(); i++){
+			if(labels.get(i).getText().equals(" , ")
+					||labels.get(i).getText().equals(" ,")
+					||labels.get(i).getText().equals(", ")
+					||labels.get(i).getText().equals(",")
+					||labels.get(i).getText().equals(".")){
+				labels.get(i-1).setText(labels.get(i-1).getText()+labels.get(i).getText());
+			}
+		}
+		
+		// clean Label List from surplus punctuation marks and spaces
 		labels.removeIf(l->l.getText().equals(" "));
 		labels.removeIf(l->l.getText().equals(""));
+		labels.removeIf(l->l.getText().equals(","));
+		labels.removeIf(l->l.getText().equals(" ,"));
+		labels.removeIf(l->l.getText().equals(", "));
+		labels.removeIf(l->l.getText().equals(" , "));
+		labels.removeIf(l->l.getText().equals("."));
 		
 		return labels;
 	}

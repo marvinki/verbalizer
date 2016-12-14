@@ -264,7 +264,7 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 		try {
 			this.computeConsequenceOrdering();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 		} 
     	this.computeNodeDepth();

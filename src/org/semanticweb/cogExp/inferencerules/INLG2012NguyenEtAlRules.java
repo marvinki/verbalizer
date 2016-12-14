@@ -5203,7 +5203,7 @@ RULE34semiold{ // SubCla(X,Y) and disjoint(X,Y) --> SubCla(X,\bot)
 				try {
 					matcher = cand.match(prem1);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					//  Auto-generated catch block
 					e.printStackTrace();
 				}
 				OWLFormula prem_2a = prem2a.applyMatcher(matcher);
@@ -6734,7 +6734,7 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 			try {
 				premises.addAll(computePremises(sequent,(SequentSinglePosition) it.next()));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -6796,13 +6796,13 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 								try {
 									// sequent.removeAntecedent(formula);
 								} catch (Exception e) {
-									// TODO Auto-generated catch block
+									//  Auto-generated catch block
 									e.printStackTrace();
 								}} else {
 								try {
 									// sequent.removeSuccedent(formula);
 								} catch (Exception e) {
-									// TODO Auto-generated catch block
+									//  Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
@@ -6825,7 +6825,7 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 								sequent.addAntecedent((OWLFormula) formula);
 								}
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
+								//  Auto-generated catch block
 								e.printStackTrace();
 							}
 							// depth bookkeeping
@@ -6836,14 +6836,14 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 						try {
 							// sequent.addAntecedent(formula);
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+							//  Auto-generated catch block
 							e.printStackTrace();
 						}}
 				}else {
 						try {
 							// sequent.addSuccedent(formula);
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+							//  Auto-generated catch block
 							e.printStackTrace();
 						}
 					}

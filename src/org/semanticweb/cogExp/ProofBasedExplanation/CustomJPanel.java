@@ -63,7 +63,6 @@ public class CustomJPanel extends JPanel {
 	 */
 	public CustomJPanel(boolean isDoubleBuffered) {
 		super(isDoubleBuffered);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -89,11 +88,12 @@ public class CustomJPanel extends JPanel {
 	maxWidth = cont.getWidth();
 	// count components and add new line (add height to the panel) when 
 	// needed.	
+		
 	for(int i=0; i<getComponentCount(); i++){
 					
 		Component comp = getComponent(i);
 		// TODO revise this implementation (following line)
-		width += Math.ceil(comp.getMaximumSize().getWidth())+5; // the +5 incorporates the spaces between each Label- this is poor implementation and has to be revised
+		width += Math.ceil(comp.getPreferredSize().getWidth())+5; // the +5 incorporates the spaces between each Label- this is poor implementation and has to be revised
 		
 		if(width >= maxWidth-rspace){
 			
