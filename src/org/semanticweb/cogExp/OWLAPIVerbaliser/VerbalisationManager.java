@@ -346,7 +346,7 @@ public enum VerbalisationManager {
 	
 	
 	public static String aOrAnIfy(String str){
-		// System.out.println("a or an |" + str);
+		System.out.println("A or an |" + str);
 		// first check if there are any determiners present; if so, leave unchanged
 		if (     (str.length()>1 && str.substring(0,2).equals("a" + _space))
 			 ||  (str.length()>2 && str.substring(0,3).equals("an" + _space))
@@ -370,10 +370,12 @@ public enum VerbalisationManager {
 	    */
 
 		int[] types = null;
+		System.out.println("Wordnet query disabled? " + WordNetQuery.INSTANCE.isDisabled());
 		if  (!WordNetQuery.INSTANCE.isDisabled())
 			types = WordNetQuery.INSTANCE.getTypes(str);
 		if (!WordNetQuery.INSTANCE.isDisabled() && !(types[0]>0) &&!isNoun){
-			// System.out.println("NOT A NOUN");
+			System.out.println(Arrays.toString(types));
+			System.out.println("NOT A NOUN");
 			str = lowerCaseFirstLetter(str);
 			// System.out.println("not using article");
 			return str;
@@ -751,8 +753,9 @@ public enum VerbalisationManager {
 					conjoiner = _space + "that is" + _space;
 					firstToken=false;
 					str = aOrAnIfy(str);
-					// System.out.println("A OR ANIFIED " + str);
+					System.out.println("A OR ANIFIED " + str);
 				}
+				System.out.println("DBG --- that is case!");
 				result = result + str + _space + "that is" + _space;
 				noun_or_attribute_concepts_strings.remove(str);
 			}
@@ -760,8 +763,10 @@ public enum VerbalisationManager {
 				result = result.substring(0,result.length()-4); // remove the last "and"
 				else
 				result = result.substring(0,result.length()-8); // remove the last "that is"
-			if (noun_or_attribute_concepts_strings.size()>0 || attribute_concepts_strings.size()>0) 
+			if (noun_or_attribute_concepts_strings.size()>0 || attribute_concepts_strings.size()>0){ 
+				System.out.println("DBG -- inserting 'that is' in getSimpleNL...");
 			result = result + "that is" + _space;
+			}
 			for (String str: noun_or_attribute_concepts_strings){
 				result = result + str + _space;
 				attribute_concepts_strings.remove(str);
@@ -943,6 +948,7 @@ public enum VerbalisationManager {
 		//	System.out.println("verbaliseComplexIntersection --- CAN'T HANDLE THIS! " + otherExpressions);
 		// Verbalise the "easy" part
 		result = result + getSimpleIntersectionNLString(simpleExpressions) + _space;
+		result = aOrAnIfy(result);
 		// Verbalise the existential part
 		List<List<OWLClassExpression>> buckets = groupMultipleExistsPatterns(existsExpressions);
 		for (int i=0; i< buckets.size();i++){

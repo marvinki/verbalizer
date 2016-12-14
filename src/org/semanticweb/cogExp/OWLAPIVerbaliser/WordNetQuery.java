@@ -73,7 +73,7 @@ public enum WordNetQuery {
 	
 	public int[] getTypes(String str){
 		if (cache.containsKey(str)){
-			// System.out.println("DEBUG -- retrieved cached element for " + str + " ! " + cache.get(str).toString());
+			System.out.println("DEBUG -- retrieved cached element for " + str + " ! " + Arrays.toString(cache.get(str)));
 			return cache.get(str);
 		}
 		// errorWriter.write("get Types called with " + str + ", data base " + database.toString() + "\n");
@@ -83,7 +83,9 @@ public enum WordNetQuery {
 	    int[] types = new int[5]; 
 	    String lastword = arr[arr.length-1];
 	    
-		Synset[] synsets = database.getSynsets(lastword); // getting synsets for last word
+	    System.out.println(lastword);
+		Synset[] synsets = database.getSynsets("Lastword " + lastword); // getting synsets for last word
+		System.out.println("Synsets length " + synsets.length);
 		// errorWriter.write("synsets " + synsets + "\n");
 		for (int i = 0; i < synsets.length; i++) {
 			int count = 0;
@@ -95,7 +97,7 @@ public enum WordNetQuery {
 			}	
 		// errorWriter.write("types " + Arrays.toString(types) + "\n");
 		// errorWriter.close();
-		// System.out.println("Caching element " + str + " " + types.toString());
+		System.out.println("Caching element " + str + " " + Arrays.toString(types));
 		cache.put(str, types);
 		return types;
 	}

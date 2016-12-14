@@ -36,7 +36,7 @@ public class ExperimentExplanations {
 		OWLOntologyManager manager = CoverageStoreEvaluatorCompressionDB.getImportKnowledgeableOntologyManger();
 		// OWLManager.createOWLOntologyManager();
 		OWLDataFactory dataFactory=manager.getOWLDataFactory();
-		File ontologyfile = new java.io.File("/Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-galen1.owl");
+		File ontologyfile = new java.io.File("/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-galen1.owl");
 		// OWLOntology ontology = CoverageStoreEvaluatorCompressionDB.createOntology();
 		OWLOntology ontology = null;
 		try {
@@ -45,6 +45,7 @@ public class ExperimentExplanations {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}	
+		VerbalisationManager.INSTANCE.setOntology(ontology);
 		
 		// List<OWLAxiom> justifications1axioms = new ArrayList<OWLAxiom>();
 
