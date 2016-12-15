@@ -78,6 +78,7 @@ public enum WordnetTmpdirManager {
 		System.out.println("input " + input);
 		System.out.println("copying files " + input1 + " TO " + target1);
 		copyFileUsingStream(input1,target1);
+		if (input1!=null)
 		input1.close();
 	}
 		
