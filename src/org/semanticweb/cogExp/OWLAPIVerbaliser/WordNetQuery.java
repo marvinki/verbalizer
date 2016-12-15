@@ -47,7 +47,9 @@ public enum WordNetQuery {
 		return disabled;
 	}
 	
-	
+	public WordNetDatabase getDatabase(){
+		return database;
+	}
 	
 	public float isType(String str, SynsetType type){
 		if (isTypeCache.containsKey(str)){
@@ -67,6 +69,7 @@ public enum WordNetQuery {
 				countType++;
 		}
 		isTypeCache.put(str,countType);
+		
 		return countType;
 	}
 	
@@ -109,6 +112,7 @@ public enum WordNetQuery {
 		for (int i = 0; i < synsets.length; i++) {
 		    NounSynset nounSynset = (NounSynset)(synsets[i]); 
 		    String[] wordforms = nounSynset.getWordForms();
+		    
 		    if (wordforms[0].equals(str))
 		    	exactfound = true;
 		    // System.out.println(Arrays.toString(wordforms));
