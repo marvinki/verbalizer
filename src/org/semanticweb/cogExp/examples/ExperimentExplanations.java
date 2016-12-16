@@ -30,6 +30,15 @@ import org.semanticweb.cogExp.core.SequentInferenceRule;
 import org.semanticweb.cogExp.core.SequentPosition;
 import org.semanticweb.cogExp.coverageEvaluator.CoverageStoreEvaluatorCompressionDB;
 
+/*
+ * Corpus generated from database. 
+ * Explanations were selected at random from a subset of explanations that fulfilled the following criteria:
+ * - It consists of at least three verbalized steps, at most eight. 
+ * - The explanation does not rely on the unsatisfiability of a class that, to the contrary, commonly has instances in real life (e.g. )
+ */
+
+
+
 public class ExperimentExplanations {
 	
 	public static ProofTree constructProoftree(String conclusion, String justifications){

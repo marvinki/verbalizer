@@ -368,12 +368,12 @@ public enum VerbalisationManager {
 	    */
 
 		int[] types = null;
-		System.out.println("Wordnet query disabled? " + WordNetQuery.INSTANCE.isDisabled());
+		// System.out.println("Wordnet query disabled? " + WordNetQuery.INSTANCE.isDisabled());
 		if  (!WordNetQuery.INSTANCE.isDisabled())
 			types = WordNetQuery.INSTANCE.getTypes(str);
 		if (!WordNetQuery.INSTANCE.isDisabled() && !(types[0]>0) &&!isNoun){
 			System.out.println(Arrays.toString(types));
-			System.out.println("NOT A NOUN");
+			// System.out.println("NOT A NOUN");
 			str = lowerCaseFirstLetter(str);
 			// System.out.println("not using article");
 			return str;

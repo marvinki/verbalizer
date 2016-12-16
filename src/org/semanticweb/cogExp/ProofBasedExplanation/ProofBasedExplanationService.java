@@ -27,6 +27,7 @@ import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 //import uk.ac.manchester.cs.jfact.JFactFactory;
 //import tests.CustomGUIList;
+import uk.ac.manchester.cs.jfact.JFactFactory;
 
 
 public class ProofBasedExplanationService extends ExplanationService{
@@ -312,7 +314,10 @@ public class ProofBasedExplanationService extends ExplanationService{
 //		 OWLReasonerConfiguration config = new SimpleConfiguration(30000);
 //		 OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology,config);
 		 
-		
+		 OWLReasonerFactory reasonerFactory = new JFactFactory();
+		 OWLReasonerConfiguration config = new SimpleConfiguration(30000);
+		 OWLReasoner reasoner = reasonerFactory.createReasoner(ontology,config);
+		 
 		 
 		 tree = VerbalisationManager.computeGentzenTree(axiom, 
 					reasoner, 

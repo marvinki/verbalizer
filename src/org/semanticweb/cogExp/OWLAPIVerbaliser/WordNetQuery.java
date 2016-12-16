@@ -27,10 +27,10 @@ public enum WordNetQuery {
 		// System.setProperty("wordnet.database.dir", "/Users/marvin/software/wordnet/WordNet-3.0/dict");
 	}
 	
-	// SynsetType.ADJECTIVE
+	// SynsetType.ADJECTIVE                ---- 3!
 	// SynsetType.ADJECTIVE_SATELLITE
 	// SynsetType.ADVERB
-	// SynsetType.NOUN
+	// SynsetType.NOUN                     ---- 1!
 	
 	public void setDict(String dict){
 		System.setProperty("wordnet.database.dir",dict);
@@ -47,11 +47,16 @@ public enum WordNetQuery {
 		return disabled;
 	}
 	
-	
+	public WordNetDatabase getDatabase(){
+		return database;
+	}
 	
 	public float isType(String str, SynsetType type){
-		if (isTypeCache.containsKey(str)){
-			return isTypeCache.get(str);
+		String key = str + type;
+		// System.out.println("Type: " + type);
+		// System.out.println("Key: " +  key);
+		if (isTypeCache.containsKey(key)){
+			return isTypeCache.get(key);
 		}
 		// errorWriter.write("is Type called with " + str + ", data base " + database.toString() + "\n");
 		String[] arr = str.split(_space);   
@@ -63,10 +68,13 @@ public enum WordNetQuery {
 		}
 	    int countType = 0;
 		for (int i = 0; i < synsets.length; i++) {
-			if (synsets[i].getType().equals(type))
+			if (synsets[i].getType().equals(type)){
+				// System.out.println(synsets[i].getType());
 				countType++;
+			}
 		}
-		isTypeCache.put(str,countType);
+		isTypeCache.put(key,countType);
+		
 		return countType;
 	}
 	
@@ -115,6 +123,7 @@ public enum WordNetQuery {
 		for (int i = 0; i < synsets.length; i++) {
 		    NounSynset nounSynset = (NounSynset)(synsets[i]); 
 		    String[] wordforms = nounSynset.getWordForms();
+		    
 		    if (wordforms[0].equals(str))
 		    	exactfound = true;
 		    // System.out.println(Arrays.toString(wordforms));

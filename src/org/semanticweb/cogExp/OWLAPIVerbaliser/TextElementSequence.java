@@ -6,7 +6,6 @@ import java.util.List;
 import javax.swing.JLabel;
 
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.cogExp.ProofBasedExplanation.LinkedJLabel;
 
 public class TextElementSequence extends TextElement{
 
