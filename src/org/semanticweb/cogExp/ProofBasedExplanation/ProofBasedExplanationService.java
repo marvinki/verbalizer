@@ -1,6 +1,5 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
-import java.awt.Dimension;
 import java.io.IOException;
 import java.util.Set;
 
@@ -9,7 +8,6 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.protege.editor.owl.ui.explanation.ExplanationService;
-import org.protege.editor.owl.ui.prefix.GeneratePrefixFromOntologyAction;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.Obfuscator;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;

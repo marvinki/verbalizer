@@ -8,7 +8,6 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.ProofBasedExplanation.WordnetTmpdirManager;
 
-import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
 
 public class VerbalizationTests {
@@ -25,15 +24,15 @@ public class VerbalizationTests {
    WordNetQuery.INSTANCE.setDict(tmpdir);
    System.out.println("TMPDIR is : " + tmpdir);
 		
-   testFor("man", false);
-   testFor("men", true);
-   testFor("male", false);
-   testFor("women", true);
-   testFor("female", false);
-   testFor("wife", true);
+   testFor("a man", false, true, false);
+   testFor("men", true, true, false);
+   testFor("male", false, true, true);
+   testFor("women", true, true, false);
+   testFor("female", false, true, true);
+   testFor("wife", false, true, false);
   }
 	
-  public static void testFor(String testString, boolean isPlural){
+  public static void testFor(String testString, boolean isPlural, boolean isNoun, boolean isAdj){
 	
 	   System.out.println("\n*\n*"+ testString.toUpperCase() +"\n*");
 	   int[] types = WordNetQuery.INSTANCE.getTypes(testString);
@@ -45,34 +44,39 @@ public class VerbalizationTests {
 		   System.out.print(type+" ");
 	   }
 	   System.out.println(")");
-	   System.out.println(VerbalisationManager.aOrAnIfy("body structure"));
 	   
+	   //Number Test
 	   if(isPlural == WordNetQuery.INSTANCE.isPlural(testString))
 	   {
-	   		System.out.println("number test OK.");
+	   		System.out.println("number test \t\t OK.");
 	   }else{
-		   	System.out.println("number test failed.");
+		   	System.out.println("number test \t\t failed.");
 	   		}
 	   
-	  System.out.println("isType NOUN count :" +WordNetQuery.INSTANCE.isType(testString, SynsetType.NOUN) );
-	  System.out.println("isType ADJECTIVE count :" +WordNetQuery.INSTANCE.isType(testString, SynsetType.ADJECTIVE) );
-	  System.out.println(" MY isType NOUN count :" +getTypeCount(testString, SynsetType.NOUN) );
-	  System.out.println(" MY isType ADJECTIVE count :" +getTypeCount(testString, SynsetType.ADJECTIVE) );
+	   //Noun Test
+	   if(isNoun == (0<WordNetQuery.INSTANCE.isType(testString, SynsetType.NOUN)))
+	   {
+	   		System.out.println("NOUN test \t\t OK.");
+	   }else{
+		   	System.out.println("NOUN test \t\t failed.");
+	   		}
+	   
+	 //Adjective Test
+	   if(isAdj == (0<WordNetQuery.INSTANCE.isType(testString, SynsetType.ADJECTIVE)))
+	   {
+	   		System.out.println("ADJECTIVE test \t\t OK.");
+	   }else{
+		   	System.out.println("ADJECTIVE test \t\t failed.");
+	   		}
+	   
+	   
+//	  System.out.println("isType NOUN count :" +WordNetQuery.INSTANCE.isType(testString, SynsetType.NOUN) );
+//	  System.out.println("isType ADJECTIVE count :" +WordNetQuery.INSTANCE.isType(testString, SynsetType.ADJECTIVE) );
+ 
+	  System.out.println(VerbalisationManager.aOrAnIfy(testString));
   }
   
-  public static int getTypeCount(String testString, SynsetType type){
-	int count = 0;
-	  
-	Synset[] synset = WordNetQuery.INSTANCE.getDatabase().getSynsets(testString);
-	for(Synset syn : synset){
-		if(syn.getType().equals(SynsetType.NOUN)){
-			count++;
-		}
-	}
-	  
-	return count;
-	  
-  }
+  
 	
 }
 

@@ -9,7 +9,6 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataExactCardinality;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
@@ -35,7 +34,7 @@ public class ConversionAndPrettyPrintingTest {
 		OWLObject cardExpr1_b = ConversionManager.toOWLAPI(cardForm1);
 		
 		System.out.println(cardForm1);
-		System.out.println(VerbalisationManager.INSTANCE.prettyPrint(cardExpr1_b));
+		System.out.println(VerbalisationManager.prettyPrint(cardExpr1_b));
 		
 		// Data Exact Cardinality
 		
@@ -43,7 +42,7 @@ public class ConversionAndPrettyPrintingTest {
 		OWLObject cardExpr2_b = ConversionManager.toOWLAPI(cardForm2);
 				
 		System.out.println(cardForm2);
-		System.out.println(VerbalisationManager.INSTANCE.prettyPrint(cardExpr2_b));
+		System.out.println(VerbalisationManager.prettyPrint(cardExpr2_b));
 		
 		
 		

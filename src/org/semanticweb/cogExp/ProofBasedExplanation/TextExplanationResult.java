@@ -124,7 +124,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		
 		result.add(content);
 		this.add(getScrollPane(result));
-		System.out.println("height : "+height);
+		
 		contentSize.setSize(contentSize.getWidth(), height+5*getFontMetrics(getFont()).getHeight());
 		
 		

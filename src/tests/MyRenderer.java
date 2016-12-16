@@ -12,9 +12,6 @@ import org.protege.editor.owl.ui.renderer.OWLEntityColorProviderPluginLoader;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-//import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.*;
@@ -35,7 +32,7 @@ import java.util.List;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCellRenderer {
+public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCellRenderer<Object> {
 
 //    private final Logger logger = LoggerFactory.getLogger(MyRenderer.class);
     
@@ -71,8 +68,6 @@ public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCell
 
     // The object that determines which icon should be displayed.
     private OWLObject iconObject;
-
-    private int leftMargin = 0;
 
     private int rightMargin = 40;
 
@@ -112,7 +107,12 @@ public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCell
 
 
     private class OWLCellRendererPanel extends JPanel {
-        private OWLCellRendererPanel(LayoutManager layout) {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -3031726058808861713L;
+
+		private OWLCellRendererPanel(LayoutManager layout) {
             super(layout);
         }
     }
@@ -249,6 +249,8 @@ public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCell
     /**
      * Specifies whether or not this row displays inferred information (the
      * default value is false)
+     * 
+     * @param inferred Currently doesn't do anything
      */
     public void setInferred(boolean inferred) {
     	/*
@@ -378,7 +380,7 @@ public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCell
     }
 
 
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
                                                   boolean cellHasFocus) {
         componentBeingRendered = list;
         Rectangle cellBounds = new Rectangle();
@@ -547,9 +549,6 @@ public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCell
             return null;
         }
     }
-
-
-    private Composite disabledComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
 
 
     private OWLModelManager getOWLModelManager() {
@@ -737,7 +736,6 @@ public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCell
         // Highlight text
         StringTokenizer tokenizer = new StringTokenizer(textPane.getText(), " []{}(),\n\t'", true);
         linkRendered = false;
-        annotURIRendered = false;
         int tokenStartIndex = 0;
         while (tokenizer.hasMoreTokens()) {
             // Get the token and determine if it is a keyword or
@@ -762,7 +760,6 @@ public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCell
     }
 
 
-    private boolean annotURIRendered = false;
     private boolean linkRendered = false;
     private boolean parenthesisRendered = false;
 
@@ -1029,7 +1026,7 @@ public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCell
          */
         public Dimension preferredLayoutSize(Container parent) {
             if (componentBeingRendered instanceof JList) {
-                JList list = (JList) componentBeingRendered;
+                JList<?> list = (JList<?>) componentBeingRendered;
                 if (list.getFixedCellHeight() != -1) {
                     return new Dimension(list.getWidth(), list.getHeight());
                 }
@@ -1042,7 +1039,7 @@ public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCell
             int height;
             iconWidth = iconLabel.getPreferredSize().width;
             iconHeight = iconLabel.getPreferredSize().height;
-            Insets insets = parent.getInsets();
+            parent.getInsets();
             Insets rcInsets = renderingComponent.getInsets();
 
             if (preferredWidth != -1) {
@@ -1081,8 +1078,6 @@ public class MyRenderer implements TableCellRenderer, TreeCellRenderer, ListCell
             int iconHeight;
             int textWidth;
             int textHeight;
-            int deprecatedWidth;
-            int deprecatedHeight;
             Insets rcInsets = renderingComponent.getInsets();
 
             iconWidth = iconLabel.getPreferredSize().width;
