@@ -15,6 +15,7 @@ import javax.swing.ScrollPaneConstants;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.CustomJPanel;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 
 /**

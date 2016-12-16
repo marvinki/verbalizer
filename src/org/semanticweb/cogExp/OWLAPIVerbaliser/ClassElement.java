@@ -22,7 +22,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.cogExp.ProofBasedExplanation.LinkedJLabel;
 
 /**
  * represents any class
@@ -98,13 +97,13 @@ public class ClassElement extends TextElement{
 		labellist.add(spacelabel);
 		labellist.add(contentlabel);
 		
+		
 		contentlabel.addMouseListener(new MouseAdapter()  
 		{  
 		    public void mouseClicked(MouseEvent e)  
 		    {  
-		       /**
-		        * run this code when mouse is clicked
-		        */
+		       //run this code when mouse is clicked
+		        
 		    	System.out.println("mouse clicked on class label\n");
 		    		       
 		       JFrame frame = new JFrame("Class Frame");
@@ -128,7 +127,6 @@ public class ClassElement extends TextElement{
 		    }  
 		    
 		}); 
-		
 		return labellist;
 	}
 	

@@ -1,6 +1,5 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 

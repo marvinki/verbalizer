@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.semanticweb.cogExp.ProofBasedExplanation;
+package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.awt.Component;
 import java.awt.Container;

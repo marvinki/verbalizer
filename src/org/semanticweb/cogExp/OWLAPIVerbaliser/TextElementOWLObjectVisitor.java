@@ -506,7 +506,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 			return seq2;
 		}
 		if (someExps.size()>0 && allExps.size()==0){
-			head = VerbalisationManager.INSTANCE.verbaliseComplexIntersection(arg0,obfuscator); // <-- TODO - nothing to do
+			head = VerbalisationManager.INSTANCE.verbaliseComplexIntersection(arg0,obfuscator);
 			ClassElement headElement3 = new ClassElement(head);
 			TextElementSequence seq3 = new TextElementSequence();
 			seq3.add(headElement3);

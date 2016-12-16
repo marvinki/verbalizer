@@ -1,8 +1,8 @@
-package org.semanticweb.cogExp.ProofBasedExplanation;
+package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
+import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import org.protege.editor.owl.OWLEditorKit;
@@ -28,14 +28,27 @@ public class LinkedJLabel extends JLabel implements LinkedObjectComponent{
 	private static final long serialVersionUID = 8173047877677087878L;
 	
 	private LinkedObjectComponentMediator mediator;
-	  private OWLEditorKit ek;
+	  	private OWLEditorKit ek;
 
 	    public LinkedJLabel(OWLEditorKit owlEditorKit) {
 	        // super(owlEditorKit);
 	        this.mediator = new LinkedObjectComponentMediator(owlEditorKit, this);
 	        ek = owlEditorKit;
+	        initializeHandCursor();
+	        
+	        
 	    }
-
+	    
+	    public LinkedJLabel(String str){
+	    	super(str);
+	    	initializeHandCursor();
+	    	
+	    }
+	    
+	    private void initializeHandCursor(){
+       	 this.setCursor(new Cursor(Cursor.HAND_CURSOR));
+       }
+	    
 	    /**
          * Gets the location of the mouse relative to the rendering cell that it is
          * over.
@@ -52,6 +65,7 @@ public class LinkedJLabel extends JLabel implements LinkedObjectComponent{
             return new Point(mouseLoc.x - cellRect.x, mouseLoc.y - cellRect.y);
         }
 
+        
         /* (non-Javadoc)
          * @see org.protege.editor.owl.ui.renderer.LinkedObjectComponent#getMouseCellRect()
          */
@@ -92,8 +106,10 @@ public class LinkedJLabel extends JLabel implements LinkedObjectComponent{
     public JComponent getComponent() {
         return this;
     }
-	    
 
+
+	    
+    
 	
 	
 }
