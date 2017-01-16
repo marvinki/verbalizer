@@ -27,6 +27,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
@@ -163,6 +164,35 @@ public enum VerbalisationManager {
 		return s;
 	}
 	
+	
+	public String getLabel(OWLEntity entity){
+		if (this.ontology==null){
+			return null;
+		}
+		String str=null;
+		// collect annotation axioms
+		Set<OWLOntology> imported = ontology.getImports();
+		Set<OWLAnnotationAssertionAxiom> annotationaxioms = new HashSet<OWLAnnotationAssertionAxiom>();
+		for (OWLOntology ont : imported){
+				annotationaxioms.addAll(EntitySearcher.getAnnotationAssertionAxioms(entity, this.ontology));
+			// annotationaxioms.addAll(namedproperty.getAnnotationAssertionAxioms(ont));
+			}
+			// 
+		annotationaxioms.addAll(EntitySearcher.getAnnotationAssertionAxioms(entity, this.ontology));
+		// annotationaxioms.addAll(namedproperty.getAnnotationAssertionAxioms(ontology));
+		if (annotationaxioms !=null){
+				for (OWLAnnotationAssertionAxiom axiom : annotationaxioms){
+					if (axiom.getAnnotation().getProperty().getIRI().getFragment().equals("label")){
+						// System.out.println("DEBUG TO STRING " + axiom.getAnnotation().getValue());
+						OWLLiteral literal = axiom.getAnnotation().getValue().asLiteral().get();
+						str = literal.getLiteral();
+						// str = axiom.getAnnotation().getValue().toString();
+					}
+				}
+			} 
+		return str;
+	}
+	
 	public java.lang.String getPropertyNLString(OWLObjectPropertyExpression property){
 		// System.out.println("DEBUG : " + property);
 		OWLProperty namedproperty = property.getNamedProperty();
@@ -177,6 +207,7 @@ public enum VerbalisationManager {
 				}
 				return result;
 			}
+			/*
 			// collect annotation axioms
 			Set<OWLOntology> imported = ontology.getImports();
 			Set<OWLAnnotationAssertionAxiom> annotationaxioms = new HashSet<OWLAnnotationAssertionAxiom>();
@@ -199,6 +230,9 @@ public enum VerbalisationManager {
 					}
 				}
 			} 
+			*/
+			str = getLabel(namedproperty);
+			
 		}// Obfuscate
 	
 		// shortcut for labels with [X]
@@ -344,7 +378,12 @@ public enum VerbalisationManager {
 	
 	
 	public static String aOrAnIfy(String str){
-		System.out.println("A or an |" + str);
+		// special cases
+		if (str.equals("unit"))
+			return "a unit";
+		if (str.equals("amino-acid"))
+			return "an amino acid";
+		// System.out.println("A or an |" + str);
 		// first check if there are any determiners present; if so, leave unchanged
 		if (     (str.length()>1 && str.substring(0,2).equals("a" + _space))
 			 ||  (str.length()>2 && str.substring(0,3).equals("an" + _space))
@@ -518,8 +557,14 @@ public enum VerbalisationManager {
 			}
 		for (OWLAnnotation annotation : annotations){
 			if (annotation.getProperty().getIRI().getFragment().equals("label")){
+				String savestr = str;
 				str = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString();
 				// System.out.println("dbg " +annotation.getValue().asLiteral().orNull().getLiteral());
+				// System.out.println("dbg " +annotation.getValue());
+				// if there are many labels (e.g. with imported ontologies), take the one with an article.
+				if (!str.equals("") && !savestr.equals("") && (!str.contains("a ") || !str.contains("the ") || !str.contains("an "))){
+					str = savestr;
+				}
 			}
 			if (annotation.getProperty().getIRI().getFragment().equals("label2")){
 				str2 = annotation.getValue().asLiteral().orNull().getLiteral();
@@ -567,15 +612,15 @@ public enum VerbalisationManager {
 			// System.out.println("DEBUG after treat " + str);
 			boolean isUncountable = false;
 			// heuristically check cases where noun might be uncountable
-			if (str.contains("ium"))
-				isUncountable = true;
+			if (str.contains("ium") && !str.contains("hypogastrium")) // -- not true for the hypogastrium
+			 	isUncountable = true;
 			if (str.contains("ies"))
 				isUncountable = true;
 			if (str.contains("red") || str.contains("Red") || str.contains("green") || str.contains("Green"))
 				isUncountable = true;
 			// put indeterminate determiner
 			// 
-			// System.out.println("DEBGU --  " + str);
+			// System.out.println("DEBUG -- [111]  " + str);
 			if (!isUncountable)
 				str = aOrAnIfy(str);
 			return str;
@@ -814,17 +859,18 @@ public enum VerbalisationManager {
 			System.out.println("FEATURE CLASS AGG: " + result.toString());
 			System.out.println(exprs.toString());
 		}
+		/* 
 		if (VerbalisationManager.INSTANCE.featureAttribute){
 			System.out.println("FEATURE ATTRIBUTE: " + result.toString());
 		}
-		
+		*/
 		if (result.length()>0)
 			result = result.substring(0, result.length()-1); // need to remove last spacer
 		return aOrAnIfy(result);
 	}
 	
-	public java.lang.String getPropertyNLStringPart1 (OWLObjectPropertyExpression property){
-		java.lang.String str = getPropertyNLString(property);
+	
+	public java.lang.String getPropertyNLStringPart1 (String str){
 		if (str.length()<4){
 			return "";
 		}
@@ -833,8 +879,7 @@ public enum VerbalisationManager {
 		return str.substring(i+1,j);
 	}
 	
-	public java.lang.String getPropertyNLStringPart2 (OWLObjectPropertyExpression property){
-		java.lang.String str = getPropertyNLString(property);
+	public java.lang.String getPropertyNLStringPart2 (String str){
 		if (str.length()<4){
 			return "";
 		}
@@ -849,6 +894,16 @@ public enum VerbalisationManager {
 			} else
 			return str.substring(i+3);
 		}
+	}
+	
+	public java.lang.String getPropertyNLStringPart1 (OWLObjectPropertyExpression property){
+		java.lang.String str = getPropertyNLString(property);
+		return getPropertyNLStringPart1(str);
+	}
+	
+	public java.lang.String getPropertyNLStringPart2 (OWLObjectPropertyExpression property){
+		java.lang.String str = getPropertyNLString(property);
+		return getPropertyNLStringPart2(str);
 	}
 	
 	public static String commonPrefix(String str1, String str2){
@@ -1324,6 +1379,7 @@ public enum VerbalisationManager {
 				 System.out.println("Trivial justification!");
 			 }
 			 justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
+			 System.out.println("Considering explanation axiom: " + ConversionManager.fromOWLAPI(ax));
 			 
 		 }
 			} catch (Exception e) {
@@ -1423,7 +1479,7 @@ public enum VerbalisationManager {
 			// 3: HTML/text
 			
 			long startVerbalising = System.currentTimeMillis();
-			String result = VerbaliseTreeManager.verbaliseNL(tree, false,asHTML,obfuscator); // parameter for rule names!
+			String result = VerbaliseTreeManager.verbaliseNL(tree, false,false,asHTML,obfuscator); // parameter for rule names!
 			long endVerbalising = System.currentTimeMillis();
 			System.out.println("Verbalisation took: " + (endVerbalising - startVerbalising) + "ms");
 			return result;
@@ -1597,7 +1653,7 @@ public enum VerbalisationManager {
 	
 	public static String computeVerbalization(GentzenTree tree, boolean asHTML, Obfuscator obfuscator){
 		WordNetQuery.INSTANCE.disableDict();
-		String result = VerbaliseTreeManager.verbaliseNL(tree, false,asHTML,obfuscator); 
+		String result = VerbaliseTreeManager.verbaliseNL(tree, false,false,asHTML,obfuscator); 
 		return result;
 	}
 	

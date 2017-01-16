@@ -144,7 +144,7 @@ public class TextElementSequence extends TextElement{
 				String[] arr = previousString.split(" ");  	
 			    String lastword = arr[arr.length-1];
 			    // System.out.println("pluralise checking plurality of :" + lastword);
-			    if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isPlural(lastword)){
+			    if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isPlural(lastword) && WordNetQuery.INSTANCE.isKnown("lastword")){
 			    	// System.out.println("yes, plural.");
 			    	// System.out.println("Current element " + current_element);
 			    	if (current_element instanceof LogicElement){

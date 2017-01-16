@@ -468,9 +468,9 @@ public class ClusterExplanationService {
    				// System.out.println(tree.getStepsInOrder());
    				// System.out.println(tree.computePresentationOrder());
    				long startVerbalising = System.currentTimeMillis();
-   				String result = VerbaliseTreeManager.verbaliseNL(tree, false, true,null); // <-- 2nd arg labels, 3rd arg html
+   				String result = VerbaliseTreeManager.verbaliseNL(tree, false, true,false, null); // <-- 2nd arg labels, 3rd arg html
    				printstream.println(result);
-   				String resultPlain = VerbaliseTreeManager.verbaliseNL(tree, false, false,null); // <-- 2nd arg labels, 3rd arg html
+   				String resultPlain = VerbaliseTreeManager.verbaliseNL(tree, false, false,false, null); // <-- 2nd arg labels, 3rd arg html
    				long endVerbalising = System.currentTimeMillis();
    				System.out.println("Verbalisation took: " + (endVerbalising - startVerbalising) + "ms");
    				String dotTree = tree.toDOT();

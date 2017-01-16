@@ -1,6 +1,7 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -99,6 +100,7 @@ import org.semanticweb.owlapi.model.SWRLObjectPropertyAtom;
 import org.semanticweb.owlapi.model.SWRLRule;
 import org.semanticweb.owlapi.model.SWRLSameIndividualAtom;
 import org.semanticweb.owlapi.model.SWRLVariable;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 import com.google.common.base.Optional;
 
@@ -1237,8 +1239,21 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 
 	public List<TextElement> visit(OWLDataHasValue arg0) {
 		List<TextElement> result = new ArrayList<TextElement>();
-		result.addAll(arg0.getProperty().accept(this));
-		result.add(new LogicElement(arg0.getValue().getLiteral()));
+		String literalstring = arg0.getValue().getLiteral();
+		// result.add(new LogicElement(arg0.getValue().getLiteral()));
+		// HERE!
+		String str = VerbalisationManager.INSTANCE.getLabel(arg0.getProperty().asOWLDataProperty());
+		if (str==null || str.equals("")){
+			List<TextElement> proptext = arg0.getProperty().accept(this);
+			proptext.add(new LogicElement(literalstring));
+			return proptext;
+		}
+		if(str.indexOf("[X]")>=0){
+			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(str);
+			String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(str);
+			str = part1 +  literalstring  + part2;
+		}
+		result.add(new LogicElement(str));
 		return result;
 	}
 

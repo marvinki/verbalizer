@@ -668,9 +668,9 @@ public class CoverageStoreEvaluatorCompressionDB {
 						VerbalisationManager.INSTANCE.featureAttribute = false;
 					
 						
-						String result = VerbaliseTreeManager.verbaliseNL(gentzenTree, true, false,null);
+						String result = VerbaliseTreeManager.verbaliseNL(gentzenTree, true, false,false,null);
 						System.out.println("Done result.");
-						String result2 = VerbaliseTreeManager.verbaliseNL(gentzenTree2, true, false,null);
+						String result2 = VerbaliseTreeManager.verbaliseNL(gentzenTree2, true, false,true,null);
 						System.out.println("Done result2.");
 						String result3 = VerbaliseTreeManager.listOutput(gentzenTree);
 						System.out.println("Done result3.");

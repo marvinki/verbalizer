@@ -180,4 +180,14 @@ public enum WordNetQuery {
 		System.out.println(Arrays.toString(types));
 	}
 	
+	public boolean isKnown(String str){
+		// known exceptions
+	
+		Synset[] synsets = database.getSynsets(str,SynsetType.NOUN);
+		// System.out.println("Length " + synsets.length);
+		if (synsets.length<1)
+			return false;
+		else return true;
+	}
+	
 }

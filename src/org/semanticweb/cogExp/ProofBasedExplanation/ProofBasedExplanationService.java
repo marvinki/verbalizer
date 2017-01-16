@@ -338,7 +338,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 	
 	public static String computeVerbalization(GentzenTree tree, boolean asHTML, Obfuscator obfuscator){
 		WordNetQuery.INSTANCE.disableDict();
-		String result = VerbaliseTreeManager.verbaliseNL(tree, false,asHTML,obfuscator); 
+		String result = VerbaliseTreeManager.verbaliseNL(tree, false,asHTML,false, obfuscator); 
 		return result;
 	}
 	

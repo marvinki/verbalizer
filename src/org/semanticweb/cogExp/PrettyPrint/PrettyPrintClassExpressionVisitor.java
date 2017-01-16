@@ -188,6 +188,7 @@ public class PrettyPrintClassExpressionVisitor implements OWLClassExpressionVisi
 		}
 
 		public String visit(OWLClass arg0) {
+			// System.out.println(arg0.toString());
 			String fragment = arg0.getIRI().getFragment();
 			if (arg0.toString().contains("/")){
 				// System.out.println(arg0.toString());
@@ -195,6 +196,7 @@ public class PrettyPrintClassExpressionVisitor implements OWLClassExpressionVisi
 				Matcher m = p.matcher(arg0.toString());
 				boolean b = m.find();
 				// System.out.println("Matcher " + m.group(1));
+				if (!b) return fragment;
 				return m.group(1);
 			}
 				
