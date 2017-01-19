@@ -7,15 +7,26 @@ import javax.swing.JLabel;
 
 import org.protege.editor.owl.OWLEditorKit;
 
+/**
+ * All textual generated Explanations are passed as Sequences of text elements
+ * @author fpaffrath
+ *
+ */
 public class TextElementSequence extends TextElement{
 
 	private List<TextElement> sequence = new ArrayList<TextElement>();
 	
 	
+	/**
+	 * @param sequence s
+	 */
 	public TextElementSequence(List<TextElement> sequence){
 		this.sequence = sequence;
 	}
 	
+	/**
+	 * @param element e
+	 */
 	public TextElementSequence(TextElement element){
 		this.sequence.add(element);
 	}
@@ -23,6 +34,9 @@ public class TextElementSequence extends TextElement{
 	public TextElementSequence(){
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement#toString()
+	 */
 	public String toString(){
 		String result = "";
 		boolean needsep = false;
@@ -39,6 +53,9 @@ public class TextElementSequence extends TextElement{
 		return result;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement#toHTML()
+	 */
 	public String toHTML(){
 		String result = "";
 		boolean needsep = false;
@@ -137,19 +154,14 @@ public class TextElementSequence extends TextElement{
 			if (current_element.toString().contains("Something that")){
 				somethingthat = true;
 			}
-			// System.out.println("pluralise looking at :" + current_element.toString());
 			if (previous instanceof ClassElement && !somethingthat){
 				ClassElement previousClass = (ClassElement) previous;
 				String previousString = previousClass.toString();
 				String[] arr = previousString.split(" ");  	
 			    String lastword = arr[arr.length-1];
-			    // System.out.println("pluralise checking plurality of :" + lastword);
 			    if (WordNetQuery.INSTANCE.isPlural(lastword)){
-			    	// System.out.println("yes, plural.");
-			    	// System.out.println("Current element " + current_element);
 			    	if (current_element instanceof LogicElement){
 			    		String currString = current_element.toString();
-			    		// System.out.println("current element: " + currString);
 			    		if (currString.equals("is")){
 			    			sequence.remove(i);
 			    			sequence.add(i,new LogicElement("are"));
@@ -157,8 +169,6 @@ public class TextElementSequence extends TextElement{
 			    	} 
 			    	if (current_element instanceof RoleElement){
 			    		String currString = current_element.toString();
-			    		// System.out.println("current element: " + currString);
-			    		// System.out.println("checking " + currString.substring(0,2) + "<");
 			    		if (currString.substring(0,2).equals("is")){
 			    			sequence.remove(i);
 			    			sequence.add(i,new RoleElement("are" + currString.substring(2) ));

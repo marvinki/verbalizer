@@ -8,8 +8,8 @@ import javax.swing.JLabel;
 import org.protege.editor.owl.OWLEditorKit;
 
 /**
- * contains zero or more TextElementSequences. All you can do is create a list,
- * add and get/set to elements in this List.
+ * Contains zero or more TextElementSequences. All you can do is create a list,
+ * add and get/set the elements in this List.
  * 
  * @author fpaffrath
  *

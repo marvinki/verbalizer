@@ -8,15 +8,16 @@ import javax.swing.JTextPane;
 
 import org.protege.editor.owl.OWLEditorKit;
 
+/**
+ * Represents a special TextElement that indicates that the Gentzen tree is empty. 
+ * It comes in action if e.g. the proof can't be found within the limit.
+ * It is supposed to facilitate coloring and such like.
+ * @author fpaffrath
+ *
+ */
 public class EmptyTreeElement extends TextElement{
 
 
-	/**
-	 * Special TextElement that indicates that the Gentzen tree is empty. 
-	 * It comes in action if e.g. the proof can't be found within the limit.
-	 * It is supposed to facilitate coloring and such like.
-	 */
-	
 	/*TODO maybe an extra "Failure!" Element should be implemented
 	 * 
 	 */

@@ -4,7 +4,8 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 /**
- * represents any role
+ * Represents any role.
+ *
  * @author marvinki (doc by fp)
  *
  */
@@ -12,7 +13,7 @@ import javax.swing.text.StyledDocument;
 public class RoleElement extends TextElement{
 
 	/**
-	 * @param content name 
+	 * @param content of the JLabel 
 	 */
 	public RoleElement(String content){
 		

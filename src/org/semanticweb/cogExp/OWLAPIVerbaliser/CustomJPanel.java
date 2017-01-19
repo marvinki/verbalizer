@@ -100,14 +100,13 @@ public class CustomJPanel extends JPanel {
 			height += fontHeight;
 			d.setSize(maxWidth, height);
 			
-//			System.out.println("longer: "+ width+ ", "+height);
-			
 			width = (int) Math.ceil(comp.getMaximumSize().getWidth());
 		}
 		else{
 			d.setSize(maxWidth, height);
 		}	
 	}
+	
 	return d;	
 	}
 

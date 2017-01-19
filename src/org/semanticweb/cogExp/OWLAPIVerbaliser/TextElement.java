@@ -10,7 +10,8 @@ import javax.swing.text.StyledDocument;
 
 import org.protege.editor.owl.OWLEditorKit;
 /**
- * represents any textual element of verbalizer
+ * Represents any textual element of verbalizer.
+ * 
  * @author marvinki (doc by fp)
  *
  */

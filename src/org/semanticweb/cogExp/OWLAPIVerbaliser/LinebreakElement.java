@@ -4,6 +4,12 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
+/**
+ * represents a line break .
+ * This is needed for the @see CustomJPanel 
+ * @author fpaffrath
+ *
+ */
 public class LinebreakElement extends TextElement{
 
 		public LinebreakElement(){

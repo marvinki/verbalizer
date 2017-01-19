@@ -4,6 +4,7 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
+// TODO documentation pending
 public class LogicElement extends TextElement{
 
 	public String toString(){

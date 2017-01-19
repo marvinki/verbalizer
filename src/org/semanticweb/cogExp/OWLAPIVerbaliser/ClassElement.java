@@ -1,19 +1,20 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.awt.Color;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /** TODO - just for testing
  * just for testing, delete this 5 imports (JFrame, JPanel,...,Toolkit) when not needed anymore
- */
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-
+ */
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -91,13 +92,14 @@ public class ClassElement extends TextElement{
 		JLabel spacelabel = new JLabel(" ");
 		articlelabel.setBorder(new EmptyBorder(0,0,0,0));
 		contentlabel.setBorder(new EmptyBorder(0,0,0,0));
-		contentlabel.setForeground(Color.MAGENTA);
+		contentlabel.setForeground(Color.BLUE);
 		contentlabel.setToolTipText(tooltiptext);
 		labellist.add(articlelabel);
 		labellist.add(spacelabel);
 		labellist.add(contentlabel);
 		
-		
+	/*	This code could be utilized if a class element is clicked
+	 * 
 		contentlabel.addMouseListener(new MouseAdapter()  
 		{  
 		    public void mouseClicked(MouseEvent e)  
@@ -127,6 +129,7 @@ public class ClassElement extends TextElement{
 		    }  
 		    
 		}); 
+		*/
 		return labellist;
 	}
 	

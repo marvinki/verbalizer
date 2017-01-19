@@ -22,9 +22,7 @@ import org.semanticweb.owlapi.model.OWLObject;
  */
 public class LinkedJLabel extends JLabel implements LinkedObjectComponent{
 
-	  /**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 8173047877677087878L;
 	
 	private LinkedObjectComponentMediator mediator;

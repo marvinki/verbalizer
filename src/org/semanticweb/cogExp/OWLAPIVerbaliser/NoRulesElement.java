@@ -8,20 +8,22 @@ import javax.swing.JTextPane;
 
 import org.protege.editor.owl.OWLEditorKit;
 
+/**
+ * Special TextElement that indicates that there's nothing to explain. 
+ * It comes in action if e.g. there is no SequentInferenceRule for 
+ * the axiom.
+ * It is supposed to facilitate coloring and such like.
+ * @author fpaffrath
+ *
+ */
 public class NoRulesElement extends TextElement{
-	/**
-	 * Special TextElement that indicates that there's nothing to explain. 
-	 * It comes in action if e.g. there is no SequentInferenceRule for 
-	 * the axiom.
-	 * It is supposed to facilitate coloring and such like.
-	 */
-	
+		
 	/*TODO maybe an extra "Failure!" Element should be implemented
 	 * 
 	 */
 
 	/**
-	 * this constructor loads the TextElement with the string
+	 * This constructor loads the TextElement with the string
 	 * "That's already stated in the ontology. " and adds an explanation at the end. 
 	 */
 	/**

@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.List;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -69,11 +70,10 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 			
 		}
 		content.setSize(contentSize);
-		
+	    
 		
 		// must be set s.t. the scroll pane works properly
 		this.setLayout(new BorderLayout(0,0));
-		
 	}
 	
 	
@@ -88,20 +88,19 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		CustomJPanel innerpanel = new CustomJPanel();
 		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
 		
+		
 		int height = 0;
 		
 		innerpanel.setLayout(flowLayout);
 		innerpanel.setBackground(Color.WHITE);
 		
 		content.add(innerpanel,constraint);
+		content.setBackground(Color.BLUE);
 
 				
 		List<JLabel> labels = sequence.generateLabels(ek);
 
-		// System.out.println(labels.toString());
-
-
-		// packing Labels in Panels 
+		// put concatenated Labels in Panels 
 		for(JLabel label : labels){
 			// concatenate labels and put them into a panel if line is broken
 			Dimension d;
@@ -125,28 +124,8 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		
 		result.add(content);
 		this.add(getScrollPane(result));
-		
-		contentSize.setSize(contentSize.getWidth(), height+5*getFontMetrics(getFont()).getHeight());
-		
-		
-		/*
-		MyRenderer cr = new MyRenderer(editorKit);
-		
-		
-		List<JLabel> labels = sequence.generateLabels(editorKit);
-		
-		OWLFrameList list = new OWLFrameList<OWLOntology>(editorKit,
-                new OWLGeneralClassAxiomsFrame(editorKit,
-                editorKit.getOWLModelManager().getOWLOntologyManager()));
-		
-		list.setCellRenderer(cr);
-		list.setRootObject(editorKit.getOWLModelManager().getActiveOntology());
-		
-			
-				
-		innerpanel.add(list);
-		this.add(innerpanel);
-		*/
+		contentSize.setSize(contentSize.getWidth(), height/*+fac*getFontMetrics(getFont()).getHeight()*/);
+
 		return this;
 	}
 	
@@ -168,23 +147,16 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	 * @param size
 	 */
 	private void refreshContentsize(Dimension size){
-//		if(contentSize.height+size.height<ProtegeManager.getInstance()
-//														.getFrame(editorKit.getWorkspace())
-//														.getSize().getHeight()
-//				){
-//			contentSize.height += size.height;
-//		}
+
 		setPreferredSize(size);
 			
 	}
 	
+	/* (non-Javadoc)
+	 * @see javax.swing.JComponent#getPreferredSize()
+	 */
 	@Override
     public Dimension getPreferredSize() {
-	
-//        Dimension workspaceSize = editorKit.getWorkspace().getSize();
-//        int width = (int) (workspaceSize.getWidth() * 0.8);
-//        int height = (int) (workspaceSize.getHeight() * 0.7);
-//        return new Dimension(width, height);
 		return contentSize;
 }
 	

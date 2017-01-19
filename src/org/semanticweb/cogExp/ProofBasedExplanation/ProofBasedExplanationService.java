@@ -158,6 +158,14 @@ public class ProofBasedExplanationService extends ExplanationService{
 	/*TODO add @param reasoner
 	 * 
 	 */
+	/**
+	 * @param subclass s
+	 * @param superclass s
+	 * @param ontologyname o
+	 * @param reasonerFactory r
+	 * @param reasoner r
+	 * @return GentzenTree
+	 */
 	public static GentzenTree computeTree(String subclass, String superclass, String ontologyname,
 			OWLReasonerFactory reasonerFactory, OWLReasoner reasoner){
 		Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -300,7 +308,7 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		
 		result = result.getResult(sequence,editorKit);
 	
-		result.updateUI();
+		//result.updateUI();
 		return result;
 	}
 	
