@@ -170,7 +170,7 @@ public enum WordNetQuery {
 	public void wordnetTest(){
 		database = WordNetDatabase.getFileInstance();
 		Synset[] synsets = database.getSynsets("person");
-		System.out.println("Found synsets for 'person': " + synsets.length);
+		// System.out.println("Found synsets for 'person': " + synsets.length);
 		for (int i = 0; i < synsets.length; i++) {
 			Synset synSet = synsets[i];
 			String[] usageExample = synSet.getUsageExamples();

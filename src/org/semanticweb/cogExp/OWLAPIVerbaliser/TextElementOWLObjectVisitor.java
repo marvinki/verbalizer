@@ -305,7 +305,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	
 	// VERBALIZE SUBCLASSOFAXIOM
 	public List<TextElement> visit(OWLSubClassOfAxiom arg0) {
-		// System.out.println("-------");
+		// System.out.println("-------" + arg0);
 		// define some elements that will be used later
 		LogicElement somethingthatElement = new LogicElement("something that"); // <------- USED.
 		LogicElement thatElement =  new LogicElement("that");
@@ -316,13 +316,15 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		// Left hand side
 		List<TextElement> leftstring = new ArrayList<TextElement>();
 		leftstring = arg0.getSubClass().accept(this);
+		// System.out.println("DEBUG --- 02 " + arg0.getSubClass());
+		// System.out.println("DEBUG --- 02 " + leftstring.toString());
 		List<TextElement> somethingthat = new ArrayList<TextElement>();
 		somethingthat.add(somethingthatElement);
 		if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
 			OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) arg0.getSubClass();
 			OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 			// System.out.println("SUBCLASS SOMEOF DEBUG " + some1 + " " + cl);
-			if (cl!=null){
+			if (cl!=null && !cl.toString().contains("izza")){ // <_ this is actually used.
 				//somethingthat = cl.toString() + " that ";
 				somethingthat =cl.accept(this); 
 				somethingthat.add(thatElement);
@@ -464,6 +466,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		leftstring.addAll(arg0.getSuperClass().accept(this));  // <-- Default>
 		// System.out.println("DEBUG default case: " + leftstring);
 		// System.out.println("DEBUG default case: " + new TextElementSequence(leftstring));
+		// System.out.println("DEBUG LEFTSTRING " + leftstring);
 		return  leftstring; // + 
 				//middlestring
 				// + arg0.getSuperClass().accept(this);
@@ -654,7 +657,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	
 	
 	public List<TextElement> visit(OWLObjectSomeValuesFrom existsexpr) {
-		// System.out.println("DEBUG -- " + existsexpr);
+		 // System.out.println("DEBUG -- " + existsexpr);
 		OWLObjectPropertyExpression property = existsexpr.getProperty();
 		// changed! String propfragment = property.getNamedProperty().getIRI().getFragment();
 		Optional<String> propfragment = property.getNamedProperty().getIRI().getRemainder();
@@ -670,7 +673,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 			}else{
 					OWLObjectPropertyExpression prop = some1.getProperty();
 					String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(prop);
-					// System.out.println("Checking if property is noun: " + propstring);
+					System.out.println("Checking if property is noun: " + propstring);
 					if (WordNetQuery.INSTANCE.detectIsNounPlusPreposition(propstring)){
 						propstring = propstring.replace("is ","");
 						LogicElement propAsNoun = new LogicElement(VerbalisationManager.aOrAnIfy(propstring));
@@ -693,7 +696,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	}
 	
 	public List<TextElement> visit(OWLEquivalentClassesAxiom arg0) {
-		System.out.println("visiting OWLEquivalentClassesAxiom " + arg0);
+		// System.out.println("visiting OWLEquivalentClassesAxiom " + arg0);
 		List<TextElement> result = new ArrayList<TextElement>();
 		OWLClass classexp = null;
 		List<OWLClassExpression> exprs =  ((OWLEquivalentClassesAxiom) arg0).getClassExpressionsAsList();
@@ -703,11 +706,11 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				break;
 			}
 		}
-		System.out.println("visiting OWLEquivalentClassesAxiom (1)" + classexp);
+		// System.out.println("TextElementOWLObjectVisitor Debug --visiting OWLEquivalentClassesAxiom (1)" + classexp);
 		if (classexp!=null){
 			result.add(new LogicElement("According to its definition,"));
 			result.addAll(classexp.accept(this));
-			System.out.println(" visiting OWLEquivalentClassesAxiom " + classexp.accept(this).toString());
+			// System.out.println("TextElementOWLObjectVisitor Debug --  visiting OWLEquivalentClassesAxiom " + classexp.accept(this).toString());
 			result.add(new LogicElement("is"));
 			boolean firstp = true;
 			for (OWLClassExpression ex:exprs){
@@ -738,7 +741,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				}	
 			}	
 		}
-		System.out.println("result " + result);
+		// System.out.println("result " + result);
 		return result;
 	}
 

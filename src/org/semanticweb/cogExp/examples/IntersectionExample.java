@@ -119,7 +119,7 @@ public class IntersectionExample {
 		System.out.println(VerbaliseTreeManager.listOutput(gentzenTree));
 		
 		
-		String result = VerbaliseTreeManager.verbaliseNL(gentzenTree, true, false,null);
+		String result = VerbaliseTreeManager.verbaliseNL(gentzenTree, true, false,false, null);
 		System.out.println(result);
 	}catch(Exception e){}
 	

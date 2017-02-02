@@ -1,6 +1,7 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.awt.Dimension;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,8 +24,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 // import org.apache.log4j.spi.LoggerFactory;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
@@ -67,8 +70,15 @@ import ch.qos.logback.classic.Logger;
 // import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.json.*;
 
 import uk.ac.manchester.cs.jfact.JFactFactory;
+
+/*
+ *  nc localhost 3113
+ * {"command" : "explain", "subclass": "CoalTit", "superclass": "BirdRequiringSmallEntranceHole", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl"}
+ */
+
 
 public class ClusterExplanationService {
 	
@@ -360,7 +370,105 @@ public class ClusterExplanationService {
 	}
 	
 	
+public String handleBoschRequest(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException {
+			
+		
 	
+		String output = "";
+		Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+	    rootlogger.setLevel(Level.OFF);
+	  	OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
+	  	
+	  	 JSONObject inputObject = new JSONObject(input);
+	  	 String command = inputObject.getString("command");
+	
+   		if (command.contains("precompute")){
+				precomputeAxioms();
+				return output;
+		}
+	  	
+   		if (command.contains("list")){
+   				List strlist = new ArrayList<String>();
+   				strlist.add(inputObject.getString("className"));
+   				strlist.add(inputObject.getString("ontologyName"));
+   				output = listInferredAxioms(strlist);	
+   				printstream.println(output);
+   				return output;
+   		}
+   		String ontologyname = inputObject.getString("ontologyName");
+   		    // String ontologyname = list.get(2).replaceAll("\"", "");
+   		    OWLOntology ont;
+   		    if (ontology!=null)
+   		    	ont = ontology;
+   		    else{
+   		    	OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+   				java.io.File file = new java.io.File(ontologyname);
+   				FileDocumentSource source = new FileDocumentSource(file);
+   				OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
+   				loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+   				loaderconfig = loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
+   						
+   				try {
+   					ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
+   				} catch (Exception e){
+   					System.out.println("error loading ontology");
+   				}
+   				ont = ontology;
+   		    }
+   		 System.out.println("[Start proof search.]");
+   			if (command.contains("explain")){
+   				String subclass = inputObject.getString("subclass");
+   				String superclass = inputObject.getString("superclass");
+   				
+   			 OWLClass subcl = null;
+   			 OWLClass supercl = null;	 
+   			 Set<OWLClass> classes = ontology.getClassesInSignature();
+   			 for (OWLClass cl : classes){
+   				 // System.out.println(cl.toString());
+   				 if (cl.getIRI().getFragment().equals(subclass)){
+   					 subcl = cl;
+   				 }
+   				 if (cl.getIRI().getFragment().equals(superclass)){
+   					 supercl = cl;
+   				 }
+   			 }
+   			 
+   			 if (subcl==null)
+   				 System.out.println("Class not found in ontology: " + subclass);
+   			 if (supercl==null)
+   				 System.out.println("Class not found in ontology: " + superclass);
+   			 if (subcl==null || supercl==null){
+   				 return null;
+   			 }  			 		 
+   			
+   			 OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(subcl, supercl);
+   				GentzenTree tree = VerbalisationManager.computeGentzenTree(axiom, 
+   						reasoner, 
+   						reasonerFactory, 
+   						ont, 
+   						50000,
+   						60000,
+   						"OP");	
+   				
+   				
+   				if (tree==null){
+   					System.out.println("ERROR. Subsumption could not be proven.");
+   					printstream.println("ERROR. Subsumption could not be proven.");
+   					return "ERROR";
+   				}
+   				
+   				TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(axiom, reasoner, reasonerFactory, ontology,100, 10000, "OP",true,false);
+   				
+   				JSONArray jsonObject = sequence.toJSON();
+   				output = jsonObject.toString();
+   				printstream.println(output);
+   				// System.out.println(result);
+   			} else {
+   				System.out.println("Please enter two class expressions, the path to the ontology, and a path for the output");
+   			}	
+   	return output;
+   	
+   }
 	
 	
 	public String handleCluster1Request(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException {
@@ -374,12 +482,19 @@ public class ClusterExplanationService {
 		//  OWLReasonerFactory reasonerFactory = new JFactFactory();
 	  	 OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
 	  	
-		
-		List<String> list = new ArrayList<String>();
+	  	 JSONObject inputObject = new JSONObject(input);
+	  	 String command = inputObject.getString("command");
+	
+   			// String[] inputs = temp.split(" ");
+   		if (command.contains("precompute")){
+				precomputeAxioms();
+				return output;
+		}
+   		
+   		List<String> list = new ArrayList<String>();
    		Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(input);
    		while (m.find())
    			   list.add(m.group(1));
-   			// String[] inputs = temp.split(" ");
    		if (list.size()==1 && list.get(0).contains("precompute")){
 				precomputeAxioms();
 				return output;
@@ -409,6 +524,7 @@ public class ClusterExplanationService {
    				}
    				ont = ontology;
    		    }
+   		
    		 System.out.println("[Start proof search.]");
    			if (list.size()>3){
    				/*

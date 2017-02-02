@@ -976,15 +976,22 @@ public enum VerbaliseTreeManager {
 				OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
 				OWLClassExpression definedconcept = premiseformula.getClassExpressionsAsList().get(0);
 				// check if synonymy
-				System.out.println("Debug " + premiseformula.getClassExpressionsAsList().size());
+				// System.out.println("Debug " + premiseformula.getClassExpressionsAsList().size());
 				if (premiseformula.getClassExpressionsAsList().size()==2 
 						&& (premiseformula.getClassExpressionsAsList().get(0) instanceof OWLClass)
 						&& (premiseformula.getClassExpressionsAsList().get(1) instanceof OWLClass)
 						){
 					OWLClassExpression definition = premiseformula.getClassExpressionsAsList().get(1);
+					// String test = "<http://sweet.jpl.nasa.gov/1.1/substance.owl#Fe2O3>";
+					// System.out.println(test.contains("<http://sweet.jpl.nasa.gov/1.1/substance.owl#Fe2O3>"));
 					// Below heuristic changes the order, such that the longer concept is taken as the definition. But changing the order may destroy the "red line" of the argument
+					// System.out.println("definition contains e203? " + definition.toString() + definition.toString().contains("203"));
+					// System.out.println("definedconcept contains e203? " + definedconcept.toString() + definedconcept.toString().contains("203"));
 					if (VerbalisationManager.verbalise(definition).length()< 
-							VerbalisationManager.verbalise(premiseformula.getClassExpressionsAsList().get(0)).length()){
+							VerbalisationManager.verbalise(premiseformula.getClassExpressionsAsList().get(0)).length()
+							|| definedconcept.toString().contains("<http://sweet.jpl.nasa.gov/1.1/substance.owl#Fe2O3>")
+							){
+						// System.out.println("turning around: " + definedconcept.toString() + " " + definition.toString());
 						definedconcept = premiseformula.getClassExpressionsAsList().get(1);
 						definition = premiseformula.getClassExpressionsAsList().get(0);
 					}

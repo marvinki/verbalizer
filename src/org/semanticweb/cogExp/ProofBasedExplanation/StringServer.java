@@ -107,7 +107,7 @@ public class StringServer {
 				System.out.println("[Reading input: " + s + "]");
 				String output = "";
 				try {
-					output = service.handleCluster1Request(s, outputStream);
+					output = service.handleBoschRequest(s, outputStream);
 				} catch (OWLOntologyCreationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -190,7 +190,7 @@ public class StringServer {
 		// }
 
 		try {
-			clusterExplanationService.handleCluster1Request("precompute", null);
+			clusterExplanationService.handleBoschRequest("{\"command\" : \"precompute\"}", null);
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

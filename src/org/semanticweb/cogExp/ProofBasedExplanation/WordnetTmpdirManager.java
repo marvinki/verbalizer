@@ -64,7 +64,7 @@ public enum WordnetTmpdirManager {
 	private static void createTmps(File newTempdir, String input, String output) throws IOException{
 		InputStream input1 = WordnetTmpdirManager.INSTANCE.getClass().getClassLoader().getResourceAsStream(input);
 		if (input1==null){
-			System.out.println("NULL!!!!");
+			// System.out.println("NULL!!!!");
 			/*
 			System.out.println(FrameworkUtil.getBundle(WordnetTmpdirManager.INSTANCE.getClass()));
 			BundleContext context = FrameworkUtil.getBundle(WordnetTmpdirManager.class).getBundleContext();
@@ -75,8 +75,8 @@ public enum WordnetTmpdirManager {
 		}
 		File target1 = new File(output);
 		target1.createNewFile();
-		System.out.println("input " + input);
-		System.out.println("copying files " + input1 + " TO " + target1);
+		// System.out.println("input " + input);
+		// System.out.println("copying files " + input1 + " TO " + target1);
 		copyFileUsingStream(input1,target1);
 		if (input1!=null)
 		input1.close();

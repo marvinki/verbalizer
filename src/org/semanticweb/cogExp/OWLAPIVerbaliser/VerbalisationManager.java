@@ -77,9 +77,17 @@ public enum VerbalisationManager {
 	
 	public boolean includesHasValue =false;
 	
+	/* Old Verbalise
 	public static String verbalise(OWLObject ob){
 		return ob.accept(verbOWLObjectVisit);
 	}
+	*/
+	
+	public static String verbalise(OWLObject ob){
+		TextElementSequence seq = new TextElementSequence( ob.accept(textOWLObjectVisit));
+		return seq.toString();
+	}
+	
 	
 	public static TextElementSequence textualise(OWLObject ob){
 		TextElementSequence seq = new TextElementSequence( ob.accept(textOWLObjectVisit));
@@ -234,7 +242,8 @@ public enum VerbalisationManager {
 			str = getLabel(namedproperty);
 			
 		}// Obfuscate
-	
+		if (str==null)
+			str = "";
 		// shortcut for labels with [X]
 		if (str.indexOf("[X]")>-1){
 			if (textOWLObjectVisit.getObfuscator()!=null){
@@ -268,7 +277,7 @@ public enum VerbalisationManager {
 		if(str.indexOf("^^xsd:string")>=0)
 			str = str.substring(1,str.length()-13);
 		// detect if name is of the form "_ of" 
-		if (detect_noun_of(str) && !str.contains("is"))
+		if (detect_noun_of(str) && !str.contains("has") && !str.contains("is"))
 			str = "is" + _space + str;
 		return str;
 	}
@@ -321,6 +330,7 @@ public enum VerbalisationManager {
 	
 	public static List<TextElement> textualiseProperty(OWLObjectPropertyExpression property, List<List<TextElement>> fillerelements, List<TextElement> middle){
 		// String result = "";
+		// System.out.println("received middle " + middle.toString());
 		List<TextElement> result = new ArrayList<TextElement>();
 		//
 		if (fillerelements.size()>1){
@@ -329,6 +339,7 @@ public enum VerbalisationManager {
 		}
 		
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(property);
+		// System.out.println("propstring: " + propstring);
 		// check case where string contains a pattern.
 		if(propstring.indexOf("[X]")>=0){
 			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
@@ -372,17 +383,17 @@ public enum VerbalisationManager {
 		}
 			// result += VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 		
-		System.out.println(result.toString());
+		// System.out.println("textualiseProperty returns " + result.toString());
 		return result;
 	}
 	
 	
 	public static String aOrAnIfy(String str){
 		// special cases
-		if (str.equals("unit"))
-			return "a unit";
-		if (str.equals("amino-acid"))
-			return "an amino acid";
+		// if (str.equals("unit"))
+		// 	return "a unit";
+		// if (str.equals("amino-acid"))
+		// 	return "an amino acid";
 		// System.out.println("A or an |" + str);
 		// first check if there are any determiners present; if so, leave unchanged
 		if (     (str.length()>1 && str.substring(0,2).equals("a" + _space))
@@ -411,7 +422,7 @@ public enum VerbalisationManager {
 		if  (!WordNetQuery.INSTANCE.isDisabled())
 			types = WordNetQuery.INSTANCE.getTypes(str);
 		if (!WordNetQuery.INSTANCE.isDisabled() && !(types[0]>0) &&!isNoun){
-			System.out.println(Arrays.toString(types));
+			// System.out.println(Arrays.toString(types));
 			// System.out.println("NOT A NOUN");
 			str = lowerCaseFirstLetter(str);
 			// System.out.println("not using article");
@@ -490,8 +501,8 @@ public enum VerbalisationManager {
 				processedtokens.add(token);
 				continue;
 			}
-			// now lowercase
-			if (token.length()>0)
+			// now lowercase, except if all uppercase
+			if (token.length()>0 && !token.toUpperCase().equals(token))
 				token = token.substring(0,1).toLowerCase() + token.substring(1,token.length()); 
 			// now find hypens and lowercase
 			int ind = 0;
@@ -562,9 +573,10 @@ public enum VerbalisationManager {
 				// System.out.println("dbg " +annotation.getValue().asLiteral().orNull().getLiteral());
 				// System.out.println("dbg " +annotation.getValue());
 				// if there are many labels (e.g. with imported ontologies), take the one with an article.
-				if (!str.equals("") && !savestr.equals("") && (!str.contains("a ") || !str.contains("the ") || !str.contains("an "))){
+				if (!str.equals("") && !savestr.equals("") && (savestr.contains("a ") || savestr.contains("the ") || savestr.contains("an "))){
 					str = savestr;
 				}
+				// System.out.println("savestr: " + str);
 			}
 			if (annotation.getProperty().getIRI().getFragment().equals("label2")){
 				str2 = annotation.getValue().asLiteral().orNull().getLiteral();
@@ -651,6 +663,12 @@ public enum VerbalisationManager {
 	}
 	
 	public String getSimpleIntersectionNLString(List<OWLClassExpression> exprs){
+		
+		if (exprs.size()==1){
+			// System.out.println("taking the easy route ");
+			return exprs.get(0).accept(verbOWLObjectVisit);
+		}
+		
 		String result = "";
 		List<OWLObject> noun_concepts = new ArrayList<OWLObject>();
 		List<OWLObject> attribute_concepts = new ArrayList<OWLObject>();
@@ -798,7 +816,7 @@ public enum VerbalisationManager {
 					str = aOrAnIfy(str);
 					System.out.println("A OR ANIFIED " + str);
 				}
-				System.out.println("DBG --- that is case!");
+				// System.out.println("DBG --- that is case!");
 				result = result + str + _space + "that is" + _space;
 				noun_or_attribute_concepts_strings.remove(str);
 			}
@@ -807,7 +825,7 @@ public enum VerbalisationManager {
 				else
 				result = result.substring(0,result.length()-8); // remove the last "that is"
 			if (noun_or_attribute_concepts_strings.size()>0 || attribute_concepts_strings.size()>0){ 
-				System.out.println("DBG -- inserting 'that is' in getSimpleNL...");
+				// System.out.println("DBG -- inserting 'that is' in getSimpleNL...");
 			result = result + "that is" + _space;
 			}
 			for (String str: noun_or_attribute_concepts_strings){
@@ -1002,6 +1020,7 @@ public enum VerbalisationManager {
 		// Verbalise the "easy" part
 		result = result + getSimpleIntersectionNLString(simpleExpressions) + _space;
 		result = aOrAnIfy(result);
+		// System.out.println("DEBUG -- " + result);
 		// Verbalise the existential part
 		List<List<OWLClassExpression>> buckets = groupMultipleExistsPatterns(existsExpressions);
 		for (int i=0; i< buckets.size();i++){
@@ -1106,7 +1125,8 @@ public enum VerbalisationManager {
 						// System.out.println("DEBUG (1) -- getting domain");
 						OWLClass cl = (OWLClass) VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 						VerbaliseOWLObjectVisitor visitor = new VerbaliseOWLObjectVisitor();
-						if (cl!=null){somethingstr = cl.accept(visitor) + " that ";}
+						// if (cl!=null){somethingstr = cl.accept(visitor) + " that ";}
+						if (cl!=null && !cl.toString().contains("izza")){somethingstr = cl.accept(visitor) + " that ";}
 						str = somethingstr + str;
 					}
 					substrings.add(str);
@@ -1171,7 +1191,9 @@ public enum VerbalisationManager {
 						// System.out.println("DEBUG (2) -- getting domain for " + some1.getProperty().getNamedProperty());
 						OWLClass cl = (OWLClass) VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 						// System.out.println(cl);
-						if (cl!=null){
+						// if (cl!=null){
+						System.out.println("DEBUG-01 " + cl.toString());
+						if (cl!=null && !cl.toString().contains("izza")){
 							somethingstr.addAll(cl.accept(textOWLObjectVisit));
 							somethingstr.add(new LogicElement("that"));
 							} else 

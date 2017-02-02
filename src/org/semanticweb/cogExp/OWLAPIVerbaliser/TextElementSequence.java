@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.protege.editor.owl.OWLEditorKit;
 
 public class TextElementSequence extends TextElement{
@@ -88,6 +90,45 @@ public class TextElementSequence extends TextElement{
 		labels.removeIf(l->l.getText().equals("."));
 		
 		return labels;
+	}
+	
+	public JSONArray toJSON(){
+		JSONArray result = new JSONArray();
+		// JSONObject result = new JSONObject();
+		int itemcounter = 0;
+		for (TextElement element : sequence){
+			if (element instanceof ClassElement){
+				ClassElement classElement = (ClassElement) element;
+				String classDescription = classElement.toString();
+				String tooltip = classElement.getToolTipText();
+				JSONObject innerobject = new JSONObject();
+				innerobject.put("text", classDescription);
+				innerobject.put("classTooltip", tooltip);
+				innerobject.put("type", "class-description");
+				result.put(innerobject);
+				itemcounter++;
+			}
+			if (element instanceof LogicElement){
+				LogicElement logicElement = (LogicElement) element;
+				String logicDescription = logicElement.toString();
+				JSONObject innerobject = new JSONObject();
+				innerobject.put("text", logicDescription);
+				innerobject.put("type", "text");
+				result.put(innerobject);
+				itemcounter++;
+			}
+			if (element instanceof RoleElement){
+				RoleElement roleElement = (RoleElement) element;
+				String roleDescription = roleElement.toString();
+				JSONObject innerobject = new JSONObject();
+				innerobject.put("text", roleDescription);
+				innerobject.put("type", "roleDescription");
+				result.put(innerobject);
+				itemcounter++;
+			}
+		
+		}
+		return result;
 	}
 	
 	/*
