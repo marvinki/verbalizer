@@ -6,7 +6,7 @@ package org.semanticweb.cogExp.OWLAPIVerbaliser;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.LayoutManager;
+import java.awt.FlowLayout;
 
 import javax.swing.JPanel;
 
@@ -25,7 +25,6 @@ public class CustomJPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = -5704255319127525196L;
 
-
 	private int vspace = 3;	// upper and lower spacing
 	private int fontHeight = getFontMetrics(getFont()).getHeight()+ // height of a line
 			2*vspace;
@@ -42,41 +41,11 @@ public class CustomJPanel extends JPanel {
 	 * inherited
 	 */
 	public CustomJPanel() {
-		// TODO constructor for CustomJPanel, s.t. if nothing else is given:
-		//		take e.g. the screen size to estimate the Dimensions
+		super(new FlowLayout(FlowLayout.LEFT));
 	}
 
 	/**
-	 * inherited
-	 * @param layout inherited
-	 */
-	public CustomJPanel(LayoutManager layout) {
-		super(layout);
-		// TODO constructor for CustomJPanel:
-		//		no matter what LayoutManager is assigned,
-		//		take FlowLayout.
-	}
-
-	/**
-	 * inherited
-	 * @param isDoubleBuffered inherited
-	 */
-	public CustomJPanel(boolean isDoubleBuffered) {
-		super(isDoubleBuffered);
-	}
-
-	/**
-	 * inherited
-	 * @param layout inherited
-	 * @param isDoubleBuffered inherited
-	 */
-	public CustomJPanel(LayoutManager layout, boolean isDoubleBuffered) {
-		super(layout, isDoubleBuffered);
-		// TODO Auto-generated constructor stub
-	}
-	
-	/**
-	 * computes the needed size for the width of the Container cont.
+	 * computes the needed size for the width of its Container.
 	 * 
 	 * @param cont Container of the CustomJPanel 
 	 * @return the Dimension with the same Width of the Container and 
@@ -100,7 +69,7 @@ public class CustomJPanel extends JPanel {
 			height += fontHeight;
 			d.setSize(maxWidth, height);
 			
-			width = (int) Math.ceil(comp.getMaximumSize().getWidth());
+			width = (int) Math.ceil(comp.getSize().getWidth());
 		}
 		else{
 			d.setSize(maxWidth, height);
@@ -109,5 +78,4 @@ public class CustomJPanel extends JPanel {
 	
 	return d;	
 	}
-
 }

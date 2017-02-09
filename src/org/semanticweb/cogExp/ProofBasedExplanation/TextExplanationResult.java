@@ -1,22 +1,14 @@
-package org.semanticweb.cogExp.ProofBasedExplanation;
+ package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.util.List;
-
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
-import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.CustomJPanel;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.ContentJPanel;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 
 /**
@@ -26,50 +18,36 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
  */
 public class TextExplanationResult extends ExplanationResult{ // implements OWLModelManagerListener{
 
-	private OWLEditorKit editorKit;
 	private static final long serialVersionUID = 1944836708820525384L;
 
-	private JPanel content = new JPanel();
+	private ContentJPanel content;
 	private JPanel result = new JPanel();
-	private GridBagLayout contentLayout  = new GridBagLayout();
-	private GridBagConstraints constraint = new GridBagConstraints();
-	private Dimension contentSize;
-	
 	
 	public TextExplanationResult(JPanel panel,OWLEditorKit ek){
-		this.editorKit = ek;
-		// set constraints for GridBagLayout
-		constraint.fill = GridBagConstraints.BOTH;
-		constraint.anchor = GridBagConstraints.PAGE_START;
-		constraint.gridx = 0;
-		constraint.gridy = 0;	
-		constraint.weightx = 0;
-		constraint.weighty = 0;
-		
 		this.result = panel;
 		
-		content.setLayout(contentLayout);
+//		content.setLayout(contentLayout);
 		// try to set the width and height of the content panel depending on the size of
 		// the parent if the parent exists.
 		// else, set it depending on the Workspace size
-		try{
-			
-			contentSize = getPreferredSize();
-			if(contentSize.getHeight()<=0||contentSize.getWidth()<=0){
-				contentSize = new Dimension(100, 100);
-			}
-	
-		}catch(Exception e){
-			
-			contentSize = new Dimension(ProtegeManager
-					.getInstance()
-					.getFrame(editorKit.getWorkspace())
-					.getSize());
-			contentSize.setSize(contentSize.getWidth()*0.8, contentSize.getHeight());
-	
-			
-		}
-		content.setSize(contentSize);
+//		try{
+//			
+//			contentSize = getPreferredSize();
+//			if(contentSize.getHeight()<=0||contentSize.getWidth()<=0){
+//				contentSize = new Dimension(100, 100);
+//			}
+//	
+//		}catch(Exception e){
+//			
+//			contentSize = new Dimension(ProtegeManager
+//					.getInstance()
+//					.getFrame(editorKit.getWorkspace())
+//					.getSize());
+//			contentSize.setSize(contentSize.getWidth()*0.8, contentSize.getHeight());
+//	
+//			
+//		}
+//		content.setSize(contentSize);
 	    
 		
 		// must be set s.t. the scroll pane works properly
@@ -85,46 +63,45 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	 * @return TextExplanationResult with proper size
 	 */
 	public TextExplanationResult getResult(TextElementSequence sequence, OWLEditorKit ek){
-		CustomJPanel innerpanel = new CustomJPanel();
-		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
+//		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
 		
 		
-		int height = 0;
 		
-		innerpanel.setLayout(flowLayout);
-		innerpanel.setBackground(Color.WHITE);
 		
-		content.add(innerpanel,constraint);
-		content.setBackground(Color.BLUE);
+//		innerpanel.setLayout(flowLayout);
+//		innerpanel.setBackground(Color.WHITE);
+		
+//		content.add(innerpanel,constraint);
+//		content.setBackground(Color.BLUE);
 
 				
-		List<JLabel> labels = sequence.generateLabels(ek);
+//		List<JLabel> labels = sequence.generateLabels(ek);
 
 		// put concatenated Labels in Panels 
-		for(JLabel label : labels){
-			// concatenate labels and put them into a panel if line is broken
-			Dimension d;
-			innerpanel.add(label);
-				if(label.getText().equals("\n")){								
-					d = innerpanel.computeBestSize(content);
-									
-					refreshContentsize(d);
-					
-					constraint.gridy++;
-				
-					innerpanel.setPreferredSize(d);
-					content.add(innerpanel, constraint);
-					height += Math.ceil(d.getHeight());
-					innerpanel = new CustomJPanel(flowLayout); // removeAll
-					innerpanel.setBackground(Color.WHITE);
-				}
-				
-		}
-		content.setPreferredSize(contentSize);
-		
+//		for(JLabel label : labels){
+//			// concatenate labels and put them into a panel if line is broken
+//			Dimension d;
+//			innerpanel.add(label);
+//				if(label.getText().equals("\n")){								
+//					d = innerpanel.computeBestSize(content);
+//									
+//					refreshContentsize(d);
+//					
+//					constraint.gridy++;
+//				
+//					innerpanel.setPreferredSize(d);
+//					content.add(innerpanel, constraint);
+//					height += Math.ceil(d.getHeight());
+//					innerpanel = new CustomJPanel(flowLayout); // removeAll
+//					innerpanel.setBackground(Color.WHITE);
+//				}
+//				
+//		}
+//		content.setPreferredSize(contentSize);
+		content = new ContentJPanel(ek, sequence);
 		result.add(content);
 		this.add(getScrollPane(result));
-		contentSize.setSize(contentSize.getWidth(), height/*+fac*getFontMetrics(getFont()).getHeight()*/);
+//		contentSize.setSize(contentSize.getWidth(), height/*+fac*getFontMetrics(getFont()).getHeight()*/);
 
 		return this;
 	}
@@ -143,21 +120,12 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 			return scrollPane;
 	}
 	
-	/**
-	 * @param size
-	 */
-	private void refreshContentsize(Dimension size){
-
-		setPreferredSize(size);
-			
-	}
-	
 	/* (non-Javadoc)
 	 * @see javax.swing.JComponent#getPreferredSize()
 	 */
 	@Override
     public Dimension getPreferredSize() {
-		return contentSize;
+		return content.getSize();
 }
 	
 	@Override
