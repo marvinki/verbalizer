@@ -8,6 +8,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
@@ -77,5 +78,11 @@ public class CustomJPanel extends JPanel {
 	}
 	
 	return d;	
+	}
+
+	
+	public void add(JLabel label) {
+		// TODO Auto-generated method stub
+		super.add(label);
 	}
 }

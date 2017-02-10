@@ -54,6 +54,7 @@ import edu.smu.tspell.wordnet.SynsetType;
 public enum VerbalisationManager {
 	INSTANCE;
 	
+
 	static final VerbaliseOWLObjectVisitor verbOWLObjectVisit = new VerbaliseOWLObjectVisitor();
 	static final TextElementOWLObjectVisitor textOWLObjectVisit = new TextElementOWLObjectVisitor();
 	static final PrettyPrintClassExpressionVisitor ppCEvisit = new PrettyPrintClassExpressionVisitor();
