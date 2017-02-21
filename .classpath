@@ -6,7 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="src" output="target/classes" path="src">
+	<classpathentry excluding="org/semanticweb/cogExp/examples/UpperBodyExample.java|org/semanticweb/cogExp/examples/Begehung.java" kind="src" output="target/classes" path="src">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
@@ -26,5 +26,9 @@
 	<classpathentry kind="lib" path="lib/jfact-1.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-osgidistribution.jar"/>
 	<classpathentry kind="lib" path="/Users/marvin/git/verbalizerPlugin/lib/log4j.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/protege-editor-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/protege-editor-owl"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ch.qos.logback.classic"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ch.qos.logback.core"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -301,7 +301,7 @@ public enum VerbalisationManager {
 		
 		// check case where string contains a pattern.
 		if(propstring.indexOf("[X]")>=0){
-			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
+			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);// + "---------";
 			String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 			result += part1;
 			if (part2.equals("") && part1.equals("") || part1==null && part2==null){
@@ -309,6 +309,20 @@ public enum VerbalisationManager {
 			}
 		} else{
 			result += propstring + " ";
+		}
+		// System.out.println("checking if propstring contains placeholder " + propstring + " -- fillerstrs  " + fillerstrs);
+		if (propstring.contains("[X]s") && fillerstrs.size()==1){
+			System.out.println("SOMETHING --> SOME " + propstring);
+			String fillers = fillerstrs.get(0);
+			if (fillers.contains("a ")){
+				fillers = fillers.substring(2,fillers.length());
+				fillerstrs.remove(0);
+				fillerstrs.add(fillers);
+			}
+			if (fillers.equals("something")){
+				fillerstrs.remove(0);
+				fillerstrs.add("some");
+			}
 		}
 		result += middle;
 		boolean needsep = false;
@@ -323,12 +337,13 @@ public enum VerbalisationManager {
 			result += VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 		result = treatCamelCaseAndUnderscores(result);
 
-		// System.out.println("DEBUG PROPERTY |" + result + "|");
+		// System.out.println("DEBUG verbalise PROPERTY |" + result + "|");
 
 		return result;
 	}
 	
 	public static List<TextElement> textualiseProperty(OWLObjectPropertyExpression property, List<List<TextElement>> fillerelements, List<TextElement> middle){
+		// System.out.println("textualiseProperty called with " + property);
 		// String result = "";
 		// System.out.println("received middle " + middle.toString());
 		List<TextElement> result = new ArrayList<TextElement>();
@@ -339,11 +354,42 @@ public enum VerbalisationManager {
 		}
 		
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(property);
+		// System.out.println("PROPSTRING " + propstring);
+		
+		boolean pluralisefiller = false;
+		if (propstring.contains("[X]s")){
+			// System.out.println("pluralising, middle size " + fillerelements.size());
+			pluralisefiller = true;
+		}
+		if (propstring.contains("[X]s") && fillerelements.size()==1 ){
+			// System.out.println("pluralising, middle size " + fillerelements.size());
+			System.out.println("SOMETHING --> SOME " + propstring);
+			String newmiddle = fillerelements.get(0).get(0).toString();
+			if (newmiddle.equals("something")){
+				TextElement elem = fillerelements.get(0).get(0);
+				elem.setContent("some");
+			}
+		}
+		if (fillerelements.size()==1 && pluralisefiller){
+			String newmiddle = fillerelements.get(0).get(0).toString();
+			// System.out.println(" rearranging " + newmiddle);
+			if (newmiddle.contains("a ")){
+				newmiddle = newmiddle.substring(2,newmiddle.length()) + "s";
+			} else 
+				newmiddle = newmiddle + "s";
+			TextElement elem = fillerelements.get(0).get(0);
+			elem.setContent(newmiddle);
+			System.out.println(elem);
+		}
+		
 		// System.out.println("propstring: " + propstring);
 		// check case where string contains a pattern.
 		if(propstring.indexOf("[X]")>=0){
+			
+			
 			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
 			String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+			
 			if (part1.endsWith(" ")){
 				part1 = part1.substring(0, part1.length()-1);
 			}
@@ -356,6 +402,29 @@ public enum VerbalisationManager {
 				// result +=  "has as" + _space + property.getNamedProperty().getIRI().getFragment() + "-successor ";;
 			}
 		} else{
+			if (pluralisefiller)
+				propstring = propstring.substring(0,propstring.length()-1);
+			
+			// check if we need to insert "only"
+			if (middle.toString().contains("only")){
+				if (propstring.endsWith("part of")){
+					int i = propstring.indexOf("part of");
+					propstring = propstring.substring(0,i) + " only part of";
+					middle = new ArrayList();
+				}
+				if (propstring.endsWith("for")){
+					int i = propstring.indexOf("for");
+					propstring = propstring.substring(0,i) + " only for";
+					middle = new ArrayList();
+				}
+				if (propstring.endsWith("to")){
+					int i = propstring.indexOf("to");
+					propstring = propstring.substring(0,i) + " only to";
+					middle = new ArrayList();
+				}
+				
+			}
+			
 			result.add(new RoleElement(propstring));
 			// result += propstring + " ";
 		}
@@ -378,6 +447,10 @@ public enum VerbalisationManager {
 			String p2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 			if (p2.startsWith(" ")){
 				p2 = p2.substring(1, p2.length());
+			}
+			if (pluralisefiller){
+				//System.out.println("shorting second part to " + p2);
+				p2 = p2.substring(0,p2.length()-1);
 			}
 			result.add(new RoleElement(p2));
 		}
@@ -1126,7 +1199,7 @@ public enum VerbalisationManager {
 						OWLClass cl = (OWLClass) VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 						VerbaliseOWLObjectVisitor visitor = new VerbaliseOWLObjectVisitor();
 						// if (cl!=null){somethingstr = cl.accept(visitor) + " that ";}
-						if (cl!=null && !cl.toString().contains("izza")){somethingstr = cl.accept(visitor) + " that ";}
+						if (cl!=null && !cl.toString().contains("izza") && !cl.toString().contains("mino")){somethingstr = cl.accept(visitor) + " that ";}
 						str = somethingstr + str;
 					}
 					substrings.add(str);
@@ -1193,7 +1266,7 @@ public enum VerbalisationManager {
 						// System.out.println(cl);
 						// if (cl!=null){
 						System.out.println("DEBUG-01 " + cl.toString());
-						if (cl!=null && !cl.toString().contains("izza")){
+						if (cl!=null && !cl.toString().contains("izza") && !cl.toString().contains("mino")){
 							somethingstr.addAll(cl.accept(textOWLObjectVisit));
 							somethingstr.add(new LogicElement("that"));
 							} else 
@@ -1243,11 +1316,24 @@ public enum VerbalisationManager {
 			result.add(middlepart);
 		}
 		else {
+			boolean pluralfiller = false;
+			System.out.println("PROPSTRING " + propstring);
+			if (propstring.contains("[X]s")){
+				System.out.println("plural property recognised");
+				pluralfiller = true;}
 		java.lang.String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(commonpropexpr);
 		result.add(new RoleElement(part1));
+		if (pluralfiller && middlepart.getSize()==1){
+			if (middlepart.getElement(0).toString().contains("a ")){
+				middlepart.getElement(0).setContent(middlepart.getElement(0).toString().substring(2) + "s");
+			}
+		}
 		result.add(middlepart);
 		// if pattern was used, need to end the expression
 		java.lang.String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(commonpropexpr);
+		if (pluralfiller){
+			part2 = part2.substring(0,part2.length()-1);
+		}
 		result.add(new RoleElement(part2));
 		}
 		

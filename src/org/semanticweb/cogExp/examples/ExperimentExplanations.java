@@ -15,6 +15,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
@@ -72,7 +73,14 @@ public class ExperimentExplanations {
 		for(OWLAxiom just:justifications1axioms){
 			try {
 				sequent.addAntecedent(ConversionManager.fromOWLAPI(just));
-				System.out.println(VerbaliseTreeManager.makeUppercaseStart(VerbalisationManager.verbalise(just)) + "<br>");
+				// get sequence
+				TextElementSequence justSeq = VerbalisationManager.textualise(just);
+				String justHTML = justSeq.toHTML();
+				String justHTML2 = justHTML.replace("<font>&nbsp;</font>"," ");
+				String justHTML3 = justHTML2.replace("<font color=blue>","<span style=\"color: blue\">");
+				String justHTML4 = justHTML3.replace("</font>","</span>");
+				String justHTML5 = justHTML4.replace("<font color=Maroon>","<span style=\"color: black\">");
+				System.out.println(justHTML5);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -211,9 +219,14 @@ public class ExperimentExplanations {
 				GentzenTree gentzenTree3_b= prooftree3_b.toGentzen();	
 			System.out.println(VerbaliseTreeManager.listOutput(gentzenTree3));
 			System.out.println("LONG EXPLANATION 1:");
-			System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree3, false, true,true,null));
+			
+			VerbalisationManager.INSTANCE.featuresOFF=true;
+			System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree3, false, true,true,null).replace("<font>&nbsp;</font>"
+					," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
 			System.out.println("SHORT EXPLANATION 1:");
-			System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree3_b, false, true,false,null));
+			VerbalisationManager.INSTANCE.featuresOFF=false;
+			System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree3_b, false, true,false,null).replace("<font>&nbsp;</font>"
+					," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
 			System.out.println("no. long steps: " + gentzenTree3.computePresentationOrder().size());
 			System.out.println("no. short steps: " + gentzenTree3_b.computePresentationOrder().size());
 			
@@ -285,11 +298,15 @@ public class ExperimentExplanations {
 						org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree5_b, prooftree5_b.getRoot().getId());
 						// node.getId());
 						GentzenTree gentzenTree5_b = prooftree5_b.toGentzen();
-						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree5));
+						// System.out.println(VerbaliseTreeManager.listOutput(gentzenTree5));
 						System.out.println("LONG EXPLANATION 2:");
-						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree5, false, true,true,null));
+						VerbalisationManager.INSTANCE.featuresOFF=true;
+						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree5, false, true,true,null).replace("<font>&nbsp;</font>"
+								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
 						System.out.println("SHORT EXPLANATION 2:");
-						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree5_b, false, true,false,null));
+						VerbalisationManager.INSTANCE.featuresOFF=false;
+						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree5_b, false, true,false,null).replace("<font>&nbsp;</font>"
+								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
 						System.out.println("no. long steps: " + gentzenTree5.computePresentationOrder().size());
 						System.out.println("no. short steps: " + gentzenTree5_b.computePresentationOrder().size());
 						
@@ -324,9 +341,13 @@ public class ExperimentExplanations {
 						GentzenTree gentzenTree6_b = prooftree6_b.toGentzen();
 						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree6));
 						System.out.println("LONG EXPLANATION 3:");
-						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree6, false, true,true,null));
+						VerbalisationManager.INSTANCE.featuresOFF=true;
+						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree6, false, true,true,null).replace("<font>&nbsp;</font>"
+								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
 						System.out.println("SHORT EXPLANATION 3:");
-						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree6_b, false, true,false,null));
+						VerbalisationManager.INSTANCE.featuresOFF=false;
+						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree6_b, false, true,false,null).replace("<font>&nbsp;</font>"
+								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
 						System.out.println("no. long steps: " + gentzenTree6.computePresentationOrder().size());
 						System.out.println("no. short steps: " + gentzenTree6_b.computePresentationOrder().size());
 						
@@ -335,6 +356,8 @@ public class ExperimentExplanations {
 						e.printStackTrace();
 				 		}
 			
+					
+					// if (true) throw new RuntimeException();
 					
 // Explanation 7 
 					/*
@@ -414,9 +437,14 @@ public class ExperimentExplanations {
 						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree8));
 						System.out.println();
 						System.out.println("LONG EXPLANATION 4:");
-						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree8, false, true,true,null));
+						VerbalisationManager.INSTANCE.featuresOFF=true;
+						System.out.println("featuresOff (1)=" + VerbalisationManager.INSTANCE.featuresOFF);
+						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree8, false, true,true,null).replace("<font>&nbsp;</font>"
+								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
 						System.out.println("SHORT EXPLANATION 4:");
-						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree8_b, false, true,false,null));
+						VerbalisationManager.INSTANCE.featuresOFF=false;
+						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree8_b, false, true,false,null).replace("<font>&nbsp;</font>"
+								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
 						System.out.println("no. long steps: " + gentzenTree8.computePresentationOrder().size());
 						System.out.println("no. short steps: " + gentzenTree8_b.computePresentationOrder().size());
 						
@@ -506,8 +534,10 @@ public class ExperimentExplanations {
 						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree10));
 						System.out.println();
 						System.out.println("LONG EXPLANATION 5:");
+						VerbalisationManager.INSTANCE.featuresOFF=true;
 						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree10, false, true,true,null));
 						System.out.println("SHORT EXPLANATION 5:");
+						VerbalisationManager.INSTANCE.featuresOFF=false;
 						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree10_b, false, true,false,null));
 						System.out.println("no. long steps: " + gentzenTree10.computePresentationOrder().size());
 						System.out.println("no. short steps: " + gentzenTree10_b.computePresentationOrder().size());
@@ -556,6 +586,8 @@ public class ExperimentExplanations {
 					
 // Explanation 12 (tambis-patched)
 					
+					/*
+					
 					String justifications12= "EquivalentClasses(<http://www.mindswap.org/ontologies/tambis-full.owl#hydrolase> ObjectIntersectionOf(<http://www.mindswap.org/ontologies/tambis-full.owl#macromolecular-compound> ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#catalyses> <http://www.mindswap.org/ontologies/tambis-full.owl#hydrolysis>) ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#has-ec-number> <http://www.mindswap.org/ontologies/tambis-full.owl#ec-number>) ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#polymer-of> <http://www.mindswap.org/ontologies/tambis-full.owl#amino-acid>) ObjectAllValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#polymer-of> <http://www.mindswap.org/ontologies/tambis-full.owl#amino-acid>)) )" +
 											 "EquivalentClasses(<http://www.mindswap.org/ontologies/tambis-full.owl#gene-product> <http://www.mindswap.org/ontologies/tambis-full.owl#protein> )" +
 											 "EquivalentClasses(<http://www.mindswap.org/ontologies/tambis-full.owl#protein> ObjectIntersectionOf(<http://www.mindswap.org/ontologies/tambis-full.owl#macromolecular-compound> ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#polymer-of> <http://www.mindswap.org/ontologies/tambis-full.owl#amino-acid>) ObjectAllValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#polymer-of> <http://www.mindswap.org/ontologies/tambis-full.owl#amino-acid>)) )";
@@ -591,8 +623,11 @@ public class ExperimentExplanations {
 						e.printStackTrace();
 				 		}
 					
+					*/ 
+					
 					// Explanation 13 (mygrid)
 					
+					/*
 					
 					String justifications13= 
 							"SubClassOf(<http://www.mygrid.org.uk/ontology#structure> <http://www.mygrid.org.uk/ontology#domain_concept>)" +
@@ -630,6 +665,8 @@ public class ExperimentExplanations {
 		System.out.println("Error while eliminating irrelevant parts");
 		e.printStackTrace();
 		}
+		
+		*/
 					
 	// Explanation 14
 	/*
@@ -690,9 +727,13 @@ public class ExperimentExplanations {
 		System.out.println(VerbaliseTreeManager.listOutput(gentzenTree15));
 		System.out.println();
 		System.out.println("LONG EXPLANATION 8:");
-		System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree15, false, true,true,null));
+		VerbalisationManager.INSTANCE.featuresOFF=true;
+		System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree15, false, true,true,null).replace("<font>&nbsp;</font>"
+				," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
 		System.out.println("SHORT EXPLANATION 8:");
-		System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree15_b, false, true,false,null));
+		VerbalisationManager.INSTANCE.featuresOFF=false;
+		System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree15_b, false, true,false,null).replace("<font>&nbsp;</font>"
+				," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
 		
 	} catch (Exception e) {
 		System.out.println("Error while eliminating irrelevant parts");
@@ -700,6 +741,8 @@ public class ExperimentExplanations {
  		}
 	
 	// Explanation 16 (tambis) -- unused
+	
+	/*
 	
 		String justifications16= 
 				"EquivalentClasses(<http://www.mindswap.org/ontologies/tambis-full.owl#nad-requiring-oxidoreductase> ObjectIntersectionOf(<http://www.mindswap.org/ontologies/tambis-full.owl#macromolecular-compound> ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#catalyses> <http://www.mindswap.org/ontologies/tambis-full.owl#oxidation-and-reduction>) ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#has-bound> <http://www.mindswap.org/ontologies/tambis-full.owl#nad>) ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#has-ec-number> <http://www.mindswap.org/ontologies/tambis-full.owl#ec-number>) ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#polymer-of> <http://www.mindswap.org/ontologies/tambis-full.owl#amino-acid>) ObjectAllValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#polymer-of> <http://www.mindswap.org/ontologies/tambis-full.owl#amino-acid>) ObjectMinCardinality(1 <http://www.mindswap.org/ontologies/tambis-full.owl#has-bound> owl:Thing)) )" + 
@@ -732,6 +775,8 @@ public class ExperimentExplanations {
 			System.out.println("Error while eliminating irrelevant parts");
 			e.printStackTrace();
 	 		}
+	 		
+	 		*/
 		
 		// Explanation (tambis-patched)
 		
@@ -758,9 +803,13 @@ public class ExperimentExplanations {
 			System.out.println(VerbaliseTreeManager.listOutput(gentzenTree17));
 			System.out.println();
 			System.out.println("LONG EXPLANATION 8:");
-			System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree17, false, true,true,null));
+			VerbalisationManager.INSTANCE.featuresOFF=true;
+			System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree17, false, true,true,null).replace("<font>&nbsp;</font>"
+					," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
 			System.out.println("SHORT EXPLANATION 8:");
-			System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree17_b, false, true,false,null));
+			VerbalisationManager.INSTANCE.featuresOFF=false;
+			System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree17_b, false, true,false,null).replace("<font>&nbsp;</font>"
+					," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
 			
 		} catch (Exception e) {
 			System.out.println("Error while eliminating irrelevant parts");
@@ -793,8 +842,10 @@ GentzenTree gentzenTree18_b = prooftree18_b.toGentzen();
 System.out.println(VerbaliseTreeManager.listOutput(gentzenTree18));
 System.out.println();
 System.out.println("LONG EXPLANATION 10:");
+VerbalisationManager.INSTANCE.featuresOFF=true;
 System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree18, false, true,true,null));
 System.out.println("SHORT EXPLANATION 10:");
+VerbalisationManager.INSTANCE.featuresOFF=false;
 System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree18_b, false, true,false,null));
 
 } catch (Exception e) {
@@ -802,7 +853,192 @@ System.out.println("Error while eliminating irrelevant parts");
 e.printStackTrace();
 }
 		
+String justifications19= 
+"SubClassOf(<http://www.mygrid.org.uk/ontology#probe> <http://www.mygrid.org.uk/ontology#nucleotide_sequence>)" +
+ "EquivalentClasses(<http://www.mygrid.org.uk/ontology#group_of_nucleotide_sequences> ObjectIntersectionOf(<http://www.mygrid.org.uk/ontology#group> ObjectSomeValuesFrom(<http://www.mygrid.org.uk/ontology#is_collection_of> <http://www.mygrid.org.uk/ontology#nucleotide_sequence>)) ) " +
+  "EquivalentClasses(<http://www.mygrid.org.uk/ontology#probe_set> ObjectIntersectionOf(<http://www.mygrid.org.uk/ontology#group> ObjectSomeValuesFrom(<http://www.mygrid.org.uk/ontology#is_collection_of> <http://www.mygrid.org.uk/ontology#probe>)) )";
+String conclusion19 = "SubClassOf(<http://www.mygrid.org.uk/ontology#probe_set> <http://www.mygrid.org.uk/ontology#group_of_nucleotide_sequences>)";
+
+
+
+ProofTree prooftree19 = constructProoftree(conclusion19,justifications19,"/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-mygrid-unclassified.owl");
+ProofTree prooftree19_b = constructProoftree(conclusion19,justifications19,"/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-mygrid-unclassified.owl");
+
+InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree19, rulesNonred, 840000, 400000);
+InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree19_b, rules, 840000, 400000);
+try {
+org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree19, prooftree19.getRoot().getId());
+org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree19_b, prooftree19_b.getRoot().getId());
+
+//node.getId());
+GentzenTree gentzenTree19 = prooftree19.toGentzen();	
+GentzenTree gentzenTree19_b = prooftree19_b.toGentzen();	
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree19));
+System.out.println();
+System.out.println("LONG EXPLANATION 11:");
+VerbalisationManager.INSTANCE.featuresOFF=true;
+System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree19, false, true,true,null).replace("<font>&nbsp;</font>"
+		," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
+System.out.println("SHORT EXPLANATION 11:");
+VerbalisationManager.INSTANCE.featuresOFF=false;
+System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree19_b, false, true,false,null).replace("<font>&nbsp;</font>"
+		," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+
+} catch (Exception e) {
+System.out.println("Error while eliminating irrelevant parts");
+e.printStackTrace();
+}
+
+
+
+String justifications20= 
+"ObjectPropertyDomain(<http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#hasSideChainStructure> <http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#AminoAcid>)" +
+"SubClassOf(<http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#N> ObjectSomeValuesFrom(<http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#hasSideChainStructure> <http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#Aliphatic>))" +
+ "EquivalentClasses(<http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#AliphaticAminoAcid> ObjectIntersectionOf(<http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#AminoAcid> ObjectSomeValuesFrom(<http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#hasSideChainStructure> <http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#Aliphatic>)) )";
+
+String conclusion20 = "SubClassOf(<http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#N> <http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#AliphaticAminoAcid>)";
+
+
+ProofTree prooftree20 = constructProoftree(conclusion20,justifications20,"/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-amino-acid.owl");
+ProofTree prooftree20_b = constructProoftree(conclusion20,justifications20,"/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-amino-acid.owl");
+
+InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree20, rulesNonred, 840000, 400000);
+InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree20_b, rules, 840000, 400000);
+try {
+org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree20, prooftree20.getRoot().getId());
+org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree20_b, prooftree20_b.getRoot().getId());
+
+//node.getId());
+GentzenTree gentzenTree20 = prooftree20.toGentzen();	
+GentzenTree gentzenTree20_b = prooftree20_b.toGentzen();	
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree20));
+System.out.println();
+System.out.println("LONG EXPLANATION 12:");
+VerbalisationManager.INSTANCE.featuresOFF=true;
+System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree20, false, true,true,null));
+System.out.println("SHORT EXPLANATION 12:");
+VerbalisationManager.INSTANCE.featuresOFF=false;
+System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree20_b, false, true,false,null));
+
+} catch (Exception e) {
+System.out.println("Error while eliminating irrelevant parts");
+e.printStackTrace();
+}
+
+String justifications21= 
+"EquivalentClasses(<http://www.mindswap.org/ontologies/tambis-full.owl#dna-part> ObjectIntersectionOf(<http://www.mindswap.org/ontologies/tambis-full.owl#macromolecule-part> ObjectIntersectionOf(ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#part-of> <http://www.mindswap.org/ontologies/tambis-full.owl#dna>) ObjectAllValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#part-of> <http://www.mindswap.org/ontologies/tambis-full.owl#dna>))) )" +
+"EquivalentClasses(<http://www.mindswap.org/ontologies/tambis-full.owl#exon> ObjectIntersectionOf(<http://www.mindswap.org/ontologies/tambis-full.owl#dna-part> ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#codes-for> <http://www.mindswap.org/ontologies/tambis-full.owl#gene-product>) ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#part-of> <http://www.mindswap.org/ontologies/tambis-full.owl#gene>) ObjectSomeValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#transcribed-to> <http://www.mindswap.org/ontologies/tambis-full.owl#rna>) ObjectAllValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#codes-for> <http://www.mindswap.org/ontologies/tambis-full.owl#gene-product>) ObjectAllValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#part-of> <http://www.mindswap.org/ontologies/tambis-full.owl#gene>) ObjectAllValuesFrom(<http://www.mindswap.org/ontologies/tambis-full.owl#transcribed-to> <http://www.mindswap.org/ontologies/tambis-full.owl#rna>)) )" ;
+
+String conclusion21 = "SubClassOf(<http://www.mindswap.org/ontologies/tambis-full.owl#exon> <http://www.mindswap.org/ontologies/tambis-full.owl#macromolecule-part>)";
 		
+
+
+ProofTree prooftree21 = constructProoftree(conclusion21,justifications21,"/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-tambis-patched.owl");
+ProofTree prooftree21_b = constructProoftree(conclusion21,justifications21,"/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-tambis-patched.owl");
+
+InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree21, rulesNonred, 840000, 400000);
+InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree21_b, rules, 840000, 400000);
+try {
+org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree21, prooftree21.getRoot().getId());
+org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree21_b, prooftree21_b.getRoot().getId());
+
+//node.getId());
+GentzenTree gentzenTree21 = prooftree21.toGentzen();	
+GentzenTree gentzenTree21_b = prooftree21_b.toGentzen();	
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree21));
+System.out.println();
+System.out.println("LONG EXPLANATION 13:");
+VerbalisationManager.INSTANCE.featuresOFF=true;
+System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree21, false, true,true,null).replace("<font>&nbsp;</font>"
+		," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+System.out.println("SHORT EXPLANATION 13:");
+VerbalisationManager.INSTANCE.featuresOFF=false;
+System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree21_b, false, true,false,null).replace("<font>&nbsp;</font>"
+		," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+
+} catch (Exception e) {
+System.out.println("Error while eliminating irrelevant parts");
+e.printStackTrace();
+}
+
+
+
+String justifications22= "EquivalentClasses(<http://www.co-ode.org/ontologies/galen#MirrorImagedBodyStructure> ObjectIntersectionOf(<http://www.co-ode.org/ontologies/galen#BodyStructure> ObjectSomeValuesFrom(<http://www.co-ode.org/ontologies/galen#isPairedOrUnpaired> <http://www.co-ode.org/ontologies/galen#mirrorImaged>)) )" + 
+						 "SubClassOf(<http://www.co-ode.org/ontologies/galen#NAMEDVein> ObjectIntersectionOf(<http://www.co-ode.org/ontologies/galen#NAMEDInternalBodyPart> <http://www.co-ode.org/ontologies/galen#Vein>)) " +
+						 "SubClassOf(<http://www.co-ode.org/ontologies/galen#BodyPart> <http://www.co-ode.org/ontologies/galen#BodyStructure>) " + 
+						 "SubClassOf(<http://www.co-ode.org/ontologies/galen#NAMEDInternalBodyPart> <http://www.co-ode.org/ontologies/galen#BodyPart>) " +
+						 "SubClassOf(<http://www.co-ode.org/ontologies/galen#CephalicVein> <http://www.co-ode.org/ontologies/galen#NAMEDVein>) " +
+						 "SubClassOf(<http://www.co-ode.org/ontologies/galen#CephalicVein> ObjectSomeValuesFrom(<http://www.co-ode.org/ontologies/galen#isPairedOrUnpaired> <http://www.co-ode.org/ontologies/galen#mirrorImaged>)) ";
+
+String conclusion22 = "SubClassOf(<http://www.co-ode.org/ontologies/galen#CephalicVein> <http://www.co-ode.org/ontologies/galen#MirrorImagedBodyStructure>)";
+		
+
+
+ProofTree prooftree22 = constructProoftree(conclusion21,justifications22,"/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-galen1.owl");
+ProofTree prooftree22_b = constructProoftree(conclusion21,justifications22,"/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-galen1.owl");
+
+InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree22, rulesNonred, 840000, 400000);
+InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree22_b, rules, 840000, 400000);
+try {
+org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree22, prooftree22.getRoot().getId());
+org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree22_b, prooftree22_b.getRoot().getId());
+
+//node.getId());
+GentzenTree gentzenTree22 = prooftree22.toGentzen();	
+GentzenTree gentzenTree22_b = prooftree22_b.toGentzen();	
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree22));
+System.out.println();
+System.out.println("LONG EXPLANATION 14:");
+VerbalisationManager.INSTANCE.featuresOFF=true;
+System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree22, false, true,true,null).replace("<font>&nbsp;</font>"
+		," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+System.out.println("SHORT EXPLANATION 14:");
+VerbalisationManager.INSTANCE.featuresOFF=false;
+System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree22_b, false, true,false,null).replace("<font>&nbsp;</font>"
+		," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+
+} catch (Exception e) {
+System.out.println("Error while eliminating irrelevant parts");
+e.printStackTrace();
+}
+
+String justifications23= "EquivalentClasses(<http://www.co-ode.org/ontologies/galen#DigestiveSystemPathology> ObjectIntersectionOf(<http://www.co-ode.org/ontologies/galen#PathologicalCondition> ObjectSomeValuesFrom(<http://www.co-ode.org/ontologies/galen#LocativeAttribute> <http://www.co-ode.org/ontologies/galen#NAMEDGITractBodyPart>)) )" +
+						 "EquivalentClasses(<http://www.co-ode.org/ontologies/galen#EsophagealPathology> ObjectIntersectionOf(<http://www.co-ode.org/ontologies/galen#PathologicalCondition> ObjectSomeValuesFrom(<http://www.co-ode.org/ontologies/galen#LocativeAttribute> <http://www.co-ode.org/ontologies/galen#Esophagus>)) )" +
+						 "SubClassOf(<http://www.co-ode.org/ontologies/galen#Esophagus> <http://www.co-ode.org/ontologies/galen#NAMEDGITractBodyPart>)";
+
+
+String conclusion23 = "SubClassOf(<http://www.co-ode.org/ontologies/galen#EsophagealPathology> <http://www.co-ode.org/ontologies/galen#DigestiveSystemPathology>)";
+
+
+
+ProofTree prooftree23 = constructProoftree(conclusion23,justifications23,"/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-galen1.owl");
+ProofTree prooftree23_b = constructProoftree(conclusion23,justifications23,"/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-galen1.owl");
+
+InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree23, rulesNonred, 840000, 400000);
+InferenceApplicationService.INSTANCE.runSimpleLoop(prooftree23_b, rules, 840000, 400000);
+try {
+org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree23, prooftree23.getRoot().getId());
+org.semanticweb.cogExp.core.InferenceApplicationService.INSTANCE.eliminateIrrelevantParts(prooftree23_b, prooftree23_b.getRoot().getId());
+
+//node.getId());
+GentzenTree gentzenTree23 = prooftree23.toGentzen();	
+GentzenTree gentzenTree23_b = prooftree23_b.toGentzen();	
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree23));
+System.out.println();
+System.out.println("LONG EXPLANATION 15:");
+VerbalisationManager.INSTANCE.featuresOFF=true;
+System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree23, false, true,true,null).replace("<font>&nbsp;</font>"
+," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+System.out.println("SHORT EXPLANATION 15:");
+VerbalisationManager.INSTANCE.featuresOFF=false;
+System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree23_b, false, true,false,null).replace("<font>&nbsp;</font>"
+," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+
+} catch (Exception e) {
+System.out.println("Error while eliminating irrelevant parts");
+e.printStackTrace();
+}
+
 			
 			} // end main
 

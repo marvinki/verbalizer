@@ -2248,6 +2248,10 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-yowl-primitive.owl")));
 		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://ontology.dumontierlab.com/goslim"),
 		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-goslim.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://sweet.jpl.nasa.gov/1.1/property.owl"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-property.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://sweet.jpl.nasa.gov/1.1/units.owl"),
+		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-units.owl")));
 		return manager;
 	}
 	

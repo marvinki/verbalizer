@@ -16,6 +16,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
@@ -96,6 +97,7 @@ public enum VerbaliseTreeManager {
 			//
 			// Debug
 			// 
+			System.out.println("DBG " + infrule.getName());
 			// result = result +=  " <<  " + infrule.getName() + " >> ";
 			//
 			// Check if rule is to be skipped
@@ -146,7 +148,7 @@ public enum VerbaliseTreeManager {
 					beforeprevconc = ConversionManager.toOWLAPI(before_previousconclusion);
 			
 				
-
+			System.out.println("before textualise");
 				TextElementSequence seq = textualiseStatementNL(tree, infrule,
 						premiseformulas,
 						additions_to_antecedent,
@@ -179,6 +181,7 @@ public enum VerbaliseTreeManager {
 	
 	public static String verbaliseNL(GentzenTree tree, boolean withrulenames, boolean asHTML, boolean longtext, Obfuscator obfuscator){
 		// System.out.println("verbaliseNL called");
+		System.out.println("featuresOff (2)=" + VerbalisationManager.INSTANCE.featuresOFF);
 		List<Integer> order = tree.computePresentationOrder();
 		// System.out.println("order: " + order);
 		String result = "";
@@ -219,11 +222,20 @@ public enum VerbaliseTreeManager {
 
 			SequentInferenceRule infrule = step.getInfrule();
 			
+			// DEBUG
+			System.out.println("DEBUG -- " + infrule.getName());
+			
 			if(infrule.equals(INLG2012NguyenEtAlRules.RULE23Repeat) && !singletonStep){
 				continue; // do not even advance the conclusions
 			}
 			
-			if (!(longtext && (infrule.equals(INLG2012NguyenEtAlRules.RULE2) || infrule.equals(AdditionalDLRules.DEFDOMAIN))))
+			// if (!(longtext && (infrule.equals(INLG2012NguyenEtAlRules.RULE2) || infrule.equals(AdditionalDLRules.DEFDOMAIN))))
+			if (!(longtext && (infrule.equals(INLG2012NguyenEtAlRules.RULE2) )))
+			if (!singletonStep 	&& infrule.equals(AdditionalDLRules.TOPINTRO)){
+				before_previousconclusion = previousconclusion;
+				previousconclusion = conclusion;
+				continue;
+			}
 			if (!singletonStep 
 			&& !VerbalisationManager.INSTANCE.featuresOFF	
 			&& (infrule.equals(AdditionalDLRules.ELEXISTSMINUS) 
@@ -232,7 +244,7 @@ public enum VerbaliseTreeManager {
 			|| (infrule.equals(INLG2012NguyenEtAlRules.RULE2) && previous_step!=-1)
 			|| (infrule.equals(AdditionalDLRules.R0) && !singletonStep)
 			|| (infrule.equals(AdditionalDLRules.TOPINTRO) && !singletonStep))){
-				
+				System.out.println("skipping, featuresOFF=" + VerbalisationManager.INSTANCE.featuresOFF);
 				before_previousconclusion = previousconclusion;
 				previousconclusion = conclusion;
 				continue;
@@ -530,7 +542,11 @@ public enum VerbaliseTreeManager {
 				Object prem1 = premiseformulas.get(0);
 				Object prem2 = premiseformulas.get(1);
 				OWLSubClassOfAxiom subcl;
-				if (previousconclusion.equals(prem1))
+				System.out.println("DEBUG ----- " + previousconclusion);
+				System.out.println("DEBUG ----- " + before_previousconclusion);
+				System.out.println("DEBUG ----- " + prem1);
+				System.out.println("DEBUG ----- " + prem2);
+				if (previousconclusion.equals(prem1) || before_previousconclusion.equals(prem1))
 					subcl = (OWLSubClassOfAxiom) prem2;
 				else	
 					subcl = (OWLSubClassOfAxiom) prem1;
@@ -938,7 +954,10 @@ public enum VerbaliseTreeManager {
 				TextElementSequence seq = new TextElementSequence();
 				seq.add(new LogicElement("Since"));
 				seq.concat(VerbalisationManager.textualise(subclpremise,obfuscator));
-				seq.add(new LogicElement("by definition it is"));
+				if (concept1 instanceof OWLClass && concept2 instanceof OWLClass) 
+					seq.add(new LogicElement("by synonymy it is"));
+				else
+					seq.add(new LogicElement("by definition it is"));
 				seq.concat(VerbalisationManager.textualise(definedconcept,obfuscator));
 				return seq;
 				// return  // "By definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
@@ -987,7 +1006,7 @@ public enum VerbaliseTreeManager {
 					// Below heuristic changes the order, such that the longer concept is taken as the definition. But changing the order may destroy the "red line" of the argument
 					// System.out.println("definition contains e203? " + definition.toString() + definition.toString().contains("203"));
 					// System.out.println("definedconcept contains e203? " + definedconcept.toString() + definedconcept.toString().contains("203"));
-					if (VerbalisationManager.verbalise(definition).length()< 
+					if (VerbalisationManager.verbalise(definition).length()+2< 
 							VerbalisationManager.verbalise(premiseformula.getClassExpressionsAsList().get(0)).length()
 							|| definedconcept.toString().contains("<http://sweet.jpl.nasa.gov/1.1/substance.owl#Fe2O3>")
 							){
@@ -997,8 +1016,9 @@ public enum VerbaliseTreeManager {
 					}
 					
 					TextElementSequence seq = new TextElementSequence();
+					seq.add(new LogicElement("Due to synonymy,"));
 					seq.concat(VerbalisationManager.textualise(definedconcept,obfuscator) );
-					seq.add(new LogicElement("is synonymous with"));
+					seq.add(new LogicElement("is"));
 					seq.concat(VerbalisationManager.textualise(definition,obfuscator) );
 					return seq;
 				}
@@ -1006,6 +1026,7 @@ public enum VerbaliseTreeManager {
 					TextElementSequence seq = new TextElementSequence();
 					seq.add(new LogicElement("According to its definition,"));
 					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
+					// System.out.println("DEBUG " + VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 					return seq;
 					// return "According to its definition, "
 					// 		+ VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0));
@@ -1086,6 +1107,16 @@ public enum VerbaliseTreeManager {
 				return seq;
 				// return "Since " + VerbalisationManager.verbalise(subcl) + ", which does not exist, nothing is " + VerbalisationManager.verbalise(subcl1.getSubClass());
 			}
+			
+			if (rule.equals(AdditionalDLRules.DEFDOMAIN)){
+				OWLObjectPropertyDomainAxiom domax = (OWLObjectPropertyDomainAxiom) premiseformulas.get(0);
+				TextElementSequence seq = new TextElementSequence();
+				seq.concat(VerbalisationManager.textualise(domax,obfuscator));
+				// seq.add(new LogicElement("."));
+				System.out.println("DEFDOMAIN seq" +  seq.toString());
+				return seq;
+			}
+			
 			if (rule.equals(INLG2012NguyenEtAlRules.RULE34) && 
 					(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
 				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premiseformulas.get(0);
@@ -1152,9 +1183,24 @@ public enum VerbaliseTreeManager {
 			}
 			if (rule.equals(INLG2012NguyenEtAlRules.RULE15) && 
 					(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
+				
 				Object prem1 = premiseformulas.get(0);
 				Object prem2 = premiseformulas.get(1);
+				System.out.println("DEBUG ----- " + previousconclusion);
+				System.out.println("DEBUG ----- " + before_previousconclusion);
+				System.out.println("DEBUG ----- " + prem1);
+				System.out.println("DEBUG ----- " + prem2);
 				OWLSubClassOfAxiom subcl;
+				// case both premises are known
+				if (previousconclusion.equals(prem2) && before_previousconclusion.equals(prem1) 
+						|| previousconclusion.equals(prem1) && before_previousconclusion.equals(prem2) 
+						){
+					TextElementSequence seq = new TextElementSequence();
+					seq.add(new LogicElement("Hence, "));
+					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
+					return seq;
+				}
+				
 				if (previousconclusion.equals(prem1))
 					subcl = (OWLSubClassOfAxiom) prem2;
 				else	

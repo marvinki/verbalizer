@@ -648,7 +648,8 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		OWLClassExpression filler = existsexpr.getFiller();
 		List<List<TextElement>> fillerstrs = new ArrayList<List<TextElement>>();
 		List<TextElement> middlestring = new ArrayList<TextElement>();
-		middlestring.add(new LogicElement("nothing but"));
+		// middlestring.add(new LogicElement("nothing but"));
+		middlestring.add(new LogicElement("only"));
 		if (filler instanceof OWLObjectSomeValuesFrom)
 			middlestring.add(new LogicElement("something that"));
 		fillerstrs.add(filler.accept(this));
@@ -706,12 +707,18 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				break;
 			}
 		}
-		// System.out.println("TextElementOWLObjectVisitor Debug --visiting OWLEquivalentClassesAxiom (1)" + classexp);
+		// System.out.println("TextElementOWLObjectVisitor Debug --visiting OWLEquivalentClassesAxiom (1)" + VerbalisationManager.prettyPrint(classexp));
+		if (exprs.get(0) instanceof OWLClass && exprs.get(1) instanceof OWLClass ){ // <-- synonymy
+			result.addAll(exprs.get(0).accept(this));
+			result.add(new LogicElement("is synonymous with"));
+			result.addAll(exprs.get(1).accept(this));
+			return result;
+		}
 		if (classexp!=null){
-			result.add(new LogicElement("According to its definition,"));
+			// result.add(new LogicElement("According to its definition,"));
 			result.addAll(classexp.accept(this));
 			// System.out.println("TextElementOWLObjectVisitor Debug --  visiting OWLEquivalentClassesAxiom " + classexp.accept(this).toString());
-			result.add(new LogicElement("is"));
+			result.add(new LogicElement("is defined as"));
 			boolean firstp = true;
 			for (OWLClassExpression ex:exprs){
 				if (!ex.equals(classexp)){
@@ -1241,6 +1248,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	}
 
 	public List<TextElement> visit(OWLDataHasValue arg0) {
+		System.out.println("DBEUG!! Data has value.");
 		List<TextElement> result = new ArrayList<TextElement>();
 		String literalstring = arg0.getValue().getLiteral();
 		// result.add(new LogicElement(arg0.getValue().getLiteral()));
