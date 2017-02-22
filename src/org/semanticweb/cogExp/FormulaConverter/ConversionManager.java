@@ -31,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectHasValue;
@@ -185,6 +186,12 @@ public enum ConversionManager {
 				OWLInteger owlint = (OWLInteger) owlintform.getHead();
 				int cardinality = owlint.getValue();
 				result = dataFactory.getOWLObjectExactCardinality(cardinality, propEx);
+				break;
+			case CLASSASSERTION:
+				OWLClassExpression classexpCA = (OWLClassExpression) toOWLAPI(tail.get(0));
+				OWLNamedIndividual indivCA = (OWLNamedIndividual) toOWLAPI(tail.get(1));
+				result = dataFactory.getOWLClassAssertionAxiom(classexpCA, indivCA);
+				break;
 			case SUBPROPERTYOF:
 				if (tail.get(0).getHead().equals(OWLSymb.SUBPROPERTYCHAIN)){
 					List<OWLObjectPropertyExpression> props = new ArrayList<OWLObjectPropertyExpression>();

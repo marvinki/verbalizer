@@ -402,8 +402,10 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLClassAssertionAxiom arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		OWLClassExpression classexp = arg0.getClassExpression();
+		OWLIndividual indiv = arg0.getIndividual();
+		OWLFormula classexpForm = classexp.accept(this);
+		return OWLFormula.createFormulaClassAssertion(classexpForm, indiv.accept(this));
 	}
 
 	public OWLFormula visit(OWLEquivalentClassesAxiom axiom) {
