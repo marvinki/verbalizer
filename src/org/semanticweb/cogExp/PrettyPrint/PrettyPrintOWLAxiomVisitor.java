@@ -236,8 +236,9 @@ public String visit(OWLEquivalentDataPropertiesAxiom arg0) {
 }
 
 public String visit(OWLClassAssertionAxiom arg0) {
-	// TODO Auto-generated method stub
-	return null;
+	String classexpr = arg0.getClassExpression().accept(ppClassExpressionVisit);
+	String indiv = arg0.getIndividual().accept(ppIndividualVisit);
+	return "(" + classexpr + ")(" +  indiv + ")";
 }
 
 public String visit(OWLEquivalentClassesAxiom arg0) {

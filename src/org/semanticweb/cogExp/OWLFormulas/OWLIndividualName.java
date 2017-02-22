@@ -22,12 +22,12 @@ public class OWLIndividualName implements OWLAtom{
 	public boolean equals(Object other){
 	    if (other == null) return false;
 	    if (other == this) return true;
-	    if (!(other instanceof OWLClassName))return false;
-	    boolean nameSame = individualname.equals(((OWLClassName) other).getName());
+	    if (!(other instanceof OWLIndividualName))return false;
+	    boolean nameSame = individualname.equals(((OWLIndividualName) other).getName());
 	    if (!nameSame){return false;}
 	    boolean ontologynameSame = ontologyname.equals(((OWLIndividualName) other).ontologyname);
-	    // System.out.println("class name equal? " + classname + " / " + ((OWLClassName) other).getName() + " AND " + ontologyname + " / " + ((OWLClassName) other).ontologyname);
-	    // System.out.println(classnameSame && ontologynameSame);
+	    // System.out.println("class name equal? " + nameSame + " / " + ((OWLIndividualName) other).getName() + " AND " + ontologyname + " / " + ((OWLIndividualName) other).ontologyname);
+	    // System.out.println(nameSame && ontologynameSame);
 	    return nameSame && ontologynameSame;   
 	}
 	

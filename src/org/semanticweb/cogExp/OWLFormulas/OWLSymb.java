@@ -10,7 +10,7 @@ package org.semanticweb.cogExp.OWLFormulas;
 public enum OWLSymb implements OWLAtom{
 	SUBCL, INT, UNION, EXISTS, FORALL, TOP, BOT, NEG, EQUIV, RANGE, DOMAIN, DATADOMAIN, DATAHASVALUE, DATASOMEVALUESFROM, OBJECTHASVALUE, 
 	TRANSITIVE, FUNCTIONAL, FUNCTIONALDATA, IRREFLEXIVE, INVERSEOBJPROP, INVFUNCTIONAL, DISJ, SUBPROPERTYCHAIN, SUBPROPERTYOF, EQUIVOBJPROP, ONEOF, DATAONEOF, 
-	OBJECTMINCARDINALITY, OBJECTMAXCARDINALITY, OBJECTEXACTCARDINALITY; 
+	OBJECTMINCARDINALITY, OBJECTMAXCARDINALITY, OBJECTEXACTCARDINALITY, CLASSASSERTION; 
 	
 	/** Returns a pretty printed string for a symbol
 	 * 
@@ -48,6 +48,7 @@ public enum OWLSymb implements OWLAtom{
 			case ONEOF:     output="oneof"; break;
 			case DATAONEOF:     output="dataoneof"; break;
 			case DISJ:     output="disj"; break;
+			case CLASSASSERTION:     output="classassertion"; break;
 		}
 		return output;
 	}

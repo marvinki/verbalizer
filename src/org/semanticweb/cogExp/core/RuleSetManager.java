@@ -191,7 +191,8 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE23Repeat, // transitivity
     			INLG2012NguyenEtAlRules.RULE23, // transitivity
     			INLG2012NguyenEtAlRules.RULE15,
-    			AdditionalDLRules.PROPCHAIN
+    			AdditionalDLRules.PROPCHAIN,
+    			AdditionalDLRules.INDIVIDUAL
     			
 	    };
 	    
@@ -278,7 +279,8 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE23,
     			INLG2012NguyenEtAlRules.RULE15,
     			AdditionalDLRules.PROPCHAIN,
-    			AdditionalDLRules.APPLRANGE  // <---- extra
+    			AdditionalDLRules.APPLRANGE,  // <---- extra
+    			AdditionalDLRules.INDIVIDUAL
 	    };    
 	    
 	    ArrayList<SequentInferenceRule> ELnonredundant = new ArrayList<SequentInferenceRule>(Arrays.asList(ELInitNonredundant));
@@ -313,7 +315,8 @@ public enum RuleSetManager {
 			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
 			// INLG2012NguyenEtAlRules.RULE42
 			AdditionalDLRules.ONLYSOME,
-			AdditionalDLRules.UNIONINTRO
+			AdditionalDLRules.UNIONINTRO,
+			AdditionalDLRules.INDIVIDUAL
     };
     
     ArrayList<SequentInferenceRule> ontopand = new ArrayList<SequentInferenceRule>(Arrays.asList(ontopandInit));
