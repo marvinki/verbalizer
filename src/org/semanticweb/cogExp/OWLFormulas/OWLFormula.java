@@ -395,6 +395,13 @@ public class OWLFormula {
 		return new OWLFormula(ran);
 	}
 	
+	public static OWLFormula createFormulaClassAssertion(OWLFormula classexpression, OWLFormula indiv){
+		ArrayList<OWLFormula> taillist = new ArrayList<OWLFormula>();
+		taillist.add(classexpression);
+		taillist.add(indiv);
+		return new OWLFormula(OWLSymb.CLASSASSERTION, taillist);
+	}
+	
 	public boolean containsSubformula(OWLFormula subformula){
 		if (this.equals(subformula)){
 			return true;

@@ -21,6 +21,7 @@ import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLLiteral;
@@ -1235,8 +1236,12 @@ public enum VerbalisationManager {
 		 
 		 Set<OWLAxiom> explanation = new HashSet<OWLAxiom>();	  
 		 // System.out.println("checking axiom " + axiom);
+		 // BRANCH FOR DIFFERENT TYPES OF AXIOMS
+		 
 	 if (axiom instanceof OWLSubClassOfAxiom){
-		   explanation = explanationGenerator.getExplanation(dataFactory.getOWLObjectIntersectionOf(((OWLSubClassOfAxiom) axiom).getSubClass(), ( (OWLSubClassOfAxiom) axiom).getSuperClass().getObjectComplementOf()));
+		   explanation = explanationGenerator.getExplanation(
+				   dataFactory.getOWLObjectIntersectionOf(((OWLSubClassOfAxiom) axiom).getSubClass(), 
+						   ( (OWLSubClassOfAxiom) axiom).getSuperClass().getObjectComplementOf()));
 	 }
 	 if (axiom instanceof OWLObjectPropertyDomainAxiom){
 		 OWLObjectPropertyDomainAxiom propDomainAx = (OWLObjectPropertyDomainAxiom) axiom;
@@ -1246,6 +1251,16 @@ public enum VerbalisationManager {
 								   dataFactory.getOWLObjectSomeValuesFrom(propDomainAx.getProperty(), dataFactory.getOWLThing()),
 								   propDomainAx.getDomain().getObjectComplementOf()));
 	 }
+	 /*
+	 if (axiom instanceof OWLClassAssertionAxiom){
+		 OWLClassAssertionAxiom classAssertion = (OWLClassAssertionAxiom) axiom;
+		   explanation = 
+				   explanationGenerator.getExplanation(
+						   
+			TODO: Stopped here.			
+						   
+	 }
+	 */
 	 if (explanation.size()==0){
 		 System.out.println("no justification found!");
 		 return null;
@@ -1483,7 +1498,7 @@ public enum VerbalisationManager {
 	}
 	
 	
-	public static GentzenTree computeTree(OWLSubClassOfAxiom axiom, String ontologyname){
+	public static GentzenTree computeTree(OWLAxiom axiom, String ontologyname){
 		// Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		// rootlogger.setLevel(Level.OFF);
 		
