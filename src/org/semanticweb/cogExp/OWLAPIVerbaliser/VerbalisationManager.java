@@ -47,6 +47,11 @@ import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import org.semanticweb.owl.explanation.api.Explanation;
+import org.semanticweb.owl.explanation.api.ExplanationGenerator;
+import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
+import org.semanticweb.owl.explanation.api.ExplanationManager;
+
 import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
 
@@ -1228,8 +1233,15 @@ public enum VerbalisationManager {
 	
 	public static GentzenTree computeGentzenTree(OWLAxiom axiom, OWLReasoner reasoner, OWLReasonerFactory factory, OWLOntology ontology, int maxsteps, long maxtime, String ruleset){
 		VerbalisationManager.INSTANCE.setOntology(ontology);
+		
+		ExplanationGeneratorFactory<OWLAxiom> genFac = ExplanationManager.createExplanationGeneratorFactory(factory);
+		// Now create the actual explanation generator for our ontology
+		ExplanationGenerator<OWLAxiom> gen = genFac.createExplanationGenerator(ontology);
+		
+		/* OLD STUFF
 		 BlackBoxExplanation bBexplanator=new BlackBoxExplanation(ontology, factory,reasoner);
 		 HSTExplanationGenerator explanationGenerator=new HSTExplanationGenerator(bBexplanator);
+		 */
 		 OWLDataFactory dataFactory= OWLAPIManagerManager.INSTANCE.getDataFactory();
 	
 		 long startJustfinding = System.currentTimeMillis();
@@ -1238,29 +1250,16 @@ public enum VerbalisationManager {
 		 // System.out.println("checking axiom " + axiom);
 		 // BRANCH FOR DIFFERENT TYPES OF AXIOMS
 		 
-	 if (axiom instanceof OWLSubClassOfAxiom){
-		   explanation = explanationGenerator.getExplanation(
-				   dataFactory.getOWLObjectIntersectionOf(((OWLSubClassOfAxiom) axiom).getSubClass(), 
-						   ( (OWLSubClassOfAxiom) axiom).getSuperClass().getObjectComplementOf()));
+	 if (axiom instanceof OWLSubClassOfAxiom || axiom instanceof OWLObjectPropertyDomainAxiom || axiom instanceof OWLClassAssertionAxiom){
+		 Set<Explanation<OWLAxiom>> explanations = gen.getExplanations(axiom,1);
+		 if (explanations.size()>0){
+			 Object expArr[] = explanations.toArray();
+			 Explanation exp = (Explanation) expArr[0];
+			 explanation = exp.getAxioms();
+		 }
 	 }
-	 if (axiom instanceof OWLObjectPropertyDomainAxiom){
-		 OWLObjectPropertyDomainAxiom propDomainAx = (OWLObjectPropertyDomainAxiom) axiom;
-		   explanation = 
-				   explanationGenerator.getExplanation(
-						   dataFactory.getOWLObjectIntersectionOf(
-								   dataFactory.getOWLObjectSomeValuesFrom(propDomainAx.getProperty(), dataFactory.getOWLThing()),
-								   propDomainAx.getDomain().getObjectComplementOf()));
-	 }
-	 /*
-	 if (axiom instanceof OWLClassAssertionAxiom){
-		 OWLClassAssertionAxiom classAssertion = (OWLClassAssertionAxiom) axiom;
-		   explanation = 
-				   explanationGenerator.getExplanation(
-						   
-			TODO: Stopped here.			
-						   
-	 }
-	 */
+	 
+	 
 	 if (explanation.size()==0){
 		 System.out.println("no justification found!");
 		 return null;
@@ -1332,6 +1331,8 @@ public enum VerbalisationManager {
 			 return "failure! null ontology received!";
 		 }
 		 
+		 System.out.println("verbalizeAxiom called with axiom: " + axiom);
+		 
 		 GentzenTree tree = computeGentzenTree(axiom,  reasoner, factory, ontology, maxsteps, maxtime, ruleset);
 		 if (tree==null){
 			 System.out.println("EMPTY TREE!");
@@ -1342,6 +1343,7 @@ public enum VerbalisationManager {
 			axiomFormula = ConversionManager.fromOWLAPI(axiom);
 			List<SequentInferenceRule> rules = tree.getInfRules();
 			if (rules.size()==0){
+				 System.out.println("Zero rules");
 				String result = "That's already stated in the ontology. ";
 				result += VerbaliseTreeManager.makeUppercaseStart(VerbalisationManager.verbalise(ConversionManager.toOWLAPI(axiomFormula))) + ".";
 				// for (OWLFormula just : justificationFormulas){
@@ -1406,8 +1408,15 @@ public enum VerbalisationManager {
 			 return resultSequence;
 		 }
 		 
+		 if (ontology.getAxioms().contains(axiom)){
+			 LogicElement element = new LogicElement("Axiom contained.");
+			 resultSequence.add(element);
+			 return resultSequence;
+		 }
+		 
 		 GentzenTree tree = computeGentzenTree(axiom,  reasoner, factory, ontology, maxsteps, maxtime, ruleset);
 		 if (tree==null){
+			 resultSequence.add(new LogicElement("fooooo"));
 			 resultSequence.add(new EmptyTreeElement());
 			 return resultSequence;
 		 }

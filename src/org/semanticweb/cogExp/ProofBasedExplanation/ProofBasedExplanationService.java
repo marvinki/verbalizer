@@ -19,6 +19,7 @@ import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
@@ -43,7 +44,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 
 	@Override
 	public boolean hasExplanation(OWLAxiom axiom) {
-		if(axiom instanceof OWLSubClassOfAxiom){
+		if(axiom instanceof OWLSubClassOfAxiom || axiom instanceof OWLClassAssertionAxiom){
 			return true;
 		}else{
 		return false;
