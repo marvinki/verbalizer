@@ -1393,9 +1393,13 @@ public enum VerbalisationManager {
 	
 	public static TextElementSequence verbalizeAxiomAsSequence(OWLAxiom axiom, OWLReasoner reasoner, OWLReasonerFactory factory, OWLOntology ontology, int maxsteps, long maxtime, String ruleset, boolean asHTML, boolean obf){
 		
-		TextElementSequence resultSequence = new TextElementSequence();
 		
+		
+		TextElementSequence resultSequence = new TextElementSequence();
+		 
 		 VerbalisationManager.INSTANCE.setOntology(ontology);
+		 
+		 System.out.println("DEBUG (1)");
 		 
 		 /*
 		  * TODO add a TextElement for Null ontology received
@@ -1403,26 +1407,34 @@ public enum VerbalisationManager {
 		  * or delete this if statement
 		  */
 		 if (ontology==null){
+			 System.out.println("DEBUG (2)");
 			 LogicElement element = new LogicElement("Failure! Null ontology received!");
 			 resultSequence.add(element);
+			 resultSequence.add(new LinebreakElement());
 			 return resultSequence;
 		 }
 		 
 		 if (ontology.getAxioms().contains(axiom)){
+			 System.out.println("DEBUG (3)");
 			 LogicElement element = new LogicElement("Axiom contained.");
 			 resultSequence.add(element);
+			 resultSequence.add(new LinebreakElement());
 			 return resultSequence;
 		 }
 		 
+		 System.out.println("DEBUG (4)");
 		 GentzenTree tree = computeGentzenTree(axiom,  reasoner, factory, ontology, maxsteps, maxtime, ruleset);
+		 System.out.println("DEBUG (5)");
 		 if (tree==null){
-			 resultSequence.add(new LogicElement("fooooo"));
+			 System.out.println("DEBUG (6)");
+			 // resultSequence.add(new LogicElement("fooooo"));
 			 resultSequence.add(new EmptyTreeElement());
 			 return resultSequence;
 		 }
 		
 		 OWLFormula axiomFormula;
 		try {  
+			System.out.println("DEBUG (1)");
 			axiomFormula = ConversionManager.fromOWLAPI(axiom);
 			List<SequentInferenceRule> rules = tree.getInfRules();
 			if (rules.size()==0){

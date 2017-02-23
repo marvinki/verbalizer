@@ -66,38 +66,6 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 //		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
 		
 		
-		
-		
-//		innerpanel.setLayout(flowLayout);
-//		innerpanel.setBackground(Color.WHITE);
-		
-//		content.add(innerpanel,constraint);
-//		content.setBackground(Color.BLUE);
-
-				
-//		List<JLabel> labels = sequence.generateLabels(ek);
-
-		// put concatenated Labels in Panels 
-//		for(JLabel label : labels){
-//			// concatenate labels and put them into a panel if line is broken
-//			Dimension d;
-//			innerpanel.add(label);
-//				if(label.getText().equals("\n")){								
-//					d = innerpanel.computeBestSize(content);
-//									
-//					refreshContentsize(d);
-//					
-//					constraint.gridy++;
-//				
-//					innerpanel.setPreferredSize(d);
-//					content.add(innerpanel, constraint);
-//					height += Math.ceil(d.getHeight());
-//					innerpanel = new CustomJPanel(flowLayout); // removeAll
-//					innerpanel.setBackground(Color.WHITE);
-//				}
-//				
-//		}
-//		content.setPreferredSize(contentSize);
 		content = new ContentJPanel(ek, sequence);
 		result.add(content);
 		this.add(getScrollPane(result));
