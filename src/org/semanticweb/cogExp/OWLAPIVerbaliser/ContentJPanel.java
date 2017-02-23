@@ -112,7 +112,7 @@ public class ContentJPanel extends JPanel{
 	private void setProperSize(){
 		this.setPreferredSize(contentSize);
 		contentSize.setSize(contentSize.getWidth(), height/*+fac*getFontMetrics(getFont()).getHeight()*/);
-		this.setBackground(Color.red);
+		
 	}
 	
 	private void addInnerpanels(){
