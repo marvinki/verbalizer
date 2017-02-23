@@ -125,7 +125,11 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	 */
 	@Override
     public Dimension getPreferredSize() {
-		return content.getSize();
+		Dimension d = new Dimension();
+		d.setSize(content.getSize().getWidth()+getFontMetrics(getFont()).getMaxAdvance(),
+				content.getSize().getHeight()+getFontMetrics(getFont()).getHeight());
+		
+		return d;
 }
 	
 	@Override
