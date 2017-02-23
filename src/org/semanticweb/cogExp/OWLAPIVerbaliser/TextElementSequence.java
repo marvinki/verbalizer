@@ -159,7 +159,7 @@ public class TextElementSequence extends TextElement{
 				String previousString = previousClass.toString();
 				String[] arr = previousString.split(" ");  	
 			    String lastword = arr[arr.length-1];
-			    if (WordNetQuery.INSTANCE.isPlural(lastword)){
+			    if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isPlural(lastword)){
 			    	if (current_element instanceof LogicElement){
 			    		String currString = current_element.toString();
 			    		if (currString.equals("is")){

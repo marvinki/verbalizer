@@ -82,7 +82,8 @@ public class ProofBasedExplanationService extends ExplanationService{
 		String tmpdir = "";
 		if (enableDict!=null & enableDict){
 			try {
-				tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+				// tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+				tmpdir = WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
 				//  Auto-generated catch block
 				e.printStackTrace();
@@ -109,7 +110,8 @@ public class ProofBasedExplanationService extends ExplanationService{
 		String tmpdir = "";
 		if (enableDict!=null & enableDict){
 			try {
-				tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+				// tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+				tmpdir = WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
 				//  Auto-generated catch block
 				e.printStackTrace();
@@ -262,7 +264,8 @@ public class ProofBasedExplanationService extends ExplanationService{
 		String tmpdir = "";
 		if (enableDict!=null & enableDict){
 			try {
-				tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+				// tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+				tmpdir =WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
 				//  Auto-generated catch block
 				e.printStackTrace();
