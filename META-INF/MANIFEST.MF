@@ -10,6 +10,7 @@ Export-Package: .,
  org.semanticweb.cogExp.OWLAPIVerbaliser,
  org.semanticweb.cogExp.OWLFormulas,
  org.semanticweb.cogExp.PrettyPrint,
+ org.semanticweb.cogExp.ProofBasedExplanation,
  org.semanticweb.cogExp.core,
  org.semanticweb.cogExp.examples,
  org.semanticweb.cogExp.inferencerules
@@ -25,8 +26,5 @@ Bundle-ClassPath: .,
  lib/owlapi-osgidistribution-4.1.0.jar,
  lib/elk-owlapi.jar
 Require-Bundle: graphviz-java-api;bundle-version="1.0.0",
- org.semanticweb.owl.owlapi;bundle-version="4.2.6",
- org.protege.common;bundle-version="5.1.1",
- org.protege.editor.core.application;bundle-version="5.1.1",
- org.protege.editor.owl;bundle-version="5.1.1"
+ org.semanticweb.owl.owlapi;bundle-version="4.2.6"
 
