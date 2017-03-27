@@ -14,7 +14,9 @@ import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
@@ -886,6 +888,19 @@ public enum VerbaliseTreeManager {
 						// + VerbalisationManager.verbalise(additions_to_antecedent.get(0));
 					// 	"Since " + VerbalisationManager.verbalise(subclpremise) + ", by definition it is " +  VerbalisationManager.verbalise(definedconcept); 
 						// VerbalisationManager.verbalise(additions_to_antecedent.get(0)) + " according to the definition of ";
+			}
+			if  (rule.equals(AdditionalDLRules.INVERSEOBJECTPROPERTY)){
+				OWLInverseObjectPropertiesAxiom axInv = (OWLInverseObjectPropertiesAxiom) premiseformulas.get(0);
+				OWLObjectPropertyAssertionAxiom ax = (OWLObjectPropertyAssertionAxiom) premiseformulas.get(1);
+				TextElementSequence seq = new TextElementSequence();
+				seq.add(new LogicElement("inverseobjectproperty"));
+				seq.concat(VerbalisationManager.textualise(ax,obfuscator));
+				return seq;
+			}
+			if (rule.equals(AdditionalDLRules.OBJPROPASSERIONEXISTS)){
+				TextElementSequence seq = new TextElementSequence();
+				seq.add(new LogicElement("opexists"));
+				return seq;
 			}
 			if (rule.equals(AdditionalDLRules.EQUIVEXTRACT)){
 				OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);

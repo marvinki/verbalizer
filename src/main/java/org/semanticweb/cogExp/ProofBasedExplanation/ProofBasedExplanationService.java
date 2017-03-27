@@ -29,8 +29,8 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
+// import ch.qos.logback.classic.Level;
+// import ch.qos.logback.classic.Logger;
 //import uk.ac.manchester.cs.jfact.JFactFactory;
 //import tests.CustomGUIList;
 
@@ -44,6 +44,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 
 	@Override
 	public boolean hasExplanation(OWLAxiom axiom) {
+		System.out.println("HAS EXPLANATION CALLED!!!!!!!!!!!!!");
 		if(axiom instanceof OWLSubClassOfAxiom || axiom instanceof OWLClassAssertionAxiom){
 			return true;
 		}else{
@@ -158,6 +159,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 * @see GentzenTree
 	 */
 	
+	
 	/*TODO add @param reasoner
 	 * 
 	 */
@@ -171,8 +173,8 @@ public class ProofBasedExplanationService extends ExplanationService{
 	 */
 	public static GentzenTree computeTree(String subclass, String superclass, String ontologyname,
 			OWLReasonerFactory reasonerFactory, OWLReasoner reasoner){
-		Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-		rootlogger.setLevel(Level.OFF);
+		// Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		// rootlogger.setLevel(Level.OFF);
 		
 		GentzenTree tree = null;
 		

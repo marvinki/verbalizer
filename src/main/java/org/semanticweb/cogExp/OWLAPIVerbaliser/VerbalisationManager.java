@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
@@ -43,9 +44,9 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
-import org.semanticweb.elk.owlapi.ElkReasonerFactory;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+// import org.semanticweb.elk.owlapi.ElkReasonerFactory;
+// import org.apache.log4j.Level;
+// import org.apache.log4j.Logger;
 
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owl.explanation.api.ExplanationGenerator;
@@ -180,10 +181,22 @@ public enum VerbalisationManager {
 			Set<OWLAnnotationAssertionAxiom> annotationaxioms = new HashSet<OWLAnnotationAssertionAxiom>();
 			for (OWLOntology ont : imported){
 				// 
+				 /*
+				Stream<OWLAnnotationAssertionAxiom> aaa = EntitySearcher.getAnnotationAssertionAxioms(namedproperty, this.ontology);
+				OWLAnnotationAssertionAxiom[] aaa2 = (OWLAnnotationAssertionAxiom[]) aaa.toArray();
+				annotationaxioms.addAll(Arrays.asList(aaa2));
+				*/
 				annotationaxioms.addAll(EntitySearcher.getAnnotationAssertionAxioms(namedproperty, this.ontology));
 				// annotationaxioms.addAll(namedproperty.getAnnotationAssertionAxioms(ont));
+				// annotationaxioms.addAll(namedproperty.getAnnotationAssertionAxioms(ont))
 			}
 			// 
+			
+			/*
+			Stream<OWLAnnotationAssertionAxiom> aaa3 = EntitySearcher.getAnnotationAssertionAxioms(namedproperty, this.ontology);
+			OWLAnnotationAssertionAxiom[] aaa4 = (OWLAnnotationAssertionAxiom[]) aaa3.toArray();
+			annotationaxioms.addAll(Arrays.asList(aaa4));
+			*/
 			annotationaxioms.addAll(EntitySearcher.getAnnotationAssertionAxioms(namedproperty, this.ontology));
 			// annotationaxioms.addAll(namedproperty.getAnnotationAssertionAxioms(ontology));
 			if (annotationaxioms !=null){
@@ -191,6 +204,7 @@ public enum VerbalisationManager {
 					if (axiom.getAnnotation().getProperty().getIRI().getFragment().equals("label")){
 						// System.out.println("DEBUG TO STRING " + axiom.getAnnotation().getValue());
 						// SimpleRenderer renderer = new SimpleRenderer();
+						// OWLLiteral literal = axiom.getAnnotation().getValue().asLiteral().get();
 						OWLLiteral literal = axiom.getAnnotation().getValue().asLiteral().get();
 						str = literal.getLiteral();
 						// str = axiom.getAnnotation().getValue().toString();
@@ -495,21 +509,32 @@ public enum VerbalisationManager {
 		if (this.ontology!=null) {
 			Set<OWLOntology> imported = ontology.getImports();
 			Set<OWLAnnotation> annotations = new HashSet<OWLAnnotation>();
+			/* 
+			Stream<OWLAnnotationAssertionAxiom> aaa = EntitySearcher.getAnnotationAssertionAxioms(classname, this.ontology);
+			OWLAnnotation[] aaa2 = (OWLAnnotation[]) aaa.toArray();
+			annotations.addAll(Arrays.asList(aaa2));
+			*/
 			annotations.addAll(EntitySearcher.getAnnotationObjects(classname, this.ontology));
 			// classname.getAnnotations(this.ontology);
 			for (OWLOntology ont : imported){
 				//
+				/* 
+				Stream<OWLAnnotationAssertionAxiom> aaa3 = EntitySearcher.getAnnotationAssertionAxioms(classname, this.ontology);
+				OWLAnnotation[] aaa4 = (OWLAnnotation[]) aaa3.toArray();
+				annotations.addAll(Arrays.asList(aaa4));
+				*/
 				  annotations.addAll(EntitySearcher.getAnnotationObjects(classname, ont));
-				// annotations.addAll(classname.getAnnotations(ont));
+				  // annotations.addAll(classname.getAnnotations(ont));
 			}
 		for (OWLAnnotation annotation : annotations){
 			if (annotation.getProperty().getIRI().getFragment().equals("label")){
 				str = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString();
+				// str = annotation.getValue().toString();// annotation.getValue().toString();
 				// System.out.println("dbg " +annotation.getValue().asLiteral().orNull().getLiteral());
 			}
 			if (annotation.getProperty().getIRI().getFragment().equals("label2")){
 				str2 = annotation.getValue().asLiteral().orNull().getLiteral();
-						// annotation.getValue().toString();
+			     // str2=  annotation.getValue().toString();
 			}
 		}
 		// remove unnecessary stuff
@@ -597,6 +622,11 @@ public enum VerbalisationManager {
 			Set<OWLAnnotation> annotations = new HashSet<OWLAnnotation>();
 			if (this.ontology!=null)
 			{
+				/*
+				Stream<OWLAnnotation> aaa = EntitySearcher.getAnnotationObjects( (OWLClass) classexp, this.ontology);
+				OWLAnnotation[] aaa2 = (OWLAnnotation[]) aaa.toArray();
+				annotations.addAll(Arrays.asList(aaa2));
+				*/
 				annotations.addAll(EntitySearcher.getAnnotationObjects((OWLClass) classexp, this.ontology));
 			}
 				// annotations = ((OWLClass) classexp).getAnnotations(this.ontology);
@@ -1275,9 +1305,11 @@ public enum VerbalisationManager {
 	 OWLFormula axiomFormula;
 	 List<OWLFormula> justificationFormulas = new ArrayList<OWLFormula>();
 	 try {
+		 System.out.println("DEBUG --- Trying to add " + axiom);
 		 axiomFormula = ConversionManager.fromOWLAPI(axiom);
 		 
 		 for (OWLAxiom ax: explanation){
+			 System.out.println("DEBUG --- Trying to add " + ax);
 			 justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 			 
 
@@ -1518,7 +1550,7 @@ public enum VerbalisationManager {
 		return resultclass;
 	}
 	
-	
+	/*
 	public static GentzenTree computeTree(OWLAxiom axiom, String ontologyname){
 		// Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		// rootlogger.setLevel(Level.OFF);
@@ -1567,6 +1599,7 @@ public enum VerbalisationManager {
 		
 		return tree;
 	}
+	*/
 	
 	public static String computeVerbalization(GentzenTree tree, boolean asHTML, Obfuscator obfuscator){
 		WordNetQuery.INSTANCE.disableDict();

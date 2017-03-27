@@ -182,7 +182,9 @@ public String visit(OWLObjectPropertyRangeAxiom arg0) {
 
 public String visit(OWLObjectPropertyAssertionAxiom arg0) {
 	// TODO Auto-generated method stub
-	return null;
+	return "(" + arg0.getProperty().accept(ppPropertyExpressionVisit) 
+			+ ","  + arg0.getSubject().accept(ppIndividualVisit) + ","
+			+ arg0.getObject().accept(ppIndividualVisit) + ")";
 }
 
 public String visit(OWLFunctionalObjectPropertyAxiom arg0) {

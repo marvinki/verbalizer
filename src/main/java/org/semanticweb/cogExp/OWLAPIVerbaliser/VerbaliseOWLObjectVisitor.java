@@ -577,8 +577,8 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 	public String visit(OWLObjectSomeValuesFrom existsexpr) {
 		// System.out.println("DEBUG -- " + existsexpr);
 		OWLObjectPropertyExpression property = existsexpr.getProperty();
-		// changed! String propfragment = property.getNamedProperty().getIRI().getFragment();
-		Optional<String> propfragment = property.getNamedProperty().getIRI().getRemainder();
+		String propfragment = property.getNamedProperty().getIRI().getFragment();
+		// Optional<String> propfragment = property.getNamedProperty().getIRI().getRemainder();
 		OWLClassExpression filler = existsexpr.getFiller();
 		List<String> fillerstrs = new ArrayList<String>();
 		String middle = "";

@@ -7,7 +7,8 @@ import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.ProofBasedExplanation.ProofBasedExplanationService;
-import org.semanticweb.elk.owlapi.ElkReasonerFactory;
+import org.semanticweb.cogExp.ProofBasedExplanation.WordnetTmpdirManager;
+// import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -24,7 +25,7 @@ public class FpExample {
 
 		String tmpdir = "";
 		try {
-			tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
+			tmpdir = WordnetTmpdirManager.makeTmpdir();
 		} catch (IOException e) {
 			//  Auto-generated catch block
 			e.printStackTrace();
@@ -39,7 +40,8 @@ public class FpExample {
 		 * 		2. a superclass(Upper_Body_training_Template) and 
 		 * 		3. a file containing the respective ontology !!!!!!!!!!!change this file to your ne!!!!!!!!!!!!
 		 */
-		OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
+		// OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
+		OWLReasonerFactory reasonerFactory = null;
 		
 		File file = new File(".");
 		File ontologyfile = new java.io.File("/home/fpaffrath/Dokumente/cluster6ontology_complete.rdf");

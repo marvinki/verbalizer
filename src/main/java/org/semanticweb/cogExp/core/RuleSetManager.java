@@ -192,7 +192,10 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE23, // transitivity
     			INLG2012NguyenEtAlRules.RULE15,
     			AdditionalDLRules.PROPCHAIN,
-    			AdditionalDLRules.INDIVIDUAL
+    			AdditionalDLRules.INDIVIDUAL,
+    			AdditionalDLRules.INVERSEOBJECTPROPERTY,
+    			AdditionalDLRules.OBJPROPASSERIONEXISTS,
+    			AdditionalDLRules.INDIVTOPINTRO
     			
 	    };
 	    
@@ -280,7 +283,10 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE15,
     			AdditionalDLRules.PROPCHAIN,
     			AdditionalDLRules.APPLRANGE,  // <---- extra
-    			AdditionalDLRules.INDIVIDUAL
+    			AdditionalDLRules.INDIVIDUAL,
+    			AdditionalDLRules.INVERSEOBJECTPROPERTY,
+    			AdditionalDLRules.OBJPROPASSERIONEXISTS,
+    			AdditionalDLRules.INDIVTOPINTRO
 	    };    
 	    
 	    ArrayList<SequentInferenceRule> ELnonredundant = new ArrayList<SequentInferenceRule>(Arrays.asList(ELInitNonredundant));
@@ -316,7 +322,10 @@ public enum RuleSetManager {
 			// INLG2012NguyenEtAlRules.RULE42
 			AdditionalDLRules.ONLYSOME,
                         AdditionalDLRules.UNIONINTRO, // <--- is slow
-			AdditionalDLRules.INDIVIDUAL
+			AdditionalDLRules.INDIVIDUAL,
+			AdditionalDLRules.INVERSEOBJECTPROPERTY,
+			AdditionalDLRules.OBJPROPASSERIONEXISTS,
+			AdditionalDLRules.INDIVTOPINTRO
     };
     
     ArrayList<SequentInferenceRule> ontopand = new ArrayList<SequentInferenceRule>(Arrays.asList(ontopandInit));

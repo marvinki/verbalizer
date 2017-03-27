@@ -22,6 +22,7 @@ import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
 import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLObjectVisitor;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
@@ -233,6 +234,12 @@ public enum ConversionManager {
 				OWLNamedIndividual indivCA = (OWLNamedIndividual) toOWLAPI(tail.get(1));
 				result = dataFactory.getOWLClassAssertionAxiom(classexpCA, indivCA);
 				break;
+			case OBJECTPROPERTYASSERTION:
+				OWLObjectPropertyExpression propExp = (OWLObjectPropertyExpression) toOWLAPI(tail.get(0));
+				OWLIndividual indivA = (OWLIndividual) toOWLAPI(tail.get(1));
+				OWLIndividual indivB = (OWLIndividual) toOWLAPI(tail.get(2));
+				result = dataFactory.getOWLObjectPropertyAssertionAxiom(propExp,indivA, indivB);
+				break;
 			case SUBPROPERTYOF:
 				if (tail.get(0).getHead().equals(OWLSymb.SUBPROPERTYCHAIN)){
 					List<OWLObjectPropertyExpression> props = new ArrayList<OWLObjectPropertyExpression>();
@@ -286,7 +293,10 @@ public enum ConversionManager {
 	
 	private static OWLObject toOWLAPI(OWLClassName classname){
 		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
-		return dataFactory.getOWLClass(IRI.create(classname.getOntologyname()));
+		String name = classname.getOntologyname();
+		IRI iri = IRI.create(name);
+		OWLClass cl = dataFactory.getOWLClass(iri);
+		return cl;
 	}
 	
 	private static OWLObject toOWLAPI(OWLRoleName rolename){

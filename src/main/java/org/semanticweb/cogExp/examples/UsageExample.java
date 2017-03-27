@@ -3,8 +3,8 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+// import org.apache.log4j.Level;
+// import org.apache.log4j.Logger;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 
 // import org.apache.log4j.Level;
@@ -12,7 +12,7 @@ import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
-import org.semanticweb.elk.owlapi.ElkReasonerFactory;
+// import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -39,8 +39,9 @@ public class UsageExample {
 	
 	
 	// indicate a reasoner and a reasoner factory to be used for justification finding (here we use ELK)
-	OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
-	Logger.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
+	// OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
+	OWLReasonerFactory reasonerFactory = null;
+	// Logger.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
 	OWLReasoner reasoner = reasonerFactory.createReasoner(tinyExampleOntology);
     
     // indicate the IRIs of some relevant classes/roles in the ontology
@@ -66,7 +67,8 @@ public class UsageExample {
 	// String explanation = VerbalisationManager.verbalizeAxiom(axiom, reasoner, reasonerFactory, tinyExampleOntology, false,false);
 	
 	// The proof tree is constructed 
-	GentzenTree tree = VerbalisationManager.computeTree(axiom,ontologyfile.toString());
+	// GentzenTree tree = VerbalisationManager.computeTree(axiom,ontologyfile.toString());
+	GentzenTree tree = null;
 	
 	// Output the proof tree (each line is a rule application: rule name, conclusion, premises)
 	System.out.println("Prooftree \n" + VerbaliseTreeManager.listOutput(tree) + "\n");
