@@ -2,16 +2,22 @@ package org.semanticweb.cogExp.examples;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Set;
 
+import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.OWLWorkspace;
+import org.protege.editor.owl.model.inference.OWLReasonerManager;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.ProofBasedExplanation.ProofBasedExplanationService;
 import org.semanticweb.cogExp.ProofBasedExplanation.WordnetTmpdirManager;
+import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 // import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
@@ -40,8 +46,8 @@ public class FpExample {
 		 * 		2. a superclass(Upper_Body_training_Template) and 
 		 * 		3. a file containing the respective ontology !!!!!!!!!!!change this file to your ne!!!!!!!!!!!!
 		 */
-		// OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		OWLReasonerFactory reasonerFactory = null;
+		
+		OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
 		
 		File file = new File(".");
 		File ontologyfile = new java.io.File("/home/fpaffrath/Dokumente/cluster6ontology_complete.rdf");

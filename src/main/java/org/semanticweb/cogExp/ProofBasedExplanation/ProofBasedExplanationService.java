@@ -44,7 +44,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 
 	@Override
 	public boolean hasExplanation(OWLAxiom axiom) {
-		System.out.println("HAS EXPLANATION CALLED!!!!!!!!!!!!!");
+		// System.out.println("HAS EXPLANATION CALLED!!!!!!!!!!!!!");
 		if(axiom instanceof OWLSubClassOfAxiom || axiom instanceof OWLClassAssertionAxiom){
 			return true;
 		}else{
