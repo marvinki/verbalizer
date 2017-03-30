@@ -8,16 +8,23 @@ package org.semanticweb.cogExp.OWLAPIVerbaliser;
  *
  */
 public enum Language {
-	ENGLISH("english"),
-	GERMAN("deutsch");
+	ENGLISH("english", "en"),
+	GERMAN("deutsch", "de");
 	
 	private String lang;
+	private String abbr;
 	
-	private Language(String s){
+	private Language(String s, String a){
 		lang = s;
+		abbr = a;
 	}
 	
 	public String toString(){
 		return lang;
+	}
+	
+	public String toAbbr(){
+		return abbr;
+		
 	}
 }

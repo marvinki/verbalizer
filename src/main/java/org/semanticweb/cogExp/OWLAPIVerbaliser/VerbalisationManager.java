@@ -44,6 +44,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
+import org.apache.commons.codec.language.bm.Lang;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -78,6 +79,8 @@ public enum VerbalisationManager {
 	public boolean featuresOFF =false;;
 	
 	public boolean includesHasValue =false;
+	
+	private Language lang = Language.GERMAN;
 	
 	public static String verbalise(OWLObject ob){
 		return ob.accept(verbOWLObjectVisit);
@@ -486,9 +489,23 @@ public enum VerbalisationManager {
 		// System.out.println("get class NL String " + classname);
 		// catch some special cases straight away!
 		if (classname.isOWLThing())
-			return "something";
+			switch(lang){
+			
+			case GERMAN:
+				return "etwas";
+			
+			case ENGLISH:
+				return "something";
+				
+			default:
+				return "something";
+				
+			}
+		
 		if (classname.isOWLNothing())
 			return "non-existant";
+		
+		
 		java.lang.String str="";
 		java.lang.String str2="";
 		boolean hasLabel = false;
@@ -504,8 +521,17 @@ public enum VerbalisationManager {
 			}
 		for (OWLAnnotation annotation : annotations){
 			if (annotation.getProperty().getIRI().getFragment().equals("label")){
-				str = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString();
-				// System.out.println("dbg " +annotation.getValue().asLiteral().orNull().getLiteral());
+				
+//				String a = annotation.getValue().toString();
+//				String b = annotation.getProperty().toString();
+//				String c = annotation.getValue().asLiteral().orNull().getLang();
+//				
+//				if(a.contains("@de")){
+//					System.out.println("hier auf deutsch: " + annotation.getValue().asLiteral().orNull().getLiteral() );
+//				}
+//				System.out.println("annotation get value : #################\n"+a+"\n"+b+"\n"+c);
+//				str = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString();
+//				// System.out.println("dbg " +annotation.getValue().asLiteral().orNull().getLiteral());
 			}
 			if (annotation.getProperty().getIRI().getFragment().equals("label2")){
 				str2 = annotation.getValue().asLiteral().orNull().getLiteral();
