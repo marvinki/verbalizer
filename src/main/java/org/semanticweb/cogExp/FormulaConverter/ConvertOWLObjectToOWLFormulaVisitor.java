@@ -363,11 +363,6 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 		return f;
 	}
 
-	public OWLFormula visit(OWLObjectPropertyAssertionAxiom arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public OWLFormula visit(OWLFunctionalObjectPropertyAxiom arg0) {
 		// System.out.println("creating " + OWLFormula.createFormula(OWLSymb.FUNCTIONAL, 
 		// 		arg0.getProperty().accept(this)));
@@ -425,6 +420,16 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 		OWLIndividual indiv = arg0.getIndividual();
 		OWLFormula classexpForm = classexp.accept(this);
 		return OWLFormula.createFormulaClassAssertion(classexpForm, indiv.accept(this));
+	}
+	
+	public OWLFormula visit(OWLObjectPropertyAssertionAxiom arg0) {
+		OWLObjectPropertyExpression propExp = arg0.getProperty();
+		OWLIndividual indivSub = arg0.getSubject();
+		OWLIndividual indivObj = arg0.getObject();
+		OWLFormula propForm = propExp.accept(this);
+		OWLFormula subForm = indivSub.accept(this);
+		OWLFormula objForm = indivObj.accept(this);
+		return OWLFormula.createFormulaObjectPropertyAssertion(propForm, subForm, objForm);
 	}
 
 	public OWLFormula visit(OWLEquivalentClassesAxiom axiom) {

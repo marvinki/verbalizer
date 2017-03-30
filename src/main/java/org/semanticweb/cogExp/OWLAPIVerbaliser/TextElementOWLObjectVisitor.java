@@ -100,7 +100,7 @@ import org.semanticweb.owlapi.model.SWRLRule;
 import org.semanticweb.owlapi.model.SWRLSameIndividualAtom;
 import org.semanticweb.owlapi.model.SWRLVariable;
 
-import com.google.common.base.Optional;
+// import com.google.common.base.Optional;
 
 public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<TextElement>>{
 	
@@ -639,8 +639,8 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	public List<TextElement> visit(OWLObjectSomeValuesFrom existsexpr) {
 		// System.out.println("DEBUG -- " + existsexpr);
 		OWLObjectPropertyExpression property = existsexpr.getProperty();
-		// changed! String propfragment = property.getNamedProperty().getIRI().getFragment();
-		Optional<String> propfragment = property.getNamedProperty().getIRI().getRemainder();
+		String propfragment = property.getNamedProperty().getIRI().getFragment();
+		// Optional<String> propfragment = property.getNamedProperty().getIRI().getRemainder();
 		OWLClassExpression filler = existsexpr.getFiller();
 		List<List<TextElement>> fillerstrs = new ArrayList<List<TextElement>>();
 		List<TextElement> middle = new ArrayList<TextElement>();
