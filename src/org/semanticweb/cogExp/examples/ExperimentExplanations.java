@@ -303,10 +303,14 @@ public class ExperimentExplanations {
 						VerbalisationManager.INSTANCE.featuresOFF=true;
 						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree5, false, true,true,null).replace("<font>&nbsp;</font>"
 								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
+						System.out.println("==LISTING == LONG EXPLANATION 2");
+						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree5));
 						System.out.println("SHORT EXPLANATION 2:");
 						VerbalisationManager.INSTANCE.featuresOFF=false;
 						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree5_b, false, true,false,null).replace("<font>&nbsp;</font>"
 								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
+						System.out.println("==LISTING == SHORT EXPLANATION 2");
+						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree5_b));
 						System.out.println("no. long steps: " + gentzenTree5.computePresentationOrder().size());
 						System.out.println("no. short steps: " + gentzenTree5_b.computePresentationOrder().size());
 						
@@ -344,10 +348,14 @@ public class ExperimentExplanations {
 						VerbalisationManager.INSTANCE.featuresOFF=true;
 						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree6, false, true,true,null).replace("<font>&nbsp;</font>"
 								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+						System.out.println("==LISTING == LONG EXPLANATION 3");
+						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree6));
 						System.out.println("SHORT EXPLANATION 3:");
 						VerbalisationManager.INSTANCE.featuresOFF=false;
 						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree6_b, false, true,false,null).replace("<font>&nbsp;</font>"
 								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+						System.out.println("==LISTING == SHORT EXPLANATION 3");
+						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree6_b));
 						System.out.println("no. long steps: " + gentzenTree6.computePresentationOrder().size());
 						System.out.println("no. short steps: " + gentzenTree6_b.computePresentationOrder().size());
 						
@@ -441,10 +449,14 @@ public class ExperimentExplanations {
 						System.out.println("featuresOff (1)=" + VerbalisationManager.INSTANCE.featuresOFF);
 						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree8, false, true,true,null).replace("<font>&nbsp;</font>"
 								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
+						System.out.println("==LISTING == LONG EXPLANATION 4");
+						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree8));
 						System.out.println("SHORT EXPLANATION 4:");
 						VerbalisationManager.INSTANCE.featuresOFF=false;
 						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree8_b, false, true,false,null).replace("<font>&nbsp;</font>"
 								," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
+						System.out.println("==LISTING == SHORT EXPLANATION 4");
+						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree8_b));
 						System.out.println("no. long steps: " + gentzenTree8.computePresentationOrder().size());
 						System.out.println("no. short steps: " + gentzenTree8_b.computePresentationOrder().size());
 						
@@ -536,9 +548,13 @@ public class ExperimentExplanations {
 						System.out.println("LONG EXPLANATION 5:");
 						VerbalisationManager.INSTANCE.featuresOFF=true;
 						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree10, false, true,true,null));
+						System.out.println("==LISTING == LONG EXPLANATION 5");
+						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree10));
 						System.out.println("SHORT EXPLANATION 5:");
 						VerbalisationManager.INSTANCE.featuresOFF=false;
 						System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree10_b, false, true,false,null));
+						System.out.println("==LISTING == SHORT EXPLANATION 5");
+						System.out.println(VerbaliseTreeManager.listOutput(gentzenTree10_b));
 						System.out.println("no. long steps: " + gentzenTree10.computePresentationOrder().size());
 						System.out.println("no. short steps: " + gentzenTree10_b.computePresentationOrder().size());
 						
@@ -806,11 +822,14 @@ public class ExperimentExplanations {
 			VerbalisationManager.INSTANCE.featuresOFF=true;
 			System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree17, false, true,true,null).replace("<font>&nbsp;</font>"
 					," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+			System.out.println("==LISTING == LONG EXPLANATION 8");
+			System.out.println(VerbaliseTreeManager.listOutput(gentzenTree17));
 			System.out.println("SHORT EXPLANATION 8:");
 			VerbalisationManager.INSTANCE.featuresOFF=false;
 			System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree17_b, false, true,false,null).replace("<font>&nbsp;</font>"
 					," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
-			
+			System.out.println("==LISTING == SHORT EXPLANATION 8");
+			System.out.println(VerbaliseTreeManager.listOutput(gentzenTree17_b));	
 		} catch (Exception e) {
 			System.out.println("Error while eliminating irrelevant parts");
 			e.printStackTrace();
@@ -879,11 +898,15 @@ System.out.println("LONG EXPLANATION 11:");
 VerbalisationManager.INSTANCE.featuresOFF=true;
 System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree19, false, true,true,null).replace("<font>&nbsp;</font>"
 		," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>"));
+System.out.println("==LISTING == LONG EXPLANATION 11");
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree19));
 System.out.println("SHORT EXPLANATION 11:");
 VerbalisationManager.INSTANCE.featuresOFF=false;
 System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree19_b, false, true,false,null).replace("<font>&nbsp;</font>"
 		," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
 
+System.out.println("==LISTING == LONG EXPLANATION 11");
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree19_b));
 } catch (Exception e) {
 System.out.println("Error while eliminating irrelevant parts");
 e.printStackTrace();
@@ -951,11 +974,15 @@ System.out.println("LONG EXPLANATION 13:");
 VerbalisationManager.INSTANCE.featuresOFF=true;
 System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree21, false, true,true,null).replace("<font>&nbsp;</font>"
 		," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+System.out.println("==LISTING == LONG EXPLANATION 13");
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree21));
 System.out.println("SHORT EXPLANATION 13:");
 VerbalisationManager.INSTANCE.featuresOFF=false;
 System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree21_b, false, true,false,null).replace("<font>&nbsp;</font>"
 		," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
 
+System.out.println("==LISTING == SHORT EXPLANATION 13");
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree21_b));
 } catch (Exception e) {
 System.out.println("Error while eliminating irrelevant parts");
 e.printStackTrace();
@@ -1029,11 +1056,14 @@ System.out.println("LONG EXPLANATION 15:");
 VerbalisationManager.INSTANCE.featuresOFF=true;
 System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree23, false, true,true,null).replace("<font>&nbsp;</font>"
 ," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
+System.out.println("==LISTING == LONG EXPLANATION 15");
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree23));
 System.out.println("SHORT EXPLANATION 15:");
 VerbalisationManager.INSTANCE.featuresOFF=false;
 System.out.println(VerbaliseTreeManager.verbaliseNL(gentzenTree23_b, false, true,false,null).replace("<font>&nbsp;</font>"
 ," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>").replace("<font color=Maroon>","<span style=\"color: black\">"));
-
+System.out.println("==LISTING == SHORT EXPLANATION 15");
+System.out.println(VerbaliseTreeManager.listOutput(gentzenTree23_b));
 } catch (Exception e) {
 System.out.println("Error while eliminating irrelevant parts");
 e.printStackTrace();
