@@ -2,6 +2,8 @@ package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.GentzenTree.GentzenStep;
@@ -25,11 +27,16 @@ import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
+
+	static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", Locale.ENGLISH);
+
 	
 	public static String listOutput(GentzenTree tree){
 		String result = "";
 		List<Integer> order = tree.computePresentationOrder();
 		boolean needBreak = false;
+		
+		
 		
 		for(int i: order){
 			if (needBreak)
@@ -336,7 +343,7 @@ public enum VerbaliseTreeManager {
 				return  // "By definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
 						// + VerbalisationManager.verbalise(additions_to_antecedent.get(0));
 						// "Since " + VerbalisationManager.verbalise(subclpremise) + ", by definition it is " +  VerbalisationManager.verbalise(definedconcept); 
-						"Thus, " + VerbalisationManager.verbalise(conclusion.getSubClass()) + " is by definition " // " according to the definition of " 
+						LogicLabels.getString("thus") + VerbalisationManager.verbalise(conclusion.getSubClass()) + LogicLabels.getString("isByDefinition")// " according to the definition of " 
 						+ definedconceptname;
 			}
 			if (rule.equals(AdditionalDLRules.ONLYSOME)){
@@ -413,7 +420,8 @@ public enum VerbaliseTreeManager {
 				}
 				return  // "By definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
 						// + VerbalisationManager.verbalise(additions_to_antecedent.get(0));
-						"Since " + VerbalisationManager.verbalise(subclpremise) + ", by definition it is " +  VerbalisationManager.verbalise(definedconcept); 
+						LogicLabels.getString("since") + VerbalisationManager.verbalise(subclpremise) + LogicLabels.getString("byDefinitionItIs") +  VerbalisationManager.verbalise(definedconcept);
+//						"Weil " + VerbalisationManager.verbalise(subclpremise) + ", by definition it is " +  VerbalisationManager.verbalise(definedconcept);
 						// VerbalisationManager.verbalise(additions_to_antecedent.get(0)) + " according to the definition of ";
 			}
 			if (rule.equals(AdditionalDLRules.EQUIVEXTRACT)){
@@ -433,10 +441,10 @@ public enum VerbaliseTreeManager {
 				OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
 				OWLClassExpression definedconcept = premiseformula.getClassExpressionsAsList().get(0);
 				if (((OWLSubClassOfAxiom) additions_to_antecedent.get(0)).getSubClass().equals(definedconcept)){
-					return "According to its definition, "
+					return LogicLabels.getString("AccordingToItsDefinition")
 							+ VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0));
 				}
-				return "According to the definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
+				return LogicLabels.getString("AccordingToTheDefinitionOf") + VerbalisationManager.verbalise(definedconcept) + ", "
 						+ VerbalisationManager.verbalise( (OWLObject) additions_to_antecedent.get(0));
 			}
 			if (rule.equals(INLG2012NguyenEtAlRules.RULE23) && premiseformulas.contains(previousconclusion)){
@@ -709,13 +717,13 @@ public enum VerbaliseTreeManager {
 				TextElementSequence seq = new TextElementSequence();
 				// [CONCEPTNAME] is defined as [DEFINITION]
 				seq.add(new ClassElement(definedconceptname,tooltiptext));
-				seq.add(new LogicElement("is"));
+				seq.add(new LogicElement(LogicLabels.getString("is")));
 				seq.concat(defSeq);
 				seq.add(new LogicElement("."));
 				// Thus [SUBCLASS] is by definition [CONCEPTNAME]
-				seq.add(new LogicElement("Thus,"));
+				seq.add(new LogicElement(LogicLabels.getString("thus")));
 				seq.concat(VerbalisationManager.textualise(conclusion.getSubClass(),obfuscator));
-				seq.add(new LogicElement("is"));
+				seq.add(new LogicElement(LogicLabels.getString("is")));
 				seq.add(new ClassElement(definedconceptname,tooltiptext));
 				return seq;
 				// return  // "By definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
@@ -728,7 +736,7 @@ public enum VerbaliseTreeManager {
 				// get only axiom that has been added
 				OWLSubClassOfAxiom addition = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("Thus,"));
+				seq.add(new LogicElement(LogicLabels.getString("thus")));
 				seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 				// String result = "";
 				// result = result + "Thus, " + VerbalisationManager.verbalise((OWLSubClassOfAxiom) additions_to_antecedent.get(0));
@@ -737,13 +745,13 @@ public enum VerbaliseTreeManager {
 			}
 			if (rule.equals(AdditionalDLRules.PROPCHAIN)){
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("Since"));
+				seq.add(new LogicElement(LogicLabels.getString("since")));
 				boolean needsep = false;
 				for (Object o : premiseformulas){
 					if (o instanceof OWLSubObjectPropertyOfAxiom || o instanceof OWLSubPropertyChainOfAxiom)
 						continue;
 					if (needsep)
-						seq.add(new LogicElement("and"));
+						seq.add(new LogicElement(LogicLabels.getString("and")));
 					needsep = true;
 					OWLSubClassOfAxiom prem = (OWLSubClassOfAxiom) o;
 					seq.concat(VerbalisationManager.textualise(prem,obfuscator));
@@ -760,12 +768,12 @@ public enum VerbaliseTreeManager {
 					&& 	!premiseformulas.contains(before_previousconclusion)){
 					// Verbalize all.
 					TextElementSequence seq = new TextElementSequence();
-					seq.add(new LogicElement("Since"));
+					seq.add(new LogicElement(LogicLabels.getString("since")));
 					boolean needsep = false;
 					for (Object premise:premiseformulas){
 						OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premise;
 						if (needsep)
-							seq.add(new LogicElement("and"));
+							seq.add(new LogicElement(LogicLabels.getString("and")));
 						seq.concat(VerbalisationManager.textualise(subcl,obfuscator));
 					}
 					seq.add(new LogicElement(","));
@@ -780,7 +788,7 @@ public enum VerbaliseTreeManager {
 						// System.out.println("DEBUG " + before_previousconclusion);
 						
 						TextElementSequence seq = new TextElementSequence();
-						seq.add(new LogicElement("Therefore,"));
+						seq.add(new LogicElement(LogicLabels.getString("therefore")));
 						OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
 						seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 						// seq.add(new LogicElement(" [args: " + premiseformulas.size() + "]"));
@@ -789,7 +797,7 @@ public enum VerbaliseTreeManager {
 					} else {
 						
 						TextElementSequence seq = new TextElementSequence();
-						seq.add(new LogicElement("Furthermore, since"));
+						seq.add(new LogicElement(LogicLabels.getString("furthermoreSince")));
 						boolean needsep = false;
 						for (Object premise:premiseformulas){
 							OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premise;
@@ -798,7 +806,7 @@ public enum VerbaliseTreeManager {
 							if (premiseformulas.contains(before_previousconclusion) && premise.equals(before_previousconclusion))
 								continue;
 							if (needsep)
-								seq.add(new LogicElement("and"));
+								seq.add(new LogicElement(LogicLabels.getString("and")));
 							seq.concat(VerbalisationManager.textualise(subcl,obfuscator));
 						}
 						seq.add(new LogicElement(","));
@@ -818,7 +826,7 @@ public enum VerbaliseTreeManager {
 						){
 					OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
 					TextElementSequence seq = new TextElementSequence();
-					seq.add(new LogicElement("Thus,"));
+					seq.add(new LogicElement(LogicLabels.getString("thus")));
 					seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 					return seq;
 					//return  "Therefore, " + VerbalisationManager.verbalise(addition);
@@ -835,7 +843,7 @@ public enum VerbaliseTreeManager {
 							prem = (OWLSubClassOfAxiom) prem1;
 						OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
 						TextElementSequence seq = new TextElementSequence();
-						seq.add(new LogicElement("Furthermore, since"));
+						seq.add(new LogicElement(LogicLabels.getString("furthermoreSince")));
 						seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 						return seq;
 						// return "Furthermore, since " + VerbalisationManager.verbalise(prem) + ", " + VerbalisationManager.verbalise(addition);
@@ -843,12 +851,12 @@ public enum VerbaliseTreeManager {
 					
 				// System.out.println(premiseformulas.toString());
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("Since"));
+				seq.add(new LogicElement(LogicLabels.getString("since")));
 				// String result = "Since ";
 				boolean needsep = false;
 				for (Object prem : premiseformulas){
 					if (needsep)
-						seq.add(new LogicElement("and"));
+						seq.add(new LogicElement(LogicLabels.getString("and")));
 					needsep = true;
 					seq.concat(VerbalisationManager.textualise((OWLObject) prem));
 					// result += VerbalisationManager.verbalise((OWLObject) prem);
@@ -879,9 +887,9 @@ public enum VerbaliseTreeManager {
 					definedconcept = concept1;
 				}
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("Since"));
+				seq.add(new LogicElement(LogicLabels.getString("since")));
 				seq.concat(VerbalisationManager.textualise(subclpremise,obfuscator));
-				seq.add(new LogicElement("by definition it is"));
+				seq.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
 				seq.concat(VerbalisationManager.textualise(definedconcept,obfuscator));
 				return seq;
 				// return  // "By definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
@@ -919,7 +927,7 @@ public enum VerbaliseTreeManager {
 				return VerbalisationManager.textualise(premiseformula,obfuscator);
 				else{
 					TextElementSequence seq = new TextElementSequence();
-					seq.add(new LogicElement("Hence,"));
+					seq.add(new LogicElement(LogicLabels.getString("hence")));
 					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 					return seq;
 				}
@@ -929,14 +937,16 @@ public enum VerbaliseTreeManager {
 				OWLClassExpression definedconcept = premiseformula.getClassExpressionsAsList().get(0);
 				if (((OWLSubClassOfAxiom) additions_to_antecedent.get(0)).getSubClass().equals(definedconcept)){
 					TextElementSequence seq = new TextElementSequence();
-					seq.add(new LogicElement("According to its definition,"));
+					seq.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
+//					seq.add(new LogicElement("Definfitionsgemäß ist "));
+
 					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 					return seq;
 					// return "According to its definition, "
 					// 		+ VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0));
 				}
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("According to the definition of"));
+				seq.add(new LogicElement(LogicLabels.getString("AccordingToTheDefinitionOf")));
 				seq.concat(VerbalisationManager.textualise(definedconcept,obfuscator) );
 				seq.add(new LogicElement(","));
 				seq.concat(VerbalisationManager.textualise( (OWLObject) additions_to_antecedent.get(0)));
@@ -973,7 +983,7 @@ public enum VerbaliseTreeManager {
 					RoleElement sr = new RoleElement("are" + supStr.substring(2));
 					superseq.getTextElements().add(0,sr);
 				}
-				seq.add(new LogicElement("and therefore"));
+				seq.add(new LogicElement(LogicLabels.getString("andTherefore)")));
 				seq.concat(superseq);
 				return seq;
 				// return VerbalisationManager.verbalise(subcl1) + " and therefore " + VerbalisationManager.verbalise(subcl2.getSuperClass());
@@ -988,7 +998,7 @@ public enum VerbaliseTreeManager {
 				if (str.indexOf("an ")==0)
 					str = str.substring(3);
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("Thus, nothing is"));
+				seq.add(new LogicElement(LogicLabels.getString("ThusNothingIs")));
 				seq.concat(VerbalisationManager.textualise(subcl1.getSubClass(),obfuscator));
 				return seq;
 				// return ". Thus, nothing is " + VerbalisationManager.verbalise(subcl1.getSubClass());
@@ -1003,9 +1013,9 @@ public enum VerbaliseTreeManager {
 				if (str.indexOf("an ")==0)
 					str = str.substring(3);
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("Since"));
+				seq.add(new LogicElement(LogicLabels.getString("since")));
 				seq.concat(VerbalisationManager.textualise(subcl));
-				seq.add(new LogicElement("which does not exist, nothing is"));
+				seq.add(new LogicElement(LogicLabels.getString("whichDoesNotExistNothingIs")));
 				seq.concat(VerbalisationManager.textualise(subcl1.getSubClass(),obfuscator));
 				// ClassElement clElement = new ClassElement(str);
 				return seq;
@@ -1021,14 +1031,14 @@ public enum VerbaliseTreeManager {
 				if (str.indexOf("an ")==0)
 					str = str.substring(3);
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("However, no"));
+				seq.add(new LogicElement(LogicLabels.getString("howeverNo")));
 				String tooltiptext = subcl.getSubClass().asOWLClass().getIRI().asLiteral().toString();
 				ClassElement classElem = new ClassElement(str,tooltiptext);
 				// System.out.println("DEBUG!!!! :: " + str);
 				seq.add(classElem);
-				seq.add(new LogicElement("is"));
+				seq.add(new LogicElement(LogicLabels.getString("is")));
 				seq.concat(VerbalisationManager.textualise(subcl.getSuperClass(),obfuscator));
-				seq.add(new LogicElement(". Thus, nothing is"));
+				seq.add(new LogicElement(LogicLabels.getString("thusNothingIs")));
 				seq.concat(VerbalisationManager.textualise(subcl.getSubClass(),obfuscator));
 				return seq;
 				// return "However, no " + str 
@@ -1040,7 +1050,7 @@ public enum VerbaliseTreeManager {
 				// OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
 				TextElementSequence seq = new TextElementSequence();
 				seq.concat(VerbalisationManager.textualise(subcl.getSubClass(),obfuscator));
-				seq.add(new LogicElement("is"));
+				seq.add(new LogicElement(LogicLabels.getString("is")));
 				boolean needsep = false;
 				for (Object premiseformula : premiseformulas){
 					if (premiseformula instanceof OWLDisjointClassesAxiom){
@@ -1049,7 +1059,7 @@ public enum VerbaliseTreeManager {
 					OWLSubClassOfAxiom ax = (OWLSubClassOfAxiom) premiseformula;
 					if (needsep)
 					{
-						seq.add(new LogicElement("and"));
+						seq.add(new LogicElement(LogicLabels.getString("and")));
 					}
 					else {
 						needsep = true;
@@ -1057,7 +1067,7 @@ public enum VerbaliseTreeManager {
 					seq.concat(VerbalisationManager.textualise(ax.getSuperClass(),obfuscator));
 					}
 				}
-				seq.add(new LogicElement("but this cannot be true at the same time. Thus, nothing is "));
+				seq.add(new LogicElement(LogicLabels.getString("butThisCanNotBeTrueAtTheSameTimeThusNothingIs")));
 				seq.concat(VerbalisationManager.textualise(subcl.getSubClass(),obfuscator));
 				return seq;
 				// return "However, no " + str 
@@ -1067,7 +1077,7 @@ public enum VerbaliseTreeManager {
 			if (rule.equals(INLG2012NguyenEtAlRules.RULE6neo)){ // || premiseformulas.contains(before_previousconclusion))){
 				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("Since everything is"));
+				seq.add(new LogicElement(LogicLabels.getString("sinceEverythingIs")));
 				seq.concat(VerbalisationManager.textualise(subcl1.getSuperClass(),obfuscator));
 				seq.add(new LogicElement(","));
 				seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
@@ -1086,13 +1096,13 @@ public enum VerbaliseTreeManager {
 					subcl = (OWLSubClassOfAxiom) prem1;
 				TextElementSequence seq = new TextElementSequence();
 				if (subcl.getSubClass().equals(subcl.getSuperClass())){ // <-- if the first axiom is tautological
-					seq.add(new LogicElement("Therefore, ")); 
+					seq.add(new LogicElement(LogicLabels.getString("therefore"))); 
 					seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) additions_to_antecedent.get(0)),obfuscator));
 				}
 				else{
 				seq.concat(VerbalisationManager.textualise(subcl,obfuscator));
 				seq.makeUppercaseStart();
-				seq.add(new LogicElement(", thus"));
+				seq.add(new LogicElement(LogicLabels.getString("_thus")));
 				// System.out.println("RULE15 -- " + additions_to_antecedent.get(0));
 				seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 				}
@@ -1110,16 +1120,16 @@ public enum VerbaliseTreeManager {
 				TextElementSequence seq = new TextElementSequence();
 				// System.out.println("checking " + subcl1);
 				if (subcl1.getSubClass().equals(subcl1.getSuperClass())){ // <-- if the first axiom is tautological
-					seq.add(new LogicElement("Furthermore, ")); 
+					seq.add(new LogicElement(LogicLabels.getString("furthermore_"))); 
 					seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) additions_to_antecedent.get(0)),obfuscator));
 				}
 				else{
 				seq.concat(VerbalisationManager.textualise(subcl1,obfuscator));
 				seq.makeUppercaseStart();
-				seq.add(new LogicElement("which is"));
+				seq.add(new LogicElement(LogicLabels.getString("whichIs")));
 				seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) subcl2).getSuperClass(),obfuscator));
 				seq.add(new LogicElement("."));
-				seq.add(new LogicElement("Therefore,"));
+				seq.add(new LogicElement(LogicLabels.getString("therefore")));
 				seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) additions_to_antecedent.get(0)),obfuscator));
 				}
 				return seq;
@@ -1134,14 +1144,14 @@ public enum VerbaliseTreeManager {
 				OWLClassExpression superclassexp = ((OWLSubClassOfAxiom) subcl3).getSuperClass();
 				String superclassstring = VerbalisationManager.verbalise(superclassexp);
 				if (((OWLSubClassOfAxiom) subcl3).getSuperClass() instanceof OWLObjectSomeValuesFrom){
-					superclassstring = "something that " + superclassstring;
+					superclassstring = LogicLabels.getString("somethingThat") + superclassstring;
 				}
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("Since both"));
+				seq.add(new LogicElement(LogicLabels.getString("sinceBoth")));
 				seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) subcl1).getSubClass(),obfuscator));
-				seq.add(new LogicElement("and"));
+				seq.add(new LogicElement(LogicLabels.getString("and")));
 				seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) subcl3).getSubClass(),obfuscator));
-				seq.add(new LogicElement("are"));
+				seq.add(new LogicElement(LogicLabels.getString("are")));
 				String tooltiptext = superclassexp.asOWLClass().getIRI().asLiteral().toString();
 				ClassElement classElem = new ClassElement(superclassstring,tooltiptext);
 				seq.add(classElem);
@@ -1182,9 +1192,9 @@ public enum VerbaliseTreeManager {
 					}
 				}
 				if (superclass instanceof OWLObjectSomeValuesFrom){
-					intString = "something that " + intString; 
+					intString = LogicLabels.getString("somethingThat") + intString; 
 					seq.add(new LogicElement(intString));}
-				seq.add(new LogicElement(", therefore being"));
+				seq.add(new LogicElement(LogicLabels.getString("_thereforeBeing")));
 				// result += ", therefore being " + intString; 
 				String tooltiptext = superclass.asOWLClass().getIRI().asLiteral().toString();
 				seq.add(new ClassElement(intString,tooltiptext));
@@ -1195,7 +1205,7 @@ public enum VerbaliseTreeManager {
 					// we are in the case where the source concept inclusion has been presented previously, 
 				    // and the target concept is new
 					TextElementSequence seq = new TextElementSequence();
-					seq.add(new LogicElement("Given that"));
+					seq.add(new LogicElement(LogicLabels.getString("givenThat")));
 					seq.concat(VerbalisationManager.textualise((OWLObject) newformula,obfuscator));
 					seq.add(new LogicElement(","));
 					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
@@ -1222,11 +1232,11 @@ public enum VerbaliseTreeManager {
 						else prem2 = candidate;
 				}
 				TextElementSequence seq = new TextElementSequence();
-				seq.add(new LogicElement("since"));
+				seq.add(new LogicElement(LogicLabels.getString("since")));
 				seq.concat(VerbalisationManager.textualise(prem1,obfuscator));
-				seq.add(new LogicElement(", which"));
+				seq.add(new LogicElement(LogicLabels.getString("_which")));
 				if (!(superclass instanceof OWLObjectSomeValuesFrom))
-					seq.add(new LogicElement("is"));
+					seq.add(new LogicElement(LogicLabels.getString("is")));
 				seq.concat(VerbalisationManager.textualise(prem2.getSuperClass(),obfuscator));
 				seq.add(new LogicElement(","));
 				seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
@@ -1251,22 +1261,23 @@ public enum VerbaliseTreeManager {
 						&& premiseformulas.contains(before_previousconclusion)
 						&& !previousconclusion.equals(before_previousconclusion)
 						){
-					seq.add(new LogicElement("Thus, we have established that"));
+					seq.add(new LogicElement(LogicLabels.getString("thus_WeHaveEstablishedThat")));
 					// resultstring += rule + "Thus, we have established that ";
 				} else {
 					if (premiseformulas.contains(previousconclusion) && premiseformulas.size()>1){
-						seq.add(new LogicElement("Furthermore, since"));
+						seq.add(new LogicElement(LogicLabels.getString("furthermore_Since")));
 						// resultstring += "Furthermore, since ";
 					} else{
 						if (premiseformulas.contains(previousconclusion)){
-							seq.add(new LogicElement("Therefore"));
+							seq.add(new LogicElement(LogicLabels.getString("therefore")));
 							// resultstring += "Therefore "; 
 						}else{
 							if (premiseformulas.size()==0){
 							// resultstring += "";
 							}
 							else {
-								seq.add(new LogicElement("Since")); 
+								
+								seq.add(new LogicElement(LogicLabels.getString("since"))); 
 								// resultstring += "Since ";
 							};
 						}
@@ -1286,7 +1297,7 @@ public enum VerbaliseTreeManager {
 					}
 					if (needsep){ 
 						// resultstring += " and ";
-						seq.add(new LogicElement("and")); 
+						seq.add(new LogicElement(LogicLabels.getString("and"))); 
 					};
 					needsep = true;
 					// resultstring += VerbalisationManager.verbalise( (OWLObject) formula);
@@ -1296,7 +1307,7 @@ public enum VerbaliseTreeManager {
 			}
 			
 			if (additions_to_antecedent.size() + additions_to_succedent.size()>1){
-				seq.add(new LogicElement("consider that")); 
+				seq.add(new LogicElement(LogicLabels.getString("considerThat"))); 
 				// resultstring += " consider that ";
 			}
 			if (additions_to_antecedent.size() + additions_to_succedent.size()==1 
@@ -1306,18 +1317,18 @@ public enum VerbaliseTreeManager {
 					     && premiseformulas.contains(before_previousconclusion)
 					     && !previousconclusion.equals(before_previousconclusion)
 					)){
-				seq.add(new LogicElement("it follows that")); 
+				seq.add(new LogicElement(LogicLabels.getString("itFollowsThat"))); 
 				// resultstring += ", it follows that ";
 			}
 			if (additions_to_antecedent.size() + additions_to_succedent.size()==0){
-				seq.add(new LogicElement("Done.")); 
+				seq.add(new LogicElement(LogicLabels.getString("done0"))); 
 				// resultstring += "Done ";
 			}
 			
 			boolean needorsep= false;
 			for(Object ob : additions_to_antecedent){
 				   if (needorsep){
-					   seq.add(new LogicElement("and")); 
+					   seq.add(new LogicElement(LogicLabels.getString("and"))); 
 					   // resultstring += " and ";
 				   }
 					// resultstring += VerbalisationManager.verbalise((OWLObject) ob);
@@ -1326,13 +1337,13 @@ public enum VerbaliseTreeManager {
 			}
 			
 			if (additions_to_succedent.size()>0){
-				seq.add(new LogicElement("we need to show")); 
+				seq.add(new LogicElement(LogicLabels.getString("weNeedToShow"))); 
 				// resultstring += "we need to show ";
 			}
 			needorsep= false;
 			for(Object ob : additions_to_succedent){
 				   if (needorsep){ 
-					   seq.add(new LogicElement("and")); 
+					   seq.add(new LogicElement(LogicLabels.getString("and"))); 
 					   //resultstring += " and ";
 				   }
 				   seq.concat(VerbalisationManager.textualise((OWLObject) ob));
