@@ -45,7 +45,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
 
-import org.semanticweb.elk.owlapi.ElkReasonerFactory;
+//import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.apache.commons.codec.language.bm.Lang;
 // import org.apache.log4j.Level;
 // import org.apache.log4j.Logger;
