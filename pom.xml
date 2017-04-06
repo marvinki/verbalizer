@@ -16,7 +16,8 @@
 		<protege.version>5.1.0</protege.version>
 		<!--   <elk.version>0.4.0</elk.version>-->
 		<!--   <elk.version>0.5.0-SNAPSHOT</elk.version> -->
-		<elk.version>0.3.2</elk.version>
+		<!--  <elk.version>0.3.2</elk.version> -->
+		<elk.version>0.4.0</elk.version>
 	</properties>
 	<repositories>
 		<repository>

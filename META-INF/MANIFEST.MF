@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1490979933144
+Bnd-LastModified: 1491498034299
 Build-Jdk: 1.8.0_91
 Built-By: fpaffrath
+Bundle-ClassPath: .,target/dependency/jaws-1.3.1.jar
 Bundle-Description: Serves to verbalise derivations
 Bundle-ManifestVersion: 2
 Bundle-Name: Verbalizer
@@ -10,8 +11,9 @@ Bundle-Vendor: MS
 Bundle-Version: 0.0.1.SNAPSHOT
 Created-By: Apache Maven Bundle Plugin
 Embed-Dependency: *;scope=!provided;scope=compile|runtime;inline=false
-Embedded-Artifacts: jaws-1.3.1.jar;g="com.github.jaytaylor";a="jaws";v="
- 1.3.1"
+Embed-Directory: target/dependency
+Embedded-Artifacts: target/dependency/jaws-1.3.1.jar;g="com.github.jayta
+ ylor";a="jaws";v="1.3.1"
 Export-Package: org.semanticweb.cogExp.ProofBasedExplanation;uses:="java
  x.swing,org.protege.editor.owl,org.protege.editor.owl.ui.explanation,or
  g.semanticweb.owlapi.model,org.semanticweb.owlapi.reasoner";version="0.

@@ -30,6 +30,10 @@ public enum VerbaliseTreeManager {
 
 	static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", Locale.ENGLISH);
 
+	public void setLanguage(Locale loc){
+		LogicLabels = ResourceBundle.getBundle("LogicLabels", loc);
+	}
+	
 	
 	public static String listOutput(GentzenTree tree){
 		String result = "";
