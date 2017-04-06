@@ -16,7 +16,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
-public class Birds {
+public class Birds2 {
 
 	public static void main(String[] args) throws OWLOntologyCreationException {
 		/**

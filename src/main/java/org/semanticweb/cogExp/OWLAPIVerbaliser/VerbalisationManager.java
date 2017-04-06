@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
@@ -70,6 +71,7 @@ public enum VerbalisationManager {
 	static final PrettyPrintOWLAxiomVisitor ppOAvisit = new PrettyPrintOWLAxiomVisitor();
 	static final PrettyPrintOWLObjectVisitor ppOOvisit = new PrettyPrintOWLObjectVisitor();
 
+	
 	private OWLOntology ontology;
 	private boolean ontologyLabelsIncludeDeterminers = false;
 	public final static String _space = " "; // SETTING SPACER!
@@ -82,8 +84,11 @@ public enum VerbalisationManager {
 
 	public boolean includesHasValue = false;
 
-	private Language lang = Language.GERMAN;
-
+//	private Language lang = Language.GERMAN;
+	private Locale lang = VerbaliseTreeManager.locale;
+	private ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
+	
+	
 	public static String verbalise(OWLObject ob) {
 		return ob.accept(verbOWLObjectVisit);
 	}
@@ -524,13 +529,15 @@ public enum VerbalisationManager {
 	 */
 	
 	public String getDataPropertyNL(OWLDataProperty arg0){
-		if (lang.equals(Locale.ENGLISH))
+//		if (lang.equals(Locale.ENGLISH))
+		if (VerbaliseTreeManager.locale.equals(Locale.ENGLISH))
 			return VerbalisationManager.treatCamelCaseAndUnderscores(arg0.getIRI().getFragment().toString());
 		Set<OWLAnnotation> annotations = collectAnnotations(arg0);
 		String str = "";
 		String str2 = "";
 		String germanlabel = "";
 		for (OWLAnnotation annotation : annotations) {
+			
 			System.out.println("DEBUG --- annotation: " + annotation);
 			if (annotation.getProperty().getIRI().getFragment().equals("label")
 					) {
@@ -545,7 +552,7 @@ public enum VerbalisationManager {
 				// str2= annotation.getValue().toString();
 			}
 		}
-		if (lang.equals(Locale.GERMAN) && !germanlabel.equals(""))
+		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN) && !germanlabel.equals(""))
 			return germanlabel;
 		return str;
 	}
@@ -582,18 +589,20 @@ public enum VerbalisationManager {
 		// System.out.println("get class NL String " + classname);
 		// catch some special cases straight away!
 		if (classname.isOWLThing())
-			switch (lang) {
-
-			case GERMAN:
-				return "etwas";
-
-			case ENGLISH:
-				return "something";
-
-			default:
-				return "something";
-
-			}
+			return LogicLabels.getString("something");
+			
+//			switch (VerbaliseTreeManager.locale.toString()) {
+//
+//			case GERMAN:
+//				return "etwas";
+//
+//			case ENGLISH:
+//				return "something";
+//
+//			default:
+//				return "something";
+//
+//			}
 
 		if (classname.isOWLNothing())
 			return "non-existant";
