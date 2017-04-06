@@ -1326,7 +1326,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	}
 
 	public List<TextElement> visit(OWLDataProperty arg0) {
-		String str = VerbalisationManager.treatCamelCaseAndUnderscores(arg0.getIRI().getFragment().toString());
+		String str = VerbalisationManager.INSTANCE.getDataPropertyNL(arg0);
 		List<TextElement> result = new ArrayList<TextElement>();
 		result.add(new LogicElement(str));
 		return result;

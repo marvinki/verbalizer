@@ -1080,7 +1080,8 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 	}
 
 	public String visit(OWLDataProperty arg0) {
-		return VerbalisationManager.treatCamelCaseAndUnderscores(arg0.getIRI().getFragment().toString());
+		return VerbalisationManager.INSTANCE.getDataPropertyNL(arg0);
+		// return VerbalisationManager.treatCamelCaseAndUnderscores(arg0.getIRI().getFragment().toString());
 		// return arg0.getIRI().getFragment().toString();
 	}
 
