@@ -2,6 +2,8 @@ package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -105,6 +107,10 @@ import org.semanticweb.owlapi.model.SWRLVariable;
 public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<TextElement>>{
 	
 	private static final String _space = VerbalisationManager.INSTANCE._space;
+	
+	private Locale lang = VerbaliseTreeManager.locale;
+	private ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
+	
 
 	private Obfuscator obfuscator;
 	

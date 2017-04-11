@@ -1221,6 +1221,7 @@ public enum VerbaliseTreeManager {
 			}
 			
 			if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && !premiseformulas.contains(previousconclusion) &&  premiseformulas.size()==2){
+				System.out.println("Case Rule 12 (3)");
 				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) additions_to_antecedent.get(0); 
 				OWLClassExpression superclass = subcl.getSuperClass();
 				OWLClassExpression subclass = subcl.getSubClass();
@@ -1256,8 +1257,10 @@ public enum VerbaliseTreeManager {
 				return seq;
 				}
 			
+			
 			// Generic output
 			TextElementSequence seq = new TextElementSequence();
+			
 			
 			if (!(premiseformulas==null)){
 				if (premiseformulas.contains(previousconclusion) 
@@ -1280,7 +1283,7 @@ public enum VerbaliseTreeManager {
 							// resultstring += "";
 							}
 							else {
-								
+								System.out.println("DEBUG --- Absolute Else case");
 								seq.add(new LogicElement(LogicLabels.getString("since"))); 
 								// resultstring += "Since ";
 							};
