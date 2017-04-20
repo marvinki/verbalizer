@@ -86,7 +86,7 @@ public enum VerbalisationManager {
 
 //	private Language lang = Language.GERMAN;
 	private Locale lang = VerbaliseTreeManager.locale;
-	private ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
+	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
 	
 	
 	public static String verbalise(OWLObject ob) {
@@ -317,7 +317,7 @@ public enum VerbalisationManager {
 		boolean needsep = false;
 		for (String str : fillerstrs) {
 			if (needsep) {
-				result += _space + "and" + _space;
+				result += _space + LogicLabels.getString("and") + _space;
 			}
 			result += str;
 			needsep = true;
@@ -537,7 +537,6 @@ public enum VerbalisationManager {
 		String str2 = "";
 		String germanlabel = "";
 		for (OWLAnnotation annotation : annotations) {
-			
 			System.out.println("DEBUG --- annotation: " + annotation);
 			if (annotation.getProperty().getIRI().getFragment().equals("label")
 					) {
@@ -553,7 +552,7 @@ public enum VerbalisationManager {
 			}
 		}
 		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN) && !germanlabel.equals(""))
-			return germanlabel;
+			return germanlabel + "(de)";
 		return str;
 	}
 	
@@ -610,16 +609,46 @@ public enum VerbalisationManager {
 		String str = "";
 		String str2 = "";
 		boolean hasLabel = false;
+		boolean labelFound = false;
+		
 		if (this.ontology != null) {
 			Set<OWLAnnotation> annotations = collectAnnotations(classname);
 			for (OWLAnnotation annotation : annotations) {
-				if (annotation.getProperty().getIRI().getFragment().equals("label")) {
-					str = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString()
+				
+				if (VerbaliseTreeManager.locale==Locale.GERMAN) {
+					if(annotation.getValue().asLiteral().orNull().hasLang("de")){ //is locale german ?
+						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
+						labelFound = true;
+					}
+					if(!labelFound){
+						str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"";
+						labelFound = true;// annotation.getValue().toString()
+					}
 				}
-				if (annotation.getProperty().getIRI().getFragment().equals("label2")) {
-					str2 = annotation.getValue().asLiteral().orNull().getLiteral();
-					// str2= annotation.getValue().toString();
-				}
+				
+//				annotation.getProperty().getIRI().getFragment().equals("@en")
+				
+				
+				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
+					if(annotation.getValue().asLiteral().orNull().hasLang("en")){
+						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
+						labelFound = true;
+					}if(!labelFound){
+						str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"" ;
+						labelFound = true;// annotation.getValue().toString()
+					}
+				}				
+					
+//				
+//					if (annotation.getProperty().getIRI().getFragment().equals("label")) {
+//						str = annotation.getValue().asLiteral().orNull().getLiteral() + "(hier)";// annotation.getValue().toString()
+//					}
+//					if (annotation.getProperty().getIRI().getFragment().equals("label2")) {
+//						str2 = annotation.getValue().asLiteral().orNull().getLiteral();
+//						// str2= annotation.getValue().toString();
+//					}
+//				} 
+				
 			}
 			// remove unnecessary stuff
 			if (str.indexOf("@e") > 0)
@@ -851,14 +880,14 @@ public enum VerbalisationManager {
 			// first case: more than one noun
 			// start with nouns, then use "that is"
 			for (String str : noun_concepts_strings) {
-				String conjoiner = _space + "and" + _space;
+				String conjoiner = _space + LogicLabels.getString("and") + _space;
 				if (firstToken == true) {
-					conjoiner = _space + "that is" + _space;
+					conjoiner = _space + LogicLabels.getString("that_is") + _space;
 					firstToken = false;
 					str = aOrAnIfy(str);
 					// System.out.println("A OR ANIFIED " + str);
 				}
-				result = result + str + _space + "that is" + _space;
+				result = result + str + _space + LogicLabels.getString("that_is") + _space;
 				noun_or_attribute_concepts_strings.remove(str);
 			}
 			if (noun_concepts_strings.size() > 2)
@@ -870,7 +899,7 @@ public enum VerbalisationManager {
 																	// last
 																	// "that is"
 			if (noun_or_attribute_concepts_strings.size() > 0 || attribute_concepts_strings.size() > 0)
-				result = result + "that is" + _space;
+				result = result + LogicLabels.getString("that_is") + _space;
 			for (String str : noun_or_attribute_concepts_strings) {
 				result = result + str + _space;
 				attribute_concepts_strings.remove(str);
@@ -1331,6 +1360,8 @@ public enum VerbalisationManager {
 			if (ax instanceof OWLAnnotationAssertionAxiom) {
 				OWLAnnotationAssertionAxiom annotax = (OWLAnnotationAssertionAxiom) ax;
 				OWLAnnotation annot = annotax.getAnnotation();
+				
+				
 				if (annot.getProperty().getIRI().getFragment().toString().equals("label")) {
 					// System.out.println("assessing label " +
 					// annot.getValue().toString());
