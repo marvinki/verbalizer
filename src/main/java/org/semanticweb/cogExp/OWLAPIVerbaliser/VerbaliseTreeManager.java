@@ -520,7 +520,7 @@ public enum VerbaliseTreeManager {
 				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) premiseformulas.get(0);
 				OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(1);
 				OWLClassExpression superExpr = ((OWLSubClassOfAxiom) subcl2).getSuperClass();
-				String is = "is ";
+				String is = LogicLabels.getString("is");
 				if (superExpr instanceof OWLObjectSomeValuesFrom)
 					is = "";
 				return makeUppercaseStart(VerbalisationManager.verbalise(subcl1)) 
@@ -562,6 +562,8 @@ public enum VerbaliseTreeManager {
 						intString = intString.substring(15);
 					}
 				}
+				
+				// TODO noch logicLabels/Resource file ausnutzen
 				if (superclass instanceof OWLObjectSomeValuesFrom)
 					intString = "something that " + intString; 
 				result += ", therefore being " + intString; 
@@ -593,10 +595,10 @@ public enum VerbaliseTreeManager {
 						else prem2 = candidate;
 				}
 				String result = "";
-				result += "Since " + VerbalisationManager.verbalise(prem1);
-				result += ", which ";
+				result += LogicLabels.getString("Since") + VerbalisationManager.verbalise(prem1);
+				result += LogicLabels.getString("_which ");
 				if (!(superclass instanceof OWLObjectSomeValuesFrom))
-					result += "is "; // TODO -- should only be there if needed!
+					result += LogicLabels.getString("is"); // TODO -- should only be there if needed!
 				result += VerbalisationManager.verbalise(prem2.getSuperClass());
 				result += ", "; 
 				result += VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); 
@@ -1119,7 +1121,7 @@ public enum VerbaliseTreeManager {
 				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) premiseformulas.get(0);
 				OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(1);
 				OWLClassExpression superExpr = ((OWLSubClassOfAxiom) subcl2).getSuperClass();
-				String is = "is ";
+				String is = LogicLabels.getString("is");
 				if (superExpr instanceof OWLObjectSomeValuesFrom)
 					is = "";
 				TextElementSequence seq = new TextElementSequence();
