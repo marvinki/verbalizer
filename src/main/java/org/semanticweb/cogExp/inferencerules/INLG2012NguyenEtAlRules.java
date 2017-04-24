@@ -28,6 +28,8 @@ import org.semanticweb.cogExp.core.SequentPart;
 import org.semanticweb.cogExp.core.SequentPosition;
 import org.semanticweb.cogExp.core.SequentSinglePosition;
 import org.semanticweb.cogExp.core.Timer;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.cogExp.core.AlreadyTriedCache;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLAtom;
@@ -785,6 +787,18 @@ RULE5new{ //SubClass(X,Y) and SubClass(X,Z) --> Subclass(X,Y^Z)
 			OWLFormula.createFormulaVar("v1"), 
 			OWLFormula.createFormulaVar("v2"));
 
+	@Override
+	public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+		OWLFormula firstConjunct = conclusion.getArgs().get(1).getArgs().get(0);
+		for (OWLFormula form : formulalist){
+			if (form.getArgs().get(1).equals(firstConjunct))
+				return form;
+		}
+		return null;
+	}
+	
+	
+	
 	
 	@Override
 	public List<RuleBinding> findRuleBindings(Sequent s){
@@ -1109,6 +1123,17 @@ public List<RuleKind> qualifyRule(){
 
 // $7
 RULE5{ //SubClass(X,Y) and SubClass(X,Z) --> Subclass(X,Y^Z)
+	
+	public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+		OWLFormula firstConjunct = conclusion.getArgs().get(1).getArgs().get(0);
+		for (OWLFormula form : formulalist){
+			if (form.getArgs().get(1).equals(firstConjunct))
+				return form;
+		}
+		return null;
+	}
+	
+	
 	
 	@Override
 	public java.lang.String getName(){return "INLG2012NguyenEtAlRule5";};
@@ -2439,6 +2464,24 @@ RULE11{ //SubCla(X,\exists r. Y) and SubCla((>1,r,Y),Z) --> SubCla(X,Z)
 					OWLFormula.createFormulaVar("v3"));
 			
 			
+			@Override
+			public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+				for (OWLFormula form : formulalist){
+					if (form.getArgs().get(0).equals(conclusion.getArgs().get(0)))
+						return form;
+				}
+				return null;
+			}
+			
+			@Override
+			public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+				for (OWLFormula form : formulalist){
+					if (form.getArgs().get(1).equals(conclusion.getArgs().get(1)))
+						return form;
+				}
+				return null;
+			}
+			
 			public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
 				ArrayList<RuleBinding> results = new ArrayList<RuleBinding>();
 				List<OWLFormula> candidates1 = s.findMatchingFormulasInAntecedent(prem1);
@@ -2911,6 +2954,24 @@ RULE14{
 		@Override
 		public List<RuleBinding> findRuleBindings(Sequent s){
 			return findRuleBindings(s,false);
+		}
+		
+		@Override
+		public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+			for (OWLFormula form : formulalist){
+				if (form.getArgs().get(0).equals(conclusion.getArgs().get(0)) && form.getArgs().get(1).getHead().equals(OWLSymb.EXISTS))
+					return form;
+			}
+			return null;
+		}
+		
+		@Override
+		public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+			for (OWLFormula form : formulalist){
+				if (!form.getArgs().get(0).equals(conclusion.getArgs().get(0)) || !form.getArgs().get(1).getHead().equals(OWLSymb.EXISTS))
+					return form;
+			}
+			return null;
 		}
 		
 		public void clearCaches(){
@@ -6862,6 +6923,14 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 		return false;
 	}
 	
+	public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
 	public void clearCaches(){}
+	
+	public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
 	
 }

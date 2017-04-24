@@ -1,6 +1,8 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JPanel;
@@ -14,6 +16,7 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
+import org.semanticweb.cogExp.StructuralCueing.NichtPraesMethodenVersuchN4;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
@@ -298,25 +301,53 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		OWLReasonerFactory factory = modelmanager.getOWLReasonerManager().getCurrentReasonerFactory().getReasonerFactory();
 		OWLOntology ontology = modelmanager.getActiveOntology();
 		OWLEditorKit editorKit = getOWLEditorKit();
-		     
-		
-		
+		     	
 		JPanel panel = new JPanel();
 		
+		
 		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
-					   													ontology, true, "OP");	
-		
-		
-		
+		 			   													ontology, true, "OP");	
 		
 		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
 		
-		
 		result = result.getResult(sequence,editorKit);
+		
+		
+		// Using Ms Kölle's structural cueing approach:
+		/*
+		List<String> htmls = generateStructurallyCuedExplanation(axiom, reasoner, factory, 
+					ontology, 100000,10000, "OP",true,false);
+		
+		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
+		
+		result = result.getResultSC(htmls,editorKit);
+		*/
 	
 		//result.updateUI();
 		return result;
 	}
+
+
+	// Method calls generic proof search to generate proof tree, and Ms Kölle's structural cueing algorithm
+	/*
+	public static List<String> generateStructurallyCuedExplanation (OWLAxiom axiom, OWLReasoner reasoner,
+		OWLReasonerFactory factory, OWLOntology ontology, int maxsteps, long maxtime, String ruleset,
+		boolean asHTML, boolean obf) {
+		GentzenTree tree = VerbalisationManager.computeGentzenTree(axiom, reasoner, factory, ontology, maxsteps, maxtime, ruleset);
+		
+		List<String> explanations = new ArrayList<String>();
+		
+		if (axiom instanceof OWLSubClassOfAxiom){
+			OWLSubClassOfAxiom subclAxiom = (OWLSubClassOfAxiom) axiom;
+			// Below, style is hardcoded (second argument)
+			for (int i = 0; i<13; i++){
+			explanations.add(NichtPraesMethodenVersuchN4.cueify(tree,i,subclAxiom,subclAxiom.getSubClass(),subclAxiom.getSuperClass()));
+			}
+			return explanations;
+		} 
+		return explanations;
+}
+	*/
 	
 
 }

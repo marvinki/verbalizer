@@ -148,6 +148,15 @@ public enum VerbalisationManager {
 	public static String prettyPrint(OWLSubClassOfAxiom oa) {
 		return ppOAvisit.visit(oa);
 	}
+	
+	public static List<String> prettyPrint(List<OWLObject> lst){
+		List<String> stringlist = new ArrayList<String>();
+		for (OWLObject l: lst){
+			stringlist.add(prettyPrint(l));
+		}
+		return stringlist;
+	}
+	
 
 	/**
 	 * Pretty print an OWL-API Object (to DL syntax)
@@ -1587,7 +1596,7 @@ public enum VerbalisationManager {
 
 		OWLFormula axiomFormula;
 		try {
-			System.out.println("DEBUG (1)");
+			// System.out.println("DEBUG (1)");
 			axiomFormula = ConversionManager.fromOWLAPI(axiom);
 			List<SequentInferenceRule> rules = tree.getInfRules();
 			if (rules.size() == 0) {

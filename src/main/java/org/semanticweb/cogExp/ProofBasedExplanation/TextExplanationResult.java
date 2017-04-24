@@ -2,9 +2,18 @@
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.text.Document;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
@@ -22,6 +31,8 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 
 	private ContentJPanel content;
 	private JPanel result = new JPanel();
+	
+	private int currentLayout = 0;
 	
 	public TextExplanationResult(JPanel panel,OWLEditorKit ek){
 		this.result = panel;
@@ -74,6 +85,54 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		return this;
 	}
 	
+	
+	public TextExplanationResult getResultSC(List<String> htmls, OWLEditorKit ek){
+//		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
+		
+		JEditorPane editorPane = new JEditorPane("text/html","");
+		editorPane.setEditable(false);
+		
+		// we need an HTMLEditorKit for using CSS
+		HTMLEditorKit kit = new HTMLEditorKit();
+		editorPane.setEditorKit(kit);
+		// StyleSheet styleSheet = kit.getStyleSheet(); <--- one could add the CSS rules to such a style sheet. However, setText seems to do the job.
+		Document doc = kit.createDefaultDocument();
+		editorPane.setDocument(doc);
+		if (htmls.size()>0)
+			editorPane.setText(htmls.get(0));
+		Dimension panesize = editorPane.getPreferredSize();
+		
+		// JPanel panel = new JPanel();
+		// panel.setName("DOOPDDI");
+		content = new ContentJPanel(ek,panesize.getWidth() + 100,panesize.getHeight() + 10);
+		// result.add(content);
+		result.add(editorPane);
+		
+		
+		JButton styleButton = new JButton("Style");
+		styleButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				currentLayout++;
+				if (currentLayout>12)
+					currentLayout=0;
+				Document doc = kit.createDefaultDocument();
+				editorPane.setDocument(doc);
+				editorPane.setText(htmls.get(currentLayout));
+				editorPane.updateUI();
+				return;
+			}
+		});
+		result.add(styleButton);
+		
+		this.add(getScrollPane(result));
+		
+		
+		
+		
+//		contentSize.setSize(contentSize.getWidth(), height/*+fac*getFontMetrics(getFont()).getHeight()*/);
+
+		return this;
+	}
 	
 	/**
 	 * 

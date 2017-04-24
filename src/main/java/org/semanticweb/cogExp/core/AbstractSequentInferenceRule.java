@@ -3,6 +3,8 @@ package org.semanticweb.cogExp.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
+
 public class AbstractSequentInferenceRule implements SequentInferenceRule {
 
 @Override
@@ -75,5 +77,13 @@ public List<RuleApplicationResults> computeRuleApplicationResults(Sequent sequen
 }
 
 public void clearCaches(){}
+
+public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+	return null;
+}
+
+public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+	return null;
+}
 
 }

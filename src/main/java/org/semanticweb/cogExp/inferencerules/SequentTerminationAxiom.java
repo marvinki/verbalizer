@@ -167,6 +167,14 @@ public enum SequentTerminationAxiom implements SequentInferenceRule {
 		return findRuleBindings(s);
 	}
 	
+	public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
+	public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
 	public void clearCaches(){}
 	
 }
