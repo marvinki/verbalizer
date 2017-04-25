@@ -16,7 +16,7 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
-import org.semanticweb.cogExp.StructuralCueing.NichtPraesMethodenVersuchN4;
+// import org.semanticweb.cogExp.StructuralCueing.NichtPraesMethodenVersuchN4;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;

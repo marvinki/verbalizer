@@ -5,8 +5,6 @@ import java.util.List;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
 
-import uk.ac.manchester.cs.bhig.util.Tree;
-
 public class GentzenStep {
 	private List<Integer> premises;
 	private List<Integer> axiompremises;
