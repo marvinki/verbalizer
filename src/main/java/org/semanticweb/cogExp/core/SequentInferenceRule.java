@@ -2,6 +2,8 @@ package org.semanticweb.cogExp.core;
 
 import java.util.List;
 
+import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
+
 public interface SequentInferenceRule {
 
 	public boolean isApplicable(Sequent s);
@@ -27,5 +29,9 @@ public interface SequentInferenceRule {
 	public List<RuleKind> qualifyRule();
 	
 	public void clearCaches();
+	
+	public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion);
+	public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion);
+
 	
 }

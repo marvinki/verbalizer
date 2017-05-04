@@ -42,6 +42,14 @@ import org.semanticweb.owlapi.vocab.XSDVocabulary;
 public enum ConversionManager {
 	INSTANCE;
 	
+	public static List<OWLObject> toOWLAPI(List<OWLFormula> formulas){
+		List<OWLObject> newlist = new ArrayList<OWLObject>();
+		for (OWLFormula form : formulas){
+			newlist.add(toOWLAPI(form));
+		}
+		return newlist;
+	}
+	
 	private static ConvertOWLObjectToOWLFormulaVisitor fromOWLAPIvisitor = new ConvertOWLObjectToOWLFormulaVisitor();
 	
 	/** Translates OWLAPI OWLObjects to (internal) OWLFormula representation

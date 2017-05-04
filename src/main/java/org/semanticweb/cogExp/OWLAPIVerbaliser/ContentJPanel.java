@@ -65,6 +65,37 @@ public class ContentJPanel extends JPanel{
 		setProperSize();
 		addInnerpanels();
 	}
+	
+	public ContentJPanel(OWLEditorKit ek, double width, double height) {
+		super();
+		
+		labels = new ArrayList<JLabel>();
+		
+		constraint.fill = GridBagConstraints.BOTH;
+		constraint.anchor = GridBagConstraints.LINE_START;
+		constraint.gridx = 0;
+		constraint.gridy = 0;	
+		constraint.weightx = 0;
+		constraint.weighty = 0;
+		
+		this.setLayout(contentLayout);
+				
+		contentSize = new Dimension(ProtegeManager
+					.getInstance()
+					.getFrame(ek.getWorkspace())
+					.getSize());
+		
+		// contentSize.setSize(contentSize.getWidth()*0.8, contentSize.getHeight());
+		contentSize.setSize(width,height);
+
+		this.setSize(contentSize);
+		
+		initializeArray();
+		// fillInnerPanels();
+		// setProperSize();
+		// addInnerpanels();
+	}
+	
 
 	/* (non-Javadoc)
 	 * @see java.awt.Component#getSize()

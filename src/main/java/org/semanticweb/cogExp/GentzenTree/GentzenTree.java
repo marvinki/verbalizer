@@ -64,6 +64,10 @@ public class GentzenTree {
 		return resultformulas;
 	}
 	
+	public OWLFormula idToFormula(Integer i){
+		return formulas.get(i);
+	}
+	
 	public void insertStep(List<OWLFormula> premises, OWLFormula conclusion, SequentInferenceRule infrule){
 		// start by identifying or inserting premise formulas
 		List<Integer> premiseids = new ArrayList<Integer>();
@@ -95,7 +99,7 @@ public class GentzenTree {
 		if (infrule.equals(AdditionalDLRules.ONLYSOME))
 			 System.out.println("Inserting " + premiseids + " " +  conclusionid + " "+ infrule);
 		*/
-		GentzenStep step = new GentzenStep(premiseids,axiompremiseids, conclusionid,infrule);
+		GentzenStep step = new GentzenStep(premiseids,axiompremiseids, conclusionid,infrule,this);
 		// System.out.println("insert step key " + last_key);
 		treesteps.put(last_key,step);
 		// System.out.println("enter conclusion with: " + conclusion + " " + last_key);
