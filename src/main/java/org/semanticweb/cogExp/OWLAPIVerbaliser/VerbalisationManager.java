@@ -279,7 +279,7 @@ public enum VerbalisationManager {
 			str = str.substring(1, str.length() - 13);
 		// detect if name is of the form "_ of"
 		if (detect_noun_of(str) && !str.contains("is"))
-			str = "is" + _space + str;
+			str = LogicLabels.getString("is") + _space + str;
 		return str;
 	}
 
@@ -306,6 +306,8 @@ public enum VerbalisationManager {
 			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
 			String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 			result += part1;
+			
+			// TODO has as --> LogicLabel???
 			if (part2.equals("") && part1.equals("") || part1 == null && part2 == null) {
 				result += "has as" + _space + property.getNamedProperty().getIRI().getFragment() + "-successor ";
 				;
@@ -437,6 +439,8 @@ public enum VerbalisationManager {
 
 			return str;
 		}
+		
+		// TODO an/a --> LogicLabel???
 		if (str.substring(0, 1).equals("a") || str.substring(0, 1).equals("u") || str.substring(0, 1).equals("e")
 				|| str.substring(0, 1).equals("i") || str.substring(0, 1).equals("o") || str.substring(0, 1).equals("A")
 				|| str.substring(0, 1).equals("U") || str.substring(0, 1).equals("E") || str.substring(0, 1).equals("I")
