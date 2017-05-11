@@ -565,7 +565,7 @@ public enum VerbalisationManager {
 			}
 		}
 		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN) && !germanlabel.equals(""))
-			return germanlabel + "(de)";
+			return germanlabel ;
 		return str;
 	}
 	
