@@ -27,7 +27,7 @@ import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
-	static boolean debug = false;
+	static boolean debug = true;
 	static Locale locale = Locale.GERMAN;
 	// static Locale locale = Locale.GERMAN;
 	static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", locale);
@@ -1621,6 +1621,8 @@ public enum VerbaliseTreeManager {
 				OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
 				TextElementSequence firstpart = VerbalisationManager.textualise(premiseformula,obfuscator);
 				firstpart.makeUppercaseStart();
+				
+				if(debug) firstpart.add(new TextElement("_>" +premiseformula.toString()+ "_<"));
 				
 				if(debug) firstpart.add(new LogicElement("-12-"));
 				return firstpart;
