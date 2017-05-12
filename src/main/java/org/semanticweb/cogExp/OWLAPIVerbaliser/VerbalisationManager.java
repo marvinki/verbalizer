@@ -88,6 +88,7 @@ public enum VerbalisationManager {
 	private Locale lang = VerbaliseTreeManager.locale;
 	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
 	
+	private static boolean debug = VerbaliseTreeManager.debug;
 	
 	public static String verbalise(OWLObject ob) {
 		return ob.accept(verbOWLObjectVisit);
@@ -95,6 +96,7 @@ public enum VerbalisationManager {
 
 	public static TextElementSequence textualise(OWLObject ob) {
 		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
+		if(debug) seq.add(new LogicElement("<--visitor--"));
 		return seq;
 	}
 

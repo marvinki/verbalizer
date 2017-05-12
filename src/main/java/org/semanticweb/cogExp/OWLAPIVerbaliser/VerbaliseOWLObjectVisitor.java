@@ -630,7 +630,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 			}		
 		} else{
 			result += exprs.get(0).accept(this);
-			result += " is the same as ";
+			result += LogicLabels.getString("isTheSameAs");
 			boolean firstp = true;
 			for (OWLClassExpression ex:exprs){
 				if (!ex.equals(exprs.get(0))){

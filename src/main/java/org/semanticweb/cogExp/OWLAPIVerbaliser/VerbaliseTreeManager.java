@@ -27,7 +27,8 @@ import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
-	static Locale locale = Locale.ENGLISH;
+	static boolean debug = false;
+	static Locale locale = Locale.GERMAN;
 	// static Locale locale = Locale.GERMAN;
 	static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", locale);
 
@@ -425,7 +426,7 @@ public enum VerbaliseTreeManager {
 				}
 				return  // "By definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
 						// + VerbalisationManager.verbalise(additions_to_antecedent.get(0));
-						LogicLabels.getString("since") + VerbalisationManager.verbalise(subclpremise) + LogicLabels.getString("byDefinitionItIs") +  VerbalisationManager.verbalise(definedconcept);
+						LogicLabels.getString("since") + VerbalisationManager.verbalise(subclpremise) +LogicLabels.getString("byDefinitionItIs") +  VerbalisationManager.verbalise(definedconcept);
 //						"Weil " + VerbalisationManager.verbalise(subclpremise) + ", by definition it is " +  VerbalisationManager.verbalise(definedconcept);
 						// VerbalisationManager.verbalise(additions_to_antecedent.get(0)) + " according to the definition of ";
 			}
@@ -907,6 +908,7 @@ public enum VerbaliseTreeManager {
 					TextElementSequence seq = new TextElementSequence();
 					seq.add(new LogicElement(LogicLabels.getString("since")));
 					seq.concat(VerbalisationManager.textualise(subclpremise,obfuscator));
+//					seq.add(new LogicElement("_bla_"));
 					seq.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
 					seq.concat(VerbalisationManager.textualise(definedconcept,obfuscator));
 					return seq;
@@ -1416,7 +1418,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new ClassElement(definedconceptname,tooltiptext));
 				
 				
-				seq.add(new LogicElement("-1-"));
+				if(debug) seq.add(new LogicElement("-1-"));
 				return seq;
 			}
 			
@@ -1427,7 +1429,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(LogicLabels.getString("thus")));
 				seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 	
-				seq.add(new LogicElement("-2-"));
+				if(debug) seq.add(new LogicElement("-2-"));
 				return seq;
 			}
 			
@@ -1448,7 +1450,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(","));
 				seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 				
-				seq.add(new LogicElement("-3-"));
+				if(debug) seq.add(new LogicElement("-3-"));
 				return seq;
 			}
 			
@@ -1480,7 +1482,7 @@ public enum VerbaliseTreeManager {
 						OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
 						seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 						
-						seq.add(new LogicElement("-4-"));
+						if(debug) seq.add(new LogicElement("-4-"));
 						return seq;
 						
 					} else {
@@ -1502,7 +1504,7 @@ public enum VerbaliseTreeManager {
 						OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
 						seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 						
-						seq.add(new LogicElement("-5-"));
+						if(debug) seq.add(new LogicElement("-5-"));
 						return seq;
 					}
 				}
@@ -1521,7 +1523,7 @@ public enum VerbaliseTreeManager {
 					seq.add(new LogicElement(LogicLabels.getString("is"))); 
 					seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 					
-					seq.add(new LogicElement("-6-"));
+					if(debug) seq.add(new LogicElement("-6-"));
 					return seq;
 				
 				} else {
@@ -1539,7 +1541,7 @@ public enum VerbaliseTreeManager {
 						seq.add(new LogicElement(LogicLabels.getString("furthermoreSince")));
 						seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 						
-						seq.add(new LogicElement("-7-"));
+						if(debug) seq.add(new LogicElement("-7-"));
 						return seq;
 					}
 					
@@ -1555,7 +1557,7 @@ public enum VerbaliseTreeManager {
 				OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
 				seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 				
-				seq.add(new LogicElement("-8-"));
+				if(debug) seq.add(new LogicElement("-8-"));
 				return seq;
 				}
 			}
@@ -1581,11 +1583,15 @@ public enum VerbaliseTreeManager {
 				}
 				TextElementSequence seq = new TextElementSequence();
 				seq.add(new LogicElement(LogicLabels.getString("since")));
+				
 				seq.concat(VerbalisationManager.textualise(subclpremise,obfuscator));
+
+//				seq.add(new LogicElement("_" +subclpremise.toString()+ "_" ));
+				
 				seq.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
 				seq.concat(VerbalisationManager.textualise(definedconcept,obfuscator));
 				
-				seq.add(new LogicElement("-9-"));
+				if(debug) seq.add(new LogicElement("-9-"));
 				return seq;
 			}
 			
@@ -1597,7 +1603,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement("inverseobjectproperty"));
 				seq.concat(VerbalisationManager.textualise(ax,obfuscator));
 				
-				seq.add(new LogicElement("-10-"));
+				if(debug) seq.add(new LogicElement("-10-"));
 				return seq;
 			}
 			
@@ -1606,7 +1612,7 @@ public enum VerbaliseTreeManager {
 				TextElementSequence seq = new TextElementSequence();
 				seq.add(new LogicElement("opexists"));
 				
-				seq.add(new LogicElement("-11-"));
+				if(debug) seq.add(new LogicElement("-11-"));
 				return seq;
 			}
 			
@@ -1616,7 +1622,7 @@ public enum VerbaliseTreeManager {
 				TextElementSequence firstpart = VerbalisationManager.textualise(premiseformula,obfuscator);
 				firstpart.makeUppercaseStart();
 				
-				firstpart.add(new LogicElement("-12-"));
+				if(debug) firstpart.add(new LogicElement("-12-"));
 				return firstpart;
 			}
 			
@@ -1630,7 +1636,7 @@ public enum VerbaliseTreeManager {
 					seq.add(new LogicElement(LogicLabels.getString("hence")));
 					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 					
-					seq.add(new LogicElement("-13-"));
+					if(debug) seq.add(new LogicElement("-13-"));
 					return seq;
 				}
 			}
@@ -1653,7 +1659,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(","));
 				seq.concat(VerbalisationManager.textualise( (OWLObject) additions_to_antecedent.get(0)));
 				
-				seq.add(new LogicElement("-15-"));
+				if(debug) seq.add(new LogicElement("-15-"));
 				return seq;
 			}
 			
@@ -1666,7 +1672,7 @@ public enum VerbaliseTreeManager {
 				// seq.add(new LogicElement("Consequently,"));
 				seq.concat(VerbalisationManager.textualise( (OWLObject) additions_to_antecedent.get(0),obfuscator));
 				
-				seq.add(new LogicElement("-16-"));
+				if(debug) seq.add(new LogicElement("-16-"));
 				return seq;
 				// return "Consequently, " + VerbalisationManager.verbalise( (OWLObject) additions_to_antecedent.get(0));
 			}
@@ -1692,7 +1698,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(LogicLabels.getString("andTherefore)")));
 				seq.concat(superseq);
 				
-				seq.add(new LogicElement("-17-"));
+				if(debug) seq.add(new LogicElement("-17-"));
 				return seq;
 				// return VerbalisationManager.verbalise(subcl1) + " and therefore " + VerbalisationManager.verbalise(subcl2.getSuperClass());
 			}
@@ -1709,7 +1715,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(LogicLabels.getString("ThusNothingIs")));
 				seq.concat(VerbalisationManager.textualise(subcl1.getSubClass(),obfuscator));
 				
-				seq.add(new LogicElement("-18-"));
+				if(debug) seq.add(new LogicElement("-18-"));
 				return seq;
 				// return ". Thus, nothing is " + VerbalisationManager.verbalise(subcl1.getSubClass());
 			}
@@ -1729,7 +1735,7 @@ public enum VerbaliseTreeManager {
 				seq.concat(VerbalisationManager.textualise(subcl1.getSubClass(),obfuscator));
 				// ClassElement clElement = new ClassElement(str);
 				
-				seq.add(new LogicElement("-19-"));
+				if(debug) seq.add(new LogicElement("-19-"));
 				return seq;
 				// return "Since " + VerbalisationManager.verbalise(subcl) + ", which does not exist, nothing is " + VerbalisationManager.verbalise(subcl1.getSubClass());
 			}
@@ -1754,7 +1760,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(LogicLabels.getString("thusNothingIs")));
 				seq.concat(VerbalisationManager.textualise(subcl.getSubClass(),obfuscator));
 				
-				seq.add(new LogicElement("-20-"));
+				if(debug) seq.add(new LogicElement("-20-"));
 				return seq;
 			}
 			if (rule.equals(INLG2012NguyenEtAlRules.RULE35) ){ 
@@ -1783,7 +1789,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(LogicLabels.getString("butThisCanNotBeTrueAtTheSameTimeThusNothingIs")));
 				seq.concat(VerbalisationManager.textualise(subcl.getSubClass(),obfuscator));
 			
-				seq.add(new LogicElement("-21-"));
+				if(debug) seq.add(new LogicElement("-21-"));
 				return seq;
 				// return "However, no " + str 
 				// 		+ " is " +  VerbalisationManager.verbalise(subcl.getSuperClass()) + 
@@ -1797,7 +1803,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(","));
 				seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 				
-				seq.add(new LogicElement("-22-"));
+				if(debug) seq.add(new LogicElement("-22-"));
 				return seq;
 				// return "Since everything is " + VerbalisationManager.verbalise(subcl1.getSuperClass()) 
 				// 		+ ", " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); // + " Previousconclusion " + previousconclusion;
@@ -1824,7 +1830,7 @@ public enum VerbaliseTreeManager {
 				seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 				}
 				
-				seq.add(new LogicElement("-23-"));
+				if(debug) seq.add(new LogicElement("-23-"));
 				return seq;
 				// return makeUppercaseStart(VerbalisationManager.verbalise(subcl)) 
 				// 		+ ", thus " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); // + " Previousconclusion " + previousconclusion;
@@ -1851,7 +1857,7 @@ public enum VerbaliseTreeManager {
 				seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) additions_to_antecedent.get(0)),obfuscator));
 				}
 				
-				seq.add(new LogicElement("-24-"));
+				if(debug) seq.add(new LogicElement("-24-"));
 				return seq;
 				// return makeUppercaseStart(VerbalisationManager.verbalise(subcl1)) 
 				// 		+ " which " + is +  VerbalisationManager.verbalise(((OWLSubClassOfAxiom) subcl2).getSuperClass()) // ; 
@@ -1878,7 +1884,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(","));
 				seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 				
-				seq.add(new LogicElement("-25-"));
+				if(debug) seq.add(new LogicElement("-25-"));
 				return seq;
 				// return "Since both " + VerbalisationManager.verbalise(((OWLSubClassOfAxiom) subcl1).getSubClass()) 
 				//                     + " and " + VerbalisationManager.verbalise(((OWLSubClassOfAxiom) subcl3).getSubClass()) + 
@@ -1921,7 +1927,7 @@ public enum VerbaliseTreeManager {
 				String tooltiptext = superclass.asOWLClass().getIRI().asLiteral().toString();
 				seq.add(new ClassElement(intString,tooltiptext));
 				
-				seq.add(new LogicElement("-26-"));
+				if(debug) seq.add(new LogicElement("-26-"));
 				return seq;
 				// return result;
 				}
@@ -1937,7 +1943,7 @@ public enum VerbaliseTreeManager {
 					// result += VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); 
 					// return result;
 					
-					seq.add(new LogicElement("-27-"));
+					if(debug) seq.add(new LogicElement("-27-"));
 					return seq;				
 				}
 			}
@@ -1980,7 +1986,7 @@ public enum VerbaliseTreeManager {
 			//	result += VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); 
 			//	return result;
 				
-				seq.add(new LogicElement("-28-"));
+				if(debug) seq.add(new LogicElement("-28-"));
 				return seq;
 				}
 			
@@ -2085,7 +2091,7 @@ public enum VerbaliseTreeManager {
 			}
 			// TextElementSequence seq = new TextElementSequence();
 			// seq.add(new LogicElement(resultstring));
-			seq.add(new LogicElement("-29-"));
+			if(debug) seq.add(new LogicElement("-29-"));
 			aSeq = seq;
 		}
 			return aSeq;
