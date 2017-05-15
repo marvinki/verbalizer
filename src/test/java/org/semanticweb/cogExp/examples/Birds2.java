@@ -34,8 +34,8 @@ public class Birds2 {
 		WordNetQuery.INSTANCE.setDict(tmpdir);
 		
 		OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		String root = "/home/fpaffrath/Dokumente/";
-		String path = root+"ornithology_mod.owl";
+		String root = "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/";
+		String path = root+"Bosch-reworked.owl";
 		File ontologyfile = new java.io.File(path);
 		OWLOntology tinyExampleOntology = 
 				OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
@@ -44,34 +44,16 @@ public class Birds2 {
 		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		
 		
-		String a = "CoalTit";
-		String b = "BirdRequiringSmallEntranceHole";
+		String a = "BirchWood";
+		String b = "DecidiousWood";
 		String result = getResult(a, b, path, reasonerFactory, reasoner );
 		
-		
-		a = "MarshTit";
-		b = "BirdRequiringSmallEntranceHole";
-		String result2 = getResult(a, b, path, reasonerFactory, reasoner );
-		
-		String nadelholzreicherMischwald = "MixedForestsRichInConifers";
-		String Mischwald = "MixedForests";
-		String result3 = getResult(nadelholzreicherMischwald, Mischwald, path, reasonerFactory, reasoner );
-		
-		a = "GreatTit";
-		b = "SeedPredator";
-		String result4 = getResult(a, b, path, reasonerFactory, reasoner );
-		
-		a = "EuropeanPiedFlycatcher";
-		b = "PulpPredator";
-		String result5b = getResult(a, b, path, reasonerFactory, reasoner );
+	
 		
 		System.out.println("Birds : \n");
 		
 		System.out.println(result);
-		System.out.println(result2);
-		System.out.println(result3);
-		System.out.println(result4);
-		System.out.println(result5b);
+		
 
 		
 //		
@@ -125,7 +107,8 @@ public class Birds2 {
 	public static OWLOntologyManager getImportKnowledgeableOntologyManger(){
 		
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		String root = "file:///home/fpaffrath/Dokumente/gatheredOntologies";
+		// String root = "file:///home/fpaffrath/Dokumente/gatheredOntologies";
+		String root = "file:////Users/marvin/marvin_work_ulm/b/resources/";
 		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.semanticweb.org/marvin/ontologies/2016/10/untitled-ontology-772"),
 		           IRI.create(root+"bosch-reworked02032017.owl")));
 		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.semanticweb.org/marvin/ontologies/2016/10/ontologyExport_PTGreenProducts.rdf"),

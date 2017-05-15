@@ -1,6 +1,8 @@
 package org.semanticweb.cogExp.examples;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
+
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
@@ -34,14 +36,17 @@ public class Birds {
 		WordNetQuery.INSTANCE.setDict(tmpdir);
 		
 		OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		String root = "/home/fpaffrath/Dokumente/";
-		String path = root+"ornithology_mod.owl";
+		// String root = "/home/fpaffrath/Dokumente/";
+		// String path = root+"ornithology_mod.owl";
+		String path = "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl";
 		File ontologyfile = new java.io.File(path);
 		OWLOntology tinyExampleOntology = 
 				OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
 		OWLReasoner reasoner = reasonerFactory.createReasoner(tinyExampleOntology);
 		
 		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		
+		VerbaliseTreeManager.INSTANCE.setLanguage(Locale.GERMAN);
 		
 		
 		String a = "CoalTit";
@@ -59,19 +64,19 @@ public class Birds {
 		
 		a = "GreatTit";
 		b = "SeedPredator";
-		String result4 = getResult(a, b, path, reasonerFactory, reasoner );
+		// String result4 = getResult(a, b, path, reasonerFactory, reasoner );
 		
 		a = "EuropeanPiedFlycatcher";
 		b = "PulpPredator";
-		String result5b = getResult(a, b, path, reasonerFactory, reasoner );
+		// String result5b = getResult(a, b, path, reasonerFactory, reasoner );
 		
 		System.out.println("Birds : \n");
 		
 		System.out.println(result);
 		System.out.println(result2);
 		System.out.println(result3);
-		System.out.println(result4);
-		System.out.println(result5b);
+		// System.out.println(result4);
+		// System.out.println(result5b);
 
 		
 //		
