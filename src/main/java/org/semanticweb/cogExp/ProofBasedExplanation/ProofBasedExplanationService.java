@@ -16,7 +16,7 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
-// import org.semanticweb.cogExp.StructuralCueing.NichtPraesMethodenVersuchN4;
+import org.semanticweb.cogExp.StructuralCueing.NichtPraesMethodenVersuchN4;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
@@ -304,32 +304,28 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		     	
 		JPanel panel = new JPanel();
 		
-		
+		/*
 		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
 		 			   													ontology, true, "OP");	
 		
 		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
 		
 		result = result.getResult(sequence,editorKit);
-		
+		*/
 		
 		// Using Ms Kölle's structural cueing approach:
-		/*
 		List<String> htmls = generateStructurallyCuedExplanation(axiom, reasoner, factory, 
 					ontology, 100000,10000, "OP",true,false);
 		
 		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
 		
 		result = result.getResultSC(htmls,editorKit);
-		*/
 	
 		//result.updateUI();
 		return result;
 	}
 
-
 	// Method calls generic proof search to generate proof tree, and Ms Kölle's structural cueing algorithm
-	/*
 	public static List<String> generateStructurallyCuedExplanation (OWLAxiom axiom, OWLReasoner reasoner,
 		OWLReasonerFactory factory, OWLOntology ontology, int maxsteps, long maxtime, String ruleset,
 		boolean asHTML, boolean obf) {
@@ -347,7 +343,6 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		} 
 		return explanations;
 }
-	*/
 	
 
 }

@@ -1,12 +1,15 @@
  package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.awt.BorderLayout;
+import javax.swing.BoxLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -31,6 +34,9 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 
 	private ContentJPanel content;
 	private JPanel result = new JPanel();
+
+	
+
 	
 	private int currentLayout = 0;
 	
@@ -91,6 +97,8 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		
 		JEditorPane editorPane = new JEditorPane("text/html","");
 		editorPane.setEditable(false);
+		JPanel resultB = new JPanel();                                                   //
+		JPanel resultK = new JPanel();													//								
 		
 		// we need an HTMLEditorKit for using CSS
 		HTMLEditorKit kit = new HTMLEditorKit();
@@ -100,16 +108,40 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		editorPane.setDocument(doc);
 		if (htmls.size()>0)
 			editorPane.setText(htmls.get(0));
-		Dimension panesize = editorPane.getPreferredSize();
+		Dimension panesize = editorPane.getPreferredSize() ;
+		
+			
+	
+		//int contentpanewidth = content.getWidth();
+		//Dimension editorsize = new Dimension(contentpanewidth,9000);
+		// editorPane.setMaximumSize(editorsize);
 		
 		// JPanel panel = new JPanel();
 		// panel.setName("DOOPDDI");
-		content = new ContentJPanel(ek,panesize.getWidth() + 100,panesize.getHeight() + 10);
+		content = new ContentJPanel(ek,panesize.getWidth() + 100,panesize.getHeight() + 60);
 		// result.add(content);
-		result.add(editorPane);
+//		result.add(editorPane);				// ORIGINAL
+
+		resultK.add(new JLabel("Styles:  "));
+
+		JButton[] styleButton = new JButton[12];
+		for(int i=0; i<12; i++) {
+			styleButton[i] = new JButton(""+(i+1));
+			styleButton[i].addActionListener(new MyActionListener(i, editorPane, htmls));
+			resultK.add(styleButton[i],BorderLayout.PAGE_START);
+	//		styleButton[i].setLayout (new FlowLayout (FlowLayout.LEADING));		// necessary?
+			
+		}
+		resultK.add(new JLabel("                                        "));
 		
+		resultK.setLayout(new BoxLayout(resultK, BoxLayout.X_AXIS));
+		resultK.setAlignmentX(LEFT_ALIGNMENT);
+		resultB.add(resultK);
+		resultB.setAlignmentX(LEFT_ALIGNMENT);
 		
+/*
 		JButton styleButton = new JButton("Style");
+//		result.add(styleButton, BorderLayout.BEFORE_FIRST_LINE); 
 		styleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				currentLayout++;
@@ -122,12 +154,25 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 				return;
 			}
 		});
-		result.add(styleButton);
 		
-		this.add(getScrollPane(result));
+*/		
+//		result.add(styleButton, BorderLayout.BEFORE_FIRST_LINE); //125
+//		result.setLayout(new BoxLayout(result, BoxLayout.Y_AXIS));
+		
+		// result.add(styleButton);			// ORIGINAL
+		
+//		content.setLayout (new FlowLayout (FlowLayout.LEFT));		
+//		content.setLayout (new FlowLayout (FlowLayout.LEADING));		
+//		styleButton.setLayout (new FlowLayout (FlowLayout.LEADING));	// Kölle, functions
 		
 		
+		resultB.setLayout(new BoxLayout(resultB, BoxLayout.Y_AXIS));
+
+		resultB.add(editorPane, BorderLayout.PAGE_END);				// Kölle, experimental, see line 111
+		this.add(getScrollPane(result)); // ORGINAL
+//		styleButton.getRootPane().setLayout (new FlowLayout (FlowLayout.LEFT));	
 		
+		result.add(resultB);	// Kölle, experimental 222 see line 111
 		
 //		contentSize.setSize(contentSize.getWidth(), height/*+fac*getFontMetrics(getFont()).getHeight()*/);
 

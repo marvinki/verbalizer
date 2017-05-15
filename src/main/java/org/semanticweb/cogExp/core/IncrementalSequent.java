@@ -50,7 +50,7 @@ public class IncrementalSequent extends Sequent{
 	}
 	
 	public int addAntecedent(OWLFormula formula, int depth) throws Exception{
-		System.out.println("DEBUG -- adding " + formula);
+		// System.out.println("DEBUG -- adding " + formula);
 		int formid = mastersequent.addAntecedent(formula, depth);
 		antecedents.add(formid);
 		return formid;

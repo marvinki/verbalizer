@@ -83,6 +83,7 @@ public class UsageExample {
 	System.out.println(explanation);
 	
 	List<Integer> proofsteps =  tree.computePresentationOrder();
+	System.out.println(proofsteps);
 	System.out.println("\n == INFORMATION CONTAINED IN THE PROOFTREE == \n");
 	for (int id: proofsteps){
 		GentzenStep step = tree.getStepByID(id);

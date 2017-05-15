@@ -546,7 +546,7 @@ public enum VerbalisationManager {
 		String str2 = "";
 		String germanlabel = "";
 		for (OWLAnnotation annotation : annotations) {
-			System.out.println("DEBUG --- annotation: " + annotation);
+			// System.out.println("DEBUG --- annotation: " + annotation);
 			if (annotation.getProperty().getIRI().getFragment().equals("label")
 					) {
 				str = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString()
@@ -643,7 +643,9 @@ public enum VerbalisationManager {
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
 						labelFound = true;
 					}if(!labelFound){
-						str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"" ;
+						// Marvin: using quotes makes Mrs Koelle's structural cueing module crash.
+						str = annotation.getValue().asLiteral().orNull().getLiteral();
+						// str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"" ;
 						labelFound = true;// annotation.getValue().toString()
 					}
 				}				
@@ -1452,11 +1454,11 @@ public enum VerbalisationManager {
 		OWLFormula axiomFormula;
 		List<OWLFormula> justificationFormulas = new ArrayList<OWLFormula>();
 		try {
-			System.out.println("DEBUG --- Trying to add " + axiom);
+			// System.out.println("DEBUG --- Trying to add " + axiom);
 			axiomFormula = ConversionManager.fromOWLAPI(axiom);
 
 			for (OWLAxiom ax : explanation) {
-				System.out.println("DEBUG --- Trying to add " + ax);
+				// System.out.println("DEBUG --- Trying to add " + ax);
 				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 
 				// System.out.println("VerbalisationManager: adding: " +

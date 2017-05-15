@@ -912,6 +912,13 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 
 	public List<TextElement> visit(OWLObjectPropertyAssertionAxiom arg0) {
 		List<TextElement> result = new ArrayList<TextElement>();
+		OWLIndividual subject = arg0.getSubject();
+		OWLIndividual object = arg0.getObject();
+		result.addAll(subject.accept(this));
+		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(arg0.getProperty());
+		TextElement propElement = new RoleElement(propstring);
+		result.add(propElement);
+		result.addAll(object.accept(this));
 		return result;
 		// return "{IMPLEMENT ME obj prop ass : " 
 	    // + arg0.getProperty().accept(this) +  arg0.getObject().accept(this) 

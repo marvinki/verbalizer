@@ -325,6 +325,8 @@ public enum RuleSetManager {
 			AdditionalDLRules.INDIVIDUAL,
 			AdditionalDLRules.INVERSEOBJECTPROPERTY,
 			AdditionalDLRules.OBJPROPASSERIONEXISTS,
+			AdditionalDLRules.OBJPROPASSERIONASWITNESS,
+			AdditionalDLRules.ANDIVIDUAL,
 			AdditionalDLRules.INDIVTOPINTRO
     };
     

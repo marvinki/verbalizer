@@ -31,5 +31,9 @@ public class LinebreakElement extends TextElement{
 			}
 		}
 	
+		@Override
+		public boolean isLinebreak(){
+			return true;
+		}
 	
 }
