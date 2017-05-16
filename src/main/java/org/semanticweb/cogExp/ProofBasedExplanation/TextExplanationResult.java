@@ -92,6 +92,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 	}
 	
 	
+	/*
 	public TextExplanationResult getResultSC(List<String> htmls, OWLEditorKit ek){
 //		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
 		
@@ -110,17 +111,8 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 			editorPane.setText(htmls.get(0));
 		Dimension panesize = editorPane.getPreferredSize() ;
 		
-			
-	
-		//int contentpanewidth = content.getWidth();
-		//Dimension editorsize = new Dimension(contentpanewidth,9000);
-		// editorPane.setMaximumSize(editorsize);
-		
-		// JPanel panel = new JPanel();
-		// panel.setName("DOOPDDI");
 		content = new ContentJPanel(ek,panesize.getWidth() + 100,panesize.getHeight() + 60);
-		// result.add(content);
-//		result.add(editorPane);				// ORIGINAL
+		
 
 		resultK.add(new JLabel("Styles:  "));
 
@@ -138,34 +130,7 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		resultK.setAlignmentX(LEFT_ALIGNMENT);
 		resultB.add(resultK);
 		resultB.setAlignmentX(LEFT_ALIGNMENT);
-		
-/*
-		JButton styleButton = new JButton("Style");
-//		result.add(styleButton, BorderLayout.BEFORE_FIRST_LINE); 
-		styleButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				currentLayout++;
-				if (currentLayout>12)
-					currentLayout=0;
-				Document doc = kit.createDefaultDocument();
-				editorPane.setDocument(doc);
-				editorPane.setText(htmls.get(currentLayout));
-				editorPane.updateUI();
-				return;
-			}
-		});
-		
-*/		
-//		result.add(styleButton, BorderLayout.BEFORE_FIRST_LINE); //125
-//		result.setLayout(new BoxLayout(result, BoxLayout.Y_AXIS));
-		
-		// result.add(styleButton);			// ORIGINAL
-		
-//		content.setLayout (new FlowLayout (FlowLayout.LEFT));		
-//		content.setLayout (new FlowLayout (FlowLayout.LEADING));		
-//		styleButton.setLayout (new FlowLayout (FlowLayout.LEADING));	// Kölle, functions
-		
-		
+				
 		resultB.setLayout(new BoxLayout(resultB, BoxLayout.Y_AXIS));
 
 		resultB.add(editorPane, BorderLayout.PAGE_END);				// Kölle, experimental, see line 111
@@ -174,10 +139,11 @@ public class TextExplanationResult extends ExplanationResult{ // implements OWLM
 		
 		result.add(resultB);	// Kölle, experimental 222 see line 111
 		
-//		contentSize.setSize(contentSize.getWidth(), height/*+fac*getFontMetrics(getFont()).getHeight()*/);
+//		contentSize.setSize(contentSize.getWidth(), height);
 
 		return this;
 	}
+*/
 	
 	/**
 	 * 
