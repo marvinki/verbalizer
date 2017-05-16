@@ -120,6 +120,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+    <groupId>net.sourceforge.owlapi</groupId>
+    <artifactId>jfact</artifactId>
+    <version>1.0.0</version>
+    <scope>test</scope>
+	</dependency>
+		<dependency>
 			<groupId>org.semanticweb.elk</groupId>
 			<artifactId>elk-reasoner</artifactId>
 			<version>${elk.version}</version>

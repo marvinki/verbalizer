@@ -9,14 +9,25 @@ import org.semanticweb.cogExp.ProofBasedExplanation.WordnetTmpdirManager;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
-public class Birds2 {
+import uk.ac.manchester.cs.jfact.JFactFactory;
+
+
+// import org.semanticweb.owlapi.inference
+
+public class IndividualsExample {
 
 	public static void main(String[] args) throws OWLOntologyCreationException {
 		/**
@@ -33,28 +44,61 @@ public class Birds2 {
 		}
 		WordNetQuery.INSTANCE.setDict(tmpdir);
 		
-		OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
+		
+		
+		// OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
 		String root = "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/";
-		String path = root+"Bosch-reworked.owl";
+		String path = root+"simple-tools.owl";
 		File ontologyfile = new java.io.File(path);
-		OWLOntology tinyExampleOntology = 
-				OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
-		OWLReasoner reasoner = reasonerFactory.createReasoner(tinyExampleOntology);
 		
-		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		OWLOntologyManager specialOntologyManager = getImportKnowledgeableOntologyManger();
+		
+		OWLOntology boschOntology = 
+				specialOntologyManager.loadOntologyFromOntologyDocument(ontologyfile);	
+		// OWLReasoner reasoner = reasonerFactory.createReasoner(boschOntology);
 		
 		
-		String a = "BirchWood";
-		String b = "DecidiousWood";
-		String result = getResult(a, b, path, reasonerFactory, reasoner );
 		
-	
+		// Reasoner hermit=new Reasoner(boschOntology);
+		// OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
+		// OWLReasoner hermit = reasonerFactory.createReasoner(boschOntology);
+		// System.out.println(hermit.getReasonerName());
 		
-		System.out.println("Birds : \n");
+		/*
+		Configuration config = new Configuration();
+		Reasoner hermit = new Reasoner(config,boschOntology);
+		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
+		System.out.println(hermit.getReasonerName());
+		*/
+		// System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		
-		System.out.println(result);
+		// OWLReasoner reasoner=new Reasoner.ReasonerFactory().createReasoner(boschOntology);
+		// OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 		
-
+		// String a = "BirchWood";
+		// String b = "DecidiousWood";
+		// String result = getResult(a, b, path, reasonerFactory, hermit );
+		
+		OWLReasonerConfiguration config = new SimpleConfiguration(50000);
+		OWLReasonerFactory reasonerFactory = new JFactFactory();
+		OWLReasoner jfact = reasonerFactory.createReasoner(boschOntology,config);
+		
+		// System.out.println("Birds : \n");
+		
+		// System.out.println(result);
+		
+		// Classaxiom
+		OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
+		// String ontologyuri = "http://www.semanticweb.org/marvin/ontologies/2016/10/untitled-ontology-772#";
+		String ontologyuri = "http://www.semanticweb.org/powertools#";
+	  	OWLClass straightShankedThing = dataFactory.getOWLClass(IRI.create(ontologyuri + "CorrectlyDrillingInWood"));
+	  	OWLNamedIndividual psr18 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drillingEvent1"));
+	  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(straightShankedThing, psr18);
+		
+		
+		String resulttext = ProofBasedExplanationService.getExplanationResult(classAxiom, jfact, reasonerFactory,  boschOntology, false, 1000, 50000, "OP", false, false);
+		System.out.println(resulttext);
+		
 		
 //		
 //		OWLOntologyManager knowledgeableManager = getImportKnowledgeableOntologyManger();
@@ -118,6 +162,8 @@ public class Birds2 {
 		           IRI.create(root+"ontologyExport_MaterialsOntology.rdf")));
 		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.bosch.com/ActivitiesOntology"),
 		           IRI.create(root+"ontologyExport_ActivitiesOntology.rdf")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.bosch.com/PTGreenProducts"),
+		           IRI.create(root+"ontologyExport_PTGreenProducts.rdf")));
 		
 		return manager;
 	}

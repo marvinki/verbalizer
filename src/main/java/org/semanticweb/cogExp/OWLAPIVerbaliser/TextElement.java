@@ -73,4 +73,12 @@ public class TextElement {
 		return result;
 	}
 	
+	public boolean isLinebreak(){
+		return false;
+	}
+	
+	public boolean isConclusionMarker(){
+		return false;
+	}
+	
 }

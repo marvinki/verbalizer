@@ -41,7 +41,7 @@ SIMPLETERMINATION{
 	
 	@Override
 	public List<RuleBinding> findRuleBindings(Sequent s){
-		System.out.println("Simple termination called");
+		// System.out.println("Simple termination called");
 		List<RuleBinding> results = new ArrayList<RuleBinding>();
 		HashSet<OWLFormula> succs = s.getAllSuccedentOWLFormulas();
 		List<OWLFormula> succslist = new ArrayList<OWLFormula>(succs);
@@ -1970,7 +1970,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 		
 		
 		//$18
-				INDIVIDUAL{ // X(a) and SubCla(X,\Y) --> Y(a)
+				INDIVIDUAL{ // X(a) and SubCla(X,Y) --> Y(a)
 					
 					@Override
 					public java.lang.String getName(){return "Individual";};
@@ -2034,7 +2034,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						}
 						} // end formula 1 loop
 						// System.out.println("DEBUG === results " + results);		
-						System.out.println("proposed bindings: " + results.size());
+						// System.out.println("proposed bindings: " + results.size());
 						return results;
 					}
 					
@@ -2139,7 +2139,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						}
 						} // end formula 1 loop
 						// System.out.println("DEBUG === results " + results);		
-						System.out.println("DEBUG INVERSE OBJE PROP proposed bindings: " + results.size());
+						// System.out.println("DEBUG INVERSE OBJE PROP proposed bindings: " + results.size());
 						return results;
 					}
 					
@@ -2242,7 +2242,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 									matcher3.addAll(matcher2);					
 											
 									OWLFormula conclusion = result.applyMatcher(matcher3);	
-									System.out.println("OBJPROPASSERIONEXISTS conclusion: " + conclusion);
+									// System.out.println("OBJPROPASSERIONEXISTS conclusion: " + conclusion);
 									// System.out.println(s.alreadyContainedInAntecedent(conclusion));
 									if (!s.alreadyContainedInAntecedent(conclusion)){
 										RuleBinding binding = new RuleBinding(conclusion,null);																						
@@ -2251,7 +2251,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 										SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(candidate2));
 										binding.insertPosition("A2", position2);
 										SequentPosition position3 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(candidate3));
-										binding.insertPosition("A2", position3);
+										binding.insertPosition("A3", position3);
 										results.add(binding);
 										// System.out.println("BINDING " + binding);
 									} // end if
@@ -2263,7 +2263,228 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						}
 						} // end formula 1 loop
 						// System.out.println("DEBUG === results " + results);		
-						System.out.println("OBJPROPASSERIONEXISTS: " + results.size());
+						// System.out.println("OBJPROPASSERIONEXISTS: " + results.size());
+						return results;
+					}
+					
+					@Override
+					public List<RuleApplicationResults>  computeRuleApplicationResults(Sequent sequent, RuleBinding binding) throws Exception{
+						SequentPosition position1 = binding.get("A1");
+						SequentPosition position2 = binding.get("A2");
+						Sequent s = sequent; //.clone();
+						// ArrayList antecedent = s.getAntecedent();
+						ArrayList newsequents = new ArrayList<Sequent>();
+						
+						List<RuleApplicationResults> results = new ArrayList<RuleApplicationResults>();
+						
+						OWLFormula conclusion = binding.getNewAntecedent();
+							if (!sequent.alreadyContainedInAntecedent(conclusion)){
+								RuleApplicationResults results1 = new RuleApplicationResults();
+								results1.setOriginalFormula(s);
+								results1.addAddition("A1", conclusion);
+								results.add(results1);	
+								results1.setMaxFormulaDepth(InferenceApplicationService.computeRuleBindingMaxDepth(sequent, binding));
+								// System.out.println("DEBUG individual === " + conclusion);
+							}
+						return results;
+					}
+					
+					
+					@Override
+					public SequentList computePremises(Sequent sequent, RuleBinding binding) throws Exception{
+						List<RuleApplicationResults> results = computeRuleApplicationResults(sequent, binding);
+						List<Sequent> sequents =  ruleApplicationResultsAsSequent(results);
+						return SequentList.makeANDSequentList(sequents);
+					}
+							
+				}, // END RULE
+				
+				//$20
+				OBJPROPASSERIONASWITNESS{ // r(a,b), B(b), --> (\exists r.B) (a)
+					
+					@Override
+					public java.lang.String getName(){return "obj-wit";};
+					@Override
+					public java.lang.String getShortName(){return "oaw";};
+					
+					
+					private final OWLFormula prem1 = OWLFormula.createFormula(OWLSymb.OBJECTPROPERTYASSERTION, 
+							OWLFormula.createFormulaVar("v1"),
+							OWLFormula.createFormulaVar("v2"),
+							OWLFormula.createFormulaVar("v3")
+							); 
+					
+					private final OWLFormula prem2 = OWLFormula.createFormula(OWLSymb.CLASSASSERTION,
+							  OWLFormula.createFormulaVar("v4"),
+							  OWLFormula.createFormulaVar("v3"));
+							
+				  private final OWLFormula result =  OWLFormula.createFormula(OWLSymb.CLASSASSERTION,
+							OWLFormula.createFormula(OWLSymb.EXISTS, 
+									OWLFormula.createFormulaVar("v1"), 
+									OWLFormula.createFormulaVar("v4")),
+							OWLFormula.createFormulaVar("v2"));
+							
+					
+					@Override
+					public List<RuleBinding> findRuleBindings(Sequent s){
+						
+						List<RuleBinding> results = new ArrayList<RuleBinding>();
+						List<OWLFormula> candidates1 = s.findMatchingFormulasInAntecedent(prem1);
+						
+						for (int i = 0 ; i < candidates1.size(); i++){
+						    List<OWLFormula> candidates2 = new ArrayList<OWLFormula>();
+							// get matcher 
+							try{
+							List<Pair<OWLFormula,OWLFormula>> matcher = candidates1.get(i).match(prem1);
+							
+							// now build new formula using the matcher
+							OWLFormula prem_2 = prem2.applyMatcher(matcher);
+							System.out.println("prem_2: " + prem_2);
+							
+							// now search for this formula in sequent
+							candidates2 = s.findMatchingFormulasInAntecedent(prem_2);
+							
+							for (OWLFormula candidate2: candidates2){
+								List<Pair<OWLFormula,OWLFormula>> matcher2 = candidate2.match(prem2);
+								matcher2.addAll(matcher);
+								
+								OWLFormula conclusion = result.applyMatcher(matcher2);	
+									// System.out.println("OBJPROPASSERIONEXISTS conclusion: " + conclusion);
+									// System.out.println(s.alreadyContainedInAntecedent(conclusion));
+									if (!s.alreadyContainedInAntecedent(conclusion)){
+										RuleBinding binding = new RuleBinding(conclusion,null);																						
+										SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(candidates1.get(i)));
+										binding.insertPosition("A1", position1);
+										SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(candidate2));
+										binding.insertPosition("A2", position2);
+										results.add(binding);
+										// System.out.println("BINDING " + binding);
+									} // end if
+								    
+									
+							} // end loop candidate2
+							} catch (Exception e){
+							e.printStackTrace();
+						}
+						} // end formula 1 loop
+						System.out.println("DEBUG === results " + results);		
+						System.out.println("WITNESS: " + results.size());
+						return results;
+					}
+					
+					@Override
+					public List<RuleApplicationResults>  computeRuleApplicationResults(Sequent sequent, RuleBinding binding) throws Exception{
+						SequentPosition position1 = binding.get("A1");
+						SequentPosition position2 = binding.get("A2");
+						Sequent s = sequent; //.clone();
+						// ArrayList antecedent = s.getAntecedent();
+						ArrayList newsequents = new ArrayList<Sequent>();
+						
+						List<RuleApplicationResults> results = new ArrayList<RuleApplicationResults>();
+						
+						OWLFormula conclusion = binding.getNewAntecedent();
+							if (!sequent.alreadyContainedInAntecedent(conclusion)){
+								RuleApplicationResults results1 = new RuleApplicationResults();
+								results1.setOriginalFormula(s);
+								results1.addAddition("A1", conclusion);
+								results.add(results1);	
+								results1.setMaxFormulaDepth(InferenceApplicationService.computeRuleBindingMaxDepth(sequent, binding));
+								// System.out.println("DEBUG individual === " + conclusion);
+							}
+						return results;
+					}
+					
+					
+					@Override
+					public SequentList computePremises(Sequent sequent, RuleBinding binding) throws Exception{
+						List<RuleApplicationResults> results = computeRuleApplicationResults(sequent, binding);
+						List<Sequent> sequents =  ruleApplicationResultsAsSequent(results);
+						return SequentList.makeANDSequentList(sequents);
+					}
+					
+					@Override
+					public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+						for (OWLFormula form : formulalist){
+							if (form.getHead().equals(OWLSymb.OBJECTPROPERTYASSERTION))
+								return form;
+						}
+						return null;
+					}
+					
+					@Override
+					public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+						for (OWLFormula form : formulalist){
+							if (form.getHead().equals(OWLSymb.CLASSASSERTION))
+								return form;
+						}
+						return null;
+					}
+					
+							
+				}, // END RULE
+				
+				
+				//$20
+				ANDIVIDUAL{ // A(a) B(a), --> (A \sqcap B) (a)
+					
+					@Override
+					public java.lang.String getName(){return "and introduction individuals";};
+					@Override
+					public java.lang.String getShortName(){return "iai";};
+					
+					private final OWLFormula prem1 = OWLFormula.createFormula(OWLSymb.CLASSASSERTION,
+							  OWLFormula.createFormulaVar("v1"),
+							  OWLFormula.createFormulaVar("v2"));
+							
+					@Override
+					public List<RuleBinding> findRuleBindings(Sequent s){
+						
+						List<RuleBinding> results = new ArrayList<RuleBinding>();
+						List<OWLFormula> candidates1 = s.findMatchingFormulasInAntecedent(prem1);
+						
+						for (int i = 0 ; i < candidates1.size(); i++){
+							
+							for (int j = i+1 ; j < candidates1.size(); j++){
+								
+								if (candidates1.get(i).getArgs().get(1).equals(candidates1.get(j).getArgs().get(1)))
+								{
+								OWLFormula conclusion1 = OWLFormula.createFormula(OWLSymb.CLASSASSERTION,
+										OWLFormula.createFormula(OWLSymb.INT,
+												candidates1.get(i).getArgs().get(0),
+												candidates1.get(j).getArgs().get(0)),
+										candidates1.get(i).getArgs().get(1));
+												
+									if (!s.alreadyContainedInAntecedent(conclusion1)){
+										RuleBinding binding = new RuleBinding(conclusion1,null);																						
+										SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(candidates1.get(i)));
+										binding.insertPosition("A1", position1);
+										SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(candidates1.get(j)));
+										binding.insertPosition("A2", position2);
+										results.add(binding);
+										// System.out.println("BINDING " + binding);
+									} // end if
+									
+									OWLFormula conclusion2 = OWLFormula.createFormula(OWLSymb.CLASSASSERTION,
+											OWLFormula.createFormula(OWLSymb.INT,
+													candidates1.get(j).getArgs().get(0),
+													candidates1.get(i).getArgs().get(0)),
+											candidates1.get(i).getArgs().get(1));
+													
+										if (!s.alreadyContainedInAntecedent(conclusion1)){
+											RuleBinding binding = new RuleBinding(conclusion1,null);																						
+											SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(candidates1.get(j)));
+											binding.insertPosition("A1", position1);
+											SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(candidates1.get(i)));
+											binding.insertPosition("A2", position2);
+											results.add(binding);
+											// System.out.println("BINDING " + binding);
+										} // end if
+								    
+								}
+							} // end second loop
+						} // end formula 1 loop
+						System.out.println("DEBUG === results " + results);		
+						System.out.println("AND-I: " + results.size());
 						return results;
 					}
 					
@@ -2315,9 +2536,9 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							for (OWLFormula subexpr : subexprs){
 								// System.out.println("Examining " + subexprs);
 								if (subexpr.getHead() instanceof OWLIndividualName){
-									System.out.println("Examining individual" + subexpr);
+									// System.out.println("Examining individual" + subexpr);
 									OWLFormula conclusion = OWLFormula.createFormula(OWLSymb.CLASSASSERTION,OWLFormula.createFormulaTop(),subexpr);
-									System.out.println("Proposing " + conclusion);
+									// System.out.println("Proposing " + conclusion);
 									if (!s.alreadyContainedInAntecedent(conclusion) 
 											){
 											RuleBinding binding = new RuleBinding(conclusion,null);
@@ -2326,7 +2547,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 								}
 								}
 							}
-							System.out.println("Rule indiv topintro " + results.size());
+							System.out.println("Rule indiv topintro bindings : " + results.size());
 							return new ArrayList<RuleBinding>(results);
 						}
 						
@@ -2353,7 +2574,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							// System.out.println("DEBUG -- newantecedent " + binding.getNewAntecedent());
 							if (binding.getNewAntecedent()!=null){ // fast track
 								conclusionformula = binding.getNewAntecedent();
-								System.out.println("Indiv Rule topintro is adding " + conclusionformula);
+								// System.out.println("Indiv Rule topintro is adding " + conclusionformula);
 							} 
 							RuleApplicationResults result = new RuleApplicationResults();
 							result.setOriginalFormula(sequent);
