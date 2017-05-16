@@ -1078,7 +1078,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	public List<TextElement> visit(OWLClassAssertionAxiom arg0) {
 		List<TextElement> result = new ArrayList<TextElement>();
 		result.addAll(arg0.getIndividual().accept(this));
-		result.add(new LogicElement("is"));
+		result.add(new LogicElement(LogicLabels.getString("is")));
 		result.addAll(arg0.getClassExpression().accept(this));
 		return result;
 	} 
@@ -1416,6 +1416,13 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 
 	public List<TextElement> visit(OWLNamedIndividual arg0) {
 		List<TextElement> result = new ArrayList<TextElement>();
+		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN)){
+			if (VerbalisationManager.INSTANCE.getLabel(arg0,"de")!=null){
+				LogicElement elem = new LogicElement(VerbalisationManager.INSTANCE.getLabel(arg0,"de"));
+				result.add(elem);
+				return result;
+				}
+			}
 		result.add(new LogicElement(arg0.getIRI().getFragment()));
 		return result;
 	}

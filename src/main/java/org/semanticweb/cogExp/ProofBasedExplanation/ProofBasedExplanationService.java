@@ -304,22 +304,24 @@ public ExplanationResult explain(OWLAxiom axiom) {
 		     	
 		JPanel panel = new JPanel();
 		
-		/*
+		
 		TextElementSequence sequence = getExplanationResultAsSequence(axiom, reasoner, factory, 
 		 			   													ontology, true, "OP");	
 		
 		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
 		
 		result = result.getResult(sequence,editorKit);
-		*/
+		
 		
 		// Using Ms Kölle's structural cueing approach:
+		/*
 		List<String> htmls = generateStructurallyCuedExplanation(axiom, reasoner, factory, 
 					ontology, 100000,10000, "OP",true,false);
 		
 		TextExplanationResult result = new TextExplanationResult(panel,editorKit);
 		
 		result = result.getResultSC(htmls,editorKit);
+		*/
 	
 		//result.updateUI();
 		return result;
