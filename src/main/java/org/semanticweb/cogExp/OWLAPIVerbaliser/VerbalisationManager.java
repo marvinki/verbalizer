@@ -197,7 +197,10 @@ public enum VerbalisationManager {
 	}
 
 	public String getPropertyNLString(OWLObjectPropertyExpression property) {
-		// System.out.println("DEBUG : " + property);
+		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN)){
+			if (getLabel(property.asOWLObjectProperty(),"de")!=null)
+				return getLabel(property.asOWLObjectProperty(),"de");
+		}
 		OWLProperty namedproperty = property.getNamedProperty();
 		// System.out.println("DEBUG - named : " + namedproperty);
 		String str = "";
@@ -542,6 +545,22 @@ public enum VerbalisationManager {
 	 * VerbaliseOWLObjectVisitor.removeCamelCase(str); } return
 	 * VerbaliseOWLObjectVisitor.removeUnderscores(str); }
 	 */
+	
+	public String getLabel(OWLEntity obj, String lang){
+		String label = "";
+		Set<OWLAnnotation> annotations = collectAnnotations(obj);
+		for (OWLAnnotation annotation : annotations) {
+			if (annotation.getProperty().getIRI().getFragment().equals("label") && annotation.getValue().asLiteral().orNull().hasLang(lang)
+					) {
+				label = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString()
+			}
+		}
+		if (label.equals(""))
+			return null;
+		return label;
+	}
+	
+	
 	
 	public String getDataPropertyNL(OWLDataProperty arg0){
 //		if (lang.equals(Locale.ENGLISH))

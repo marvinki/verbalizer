@@ -28,9 +28,10 @@ import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
-	static boolean debug = true;
-	static Locale locale = Locale.GERMAN;
+	// static boolean debug = true;
+	static boolean debug = false;
 	// static Locale locale = Locale.GERMAN;
+	static Locale locale = Locale.ENGLISH;
 	static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", locale);
 
 	public void setLanguage(Locale loc){
