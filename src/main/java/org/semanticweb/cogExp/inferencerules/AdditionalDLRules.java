@@ -3,11 +3,13 @@ package org.semanticweb.cogExp.inferencerules;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.semanticweb.cogExp.core.AbstractSequentPositions;
+import org.semanticweb.cogExp.core.HierarchNode;
 import org.semanticweb.cogExp.core.IncrementalSequent;
 import org.semanticweb.cogExp.core.InferenceApplicationService;
 import org.semanticweb.cogExp.core.JustificationNode;
@@ -16,6 +18,7 @@ import org.semanticweb.cogExp.core.ProofNode;
 import org.semanticweb.cogExp.core.ProofTree;
 import org.semanticweb.cogExp.core.RuleApplicationResults;
 import org.semanticweb.cogExp.core.RuleBinding;
+import org.semanticweb.cogExp.core.RuleBindingForNode;
 import org.semanticweb.cogExp.core.RuleKind;
 import org.semanticweb.cogExp.core.Sequent;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
@@ -1961,12 +1964,234 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 			/// TODO: THIS IS JUST COPIED, IT IS NOT IMPLEMENTED FOR THIS OBJECT!
 			@Override
 			public void expandTactic(ProofTree tree, ProofNode<Sequent,java.lang.String,AbstractSequentPositions> source, JustificationNode<java.lang.String,AbstractSequentPositions> justification) throws Exception{
+				// necessary to deal with or alternatives
+				System.out.println("expand tactic called!");
+				HierarchNode hnode = null;
+				List<HierarchNode<String,AbstractSequentPositions>> hnodes = source.getJustifications();
+				for(HierarchNode h: hnodes){
+					if(h.getJustifications().contains(justification)){
+						hnode = h;
+					}
+				}
+				if (hnode == null) throw new Exception("fatal error");
+				//
+				List<Integer> premises = justification.getPremises();
+				System.out.println("Premises: " + premises);
+				
 				return;
 							}
 							
 			
 			
 		}, // END RULEPROPCHAIN
+		
+		//$18
+				SUBCLCHAIN{ // a subcl b subcl c subcl ...   .... subcl x --> a subcl x
+					
+					@Override
+					public java.lang.String getName(){return "Subclass-chain";};
+					@Override
+					public java.lang.String getShortName(){return "SCC";};
+					
+					private final OWLFormula prem1 = OWLFormula.createFormula(OWLSymb.SUBCL,
+							OWLFormula.createFormulaVar("v1"),
+							OWLFormula.createFormulaVar("v2"));
+							
+					
+					@Override
+					public List<RuleBinding> findRuleBindings(Sequent s){
+						// System.out.println("SCC called!");
+						ArrayList<RuleBinding> results = new ArrayList<RuleBinding>();
+						if (s.isEmptyP()) return results;
+						// collect all equiv and subcl formulas
+						 // List<OWLFormula> candidatesSUBPROP2 = s.findMatchingFormulasInAntecedent(prem1);
+						 Set<OWLFormula> candidates =  s.getAllAntecedentOWLFormulas();	
+						 if (candidates.size()==0)
+							 return results;
+						// System.out.println(candidatesSUBPROP.toString());
+						List<List<OWLFormula>> chainqueue = new ArrayList<List<OWLFormula>>();
+						List<List<OWLFormula>> resultchains = new ArrayList<List<OWLFormula>>();
+						for (OWLFormula cand : candidates){
+							if (cand.getArgs().get(0).equals(cand.getArgs().get(1))
+									|| cand.getArgs().get(0).isBot()
+									|| cand.getArgs().get(0).isTop()
+									|| cand.getArgs().get(1).isTop()
+									|| cand.getArgs().get(1).isBot()
+									)
+								continue;
+							// System.out.println("considering candidate " + cand);
+							boolean used = false;
+							for (List<OWLFormula> chain : chainqueue){
+								// System.out.println("considering chain " + chain);
+								for (int i = 0; i< chain.size(); i++){
+									// System.out.println("considering element " + chain.get(i));
+									if (chain.get(i).getArgs().get(0).equals(cand.getArgs().get(1))){
+										chain.add(i,cand);
+										// System.out.println("Chain after addition " + chain);
+										i++;
+										used=true;
+									}
+									if (chain.get(i).getArgs().get(1).equals(cand.getArgs().get(0))){
+										chain.add(i+1,cand);
+										i++;
+										used=true;
+									}
+								}
+							}
+							if (chainqueue.size()==0 || used == false){
+									List<OWLFormula> chain = new ArrayList<OWLFormula>();
+									chain.add(cand);
+									chainqueue.add(chain);
+							}	
+						}
+						
+						for (List<OWLFormula> chain : chainqueue){
+							// System.out.println("new chain ");
+							if (chain.size()>2){
+								resultchains.add(chain);
+							}
+							for (OWLFormula form : chain){
+								System.out.print(form.prettyPrint() + ", ");
+							}
+							
+						}
+						
+						for (List<OWLFormula> chain : resultchains){
+							for (int i = 0; i< chain.size();i++){
+								for (int j = i; j< chain.size();j++){
+									OWLFormula resultformula = OWLFormula.createFormula(OWLSymb.SUBCL, 
+											chain.get(i).getArgs().get(0),
+											chain.get(j).getArgs().get(1));
+									System.out.println("considering conclusion : " + resultformula.prettyPrint());
+									if(!s.alreadyContainedInAntecedent(resultformula)){
+										RuleBinding binding = new RuleBinding(resultformula,null);
+										
+										int ind = 1;
+										for(int p = i; p<=j ; p++){
+											ind=ind+1;
+											SequentPosition pos = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(chain.get(p)));
+											binding.insertPosition("A" + ind, pos);
+										}			
+										results.add(binding);
+									} // end if 
+								} // j loop
+							} // i loop
+						}
+						
+					
+						return results;
+					}
+					
+					@Override
+					public List<RuleApplicationResults> computeRuleApplicationResults(Sequent sequent, RuleBinding binding) throws Exception{
+						List<RuleApplicationResults> results = new ArrayList<RuleApplicationResults>();
+						OWLFormula resultformula = binding.getNewAntecedent();
+							RuleApplicationResults result1 = new RuleApplicationResults();
+							result1.setOriginalFormula(sequent);
+							result1.addAddition("A1", resultformula);
+							results.add(result1);
+							result1.setMaxFormulaDepth(InferenceApplicationService.computeRuleBindingMaxDepth(sequent, binding));			
+						return results;
+						
+					}
+					
+					@Override
+					public SequentList computePremises(Sequent sequent, RuleBinding binding) throws Exception{
+						List<RuleApplicationResults> results = computeRuleApplicationResults(sequent, binding);
+						List<Sequent> sequents =  ruleApplicationResultsAsSequent(results);
+						return SequentList.makeANDSequentList(sequents);
+					}
+					
+					
+					
+					/// TODO: THIS IS JUST COPIED, IT IS NOT IMPLEMENTED FOR THIS OBJECT!
+					@Override
+					public void expandTactic(ProofTree tree, ProofNode<Sequent,java.lang.String,AbstractSequentPositions> source, JustificationNode<java.lang.String,AbstractSequentPositions> justification) throws Exception{
+						// necessary to deal with or alternatives
+						System.out.println("expand tactic called!");
+						HierarchNode hnode = null;
+						List<HierarchNode<String,AbstractSequentPositions>> hnodes = source.getJustifications();
+						for(HierarchNode h: hnodes){
+							if(h.getJustifications().contains(justification)){
+								hnode = h;
+							}
+						}
+						if (hnode == null) throw new Exception("fatal error");
+						//
+						List<Integer> premises = justification.getPremises();
+						System.out.println("Premises: " + premises);
+						ProofNode premisenode = tree.getProofNode(premises.get(0));
+						Sequent premisesequent = (Sequent) premisenode.getContent();
+						Sequent sourcesequent = (Sequent) source.getContent();
+						HashSet<OWLFormula> premiseantecedent = premisesequent.getAllAntecedentOWLFormulas();
+						HashSet<OWLFormula> sourceantecedent = sourcesequent.getAllAntecedentOWLFormulas();
+						premiseantecedent.removeAll(sourceantecedent);
+						List<OWLFormula> conclusions = new ArrayList<OWLFormula>(premiseantecedent);
+						OWLFormula conclusion = conclusions.get(0); // <-- now this was the conclusion, per reconstruction
+						// Now we use the premise finding to establish a binding
+						List<RuleBinding> bindings = findRuleBindings(sourcesequent);
+						RuleBinding binding = null;
+						for (RuleBinding bind : bindings){
+							System.out.println(bind.getNewAntecedent());
+							if (bind.getNewAntecedent().equals(conclusion))
+								binding = bind;
+						}
+						HashMap<java.lang.String,SequentPosition> positions = binding.getBindings();
+						List<OWLFormula> premforms = new ArrayList<OWLFormula>();
+						for (String s : positions.keySet()){
+							System.out.println(positions.get(s));
+							SequentSinglePosition singlePos = (SequentSinglePosition) positions.get(s);
+							System.out.println(sourcesequent.antecedentGetFormula(singlePos.getToplevelPosition()));
+							premforms.add(sourcesequent.antecedentGetFormula(singlePos.getToplevelPosition()));
+						}
+						
+						ProofNode current_source_node = source;
+						 OWLFormula current_conclusion = 
+						 		OWLFormula.createFormulaSubclassOf(premforms.get(0).getArgs().get(0), 
+						 				premforms.get(0).getArgs().get(1));
+						 OWLFormula prev_conclusion;
+						
+						for (int ind = 0; ind< premforms.size()-1; ind++){
+							OWLFormula prem1 = current_conclusion;
+							OWLFormula prem2 = premforms.get(ind+1);
+							
+							prev_conclusion = current_conclusion;
+							
+							current_conclusion = OWLFormula.createFormulaSubclassOf(premforms.get(0).getArgs().get(0), 
+									prem2.getArgs().get(1));
+							
+							System.out.println("prem1" + prem1);
+							System.out.println("prem2" + prem2);
+							System.out.println(current_conclusion);
+							
+							Sequent current_sourcesequent = (Sequent) current_source_node.getContent();
+							
+							RuleBinding genbinding = new RuleBinding(current_conclusion,null);
+							SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, current_sourcesequent.antecedentFormulaGetID(prev_conclusion));
+							binding.insertPosition("A1", position1);
+							SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, current_sourcesequent.antecedentFormulaGetID(prem2));
+							binding.insertPosition("A2", position2);
+							
+							
+							
+							RuleBindingForNode genbindingFN = new RuleBindingForNode(current_source_node.getId(),genbinding);
+							
+							InferenceApplicationService.INSTANCE.applySequentInferenceRule(tree,genbindingFN,INLG2012NguyenEtAlRules.RULE12);
+							current_source_node = (ProofNode) tree.getOpenNodes().get(0);
+							
+							System.out.println(tree.getOpenNodes());
+						}
+						
+						
+						System.out.println(conclusion);
+						
+						return;
+									}
+									
+					
+					
+				}, // END RULEPROPCHAIN
+		
 		
 		
 		//$18

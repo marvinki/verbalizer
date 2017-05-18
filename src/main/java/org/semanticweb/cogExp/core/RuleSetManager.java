@@ -327,7 +327,8 @@ public enum RuleSetManager {
 			AdditionalDLRules.OBJPROPASSERIONEXISTS,
 			AdditionalDLRules.OBJPROPASSERIONASWITNESS,
 			AdditionalDLRules.ANDIVIDUAL,
-			AdditionalDLRules.INDIVTOPINTRO
+			AdditionalDLRules.INDIVTOPINTRO,
+			AdditionalDLRules.SUBCLCHAIN
     };
     
     ArrayList<SequentInferenceRule> ontopand = new ArrayList<SequentInferenceRule>(Arrays.asList(ontopandInit));

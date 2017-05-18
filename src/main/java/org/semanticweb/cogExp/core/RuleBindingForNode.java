@@ -14,7 +14,7 @@ public class RuleBindingForNode extends RuleBinding{
 		nid = n;
 	}
 	
-	RuleBindingForNode (int n,RuleBinding binding){
+	public RuleBindingForNode (int n,RuleBinding binding){
 		super();
 		hashMap = binding.getBindings();
 		nid = n;

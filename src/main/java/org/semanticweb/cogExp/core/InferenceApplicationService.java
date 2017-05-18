@@ -1324,6 +1324,15 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 	  */
 	 public static GentzenTree computeProofTree(OWLFormula conclusion, List<OWLFormula> axioms, int loopLimit, long timeLimit, String ruleset) throws ProofNotFoundException,Exception{
 		 	
+		 ProofTree<ProofNode<Sequent<OWLFormula>,java.lang.String, SequentPosition>> prooftree = 
+				 computeSequentTree(conclusion, axioms, loopLimit, timeLimit, ruleset);
+		 	
+		    GentzenTree gentzenTree = prooftree.toGentzen();
+			return gentzenTree;
+	 }
+	 
+	 public static ProofTree computeSequentTree(OWLFormula conclusion, List<OWLFormula> axioms, int loopLimit, long timeLimit, String ruleset) throws ProofNotFoundException,Exception{
+		 	
 		  	// Sequent<OWLFormula> sequent = new Sequent<OWLFormula>();
 		    IncrementalSequent sequent = new IncrementalSequent();
 	 	  	sequent.addSuccedent(conclusion);
@@ -1348,9 +1357,10 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			 e.printStackTrace();
 				 		}
 		    	
-		    GentzenTree gentzenTree = prooftree.toGentzen();
-			return gentzenTree;
+		    
+			return prooftree;
 	 }
+	 
 	 
 
 	
