@@ -259,4 +259,21 @@ public class IncrementalSequent extends Sequent{
 		return mastersequent.antecedent;
 	}
 	
+	
+	public String toString(){
+		String res = "";
+		HashSet<OWLFormula> ans = getAllAntecedentOWLFormulas();
+		for (OWLFormula form : ans){
+			res = res + form.prettyPrint();
+			res = res + ",";
+		}
+		res = res + "|=";
+		HashSet<OWLFormula> succs = getAllSuccedentOWLFormulas();
+		for (OWLFormula form : succs){
+			res = res + form.prettyPrint();
+			res = res + ",";
+		}
+		return res;
+	}
+	
 }

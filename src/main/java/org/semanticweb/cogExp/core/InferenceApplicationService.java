@@ -229,11 +229,14 @@ public void applySequentInferenceRule(ProofTree tree, RuleBindingForNode binding
 	// .accept(new PrettyPrintOWLObjectVisitor())
 	ProofNode node = tree.getProofNode(binding.getNodeId());
 	Sequent sequent = (Sequent) node.getContent();
+	// System.out.println("apply inf rule with antecedent " + sequent.getAllAntecedentOWLFormulas());
 	// List<Sequent> premiseSequents = new ArrayList<Sequent>();
 	SequentList premiseSequents = null;
 	try {
 		// System.out.println(binding.getRuleBinding());
+		// System.out.println("debug breakpoint 1");
 		premiseSequents = rule.computePremises(sequent, binding.getRuleBinding());
+		// System.out.println("debug breakpoint 1 (a)");
 		// System.out.println("premise sequents " + premiseSequents);
 		// System.out.println("premise sequents " + premiseSequents.getSequents().get(0).getAllAntecedentOWLFormulas());
 		assert(premiseSequents!=null);
@@ -300,6 +303,8 @@ public void applySequentInferenceRule(ProofTree tree, RuleBindingForNode binding
 		}
 		justificationnode.setPremises(premisenodeids);
 		justificationnode.setJustification(rule.getName());
+		//
+		// System.out.println("setting positions " + binding);
 		justificationnode.setPositions(binding);
 		justificationnode.setJustifiedNode(node.getId());
 		justificationnode.setInferenceRule(rule);
@@ -1361,7 +1366,31 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			return prooftree;
 	 }
 	 
-	 
+	 public List<JustificationNode> getExpandableJustifications(ProofTree prooftree, SequentInferenceRule seqrule){
+		 Collection<ProofNode> proofnodes = prooftree.getAllProofNodes();
+		 List<JustificationNode> toBeExpanded = new ArrayList<JustificationNode>();
+		 for (ProofNode  node : proofnodes){
+			 if (node.getBottomJustification()==null)
+				 continue;
+			 List<HierarchNode> hnodes = node.getJustifications();
+			 for (HierarchNode hnode : hnodes){
+				 	List<JustificationNode> justnodes = hnode.getJustifications();
+				 	for (JustificationNode just : justnodes){
+					just = node.getBottomJustification();
+					// System.out.println(node);
+					// System.out.println(just.getInferenceRule());
+				 		if (just.getInferenceRule()==null)
+				 			continue;
+				 		if (just.getInferenceRule().equals(seqrule)){
+				 			// System.out.println("action!");
+				 			toBeExpanded.add(just);
+				 			// AdditionalDLRules.SUBCLCHAIN.expandTactic(prooftree,node,just);
+				 		}
+				 	}
+			 }	
+		 }	
+			 return toBeExpanded;
+	 }
 
 	
 	 
