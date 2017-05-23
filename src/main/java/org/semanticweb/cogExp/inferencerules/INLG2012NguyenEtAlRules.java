@@ -2610,13 +2610,16 @@ RULE11{ //SubCla(X,\exists r. Y) and SubCla((>1,r,Y),Z) --> SubCla(X,Z)
 			@Override
 			public SequentList computePremises(Sequent sequent, RuleBinding binding) throws Exception{
 				List<RuleApplicationResults> results = computeRuleApplicationResults(sequent, binding);
+				// System.out.println("Rule12new breakpoint (1)");
 				List<Sequent> sequents =  ruleApplicationResultsAsSequent(results);
+				// System.out.println("Rule12new breakpoint (2)");
 				return SequentList.makeANDSequentList(sequents);
 			}
 			
 			
 			@Override
 			public List<RuleApplicationResults> computeRuleApplicationResults(Sequent sequent, RuleBinding binding) throws Exception{
+				// System.out.println("Rule12new computeRuleApplicationResults called");
 				List<RuleApplicationResults> results = new ArrayList<RuleApplicationResults>();
 				
 				OWLFormula conclusionformula = null;
@@ -2629,6 +2632,7 @@ RULE11{ //SubCla(X,\exists r. Y) and SubCla((>1,r,Y),Z) --> SubCla(X,Z)
 				result.addAddition("A1",conclusionformula);
 				results.add(result);
 				result.setMaxFormulaDepth(InferenceApplicationService.computeRuleBindingMaxDepth(sequent, binding));
+				// System.out.println("Rule12new computeRuleApplicationResults done");
 				return results;
 			}
 			
@@ -6822,8 +6826,10 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 	}
 	
 	private static List<Sequent> ruleApplicationResultsAsSequent(List<RuleApplicationResults> results){
+			// System.out.println("ruleApplicationResultsAsSequent called");
 			ArrayList<Sequent> sequents = new ArrayList();
 			for (RuleApplicationResults result: results){
+				// System.out.println("result : " + result);
 				// generate a clone of the original sequent
 				Object original = result.getOriginalFormula();
 				Sequent sequent;
@@ -6863,7 +6869,9 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 							try {
 								if (sequent instanceof IncrementalSequent){
 									IncrementalSequent incseq = (IncrementalSequent) sequent;
+									// System.out.println("bp 1" + incseq.getAllAntecedentOWLFormulas());
 									incseq.addAntecedent((OWLFormula) formula);
+									// System.out.println("bp 2");
 									// System.out.println("adding inc case");
 								}
 								else{ 

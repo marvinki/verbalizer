@@ -1965,7 +1965,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 			@Override
 			public void expandTactic(ProofTree tree, ProofNode<Sequent,java.lang.String,AbstractSequentPositions> source, JustificationNode<java.lang.String,AbstractSequentPositions> justification) throws Exception{
 				// necessary to deal with or alternatives
-				System.out.println("expand tactic called!");
+				// System.out.println("expand tactic called!");
 				HierarchNode hnode = null;
 				List<HierarchNode<String,AbstractSequentPositions>> hnodes = source.getJustifications();
 				for(HierarchNode h: hnodes){
@@ -1976,7 +1976,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 				if (hnode == null) throw new Exception("fatal error");
 				//
 				List<Integer> premises = justification.getPremises();
-				System.out.println("Premises: " + premises);
+				// System.out.println("Premises: " + premises);
 				
 				return;
 							}
@@ -2050,9 +2050,11 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							if (chain.size()>2){
 								resultchains.add(chain);
 							}
+							/*
 							for (OWLFormula form : chain){
 								System.out.print(form.prettyPrint() + ", ");
 							}
+							*/
 							
 						}
 						
@@ -2062,7 +2064,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 									OWLFormula resultformula = OWLFormula.createFormula(OWLSymb.SUBCL, 
 											chain.get(i).getArgs().get(0),
 											chain.get(j).getArgs().get(1));
-									System.out.println("considering conclusion : " + resultformula.prettyPrint());
+									// System.out.println("considering conclusion : " + resultformula.prettyPrint());
 									if(!s.alreadyContainedInAntecedent(resultformula)){
 										RuleBinding binding = new RuleBinding(resultformula,null);
 										
@@ -2104,11 +2106,11 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 					
 					
 					
-					/// TODO: THIS IS JUST COPIED, IT IS NOT IMPLEMENTED FOR THIS OBJECT!
+					
 					@Override
 					public void expandTactic(ProofTree tree, ProofNode<Sequent,java.lang.String,AbstractSequentPositions> source, JustificationNode<java.lang.String,AbstractSequentPositions> justification) throws Exception{
 						// necessary to deal with or alternatives
-						System.out.println("expand tactic called!");
+						List<Integer> original_premiseids =  justification.getPremises();
 						HierarchNode hnode = null;
 						List<HierarchNode<String,AbstractSequentPositions>> hnodes = source.getJustifications();
 						for(HierarchNode h: hnodes){
@@ -2119,7 +2121,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						if (hnode == null) throw new Exception("fatal error");
 						//
 						List<Integer> premises = justification.getPremises();
-						System.out.println("Premises: " + premises);
+						// System.out.println("Premises: " + premises);
 						ProofNode premisenode = tree.getProofNode(premises.get(0));
 						Sequent premisesequent = (Sequent) premisenode.getContent();
 						Sequent sourcesequent = (Sequent) source.getContent();
@@ -2132,16 +2134,16 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						List<RuleBinding> bindings = findRuleBindings(sourcesequent);
 						RuleBinding binding = null;
 						for (RuleBinding bind : bindings){
-							System.out.println(bind.getNewAntecedent());
+							//System.out.println(bind.getNewAntecedent());
 							if (bind.getNewAntecedent().equals(conclusion))
 								binding = bind;
 						}
 						HashMap<java.lang.String,SequentPosition> positions = binding.getBindings();
 						List<OWLFormula> premforms = new ArrayList<OWLFormula>();
 						for (String s : positions.keySet()){
-							System.out.println(positions.get(s));
+							// System.out.println(positions.get(s));
 							SequentSinglePosition singlePos = (SequentSinglePosition) positions.get(s);
-							System.out.println(sourcesequent.antecedentGetFormula(singlePos.getToplevelPosition()));
+							// System.out.println(sourcesequent.antecedentGetFormula(singlePos.getToplevelPosition()));
 							premforms.add(sourcesequent.antecedentGetFormula(singlePos.getToplevelPosition()));
 						}
 						
@@ -2150,8 +2152,23 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						 		OWLFormula.createFormulaSubclassOf(premforms.get(0).getArgs().get(0), 
 						 				premforms.get(0).getArgs().get(1));
 						 OWLFormula prev_conclusion;
+						 
+						 boolean firsthierarch = true;
 						
+						 ProofNode savednode = null;
+						 ProofNode beforesavednode = source;
+						 
 						for (int ind = 0; ind< premforms.size()-1; ind++){
+							
+							List<ProofNode> current_open_nodes = tree.getOpenNodes();
+							
+								
+							if (current_open_nodes.size()>0){
+								if (savednode!=null)
+									beforesavednode =  savednode;
+								savednode = (ProofNode) tree.getOpenNodes().get(0);
+							}
+							
 							OWLFormula prem1 = current_conclusion;
 							OWLFormula prem2 = premforms.get(ind+1);
 							
@@ -2160,30 +2177,115 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							current_conclusion = OWLFormula.createFormulaSubclassOf(premforms.get(0).getArgs().get(0), 
 									prem2.getArgs().get(1));
 							
-							System.out.println("prem1" + prem1);
-							System.out.println("prem2" + prem2);
-							System.out.println(current_conclusion);
+							// System.out.println("prem1" + prem1);
+							// System.out.println("prem2" + prem2);
+							// System.out.println(current_conclusion);
 							
 							Sequent current_sourcesequent = (Sequent) current_source_node.getContent();
 							
 							RuleBinding genbinding = new RuleBinding(current_conclusion,null);
 							SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, current_sourcesequent.antecedentFormulaGetID(prev_conclusion));
-							binding.insertPosition("A1", position1);
+							genbinding.insertPosition("A1", position1);
 							SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, current_sourcesequent.antecedentFormulaGetID(prem2));
-							binding.insertPosition("A2", position2);
+							genbinding.insertPosition("A2", position2);
 							
-							
+							// System.out.println("Source antecedent" + current_sourcesequent.getAllAntecedentOWLFormulas());
 							
 							RuleBindingForNode genbindingFN = new RuleBindingForNode(current_source_node.getId(),genbinding);
+							// System.out.println("genbinding fn " + genbindingFN);
 							
-							InferenceApplicationService.INSTANCE.applySequentInferenceRule(tree,genbindingFN,INLG2012NguyenEtAlRules.RULE12);
+							if (firsthierarch)
+							InferenceApplicationService.INSTANCE.applySequentInferenceRule(tree,genbindingFN,INLG2012NguyenEtAlRules.RULE12new,hnode);
+							else 
+								InferenceApplicationService.INSTANCE.applySequentInferenceRule(tree,genbindingFN,INLG2012NguyenEtAlRules.RULE12new);
+							firsthierarch = false;
+								
+							
+							// checks
+							// JustificationNode justinode = (JustificationNode) hnode.getJustifications().get(1);
+							// System.out.println("justinode positions  " + justinode.getPositions());
+							
+							
 							current_source_node = (ProofNode) tree.getOpenNodes().get(0);
 							
-							System.out.println(tree.getOpenNodes());
+							Sequent new_current_source_sequent = (Sequent) current_source_node.getContent();
+							
+							// System.out.println("Source antecedent after application: " + new_current_source_sequent.getAllAntecedentOWLFormulas());
+							
+							
+							//System.out.println("Open nodes " + tree.getOpenNodes());
+						}
+						
+						Collections.reverse(hnode.getJustifications());
+						
+						List<JustificationNode> justs = hnode.getJustifications();
+						// System.out.println(justs.get(0).getInferenceRule());
+						// System.out.println(justs.get(1).getInferenceRule());
+						
+						
+						RuleBindingForNode rb_where_inference_was_applied  = (RuleBindingForNode) justs.get(0).getPositions();
+						// System.out.println("checking " +  rb_where_inference_was_applied );
+						
+						int originalpremiseid = (Integer) justs.get(1).getPremises().get(0);
+						ProofNode originalpremisenode = tree.getProofNode(originalpremiseid);
+						
+						
+						
+						Sequent origseq = (Sequent) originalpremisenode.getContent();
+						Sequent savedseq = (Sequent) savednode.getContent();
+						HashSet<OWLFormula> s =  savedseq.getAllAntecedentOWLFormulas();
+						
+						for (OWLFormula f : s){
+						origseq.addAntecedent(f);
 						}
 						
 						
-						System.out.println(conclusion);
+						ProofNode stillopennode = (ProofNode) tree.getOpenNodes().get(0);
+						
+						// System.out.println("savednode : " + savednode);
+						
+						// hierarch: the hierarchy node of the LAST inserted step
+						List<HierarchNode> hierarch = savednode.getJustifications();
+						List<JustificationNode> justnodes = hierarch.get(0).getJustifications();
+						List<Integer> originalpremiseids = (List<Integer>) justs.get(1).getPremises();
+						justnodes.get(0).setPremises(originalpremiseids);
+						
+						// trying to fix backlink
+						justnodes.get(0).setJustifiedNode(beforesavednode.getId());
+						
+						// Destroy old justification in the hierarchy
+						// hnode.getJustifications().remove(hnode.getJustifications().get(1));
+						
+						// JustificationNode justificationnode = new JustificationNode();
+						// List<Integer> premisenodeids = new ArrayList<Integer>();
+						// premisenodeids.add(originalpremiseid);
+						// justificationnode.setPremises(premisenodeids);
+						// justificationnode.setJustification(rule.getName());
+						// justificationnode.setPositions(binding);
+						// justificationnode.setJustifiedNode(node.getId());
+						// justificationnode.setInferenceRule(rule);
+						// if we are dealing with a tactic expansion, need to add to the same HierarchNode
+						// HierarchNode new_h;
+						
+						// new_h = new HierarchNode();}
+						// new_h.getJustifications().add(justificationnode);
+						
+						
+						List<Integer> premiseIds = justs.get(0).getPremises();
+						ProofNode node1 = tree.getProofNode(premiseIds.get(0));
+						
+						// System.out.println(justs.get(0).getPremises());
+						// System.out.println(node1.getBottomJustification().getInferenceRule());
+						
+						tree.removeNode(stillopennode);
+						
+						// System.out.println("DBG " + node1.getBottomJustification().getPremises().get(0));
+						
+						// tree.print2();
+						// System.out.println(hnode.getJustifications());
+						// h.
+						
+						// System.out.println(conclusion);
 						
 						return;
 									}
@@ -2592,8 +2694,8 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							e.printStackTrace();
 						}
 						} // end formula 1 loop
-						System.out.println("DEBUG === results " + results);		
-						System.out.println("WITNESS: " + results.size());
+						// System.out.println("DEBUG === results " + results);		
+						// System.out.println("WITNESS: " + results.size());
 						return results;
 					}
 					
@@ -2708,8 +2810,8 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 								}
 							} // end second loop
 						} // end formula 1 loop
-						System.out.println("DEBUG === results " + results);		
-						System.out.println("AND-I: " + results.size());
+						// System.out.println("DEBUG === results " + results);		
+						// System.out.println("AND-I: " + results.size());
 						return results;
 					}
 					
@@ -2772,7 +2874,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 								}
 								}
 							}
-							System.out.println("Rule indiv topintro bindings : " + results.size());
+							// System.out.println("Rule indiv topintro bindings : " + results.size());
 							return new ArrayList<RuleBinding>(results);
 						}
 						

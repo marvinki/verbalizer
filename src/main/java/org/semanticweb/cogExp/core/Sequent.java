@@ -145,7 +145,8 @@ public class Sequent<FormulaType> {
 		// System.out.println("Sequent DEBUG (1)" + formula);
 		// System.out.println("Checking -- already contained ? " + antecedent.contains(formula));
 		// System.out.println("Counting " + antecedent.getAllFormulas().size());
-		antecedent.insert(formula);
+		if (!antecedent.contains(formula)) // <-- might be the case when using an incremental sequent
+			antecedent.insert(formula);
 		// System.out.println("Now -- already contained ? " + antecedent.contains(formula));
 		// System.out.println("Counting " + antecedent.getAllFormulas().size());
 		// System.out.println("Sequent DEBUG (2)" + formula);

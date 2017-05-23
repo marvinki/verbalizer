@@ -253,6 +253,82 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 			}
 			System.out.println("");
 		}
+		System.out.println();;
+		try {
+			this.computeConsequenceOrdering();
+		} catch (Exception e) {
+			//  Auto-generated catch block
+			e.printStackTrace();
+		} 
+		for (int i :consequenceOrdering.keySet()){
+			System.out.println(i + " : " + consequenceOrdering.get(i));
+		}
+		
+		
+    	this.computeNodeDepth();
+		for (int i : nodeDepth.keySet()){
+			System.out.println(i + " : " + nodeDepth.get(i));
+		}
+		
+		return;
+	}
+	
+	
+	public void  print2(){
+		System.out.println("PROOFTREE No. " + id);
+		System.out.println("Opennodes " + open_nodes);
+		Set<Integer> keyset = nodesHashMap.keySet();
+		List<Integer> keylist = new ArrayList<Integer>(keyset);
+		Collections.sort(keylist);
+		Iterator<Integer> it = keylist.iterator();
+		ProofNode node;
+		while(it.hasNext()){
+			int i = it.next();
+			System.out.print(i + ": ");
+			node  = nodesHashMap.get(i);
+			System.out.print(node.getContent());
+			boolean first_flag = true;
+			List<HierarchNode> hnodes = node.getJustifications(); // by default only look at first option
+			if (hnodes==null||hnodes.size()==0){}
+			else{
+				for (HierarchNode hnode : hnodes){
+					System.out.println(hnode.toString());
+					List<JustificationNode> jnodes = hnodes.get(0).getJustifications();
+					for (JustificationNode jnode : jnodes){
+						System.out.print(" by " + jnode.getJustification());
+						System.out.print(" from " + jnode.getPremises());	
+						System.out.println("backlinks: " + jnode.getJustifiedNode());
+					}
+				}
+				/* 
+			List<JustificationNode> jnodes = hnodes.get(0).getJustifications();
+			for (JustificationNode jnode : jnodes){
+				if (!first_flag){System.out.print(", or");}
+				first_flag = false;
+				System.out.print(" by " + jnode.getJustification());
+				System.out.print(" from " + jnode.getPremises());	
+			} 
+			*/
+			}
+			System.out.println("");
+		}
+		System.out.println();;
+		try {
+			this.computeConsequenceOrdering();
+		} catch (Exception e) {
+			//  Auto-generated catch block
+			e.printStackTrace();
+		} 
+		for (int i :consequenceOrdering.keySet()){
+			System.out.println(i + " : " + consequenceOrdering.get(i));
+		}
+		
+		
+    	this.computeNodeDepth();
+		for (int i : nodeDepth.keySet()){
+			System.out.println(i + " : " + nodeDepth.get(i));
+		}
+		
 		return;
 	}
 	
@@ -270,6 +346,7 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
     	this.computeNodeDepth();
     	ProofNode node;
     	List<Integer> keylist = computePresentationOrder();
+    	// System.out.println("keylist " + keylist);
     	// Collections.reverse(keylist);
 		Iterator<Integer> it = keylist.iterator();
 		while(it.hasNext()){
@@ -473,7 +550,7 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 		if (node==null){
 			return results;
 		} else{ // node is not null
-			// System.out.println("working on node with id " + node.getId());
+		   // System.out.println("working on node with id " + node.getId());
 			List<HierarchNode> hnodes = node.getJustifications();
 			for (HierarchNode hnode : hnodes){ // each hnode encapsulates an alternative option (with its own hierarchy)
 					List<JustificationNode> justs = hnode.getJustifications();
@@ -482,7 +559,7 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 						RuleBindingForNode rb_where_inference_was_applied  = (RuleBindingForNode) just.getPositions();
 						SequentInferenceRule infrule = just.getInferenceRule();
 						Sequent inf_sequent = (Sequent) node.getContent();
-						// System.out.println("insequent: " + inf_sequent);
+						// System.out.println("infsequent: " + inf_sequent);
 						// System.out.println("rb_where_inference_was_applied: " + rb_where_inference_was_applied);
 						// In case we terminate, we still need to take note of the premises!
 						Object positions; 
@@ -593,6 +670,7 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 			} // end for hnodes
 					
 		} // end else
+		// System.out.println(results);
 		return results;
 		
 	} 
@@ -707,7 +785,18 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 		return results;
 	}
 			
-
+	public ProofNode getDirectlyJustifiedNode(JustificationNode justnode){
+		for (Integer pnodeid : nodesHashMap.keySet()){
+			ProofNode pnode = nodesHashMap.get(pnodeid);
+			List<HierarchNode> hnodes = pnode.getJustifications();
+			for (HierarchNode hnode : hnodes){
+				List<JustificationNode> jnodes = hnode.getJustifications();
+				if (jnodes.contains(justnode))
+					return pnode;
+			}
+		}
+		return null;
+	}
 	
 	
 	
