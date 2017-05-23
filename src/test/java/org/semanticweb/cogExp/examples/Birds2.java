@@ -34,13 +34,22 @@ public class Birds2 {
 		WordNetQuery.INSTANCE.setDict(tmpdir);
 		
 		OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		String root = "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/";
-		String path = root+"Bosch-reworked.owl";
-		File ontologyfile = new java.io.File(path);
-		OWLOntology tinyExampleOntology = 
-				OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
-		OWLReasoner reasoner = reasonerFactory.createReasoner(tinyExampleOntology);
+		String root = "/home/fpaffrath/svn/Bosch-intern/ontologies/";
+		String path = root+"bosch-reworked.owl";
 		
+		
+		
+		File ontologyfile = new java.io.File(path);
+		
+		
+		
+		OWLOntologyManager knowledgeableManager = getImportKnowledgeableOntologyManger();
+		OWLOntology ExampleOntology = createOntology(knowledgeableManager);
+	
+		
+		
+		OWLReasoner reasoner = reasonerFactory.createReasoner(ExampleOntology);
+				
 		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		
 		
