@@ -299,7 +299,8 @@ public enum VerbaliseTreeManager {
 					else 
 						result = result; //  
 
-				result = result + "\t\t• " + output + "." + linebr;
+				result = result + output + "." + linebr;
+				// result = result + "\t\t• " + output + "." + linebr; // <-- Koelle stuff
 
 
 			}
@@ -1243,7 +1244,34 @@ public enum VerbaliseTreeManager {
 						return seq;				
 					}
 				}
-				
+				if (rule.equals(AdditionalDLRules.SUBCLCHAIN)){
+					TextElementSequence seq = new TextElementSequence();
+					boolean firstprem = true;
+					boolean innerprem = false;
+					for (Object premiseObj : premiseformulas){
+						OWLSubClassOfAxiom prem = (OWLSubClassOfAxiom) premiseObj;
+						if (firstprem){
+							seq.add(new LogicElement(LogicLabels.getString("Since")));
+							seq.concat(VerbalisationManager.textualise(prem.getSubClass()));
+							seq.add(new LogicElement(LogicLabels.getString("is")));
+							seq.concat(VerbalisationManager.textualise(prem.getSuperClass()));
+							innerprem = true;
+						}
+						if (!firstprem && innerprem){
+							seq.add(new LogicElement("which is"));
+							seq.concat(VerbalisationManager.textualise(prem.getSuperClass()));
+							seq.add(new LogicElement(","));
+						}
+						firstprem = false;	
+					}
+					OWLSubClassOfAxiom conclusion =  (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
+					
+					// seq.add(new LogicElement(LogicLabels.getString("INDIVIDUAL")));
+					ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(conclusion,obfuscator).getTextElements());
+					// seq.concat(VerbalisationManager.textualise(addition,obfuscator));
+					seq.add(conclusionMarker);
+					return seq;
+				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && !premiseformulas.contains(previousconclusion) &&  premiseformulas.size()==2){
 					System.out.println("Case Rule 12 (3)");
 					OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) additions_to_antecedent.get(0); 
@@ -1307,7 +1335,7 @@ public enum VerbaliseTreeManager {
 								// resultstring += "";
 								}
 								else {
-									System.out.println("DEBUG --- Absolute Else case");
+									// System.out.println("DEBUG --- Absolute Else case");
 									seq.add(new LogicElement(LogicLabels.getString("since"))); 
 									// resultstring += "Since ";
 								};
@@ -1495,6 +1523,15 @@ public enum VerbaliseTreeManager {
 				// result = result + "Thus, " + VerbalisationManager.verbalise((OWLSubClassOfAxiom) additions_to_antecedent.get(0));
 				// "Thus, [SUBCLASS]
 				return seq;
+			}
+			if (rule.equals(AdditionalDLRules.SUBCLCHAIN)){
+				System.out.println(" premiseformulas -- " + premiseformulas);
+				OWLClassAssertionAxiom conclusion =  (OWLClassAssertionAxiom) additions_to_antecedent.get(0);
+				TextElementSequence seq = new TextElementSequence();
+				// seq.add(new LogicElement(LogicLabels.getString("INDIVIDUAL")));
+				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(conclusion,obfuscator).getTextElements());
+				// seq.concat(VerbalisationManager.textualise(addition,obfuscator));
+				seq.add(conclusionMarker);
 			}
 			if (rule.equals(AdditionalDLRules.OBJPROPASSERIONASWITNESS)){
 				OWLClassAssertionAxiom conclusion =  (OWLClassAssertionAxiom) additions_to_antecedent.get(0);
