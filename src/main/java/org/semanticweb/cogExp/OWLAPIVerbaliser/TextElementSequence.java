@@ -146,6 +146,19 @@ public class TextElementSequence extends TextElement{
 		return sequence;
 	}
 	
+	public int size(){
+		int count = 0;
+		for(TextElement el : this.getTextElements()){
+			
+			if(el.toString() != ""){
+				count++;
+			}
+		}
+		
+		return count;
+		
+	}
+	
 	public void pluralise(){
 		TextElement previous = null;
 		boolean somethingthat = false;

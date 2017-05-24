@@ -37,9 +37,12 @@ public class Sentence{
 		this.setObjekt(objekt);
 		this.setPraedikat(praedikat);
 		
+		
+		
 //		setSentenceType("default");
 	}
 
+	
 	public void makeDefaultSentence(){
 		//German Sentences
 		if(lang == Locale.GERMAN){	
@@ -148,7 +151,19 @@ public class Sentence{
 	
 	
 	public TextElementSequence getSentence() {
+		if(sentence == null){
+			sentence.add(new TextElement(""));
+			return sentence;
+		}
+		if(!isEmpty(sentence)){
+			return sentence;
+		}
+		if(sentence.size() == 1){
+			makeDefaultSentence();
+		}
 		return sentence;
+		
+		
 	}
 
 
@@ -188,6 +203,22 @@ public class Sentence{
 		return clause;
 	}
 	
+	private boolean isEmpty(TextElementSequence sentence){
+		
+		for(TextElement el : sentence.getTextElements()){
+			if(el.toString() == ""){
+				return true;
+			}
+				
+		}
+		
+		
+		return false;
+		
+	}
+	
+ 
+		
 //	public String getSentenceType() {
 //		return sentenceType;
 //	}
