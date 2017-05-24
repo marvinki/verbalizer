@@ -46,8 +46,8 @@ public class Birds {
 		
 		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		
-		VerbaliseTreeManager.INSTANCE.setLanguage(Locale.GERMAN);
-		
+		//VerbaliseTreeManager.INSTANCE.setLanguage(Locale.GERMAN);
+		VerbaliseTreeManager.setLocale(Locale.GERMAN);
 		
 		String a = "CoalTit";
 		String b = "BirdRequiringSmallEntranceHole";

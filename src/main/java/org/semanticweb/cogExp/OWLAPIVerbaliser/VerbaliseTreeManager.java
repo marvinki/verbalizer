@@ -11,6 +11,7 @@ import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.core.Sequent;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
+import org.semanticweb.cogExp.examples.Birds2;
 import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
@@ -30,15 +31,17 @@ public enum VerbaliseTreeManager {
 	
 	// static boolean debug = true;
 	static boolean debug = false;
-	// static Locale locale = Locale.GERMAN;
 	static Locale locale = Locale.ENGLISH;
+	
+	
+		
 	static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", locale);
-
-	public void setLanguage(Locale loc){
-		LogicLabels = ResourceBundle.getBundle("LogicLabels", loc);
+	
+	
+	public static void setLogicLabels(ResourceBundle logicLabels) {
+		LogicLabels = logicLabels;
 	}
-	
-	
+
 	public static String listOutput(GentzenTree tree){
 		String result = "";
 		List<Integer> order = tree.computePresentationOrder();
@@ -770,6 +773,8 @@ public enum VerbaliseTreeManager {
 				//check
 				if (rule.equals(AdditionalDLRules.PROPCHAIN)){
 					TextElementSequence seq = new TextElementSequence();
+					
+					
 					seq.add(new LogicElement(LogicLabels.getString("since")));
 					boolean needsep = false;
 					for (Object o : premiseformulas){
@@ -914,18 +919,35 @@ public enum VerbaliseTreeManager {
 					} else{
 						definedconcept = concept1;
 					}
-					TextElementSequence seq = new TextElementSequence();
-					seq.add(new LogicElement(LogicLabels.getString("since")));
-					seq.concat(VerbalisationManager.textualise(subclpremise,obfuscator));
-//					seq.add(new LogicElement("_bla_"));
-					seq.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
-					seq.concat(VerbalisationManager.textualise(definedconcept,obfuscator));
-					return seq;
-					// return  // "By definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
-							// + VerbalisationManager.verbalise(additions_to_antecedent.get(0));
-						// 	"Since " + VerbalisationManager.verbalise(subclpremise) + ", by definition it is " +  VerbalisationManager.verbalise(definedconcept); 
-							// VerbalisationManager.verbalise(additions_to_antecedent.get(0)) + " according to the definition of ";
+									
+//					TextElementSequence seq = new TextElementSequence();
+//					seq.add(new LogicElement(LogicLabels.getString("since")+"4"));
+//					seq.concat(VerbalisationManager.textualise(subclpremise,obfuscator));
+////					seq.add(new LogicElement("_bla_"));
+//					seq.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
+//					seq.concat(VerbalisationManager.textualise(definedconcept,obfuscator));
+					
+
+					
+					/*
+					 * Modified
+					 * */
+					
+					Sentence mainClause = new Sentence();
+					mainClause.setSubjekt(VerbalisationManager.textualise(subclpremise,obfuscator));
+					mainClause.setObjekt(new TextElement(""));
+					mainClause.setPraedikat(new TextElement(""));
+					mainClause.makeSinceSentence();
+					
+					Sentence sideClause = new Sentence();
+					sideClause.setSubjekt(VerbalisationManager.textualise(definedconcept,obfuscator));
+					sideClause.makebyDefinitionItIsSentence();
+										
+					mainClause.concat(sideClause.getSentence());
+					
+					return mainClause.getSentence();
 				}
+				
 				if  (rule.equals(AdditionalDLRules.INVERSEOBJECTPROPERTY)){
 					OWLInverseObjectPropertiesAxiom axInv = (OWLInverseObjectPropertiesAxiom) premiseformulas.get(0);
 					OWLObjectPropertyAssertionAxiom ax = (OWLObjectPropertyAssertionAxiom) premiseformulas.get(1);
@@ -1335,7 +1357,12 @@ public enum VerbaliseTreeManager {
 								// resultstring += "";
 								}
 								else {
+
 									// System.out.println("DEBUG --- Absolute Else case");
+
+									System.out.println("DEBUG --- Absolute Else case");
+										
+
 									seq.add(new LogicElement(LogicLabels.getString("since"))); 
 									// resultstring += "Since ";
 								};
@@ -1800,7 +1827,7 @@ public enum VerbaliseTreeManager {
 					seq.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
 					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 					
-					seq.add(new LogicElement("-14-"));
+					if(debug) seq.add(new LogicElement("-14-"));
 					return seq;
 				}
 				TextElementSequence seq = new TextElementSequence();
@@ -2268,6 +2295,11 @@ public enum VerbaliseTreeManager {
 			
 	}
 	
+	public static void setLocale(Locale locale) {
+		VerbaliseTreeManager.locale = locale;
+	}
+
+
 	public static String makeUppercaseStart(String str){
 		if (str.length()<1)
 			return str;
