@@ -1,6 +1,9 @@
 package org.semanticweb.cogExp.examples;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
@@ -16,14 +19,18 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
+import com.google.inject.spi.StaticInjectionRequest;
+
 public class Birds2 {
+
 
 	public static void main(String[] args) throws OWLOntologyCreationException {
 		/**
 		 * this is the very smallest example one can think of
 		 * 
 		 */
-
+		
+		
 		String tmpdir = "";
 		try {
 			tmpdir = WordnetTmpdirManager.makeTmpdir();
@@ -34,12 +41,49 @@ public class Birds2 {
 		WordNetQuery.INSTANCE.setDict(tmpdir);
 		
 		OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		String root = "/home/fpaffrath/svn/Bosch-intern/ontologies/";
-		String path = root+"bosch-reworked.owl";
-		
-		
-		
+		// String root = "/home/fpaffrath/Dokumente/";
+		// String path = root+"ornithology_mod.owl";
+		String path = "/home/fpaffrath/Dokumente/ornithology_mod.owl";
 		File ontologyfile = new java.io.File(path);
+		OWLOntology tinyExampleOntology = 
+				OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
+		OWLReasoner reasoner = reasonerFactory.createReasoner(tinyExampleOntology);
+		
+		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		
+//		VerbaliseTreeManager.INSTANCE.setLanguage(Locale.ENGLISH);
+		Locale locale = Locale.GERMAN;
+		VerbaliseTreeManager.setLocale(locale);
+		VerbaliseTreeManager.setLogicLabels(ResourceBundle.getBundle("LogicLabels", locale));
+		
+		System.out.println("Birds : \n");
+		
+		String a = "CoalTit";
+		String b = "BirdRequiringSmallEntranceHole";
+		String result = getResult(a, b, path, reasonerFactory, reasoner );
+		
+		
+		a = "MarshTit";
+		b = "BirdRequiringSmallEntranceHole";
+		String result2 = getResult(a, b, path, reasonerFactory, reasoner );
+		
+		String nadelholzreicherMischwald = "MixedForestsRichInConifers";
+		String Mischwald = "MixedForests";
+		String result3 = getResult(nadelholzreicherMischwald, Mischwald, path, reasonerFactory, reasoner );
+		
+		a = "GreatTit";
+		b = "SeedPredator";
+		// String result4 = getResult(a, b, path, reasonerFactory, reasoner );
+		
+		a = "EuropeanPiedFlycatcher";
+		b = "PulpPredator";
+		// String result5b = getResult(a, b, path, reasonerFactory, reasoner );
+		
+		
+				
+		reasonerFactory = new ElkReasonerFactory();
+		String root = "/home/fpaffrath/svn/Bosch-intern/ontologies/";
+		path = root+"bosch-reworked.owl";
 		
 		
 		
@@ -48,23 +92,31 @@ public class Birds2 {
 	
 		
 		
-		OWLReasoner reasoner = reasonerFactory.createReasoner(ExampleOntology);
+		reasoner = reasonerFactory.createReasoner(ExampleOntology);
 				
-		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		
 		
-		String a = "BirchWood";
-		String b = "DecidiousWood";
-		String result = getResult(a, b, path, reasonerFactory, reasoner );
 		
-	
-		
+		String result5 = getResult("BirchWood", "DecidiousWood", "/home/fpaffrath/svn/Bosch-intern/ontologies/bosch-reworked.owl", reasonerFactory, reasoner);
+		String result6 = getResult("DrillHoleInWood", "DrillHole", "/home/fpaffrath/Dokumente/gatheredOntologies/bosch-reworked.owl", reasonerFactory, reasoner);
+		String result9 = getResult("CutPaper", "CutOut", "/home/fpaffrath/Dokumente/gatheredOntologies/bosch-reworked.owl", reasonerFactory, reasoner);
+		String result7 = getResult("DrillEntryHoleWithJigsaw", "CutOut", "/home/fpaffrath/Dokumente/gatheredOntologies/bosch-reworked.owl", reasonerFactory, reasoner);
+		String result8 = getResult("WoodTwistDrillBit", "DrillBit", "/home/fpaffrath/Dokumente/gatheredOntologies/bosch-reworked.owl", reasonerFactory, reasoner);
+
 		System.out.println("Birds : \n");
 		
 		System.out.println(result);
+		System.out.println(result2);
+		System.out.println(result3);
 		
-
+		System.out.println("\n\n");
 		
+		System.out.println("\nTools : \n");
+		System.out.println(result5);
+		System.out.println(result6);
+		System.out.println(result9);		
+		System.out.println(result7);
+		System.out.println(result8);
 //		
 //		OWLOntologyManager knowledgeableManager = getImportKnowledgeableOntologyManger();
 //		OWLOntology ExampleOntology = createOntology(knowledgeableManager);
