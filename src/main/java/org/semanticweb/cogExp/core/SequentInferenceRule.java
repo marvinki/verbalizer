@@ -32,6 +32,8 @@ public interface SequentInferenceRule {
 	
 	public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion);
 	public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion);
+	public OWLFormula getP3(List<OWLFormula> formulalist, OWLFormula conclusion);
+	public OWLFormula getP4(List<OWLFormula> formulalist, OWLFormula conclusion);
 
 	
 }

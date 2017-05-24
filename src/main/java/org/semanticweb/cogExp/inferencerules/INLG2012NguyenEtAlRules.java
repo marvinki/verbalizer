@@ -2339,6 +2339,22 @@ RULE11{ //SubCla(X,\exists r. Y) and SubCla((>1,r,Y),Z) --> SubCla(X,Z)
 			return results;
 		}
 		
+		public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+			OWLFormula p1 = null;
+			for (OWLFormula f : formulalist)
+				if (f.getArgs().get(0).equals(conclusion.getArgs().get(0)))
+					p1 = f;
+			return p1;
+		}
+		
+		public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+			OWLFormula p2 = null;
+			for (OWLFormula f : formulalist)
+				if (f.getArgs().get(1).equals(conclusion.getArgs().get(1)))
+					p2 = f;
+			return p2;
+		}
+		
 		public void generateRuleBinding(Sequent s, OWLFormula candidate1, OWLFormula candidate2, ArrayList<RuleBinding> results){
 			try{
 				// List<Pair<OWLFormula,OWLFormula>> matcher2  = OWLFormula.getMatcher2Ary(candidate1, candidate2,prem1, prem2);
@@ -6938,6 +6954,14 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 	public void clearCaches(){}
 	
 	public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
+	public OWLFormula getP3(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
+	public OWLFormula getP4(List<OWLFormula> formulalist, OWLFormula conclusion){
 		return null;
 	}
 	

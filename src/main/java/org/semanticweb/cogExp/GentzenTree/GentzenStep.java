@@ -49,4 +49,20 @@ public class GentzenStep {
 		return tree.idToFormula(conclusion);
 	}
 	
+	public OWLFormula getP1(){
+		return infrule.getP1(getPremiseFormulas(),getConclusionFormula());
+	}
+	
+	public OWLFormula getP2(){
+		return infrule.getP2(getPremiseFormulas(),getConclusionFormula());
+	}
+	
+	public OWLFormula getP3(){
+		return infrule.getP3(getPremiseFormulas(),getConclusionFormula());
+	}
+	
+	public OWLFormula getP4(){
+		return infrule.getP4(getPremiseFormulas(),getConclusionFormula());
+	}
+	
 }

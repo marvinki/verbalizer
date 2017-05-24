@@ -3294,5 +3294,13 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 		return null;
 	}
 	
+	public OWLFormula getP3(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
+	public OWLFormula getP4(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
 	public void clearCaches(){}
 }

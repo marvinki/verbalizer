@@ -40,10 +40,10 @@ public class TacticExample {
 	
 	public static void main(String[] args){
 	
-		OWLFormula formA = OWLFormula.createFormulaClass("A", "A");
-		OWLFormula formB = OWLFormula.createFormulaClass("B", "B");
-		OWLFormula formC = OWLFormula.createFormulaClass("C", "C");
-		OWLFormula formD = OWLFormula.createFormulaClass("D", "D");
+		OWLFormula formA = OWLFormula.createFormulaClass("A-thing", "ant");
+		OWLFormula formB = OWLFormula.createFormulaClass("B-thing", "banana");
+		OWLFormula formC = OWLFormula.createFormulaClass("C-thing", "clown");
+		OWLFormula formD = OWLFormula.createFormulaClass("D-thing", "dress");
 		
 		OWLFormula axiomFormula = OWLFormula.createFormula(OWLSymb.SUBCL, formA, formD);
 		
