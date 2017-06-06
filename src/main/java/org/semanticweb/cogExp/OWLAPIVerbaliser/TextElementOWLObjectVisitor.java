@@ -1264,7 +1264,24 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	}
 
 	public List<TextElement> visit(OWLObjectOneOf arg0) {
+		System.out.println("visit oneof called ");
+		Set<OWLIndividual> individuals = arg0.getIndividuals();
+		if (individuals.size()==1){
+			ArrayList<OWLIndividual> indivlist = new ArrayList<OWLIndividual>(individuals);
+		List<TextElement> result = new ArrayList<TextElement>();
+		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN)){
+			if (VerbalisationManager.INSTANCE.getLabel(indivlist.get(0).asOWLNamedIndividual(),"de")!=null){
+				LogicElement elem = new LogicElement(VerbalisationManager.INSTANCE.getLabel(indivlist.get(0).asOWLNamedIndividual(),"de"));
+				result.add(elem);
+				return result;
+				}
+			}
+		result.add(new LogicElement(indivlist.get(0).asOWLNamedIndividual().getIRI().getFragment()));
+		System.out.println("DEBUG --- " + indivlist.get(0).asOWLNamedIndividual().getIRI().getFragment());
+		return result;
+		}
 		// TODO Auto-generated method stub
+		System.out.println("DEBUG --- returning null ");
 		return null;
 	}
 

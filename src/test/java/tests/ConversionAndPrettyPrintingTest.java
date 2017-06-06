@@ -1,7 +1,13 @@
 package tests;
 
+import java.util.Locale;
+
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.SentenceOWLObjectVisitor;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementOWLObjectVisitor;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -13,12 +19,14 @@ import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
 public class ConversionAndPrettyPrintingTest {
 	public static void main(String[] args) {
 		
 		OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
 		OWLClass class1 = dataFactory.getOWLClass(IRI.create("http://foo#" + "Class1"));
+		OWLClass class2 = dataFactory.getOWLClass(IRI.create("http://foo#" + "Class2"));
 		// OWLDataRange range1 = dataFactory.getOWL
 		// OWLDataRange range1 = dataFactory.getOWLDataProperty(IRI.create("http://foo#" + "Range1"));
 		
@@ -44,7 +52,13 @@ public class ConversionAndPrettyPrintingTest {
 		System.out.println(cardForm2);
 		System.out.println(VerbalisationManager.prettyPrint(cardExpr2_b));
 		
-		
-		
+		// Sentences
+		WordNetQuery.INSTANCE.disableDict();
+		VerbaliseTreeManager.setLocale(Locale.ENGLISH);
+		SentenceOWLObjectVisitor sentenceOWLObjectVisit = new SentenceOWLObjectVisitor();
+		OWLSubClassOfAxiom subcl1 =  dataFactory.getOWLSubClassOfAxiom(class1,class2);
+		System.out.println(subcl1.accept(sentenceOWLObjectVisit));
+		OWLSubClassOfAxiom subcl2 =  dataFactory.getOWLSubClassOfAxiom(class1,dataFactory.getOWLObjectSomeValuesFrom(prop1,class2));
+		System.out.println(subcl2.accept(sentenceOWLObjectVisit));
 	}
 }

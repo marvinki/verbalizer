@@ -1,6 +1,7 @@
 package org.semanticweb.cogExp.FormulaConverter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -241,6 +242,16 @@ public enum ConversionManager {
 				OWLClassExpression classexpCA = (OWLClassExpression) toOWLAPI(tail.get(0));
 				OWLNamedIndividual indivCA = (OWLNamedIndividual) toOWLAPI(tail.get(1));
 				result = dataFactory.getOWLClassAssertionAxiom(classexpCA, indivCA);
+				break;
+			case ONEOF:
+				Set<OWLIndividual> individuallist = new HashSet<OWLIndividual>();
+				System.out.println("tail " + tail);
+				for (OWLFormula form : tail){
+					OWLIndividual individ = (OWLIndividual) toOWLAPI(form);
+					individuallist.add(individ);
+				}
+				result = dataFactory.getOWLObjectOneOf(individuallist);
+				System.out.println("oneof conversion " + result);
 				break;
 			case OBJECTPROPERTYASSERTION:
 				OWLObjectPropertyExpression propExp = (OWLObjectPropertyExpression) toOWLAPI(tail.get(0));

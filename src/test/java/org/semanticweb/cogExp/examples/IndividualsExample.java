@@ -91,13 +91,21 @@ public class IndividualsExample {
 		OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
 		// String ontologyuri = "http://www.semanticweb.org/marvin/ontologies/2016/10/untitled-ontology-772#";
 		String ontologyuri = "http://www.semanticweb.org/powertools#";
-	  	OWLClass straightShankedThing = dataFactory.getOWLClass(IRI.create(ontologyuri + "CorrectlyDrillingInWood"));
-	  	OWLNamedIndividual psr18 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drillingEvent1"));
-	  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(straightShankedThing, psr18);
+	  	
+		/*
+		OWLClass correctlyDrillingInWood = dataFactory.getOWLClass(IRI.create(ontologyuri + "CorrectlyDrillingInWood"));
+	  	OWLNamedIndividual drillingEvent1 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drillingEvent1"));
+	  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(correctlyDrillingInWood, drillingEvent1);
+		*/
 		
+		OWLClass drillingInWoodWithTooMuchSpeed = dataFactory.getOWLClass(IRI.create(ontologyuri + "DrillingInWoodWithRotationalSpeedAbove1000Umin"));
+	  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drillingEvent2"));
+	  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(drillingInWoodWithTooMuchSpeed, drillingEvent2);
 		
 		String resulttext = ProofBasedExplanationService.getExplanationResult(classAxiom, jfact, reasonerFactory,  boschOntology, false, 1000, 50000, "OP", false, false);
 		System.out.println(resulttext);
+		
+		
 		
 		
 //		

@@ -42,6 +42,11 @@ public class Sentence{
 //		setSentenceType("default");
 	}
 
+	public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, TextElementSequence objekt){
+		this.subjekt = subjekt;
+		this.praedikat = praedikat;
+		this.objekt = objekt;
+	}
 	
 	public void makeDefaultSentence(){
 		//German Sentences
@@ -162,11 +167,22 @@ public class Sentence{
 			makeDefaultSentence();
 		}
 		return sentence;
-		
-		
 	}
 
-
+	/*
+	 *  When recursion is used with sentences, this can be used to access the plain content independent of language
+	 */
+	public TextElementSequence toTextElementSequence(){
+		if (sentence==null || isEmpty(sentence) || sentence.size()<1){
+			TextElementSequence seq = new TextElementSequence();
+			seq.concat(subjekt);
+			seq.concat(praedikat);
+			seq.concat(objekt);
+			return seq;
+		}
+		return sentence;
+	}
+	
 	public void setSentence(TextElementSequence sentence) {
 		this.sentence = sentence;
 	}
@@ -217,7 +233,26 @@ public class Sentence{
 		
 	}
 	
- 
+	public void addToSubject(TextElementSequence seq){
+		subjekt.concat(seq);
+	}
+	
+	public void addToPredicate(TextElementSequence seq){
+		praedikat.concat(seq);
+	}
+	
+	public void addToObject(TextElementSequence seq){
+		objekt.concat(seq);
+	}
+	
+	/* 
+	 * For each sentence part, the method adds the corresponding parts of the argument
+	 */
+	public void concat(Sentence sentence){
+		subjekt.concat(sentence.subjekt);
+		praedikat.concat(sentence.praedikat);
+		objekt.concat(sentence.objekt);
+	}
 		
 //	public String getSentenceType() {
 //		return sentenceType;
@@ -227,5 +262,12 @@ public class Sentence{
 //		this.sentenceType = sentenceTyoe;
 //	}
 
+	public String toString(){
+		String result = "";
+		result = "Sentence: " + sentence.toString() + "\n";
+		result = result + subjekt.toString() + " -- " + praedikat.toString() + " -- " + objekt.toString();
+		return result;
+	}	
+	
 	
 }
