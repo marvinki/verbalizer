@@ -2012,6 +2012,9 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						// System.out.println(candidatesSUBPROP.toString());
 						List<List<OWLFormula>> chainqueue = new ArrayList<List<OWLFormula>>();
 						List<List<OWLFormula>> resultchains = new ArrayList<List<OWLFormula>>();
+						
+						List<Pair> input = new ArrayList<Pair>();
+						
 						for (OWLFormula cand : candidates){
 							if (!cand.getHead().equals(OWLSymb.SUBCL))
 								continue;
@@ -2023,44 +2026,22 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 									|| cand.getArgs().get(1).isBot()
 									)
 								continue;
-							// System.out.println("considering candidate " + cand);
-							boolean used = false;
-							for (List<OWLFormula> chain : chainqueue){
-								// System.out.println("considering chain " + chain);
-								for (int i = 0; i< chain.size(); i++){
-									// System.out.println("considering element " + chain.get(i));
-									if (chain.get(i).getArgs().get(0).equals(cand.getArgs().get(1))){
-										chain.add(i,cand);
-										// System.out.println("Chain after addition " + chain);
-										i++;
-										used=true;
-									}
-									if (chain.get(i).getArgs().get(1).equals(cand.getArgs().get(0))){
-										chain.add(i+1,cand);
-										i++;
-										used=true;
-									}
-								}
-							}
-							if (chainqueue.size()==0 || used == false){
-									List<OWLFormula> chain = new ArrayList<OWLFormula>();
-									chain.add(cand);
-									chainqueue.add(chain);
-							}	
+							Pair inp = new Pair(cand.getArgs().get(0),cand.getArgs().get(1));
+							input.add(inp);
 						}
 						
-						for (List<OWLFormula> chain : chainqueue){
-							// System.out.println("new chain ");
-							if (chain.size()>2){
-								resultchains.add(chain);
-							}
-							/*
-							for (OWLFormula form : chain){
-								System.out.print(form.prettyPrint() + ", ");
-							}
-							*/
+						List<List<Pair>> chains = findAllChains(input);
 							
+						for (List<Pair> pairs : chains){
+							List<OWLFormula> chain = new ArrayList<OWLFormula>();
+							for (Pair p : pairs){
+								OWLFormula form = OWLFormula.createFormulaSubclassOf((OWLFormula) p.t, (OWLFormula)p.u) ;
+								chain.add(form);
+							}
+								resultchains.add(chain);
 						}
+						
+				
 						
 						for (List<OWLFormula> chain : resultchains){
 							for (int i = 0; i< chain.size();i++){
@@ -3400,4 +3381,86 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 	}
 	
 	public void clearCaches(){}
+	
+	public static List<List<Pair>> findAllChains(List<Pair> input){
+		List<List<Pair>> result = new ArrayList<List<Pair>>();
+		List<Pair> toBeConsumed = new ArrayList(input);
+		List<List<Pair>> candidateChains = new ArrayList<List<Pair>>();
+		// Idea: Every input element must at least be inserted once (use a list that is consumed)
+		// For each chain, check if the start or the end can be extended (with all elements)
+		boolean chainsChanged = false;
+		while (toBeConsumed.size()>0 || chainsChanged){
+			// initialize the first chain
+			if (candidateChains.size()==0 || !chainsChanged){
+					Pair consumable = toBeConsumed.get(0);
+					toBeConsumed.remove(consumable);
+					List<Pair> firstlist = new ArrayList<Pair>();
+					firstlist.add(consumable);
+					candidateChains.add(firstlist);
+					chainsChanged = true;
+			}
+			else{ // there is at least some chain, so now try to extend all the chains
+				int i = 0;
+				while (i<candidateChains.size()){
+					List<Pair> currentchain = candidateChains.get(i);
+					Pair firstpair = currentchain.get(0);
+					Pair lastpair = currentchain.get(currentchain.size()-1);
+					
+					chainsChanged = false;
+					
+					for (Pair candidatepair : input){
+						if (candidatepair.u.equals(firstpair.t)){
+							// make a copy and append candidate to front of copied chain
+							List<Pair> copyOfChain = new ArrayList<Pair>(currentchain);
+							copyOfChain.add(0,candidatepair);
+							candidateChains.add(copyOfChain);
+							if (toBeConsumed.contains(candidatepair)){
+								toBeConsumed.remove(candidatepair);
+							}
+							
+							chainsChanged = true;
+						}
+						if (candidatepair.t.equals(lastpair.u)){
+							List<Pair> copyOfChain = new ArrayList<Pair>(currentchain);
+							// append candidate to back of chain
+							copyOfChain.add(candidatepair);
+							candidateChains.add(copyOfChain);
+							if (toBeConsumed.contains(candidatepair)){
+								toBeConsumed.remove(candidatepair);
+							}
+										
+							chainsChanged = true;
+						}
+					}
+					i++;
+				} // end for loop for current chain
+			}
+		} // end while loop
+		
+		// now extract all kinds of different chains
+		
+	
+		
+		List<String> hash = new ArrayList<String>();
+		
+		for (List<Pair> candidateChain:  candidateChains){
+			if (candidateChain.size()<3)
+				continue;
+			for (int i = 0; i<candidateChain.size(); i++){
+				for (int j = i+2; j<candidateChain.size(); j++){
+					List<Pair> seq = new ArrayList<Pair>();
+					for (int k = i;k<=j;k++){
+						seq.add(candidateChain.get(k));
+					}
+					if (!hash.contains(seq.toString())){
+						result.add(seq);
+						hash.add(seq.toString());
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+	
 }

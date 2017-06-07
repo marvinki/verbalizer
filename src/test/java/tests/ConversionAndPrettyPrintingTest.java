@@ -1,7 +1,11 @@
 package tests;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import org.semanticweb.cogExp.core.Pair;
+import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.SentenceOWLObjectVisitor;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementOWLObjectVisitor;
@@ -60,5 +64,21 @@ public class ConversionAndPrettyPrintingTest {
 		System.out.println(subcl1.accept(sentenceOWLObjectVisit));
 		OWLSubClassOfAxiom subcl2 =  dataFactory.getOWLSubClassOfAxiom(class1,dataFactory.getOWLObjectSomeValuesFrom(prop1,class2));
 		System.out.println(subcl2.accept(sentenceOWLObjectVisit));
+
+		List<Pair> lst = new ArrayList<Pair>();
+		Pair p1 = new Pair(1,2);
+		Pair p2 = new Pair(2,3);
+		Pair p3 = new Pair(3,4);
+		
+		
+		lst.add(p3);
+		lst.add(p1);
+		lst.add(p2);
+		AdditionalDLRules.findAllChains(lst);
+		
+		
 	}
+	
+	
+	
 }
