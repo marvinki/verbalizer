@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
  * @author fpaffrath
  *
  */
-public class Sentence{
+public class Sentence extends CompoundSentence{
 
 	private TextElementSequence sentence = new TextElementSequence();
 			
@@ -214,9 +214,9 @@ public class Sentence{
 		this.praedikat.add(praedikat);;
 	}
 
-	public TextElementSequence concat(TextElementSequence clause){
+	public void concat(TextElementSequence clause){
 		sentence.add(clause);
-		return clause;
+		return;
 	}
 	
 	private boolean isEmpty(TextElementSequence sentence){

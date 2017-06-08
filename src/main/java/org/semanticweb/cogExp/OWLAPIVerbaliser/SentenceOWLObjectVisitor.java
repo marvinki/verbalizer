@@ -325,10 +325,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		// System.out.println("visit subclassof called with " + arg0);
 		// Left hand side
 		Sentence leftstringSentence = arg0.getSubClass().accept(this);
-		leftstringSentence.makeDefaultSentence();
 		List<TextElement> leftstring = leftstringSentence.toTextElementSequence().getTextElements();
 		List<TextElement> somethingthat = new ArrayList<TextElement>();
 		somethingthat.add(somethingthatElement);
+		
 		
 		if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
 			OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) arg0.getSubClass();
@@ -336,7 +336,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 //		 System.out.println("SUBCLASS SOMEOF DEBUG " + some1 + " " + cl);
 			if (cl!=null){
 				//somethingthat = cl.toString() + " that ";
-				somethingthat =cl.accept(this).getSentence().getTextElements(); 
+				somethingthat =cl.accept(this).toTextElementSequence().getTextElements(); 
 				somethingthat.add(thatElement);
 			}
 		}
@@ -350,7 +350,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 					OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) expr;
 					OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 					if (cl!=null){
-						somethingthat =cl.accept(this).getSentence().getTextElements(); 
+						somethingthat =cl.accept(this).toTextElementSequence().getTextElements(); 
 						somethingthat.add(thatElement);
 					}
 				}
@@ -446,17 +446,18 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				}	
 			}	
 		
-			// System.out.println(" DEBUG (1) -- " +  filler.accept(this));
+			//System.out.println(" DEBUG (1) -- " +  filler.accept(this));
 			fillerstrs.add(filler.accept(this).toTextElementSequence().getTextElements());
-			middlestring.addAll(VerbalisationManager.textualiseProperty(property, fillerstrs, middle));
+			Sentence propsentence = VerbalisationManager.textualisePropertyAsSentence(property, fillerstrs, middle);
 			
 			// System.out.println("leftstring " + leftstring);
 			// System.out.println("middlestring " + middlestring);
 			// System.out.println("rightstring " + rightstring);
 			
 			Sentence sentence = new Sentence(new TextElementSequence(leftstring),
-					new TextElementSequence(middlestring),
-					new TextElementSequence(rightstring));
+					new TextElementSequence(),
+					new TextElementSequence());
+			sentence.concat(propsentence);
 			
 			return sentence;
 			// return // leftstring
@@ -494,11 +495,6 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			// 		leftstring + " " +
 			// VerbalisationManager.pseudoNLStringMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
 		}
-		leftstring.addAll(middlestring);
-		// System.out.println("DEBUG -- in the default case!");
-		leftstring.addAll(arg0.getSuperClass().accept(this).getSentence().getTextElements());  // <-- Default>
-		// System.out.println("DEBUG default case: " + leftstring);
-		// System.out.println("DEBUG default case: " + new TextElementSequence(leftstring));
 		
 		//TODO implement this better
 		// if(lang == Locale.GERMAN)
@@ -604,7 +600,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			for(OWLObjectAllValuesFrom all : allExps){
 				if (!isFirst)
 					seq4.add(new LogicElement(LogicLabels.getString("and"))) ;
-				seq4.concat(new TextElementSequence(all.accept(this).getSentence().getTextElements()));
+				seq4.concat(new TextElementSequence(all.accept(this).toTextElementSequence().getTextElements()));
 				isFirst = false;
 			}
 		}
@@ -618,11 +614,11 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			for(OWLClassExpression allelse : allelseExps){
 				if (!isFirst)
 					seq4.add(new LogicElement(LogicLabels.getString(("and")))) ;
-				List<TextElement> allelseString = allelse.accept(this).getSentence().getTextElements();
+				List<TextElement> allelseString = allelse.accept(this).toTextElementSequence().getTextElements();
 				if (allelseString == null){
 					seq.add(new LogicElement("{NULL}"));
 				}else{
-					seq4.concat(new TextElementSequence(allelse.accept(this).getSentence().getTextElements()));
+					seq4.concat(new TextElementSequence(allelse.accept(this).toTextElementSequence().getTextElements()));
 				}
 				isFirst = false;
 			}
@@ -686,7 +682,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				LogicElement orElement = new LogicElement(LogicLabels.getString("or"));
 				resultList.add(orElement);}
 			firstp = false;
-			result.addToSubject(exp.accept(this).getSentence());
+			result.addToSubject(exp.accept(this).toTextElementSequence());
 			// resultstring = resultstring + exp.accept(this);
 		}
 		System.out.println("_OWLObjectUnionOf arg0_");
@@ -698,7 +694,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		Sentence result = new Sentence();
 		LogicElement notElement = new LogicElement(LogicLabels.getString("not"));
 		result.setSubjekt(notElement);
-		result.addToSubject(arg0.getOperand().accept(this).getSentence());
+		result.addToSubject(arg0.getOperand().accept(this).toTextElementSequence());
 		System.out.println("_OWLObjectComplementOf arg0_");
 		return result;
 	}
@@ -712,7 +708,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		middlestring.add(new LogicElement(LogicLabels.getString("nothing but")));
 		if (filler instanceof OWLObjectSomeValuesFrom)
 			middlestring.add(new LogicElement(LogicLabels.getString("somethingThat")));
-		fillerstrs.add(filler.accept(this).getSentence().getTextElements());
+		fillerstrs.add(filler.accept(this).toTextElementSequence().getTextElements());
 		
 		System.out.println("_OWLObjectAllValuesFrom existsexpr_");
 
@@ -743,7 +739,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			middle.add(new LogicElement(LogicLabels.getString("somethingThat")));
 			}
 		}
-		fillerstrs.add(filler.accept(this).getSentence().getTextElements());
+		fillerstrs.add(filler.accept(this).toTextElementSequence().getTextElements());
 		List<TextElement> resultseq = VerbalisationManager.textualiseProperty(property,fillerstrs,middle);
 		// String str = VerbalisationManager.verbaliseProperty(property,fillerstrs,middle);
 		// System.out.println("DEBUG visit " + str);
@@ -766,7 +762,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		if (classexp!=null){
 			if(lang == Locale.ENGLISH){
 				result.setSubjekt(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
-				result.addToSubject(classexp.accept(this).getSentence());
+				result.addToSubject(classexp.accept(this).toTextElementSequence());
 				result.setPraedikat(new LogicElement("is"));
 				boolean firstp = true;
 				for (OWLClassExpression ex:exprs){
@@ -777,7 +773,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 							}
 							if (ex instanceof OWLObjectSomeValuesFrom)
 								result.setObjekt(new LogicElement("something that"));
-								result.addToObject(ex.accept(this).getSentence());
+								result.addToObject(ex.accept(this).toTextElementSequence());
 								
 					}
 				}
@@ -786,7 +782,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				result.setSubjekt(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
 				
 				result.setPraedikat(new LogicElement(LogicLabels.getString("is")));
-				result.addToObject(classexp.accept(this).getSentence());
+				result.addToObject(classexp.accept(this).toTextElementSequence());
 				
 				boolean firstp = true;
 				for (OWLClassExpression ex:exprs){
@@ -797,7 +793,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 							}
 							if (ex instanceof OWLObjectSomeValuesFrom)
 								result.setObjekt(new LogicElement(LogicLabels.getString("something that")));
-								result.addToSubject(ex.accept(this).getSentence());
+								result.addToSubject(ex.accept(this).toTextElementSequence());
 								
 					}
 				}
@@ -806,7 +802,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			
 			
 		} else{
-			result.addToSubject(exprs.get(0).accept(this).getSentence());
+			result.addToSubject(exprs.get(0).accept(this).toTextElementSequence());
 			// result += exprs.get(0).accept(this);
 			result.setPraedikat(new LogicElement("is"));
 			result.setObjekt(new LogicElement("the same as"));
@@ -819,7 +815,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 							}
 						if (ex instanceof OWLObjectSomeValuesFrom)
 							result.setObjekt(new LogicElement("something that"));
-							result.addToObject(ex.accept(this).getSentence());
+							result.addToObject(ex.accept(this).toTextElementSequence());
 				}	
 			}	
 		}
@@ -829,11 +825,11 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLNegativeObjectPropertyAssertionAxiom arg0) {
 		Sentence result = new Sentence();
 		result.setSubjekt(new LogicElement("neg obj prop("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(","));
-		result.addToSubject(arg0.getObject().accept(this).getSentence());
+		result.addToSubject(arg0.getObject().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(","));
-		result.addToSubject(arg0.getSubject().accept(this).getSentence());
+		result.addToSubject(arg0.getSubject().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -841,7 +837,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLAsymmetricObjectPropertyAxiom arg0) {
 		Sentence result = new Sentence();
 		result.setSubjekt(new LogicElement("asymmetr("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -849,7 +845,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLReflexiveObjectPropertyAxiom arg0) {
 		Sentence result = new Sentence();
 		result.setSubjekt(new LogicElement("reflexive("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -867,7 +863,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		}
 		if (classexp!=null){
 			result.setSubjekt(new LogicElement("No"));
-			List<TextElement> str = classexp.accept(this).getSentence().getTextElements();
+			List<TextElement> str = classexp.accept(this).toTextElementSequence().getTextElements();
 			TextElement t = str.get(0);
 			String firstt = t.content;
 			if (firstt.indexOf("a ")==0)
@@ -887,7 +883,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 					result.setObjekt(new LogicElement("or"));
 					}
 				firstp = false;
-				result.addToObject(exp.accept(this).getSentence());
+				result.addToObject(exp.accept(this).toTextElementSequence());
 				}
 			}
 		}
@@ -900,7 +896,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				if (!twop) {
 					result.setSubjekt(new LogicElement("or"));
 					}
-				result.addToSubject(exp.accept(this).getSentence());	
+				result.addToSubject(exp.accept(this).toTextElementSequence());	
 				if (firstp)
 					{firstp = false;
 					result.setPraedikat(new LogicElement("is"));
@@ -916,9 +912,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		// TODO: treat this as syntactic sugar, convert this to the form \exists r. \top \sqsubseteq X and output
 		Sentence result = new Sentence();
 		result.setSubjekt(new LogicElement("dom("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(","));
-		result.addToSubject(arg0.getDomain().accept(this).getSentence());
+		result.addToSubject(arg0.getDomain().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -944,7 +940,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			// resultstring = resultstring + ",";
 			}
 			firstp = false;
-			result.addToSubject(exp.accept(this).getSentence());
+			result.addToSubject(exp.accept(this).toTextElementSequence());
 			}
 		result.setSubjekt(new LogicElement(")"));
 		return result;
@@ -952,155 +948,155 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	}
 
 	public Sentence visit(OWLNegativeDataPropertyAssertionAxiom arg0) {
-		Sentence resultSentence = new Sentence();
+		Sentence result = new Sentence();
 		Sentence propSentence = arg0.getProperty().accept(this);
 		Sentence objSentence = arg0.getObject().accept(this);
 		Sentence subjSentence = arg0.getSubject().accept(this);
-		resultSentence.setSubjekt(new LogicElement("neg dat prop: "));
-		resultSentence.addToSubject(subjSentence.getSentence());
-		resultSentence.addToPredicate(propSentence.getSentence());
-		resultSentence.addToObject(objSentence.getSentence());
-		return resultSentence;
+		result.setSubjekt(new LogicElement("neg dat prop: "));
+		result.addToSubject(subjSentence.toTextElementSequence());
+		result.addToPredicate(propSentence.toTextElementSequence());
+		result.addToObject(objSentence.toTextElementSequence());
+		return result;
 	}
 
 	public Sentence visit(OWLDifferentIndividualsAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("different individuals: "));
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("different individuals: "));
 		List<OWLIndividual> exprs =  arg0.getIndividualsAsList();
 		boolean firstp = true;
 		for (OWLIndividual exp : exprs){
 		if (!firstp) {
-			resultSentence.setSubjekt(new LogicElement(","));
+			result.setSubjekt(new LogicElement(","));
 			}
 			firstp = false;
-			resultSentence.addToSubject(exp.accept(this).getSentence());
+			result.addToSubject(exp.accept(this).toTextElementSequence());
 			}
-		return resultSentence;
+		return result;
 	}
 
 	public Sentence visit(OWLDisjointDataPropertiesAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("disjoint: "));
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("disjoint: "));
 		Set<OWLDataPropertyExpression> exprs =  arg0.getProperties();
 		boolean firstp = true;
 		for (OWLDataPropertyExpression exp : exprs){
 		if (!firstp) {
-			resultSentence.setSubjekt(new LogicElement(","));
+			result.setSubjekt(new LogicElement(","));
 		}
 			firstp = false;
-			resultSentence.addToSubject(exp.accept(this).getSentence());
+			result.addToSubject(exp.accept(this).toTextElementSequence());
 			}
-		return resultSentence;
+		return result;
 	}
 
 	public Sentence visit(OWLDisjointObjectPropertiesAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("disjoint: "));
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("disjoint: "));
 		Set<OWLObjectPropertyExpression> exprs =  arg0.getProperties();
 		boolean firstp = true;
 		for (OWLObjectPropertyExpression exp : exprs){
 		if (!firstp) {
-			resultSentence.setSubjekt(new LogicElement(","));
+			result.setSubjekt(new LogicElement(","));
 		}
 			firstp = false;
-			resultSentence.addToSubject(exp.accept(this).getSentence());
+			result.addToSubject(exp.accept(this).toTextElementSequence());
 			}
-		return resultSentence;
+		return result;
 	}
 
 	public Sentence visit(OWLObjectPropertyRangeAxiom arg0) {
-		Sentence resultSentence = new Sentence();
+		Sentence result = new Sentence();
 		OWLObjectPropertyExpression prop1 = arg0.getProperty();
 		OWLClassExpression prop2 = arg0.getRange();
-		resultSentence.setSubjekt(new LogicElement("range("));
-		resultSentence.addToSubject(prop1.accept(this).getSentence());
-		resultSentence.setSubjekt(new LogicElement(","));
-		resultSentence.addToSubject(prop2.accept(this).getSentence());
-		resultSentence.setSubjekt(new LogicElement(")"));
-		return resultSentence;
+		result.setSubjekt(new LogicElement("range("));
+		result.addToSubject(prop1.accept(this).toTextElementSequence());
+		result.setSubjekt(new LogicElement(","));
+		result.addToSubject(prop2.accept(this).toTextElementSequence());
+		result.setSubjekt(new LogicElement(")"));
+		return result;
 		
 	}
 
 	public Sentence visit(OWLObjectPropertyAssertionAxiom arg0) {
-		Sentence resultSentence = new Sentence();
+		Sentence result = new Sentence();
 		OWLIndividual subject = arg0.getSubject();
 		OWLIndividual object = arg0.getObject();
-		resultSentence.addToSubject(subject.accept(this).getSentence());
+		result.addToSubject(subject.accept(this).toTextElementSequence());
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(arg0.getProperty());
 		TextElement propElement = new RoleElement(propstring);
-		resultSentence.setSubjekt((propElement));
-		resultSentence.addToSubject(object.accept(this).getSentence());
-		return resultSentence;
+		result.setSubjekt((propElement));
+		result.addToSubject(object.accept(this).toTextElementSequence());
+		return result;
 		// return "{IMPLEMENT ME obj prop ass : " 
 	    // + arg0.getProperty().accept(this) +  arg0.getObject().accept(this) 
 	    // + "}";
 	}
 
 	public Sentence visit(OWLFunctionalObjectPropertyAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		return resultSentence;
+		Sentence result = new Sentence();
+		return result;
 		// return "functional" + "(" + arg0.getProperty().accept(this) + ")";		
 	}
 
 	public Sentence visit(OWLSubObjectPropertyOfAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		return resultSentence;
+		Sentence result = new Sentence();
+		return result;
 		// return "to " + arg0.getSubProperty().accept(this) + " is a subproperty of " + arg0.getSuperProperty().accept(this); 
 	}
 
 	public Sentence visit(OWLDisjointUnionAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("disjoint-union("));
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("disjoint-union("));
 		Set<OWLClassExpression> exprs =  arg0.getClassExpressions();
 		boolean firstp = true;
 		for (OWLClassExpression exp : exprs){
 		if (!firstp) {
-			resultSentence.setSubjekt(new LogicElement(","));
+			result.setSubjekt(new LogicElement(","));
 		}
 			firstp = false;
-			resultSentence.addToSubject(exp.accept(this).getSentence());
+			result.addToSubject(exp.accept(this).toTextElementSequence());
 			}
-		resultSentence.setSubjekt(new LogicElement(")"));
-		return resultSentence;
+		result.setSubjekt(new LogicElement(")"));
+		return result;
 	}
 
 	public Sentence visit(OWLDeclarationAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		return resultSentence;
+		Sentence result = new Sentence();
+		return result;
 		// return "{IMPLEMENT ME decl ax : "  + arg0.getEntity() + "}";
 	}
 
 	public Sentence visit(OWLAnnotationAssertionAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		return resultSentence;
+		Sentence result = new Sentence();
+		return result;
 		// return "{IMPLEMENT ME annot ax : " + arg0.getSubject().accept(this)  
 		// 		+ arg0.getProperty().accept(this) + arg0.getValue().accept(this)  + "}";
 	}
 
 	public Sentence visit(OWLSymmetricObjectPropertyAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("symm("));
-		resultSentence.addToSubject((arg0.getProperty().accept(this)).getSentence());
-		resultSentence.setSubjekt(new LogicElement(")"));
-		return resultSentence;
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("symm("));
+		result.addToSubject((arg0.getProperty().accept(this)).toTextElementSequence());
+		result.setSubjekt(new LogicElement(")"));
+		return result;
 	}
 
 	public Sentence visit(OWLDataPropertyRangeAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("has range"));
-		resultSentence.addToSubject(arg0.getProperty().accept(this).getSentence());
-		resultSentence.setSubjekt(new LogicElement(" -- "));
-		resultSentence.addToSubject(arg0.getRange().accept(this).getSentence());
-		return resultSentence;
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("has range"));
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
+		result.setSubjekt(new LogicElement(" -- "));
+		result.addToSubject(arg0.getRange().accept(this).toTextElementSequence());
+		return result;
 		// return arg0.getProperty().accept(this) + " has range " + arg0.getRange().accept(this); 
 	}
 
 	public Sentence visit(OWLFunctionalDataPropertyAxiom arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("functional("));
-		resultSentence.addToSubject(arg0.getProperty().accept(this).getSentence());
-		resultSentence.setSubjekt(new LogicElement(")"));
-		return resultSentence;
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("functional("));
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
+		result.setSubjekt(new LogicElement(")"));
+		return result;
 	}
 
 	public Sentence visit(OWLEquivalentDataPropertiesAxiom arg0) {
@@ -1113,7 +1109,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			result.setSubjekt(new LogicElement(","));
 			}
 			firstp = false;
-			result.addToSubject(exp.accept(this).getSentence());
+			result.addToSubject(exp.accept(this).toTextElementSequence());
 			}
 		result.setSubjekt(new LogicElement(")"));
 		return result;
@@ -1121,23 +1117,23 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 
 	public Sentence visit(OWLClassAssertionAxiom arg0) {
 		Sentence result = new Sentence();
-		result.addToSubject(arg0.getIndividual().accept(this).getSentence());
+		result.addToSubject(arg0.getIndividual().accept(this).toTextElementSequence());
 		result.setPraedikat(new LogicElement(LogicLabels.getString("is")));
-		result.addToObject(arg0.getClassExpression().accept(this).getSentence());
+		result.addToObject(arg0.getClassExpression().accept(this).toTextElementSequence());
 		return result;
 	} 
 
 	public Sentence visit(OWLDataPropertyAssertionAxiom arg0) {
 		Sentence result = new Sentence();
-		result.addToSubject(arg0.getSubject().accept(this).getSentence());
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getSubject().accept(this).toTextElementSequence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		return result;
 	}
 
 	public Sentence visit(OWLTransitiveObjectPropertyAxiom arg0) {
 		Sentence result = new Sentence();
 		result.setSubjekt(new LogicElement("trans("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -1145,7 +1141,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLIrreflexiveObjectPropertyAxiom arg0) {
 		Sentence result = new Sentence();
 		result.setSubjekt(new LogicElement("irrefl("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -1153,17 +1149,17 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLSubDataPropertyOfAxiom arg0) {
 		Sentence result = new Sentence();
 		result.setSubjekt(new LogicElement("to"));
-		result.addToSubject(arg0.getSubProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getSubProperty().accept(this).toTextElementSequence());
 		result.setPraedikat(new LogicElement("is"));
 		result.setObjekt(new LogicElement("a subproperty of"));
-		result.addToObject(arg0.getSuperProperty().accept(this).getSentence());
+		result.addToObject(arg0.getSuperProperty().accept(this).toTextElementSequence());
 		return result;
 	}
 
 	public Sentence visit(OWLInverseFunctionalObjectPropertyAxiom arg0) {
 		Sentence result = new Sentence();
 		result.setSubjekt(new LogicElement("inv-funct("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -1178,7 +1174,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			result.setSubjekt(new LogicElement(","));
 		}
 			firstp = false;
-			result.addToSubject(exp.accept(this).getSentence());
+			result.addToSubject(exp.accept(this).toTextElementSequence());
 			}
 		result.setSubjekt(new LogicElement(")"));
 		return result;
@@ -1194,7 +1190,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			result.setSubjekt(new LogicElement(","));
 			}
 			firstp = false;
-			result.addToSubject(exp.accept(this).getSentence());
+			result.addToSubject(exp.accept(this).toTextElementSequence());
 			}
 		result.setSubjekt(new LogicElement(")"));
 		return result;
@@ -1205,9 +1201,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			OWLObjectPropertyExpression expr1 =   arg0.getFirstProperty();
 			OWLObjectPropertyExpression expr2 =   arg0.getSecondProperty();
 			result.setSubjekt(new LogicElement("inverse("));
-			result.addToSubject(expr1.accept(this).getSentence());
+			result.addToSubject(expr1.accept(this).toTextElementSequence());
 			result.setSubjekt(new LogicElement(","));
-			result.addToSubject(expr2.accept(this).getSentence());
+			result.addToSubject(expr2.accept(this).toTextElementSequence());
 			result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -1228,19 +1224,19 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 
 	public Sentence visit(OWLSubAnnotationPropertyOfAxiom arg0) {
 		Sentence result = new Sentence();
-		result.addToSubject((arg0.getSubProperty().accept(this)).getSentence());
+		result.addToSubject((arg0.getSubProperty().accept(this)).toTextElementSequence());
 		result.setPraedikat(new LogicElement("is"));
 		result.setObjekt(new LogicElement("sub-annotiation property of"));
-		result.addToSubject(arg0.getSuperProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getSuperProperty().accept(this).toTextElementSequence());
 		return result;
 	}
 
 	public Sentence visit(OWLAnnotationPropertyDomainAxiom arg0) {
 		Sentence result = new Sentence();
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setPraedikat(new LogicElement("has domain"));
 		result.setObjekt(new LogicElement("domain"));
-		result.addToSubject(arg0.getDomain().accept(this).getSentence());
+		result.addToSubject(arg0.getDomain().accept(this).toTextElementSequence());
 		return result;
 	}
 
@@ -1249,9 +1245,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		OWLAnnotationProperty prop1 = arg0.getProperty();
 		IRI prop2 = arg0.getRange();
 		result.setSubjekt(new LogicElement("range("));
-		result.addToSubject(prop1.accept(this).getSentence());
+		result.addToSubject(prop1.accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(","));
-		result.addToSubject(prop2.accept(this).getSentence());
+		result.addToSubject(prop2.accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -1259,9 +1255,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLObjectHasValue arg0) {
 		Sentence result = new Sentence();
 		result.setSubjekt(new LogicElement("has value("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(","));
-		result.addToSubject(arg0.getValue().accept(this).getSentence());
+		result.addToSubject(arg0.getValue().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result; 
 	}
@@ -1272,9 +1268,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		String card = "" + arg0.getCardinality();
 		result.setSubjekt(new LogicElement(card));
 		result.setSubjekt(new LogicElement("("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(","));
-		result.addToSubject(arg0.getFiller().accept(this).getSentence());
+		result.addToSubject(arg0.getFiller().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -1285,9 +1281,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		String card = "" + arg0.getCardinality();
 		result.setSubjekt(new LogicElement(card));
 		result.setSubjekt(new LogicElement("("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(","));
-		result.addToSubject(arg0.getFiller().accept(this).getSentence());
+		result.addToSubject(arg0.getFiller().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -1298,9 +1294,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		String card = "" + arg0.getCardinality();
 		result.setSubjekt(new LogicElement(card));
 		result.setSubjekt(new LogicElement("("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(","));
-		result.addToSubject(arg0.getFiller().accept(this).getSentence());
+		result.addToSubject(arg0.getFiller().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -1318,21 +1314,21 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLDataSomeValuesFrom arg0) {
 		Sentence result = new Sentence();
 		result.setSubjekt(new LogicElement("something that"));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
-		result.addToSubject(arg0.getFiller().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
+		result.addToSubject(arg0.getFiller().accept(this).toTextElementSequence());
 		return result;
 	}
 
 	public Sentence visit(OWLDataAllValuesFrom arg0) {
 		Sentence result = new Sentence();
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
-		result.addToSubject(arg0.getFiller().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
+		result.addToSubject(arg0.getFiller().accept(this).toTextElementSequence());
 		return result;
 	}
 
 	public Sentence visit(OWLDataHasValue arg0) {
 		Sentence result = new Sentence();
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(arg0.getValue().getLiteral()));
 		return result;
 	}
@@ -1351,9 +1347,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		String card = "" + arg0.getCardinality();
 		result.setSubjekt(new LogicElement(card));
 		result.setSubjekt(new LogicElement("("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(","));
-		result.addToSubject(arg0.getFiller().accept(this).getSentence());
+		result.addToSubject(arg0.getFiller().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -1364,9 +1360,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		String card = "" + arg0.getCardinality();
 		result.setSubjekt(new LogicElement(card));
 		result.setSubjekt(new LogicElement("("));
-		result.addToSubject(arg0.getProperty().accept(this).getSentence());
+		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(","));
-		result.addToSubject(arg0.getFiller().accept(this).getSentence());
+		result.addToSubject(arg0.getFiller().accept(this).toTextElementSequence());
 		result.setSubjekt(new LogicElement(")"));
 		return result;
 	}
@@ -1399,81 +1395,81 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		for (OWLLiteral lit: literals){
 			if (!firstP)
 				result.setSubjekt(new LogicElement(","));
-			result.addToSubject(lit.accept(this).getSentence());
+			result.addToSubject(lit.accept(this).toTextElementSequence());
 			firstP = false;
 		}
 		return result;
 	}
 
 	public Sentence visit(OWLDataIntersectionOf arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("NI-1003"));
-		return resultSentence;
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("NI-1003"));
+		return result;
 	}
 
 	public Sentence visit(OWLDataUnionOf arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("NI-1004"));
-		return resultSentence;
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("NI-1004"));
+		return result;
 	}
 
 	public Sentence visit(OWLDatatypeRestriction arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("NI-1005"));
-		return resultSentence;
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("NI-1005"));
+		return result;
 	}
 
 	public Sentence visit(OWLLiteral arg0) {
-		Sentence resultSentence = new Sentence();
+		Sentence result = new Sentence();
 		TextElementSequence seq = new TextElementSequence();
 		seq.add(new LogicElement(arg0.getLiteral()));
-		resultSentence.addToSubject(seq);
-		return resultSentence;
+		result.addToSubject(seq);
+		return result;
 	}
 
 	public Sentence visit(OWLFacetRestriction arg0) {
-		Sentence resultSentence = new Sentence();
-		resultSentence.setSubjekt(new LogicElement("NI-1006"));
-		return resultSentence;
+		Sentence result = new Sentence();
+		result.setSubjekt(new LogicElement("NI-1006"));
+		return result;
 	}
 
 	public Sentence visit(OWLObjectProperty arg0) {
-		Sentence resultSentence = new Sentence();
+		Sentence result = new Sentence();
 		TextElementSequence seq = new TextElementSequence();
 		seq.add(new RoleElement(arg0.getNamedProperty().toString()));
-		resultSentence.addToSubject(seq);
-		return resultSentence;
+		result.addToSubject(seq);
+		return result;
 	}
 
 	public Sentence visit(OWLObjectInverseOf arg0) {
-		Sentence resultSentence = new Sentence();
+		Sentence result = new Sentence();
 		TextElementSequence seq = new TextElementSequence();
 		seq.add(new LogicElement("not"));
 		Sentence innerseq = arg0.getInverse().accept(this);
-		seq.concat(innerseq.getSentence());
-		resultSentence.addToSubject(seq);
-		return resultSentence;
+		seq.concat(innerseq.toTextElementSequence());
+		result.addToSubject(seq);
+		return result;
 	}
 
 	public Sentence visit(OWLDataProperty arg0) {
-		Sentence resultSentence = new Sentence();
+		Sentence result = new Sentence();
 		String str = VerbalisationManager.INSTANCE.getDataPropertyNL(arg0);
-		resultSentence.setSubjekt(new LogicElement(str));
-		return resultSentence;
+		result.setSubjekt(new LogicElement(str));
+		return result;
 		// return arg0.getIRI().getFragment().toString();
 	}
 
 	public Sentence visit(OWLNamedIndividual arg0) {
-		Sentence resultSentence = new Sentence();
+		Sentence result = new Sentence();
 		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN)){
 			if (VerbalisationManager.INSTANCE.getLabel(arg0,"de")!=null){
 				LogicElement elem = new LogicElement(VerbalisationManager.INSTANCE.getLabel(arg0,"de"));
-				resultSentence.setSubjekt(elem);
-				return resultSentence;
+				result.setSubjekt(elem);
+				return result;
 				}
 			}
-		resultSentence.setSubjekt(new LogicElement(arg0.getIRI().getFragment()));
-		return resultSentence;
+		result.setSubjekt(new LogicElement(arg0.getIRI().getFragment()));
+		return result;
 	}
 
 	public Sentence visit(OWLAnnotationProperty arg0) {
@@ -1488,8 +1484,8 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		Sentence sen2 = arg0.getValue().accept(this);
 		
 		Sentence sentence = new Sentence(
-				new TextElementSequence(sen1.getSentence().getTextElements()),
-				new TextElementSequence(sen2.getSentence().getTextElements()),
+				new TextElementSequence(sen1.toTextElementSequence().getTextElements()),
+				new TextElementSequence(sen2.toTextElementSequence().getTextElements()),
 				(new TextElementSequence())
 				);
 		return sentence;

@@ -31,6 +31,7 @@ public class ConversionAndPrettyPrintingTest {
 		OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
 		OWLClass class1 = dataFactory.getOWLClass(IRI.create("http://foo#" + "Class1"));
 		OWLClass class2 = dataFactory.getOWLClass(IRI.create("http://foo#" + "Class2"));
+		OWLClass class3 = dataFactory.getOWLClass(IRI.create("http://foo#" + "Class3"));
 		// OWLDataRange range1 = dataFactory.getOWL
 		// OWLDataRange range1 = dataFactory.getOWLDataProperty(IRI.create("http://foo#" + "Range1"));
 		
@@ -64,7 +65,14 @@ public class ConversionAndPrettyPrintingTest {
 		System.out.println(subcl1.accept(sentenceOWLObjectVisit));
 		OWLSubClassOfAxiom subcl2 =  dataFactory.getOWLSubClassOfAxiom(class1,dataFactory.getOWLObjectSomeValuesFrom(prop1,class2));
 		System.out.println(subcl2.accept(sentenceOWLObjectVisit));
-
+		OWLSubClassOfAxiom subcl3 =  dataFactory.getOWLSubClassOfAxiom(dataFactory.getOWLObjectSomeValuesFrom(prop1,class1),class2);
+		System.out.println(subcl3.accept(sentenceOWLObjectVisit));
+		OWLSubClassOfAxiom subcl4 =  dataFactory.getOWLSubClassOfAxiom(class1,dataFactory.getOWLObjectIntersectionOf(class2,class3));
+		System.out.println(subcl4.accept(sentenceOWLObjectVisit));
+		
+		
+		
+		
 		List<Pair> lst = new ArrayList<Pair>();
 		Pair p1 = new Pair(1,2);
 		Pair p2 = new Pair(2,3);

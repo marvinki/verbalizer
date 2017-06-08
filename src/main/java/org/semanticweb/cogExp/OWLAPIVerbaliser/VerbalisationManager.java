@@ -403,6 +403,64 @@ public enum VerbalisationManager {
 
 		return result;
 	}
+	
+	public static Sentence textualisePropertyAsSentence(OWLObjectPropertyExpression property,
+			List<List<TextElement>> fillerelements, List<TextElement> middle) {
+		Sentence result = new Sentence();
+		
+		//
+		if (fillerelements.size() > 1) {
+			// hey, we certainly got a feature!
+			VerbalisationManager.INSTANCE.featureRoleAgg = true;
+		}
+
+		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(property);
+		// check case where string contains a pattern.
+		if (propstring.indexOf("[X]") >= 0) {
+			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
+			String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+			if (part1.endsWith(" ")) {
+				part1 = part1.substring(0, part1.length() - 1);
+			}
+			if (part2.startsWith(" ")) {
+				part2 = part2.substring(1, part2.length());
+			}
+			result.setPraedikat(new RoleElement(part1)); // += part1;
+			if (part2.equals("") && part1.equals("") || part1 == null && part2 == null) {
+				result.setPraedikat(new RoleElement(
+						"has as" + _space + property.getNamedProperty().getIRI().getFragment() + "-successor "));
+				// result += "has as" + _space +
+				// property.getNamedProperty().getIRI().getFragment() +
+				// "-successor ";;
+			}
+		} else {
+			result.setPraedikat(new RoleElement(propstring));
+			// result += propstring + " ";
+		}
+
+		result.addToObject(new TextElementSequence(middle));
+		boolean needsep = false;
+		for (List<TextElement> str : fillerelements) {
+			if (needsep) {
+				result.setObjekt(new LogicElement("and"));
+				// result += _space + "and" + _space;
+			}
+			result.addToObject(new TextElementSequence(str));
+			needsep = true;
+		}
+		if (VerbalisationManager.INSTANCE.getPropertyNLString(property).indexOf("[X]") >= 0) {
+			String p2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+			if (p2.startsWith(" ")) {
+				p2 = p2.substring(1, p2.length());
+			}
+			result.setObjekt(new RoleElement(p2));
+		}
+		// result +=
+		// VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+
+		return result;
+	}
+	
 
 	public static String aOrAnIfy(String str) {
 		// System.out.println("a or an |" + str);
