@@ -6,29 +6,33 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry excluding="org/semanticweb/cogExp/examples/UpperBodyExample.java|org/semanticweb/cogExp/examples/Begehung.java" kind="src" output="target/classes" path="src">
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/jaws-bin.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/elk-owlapi.jar"/>
-	<classpathentry kind="lib" path="resource"/>
-	<classpathentry exported="true" kind="lib" path="lib/DictTmp.jar"/>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="target/dependency/jaws-1.3.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-5.0.8-bin.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/owlexplanation"/>
-	<classpathentry kind="lib" path="lib/jfact-1.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/owlapi-osgidistribution.jar"/>
-	<classpathentry kind="lib" path="/Users/marvin/git/verbalizerPlugin/lib/log4j.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/protege-editor-core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/protege-editor-owl"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ch.qos.logback.classic"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ch.qos.logback.core"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
