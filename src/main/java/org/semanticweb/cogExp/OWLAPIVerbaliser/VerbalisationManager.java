@@ -960,11 +960,11 @@ public enum VerbalisationManager {
 				+ noun_or_attribute_concepts_strings.size() + attribute_concepts_strings.size() > 1) && exprs.size() > 1
 		// exclusion
 				&& !(exprs.size() == 2 && (exprs.get(0).isOWLNothing() || exprs.get(1).isOWLNothing()))) {
-			System.out.println("setting " + exprs.toString());
-			System.out.println("setting " + exprs.get(1));
-			System.out.println("setting " + exprs.get(1).isOWLNothing());
-			System.out.println(
-					"setting " + !(exprs.size() == 2 && (exprs.get(0).isOWLNothing() || exprs.get(1).isOWLNothing())));
+			// System.out.println("setting " + exprs.toString());
+			// System.out.println("setting " + exprs.get(1));
+			// System.out.println("setting " + exprs.get(1).isOWLNothing());
+			// System.out.println(
+			// 		"setting " + !(exprs.size() == 2 && (exprs.get(0).isOWLNothing() || exprs.get(1).isOWLNothing())));
 			VerbalisationManager.INSTANCE.featureClassAgg = true;
 		}
 		/* now arrange */
@@ -1041,11 +1041,11 @@ public enum VerbalisationManager {
 		//
 		if (VerbalisationManager.INSTANCE.featureClassAgg) {
 			// System.out.println(exprs);
-			System.out.println("FEATURE CLASS AGG: " + result.toString());
-			System.out.println(exprs.toString());
+			// System.out.println("FEATURE CLASS AGG: " + result.toString());
+			// System.out.println(exprs.toString());
 		}
 		if (VerbalisationManager.INSTANCE.featureAttribute) {
-			System.out.println("FEATURE ATTRIBUTE: " + result.toString());
+			// System.out.println("FEATURE ATTRIBUTE: " + result.toString());
 		}
 
 		if (result.length() > 0)

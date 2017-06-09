@@ -69,6 +69,8 @@ public class ConversionAndPrettyPrintingTest {
 		System.out.println(subcl3.accept(sentenceOWLObjectVisit));
 		OWLSubClassOfAxiom subcl4 =  dataFactory.getOWLSubClassOfAxiom(class1,dataFactory.getOWLObjectIntersectionOf(class2,class3));
 		System.out.println(subcl4.accept(sentenceOWLObjectVisit));
+		OWLSubClassOfAxiom subcl5 =  dataFactory.getOWLSubClassOfAxiom(dataFactory.getOWLObjectIntersectionOf(class1,class2),class3);
+		System.out.println(subcl5.accept(sentenceOWLObjectVisit));
 		
 		
 		
