@@ -1825,9 +1825,10 @@ public enum VerbalisationManager {
 
 		if (ontology.getAxioms().contains(axiom)) {
 			System.out.println("DEBUG (3)");
-			LogicElement element = new LogicElement("Axiom contained.");
-			resultSequence.add(element);
-			resultSequence.add(new LinebreakElement());
+			resultSequence.concat(VerbalisationManager.textualise(axiom));
+			// LogicElement element = new LogicElement("Axiom contained.");
+			// resultSequence.add(element);
+			// resultSequence.add(new LinebreakElement());
 			return resultSequence;
 		}
 

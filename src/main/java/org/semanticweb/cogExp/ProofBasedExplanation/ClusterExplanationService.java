@@ -38,7 +38,10 @@ import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
@@ -76,7 +79,17 @@ import uk.ac.manchester.cs.jfact.JFactFactory;
 
 /*
  *  nc localhost 3113
- * {"command" : "explain", "subclass": "CoalTit", "superclass": "BirdRequiringSmallEntranceHole", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl"}
+ * {"command" : "explainSubclass", "subclass": "CoalTit", "superclass": "BirdRequiringSmallEntranceHole", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl"}
+ * {"command" : "list", "className": "Tit", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl"}
+ * {"command" : "listAll", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl"}
+ *
+ * Tools
+ * {"command" : "listAll", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
+ * {"command" : "explainSubclass", "subclass": "DrillingInWoodWithRotationalSpeedAbove1000Umin", "superclass": "ActivityPerformedIncorrectly", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
+ * {"command" : "explainSubclass", "subclass": "DrillDriver", "superclass": "DIYPowerTool", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
+ * {"command" : "explainSubclass", "subclass": "DrillingInWood", "superclass": "Drilling", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
+ * {"command" : "explainClassAssertion", "class": "WoodDrillingBit", "individual": "woodDrillingBit7mm", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
+ * {"command" : "explainSubclass", "subclass": "Spruce", "superclass": "Material", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
  */
 
 
@@ -216,20 +229,18 @@ public class ClusterExplanationService {
 	inferredAxioms = newaxioms;
 }
 	
-	public String listInferredAxioms(List<String> input){
+	public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
 		System.out.println("[Retrieving list of superclasses]");
 			// find classname
-			String classnameString = input.get(1);
-			String ontologyname = input.get(2).replaceAll("\"", "");
+			String ontologyname =ontologynameinput.replaceAll("\"", "");
 			
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			String result = "";
 			try {
 				
 				if (ontology==null){
-					
-					
+								
 					java.io.File file = new java.io.File(ontologyname);
 					FileDocumentSource source = new FileDocumentSource(file);
 					OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
@@ -242,20 +253,6 @@ public class ClusterExplanationService {
 				} else{ 
 					System.out.println("[Using preloaded ontology]");
 					}
-	   				
-				// OWLClass classname = null;
-			
-				/* 
-			 Set<OWLClass> classes = ontology.getClassesInSignature();
-				for (OWLClass cl : classes){
-				 // System.out.println(cl.toString());
-				 if (cl.getIRI().getFragment().equals(classnameString)){
-					 classname = cl;
-					}
-			 }
-				 
-			System.out.println("[identified class]: " + classname);
-				*/
 				
 			Set<OWLAxiom> newaxioms;
 			Set<OWLAxiom> previousaxioms = new HashSet<OWLAxiom>();
@@ -264,12 +261,6 @@ public class ClusterExplanationService {
 					System.out.println("[Using cached axioms]");
 					newaxioms = inferredAxioms;
 				} else{
-				
-		    // OWLReasonerFactory reasonerFactory2 = new JFactFactory();
-		    // SimpleConfiguration configuration = new SimpleConfiguration(50000);
-			// OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology,configuration);
-			// List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
-			// gens.add(new InferredSubClassAxiomGenerator());
 			 
 		    // Put the inferred axioms into a fresh empty ontology.
 		    OWLOntologyManager outputOntologyManager = OWLManager.createOWLOntologyManager();
@@ -277,8 +268,6 @@ public class ClusterExplanationService {
 			previousaxioms = ontology.getAxioms();
 			// System.out.println("Previous axioms " + previousaxioms.size());
 			InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
-			
-			
 			
 			OWLDataFactory dataFactory2=manager.getOWLDataFactory();
 			iog.fillOntology(dataFactory2, ontology);
@@ -292,14 +281,40 @@ public class ClusterExplanationService {
 			inferredAxioms = newaxioms;
 			System.out.println("[Inferred axioms cached: " + inferredAxioms.size()+ "]");
 				
-	        for (OWLAxiom ax: newaxioms){
+			HashSet<OWLClassExpression> superclasses = new HashSet<OWLClassExpression>();
+				} catch (Exception e){
+					e.printStackTrace();
+				}
+			System.out.println("Returning list: " + result);
+		return inferredAxioms;
+		
+	}
+	
+	
+	public String listInferredAxioms(List<String> input){
+		System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
+		System.out.println("[Retrieving list of superclasses]");
+		String result = "";
+			// find classname
+			String classnameString = input.get(0);
+			String ontologyname = input.get(1).replaceAll("\"", "");
+			
+			Set<OWLAxiom>  previousaxioms = ontology.getAxioms();
+			
+			Set<OWLAxiom> inferredAxioms = getInferredAxioms(ontologyname);
+			System.out.println("[Inferred axioms cached: " + inferredAxioms.size()+ "]");
+				
+			HashSet<OWLClassExpression> superclasses = new HashSet<OWLClassExpression>();
+			
+	        for (OWLAxiom ax: inferredAxioms){
 			    	if (!previousaxioms.contains(ax)){
 			    		if (ax instanceof OWLSubClassOfAxiom){
 			    			// System.out.println("subcl " + ax);
 			    			OWLSubClassOfAxiom subclax = (OWLSubClassOfAxiom) ax;
-			    			if (subclax.getSubClass().toString().contains(classnameString)){
+			    			if (subclax.getSubClass().toString().contains(classnameString) && !superclasses.contains(subclax.getSuperClass())){
 			    				//  System.out.println(subclax.getSuperClass());
 			    				result += subclax.getSuperClass().asOWLClass().getIRI().getFragment().toString() + " ";
+			    				superclasses.add(subclax.getSuperClass());
 			    			}
 			    		}
 			    		else{
@@ -311,12 +326,21 @@ public class ClusterExplanationService {
 			    	}
 			    }
 				 
-				} catch (Exception e){
-					e.printStackTrace();
-				}
+				
 			System.out.println("Returning list: " + result);
 		return result;
 		
+	}
+	
+	
+	public String listInferredAxioms(String ontologyname){
+		String result = "";
+		Set<OWLAxiom> inferredAxioms = getInferredAxioms(ontologyname);
+		inferredAxioms.addAll(ontology.getAxioms());
+		for (OWLAxiom ax: inferredAxioms){
+			result += ax.toString() +"\n";
+		}
+		return result;
 	}
 	
 	public static void handleDotRequest(String dotTree){
@@ -389,7 +413,12 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 				precomputeAxioms();
 				return output;
 		}
-	  	
+   		if (command.contains("listAll")){
+				List strlist = new ArrayList<String>();
+				output = listInferredAxioms(inputObject.getString("ontologyName"));	
+				printstream.println(output);
+				return output;
+		}
    		if (command.contains("list")){
    				List strlist = new ArrayList<String>();
    				strlist.add(inputObject.getString("className"));
@@ -419,7 +448,12 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    				ont = ontology;
    		    }
    		 System.out.println("[Start proof search.]");
-   			if (command.contains("explain")){
+   			if (command.contains("explainSubclass") || command.contains("explainClassAssertion")){
+   				
+   				OWLAxiom axiom = null;
+   				
+   				if (command.contains("explainSubclass")){
+   				
    				String subclass = inputObject.getString("subclass");
    				String superclass = inputObject.getString("superclass");
    				
@@ -444,7 +478,49 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    				 return null;
    			 }  			 		 
    			
-   			 OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(subcl, supercl);
+   			 axiom = dataFactory.getOWLSubClassOfAxiom(subcl, supercl);
+   				}
+   				
+   				if (command.contains("explainClassAssertion")){
+   	   				
+   	   				String classExpression = inputObject.getString("class");
+   	   				String individual = inputObject.getString("individual");
+   	   				
+   	   			 OWLClass classExp = null; 
+   	   			 Set<OWLClass> classes = ontology.getClassesInSignature();
+   	   			 for (OWLClass cl : classes){
+   	   				 // System.out.println(cl.toString());
+   	   				 if (cl.getIRI().getFragment().equals(classExpression)){
+   	   					 classExp = cl;
+   	   				 }
+   	   				 
+   	   			 }
+   	   			 
+   	   			 Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature();
+   	   			 
+   	   			 OWLNamedIndividual indivExp = null; 
+	   			
+	   			 for (OWLNamedIndividual cl : individuals){
+	   				 // System.out.println(cl.toString());
+	   				 if (cl.getIRI().getFragment().equals(individual)){
+	   					 indivExp = cl;
+	   				 }
+	   				 
+	   			 }
+   	   			 
+   	   			 if (classExp==null)
+   	   				 System.out.println("Class assertion explanation: Class not found in ontology: " + classExp);
+   	   			 if (indivExp==null)
+   	   				 System.out.println("Class assertion explanation: Individual not found in ontology: " + indivExp);
+   	   			 if (classExpression==null || indivExp==null){
+   	   				 return null;
+   	   			 }  			 		 
+   	   			
+   	   			 axiom = dataFactory.getOWLClassAssertionAxiom(classExp, indivExp);
+   	   				}
+   				
+   			 
+   			 
    				GentzenTree tree = VerbalisationManager.computeGentzenTree(axiom, 
    						reasoner, 
    						reasonerFactory, 
@@ -455,12 +531,15 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    				
    				
    				if (tree==null){
-   					System.out.println("ERROR. Subsumption could not be proven.");
-   					printstream.println("ERROR. Subsumption could not be proven.");
+   					System.out.println("ERROR. Axiom could not be proven.");
+   					printstream.println("ERROR. Axiom could not be proven.");
    					return "ERROR";
    				}
    				
    				TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(axiom, reasoner, reasonerFactory, ontology,100, 10000, "OP",true,false);
+   				
+   				System.out.println("Sending explanation");
+   				System.out.println(sequence.toString());
    				
    				JSONArray jsonObject = sequence.toJSON();
    				output = jsonObject.toString();

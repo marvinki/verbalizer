@@ -29,7 +29,7 @@ public enum VerbaliseTreeManager {
 	
 	// static boolean debug = true;
 	static boolean debug = false;
-	static Locale locale = Locale.ENGLISH;
+	static Locale locale = Locale.GERMAN;
 	
 	
 		
@@ -1304,19 +1304,29 @@ public enum VerbaliseTreeManager {
 					for (Object premiseObj : premiseformulas){
 						OWLSubClassOfAxiom prem = (OWLSubClassOfAxiom) premiseObj;
 						if (firstprem){
-							seq.add(new LogicElement(LogicLabels.getString("Since")));
-							seq.concat(VerbalisationManager.textualise(prem.getSubClass()));
-							seq.add(new LogicElement(LogicLabels.getString("is")));
-							seq.concat(VerbalisationManager.textualise(prem.getSuperClass()));
+							Sentence sen = new Sentence();
+							// seq.add(new LogicElement(LogicLabels.getString("Since")));
+							sen.setSubjekt(VerbalisationManager.textualise(prem.getSubClass()));
+							sen.setPraedikat(new LogicElement(LogicLabels.getString("is")));
+							sen.setObjekt(VerbalisationManager.textualise(prem.getSuperClass()));
+							sen.makeSinceSentence();
+							seq.concat(sen.getSentence());
 							innerprem = true;
 						}
 						if (!firstprem && innerprem){
-							seq.add(new LogicElement("which is"));
-							seq.concat(VerbalisationManager.textualise(prem.getSuperClass()));
+							Sentence sen = new Sentence();
+							sen.setSubjekt(new LogicElement("which"));
+							sen.setPraedikat(new LogicElement("is"));
+							sen.setObjekt(VerbalisationManager.textualise(prem.getSuperClass()));
+							sen.makeDefaultSentence();
+							seq.concat(sen.getSentence());
 							seq.add(new LogicElement(","));
 						}
 						firstprem = false;	
 					}
+					
+					seq.add(new LogicElement("itFollowsThat"));
+					
 					OWLSubClassOfAxiom conclusion =  (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
 					
 					// seq.add(new LogicElement(LogicLabels.getString("INDIVIDUAL")));
@@ -1584,12 +1594,43 @@ public enum VerbaliseTreeManager {
 			}
 			if (rule.equals(AdditionalDLRules.SUBCLCHAIN)){
 				System.out.println(" premiseformulas -- " + premiseformulas);
-				OWLClassAssertionAxiom conclusion =  (OWLClassAssertionAxiom) additions_to_antecedent.get(0);
 				TextElementSequence seq = new TextElementSequence();
+				boolean firstprem = true;
+				boolean innerprem = false;
+				for (Object premiseObj : premiseformulas){
+					OWLSubClassOfAxiom prem = (OWLSubClassOfAxiom) premiseObj;
+					if (firstprem){
+						Sentence sen = new Sentence();
+						// seq.add(new LogicElement(LogicLabels.getString("Since")));
+						sen.setSubjekt(VerbalisationManager.textualise(prem.getSubClass()));
+						sen.setPraedikat(new LogicElement(LogicLabels.getString("is")));
+						sen.setObjekt(VerbalisationManager.textualise(prem.getSuperClass()));
+						sen.makeSinceSentence();
+						seq.concat(sen.getSentence());
+						innerprem = true;
+					}
+					if (!firstprem && innerprem){
+						Sentence sen = new Sentence();
+						sen.setSubjekt(new LogicElement(LogicLabels.getString("which")));
+						sen.setPraedikat(new LogicElement(LogicLabels.getString("is")));
+						sen.setObjekt(VerbalisationManager.textualise(prem.getSuperClass()));
+						sen.makeDefaultSentence();
+						seq.concat(sen.getSentence());
+						seq.add(new LogicElement(","));
+					}
+					firstprem = false;	
+				}
+				
+				seq.add(new LogicElement(LogicLabels.getString("itFollowsThat")));
+				
+				OWLSubClassOfAxiom conclusion =  (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
+				System.out.println(VerbalisationManager.textualise(conclusion,obfuscator));
+				
 				// seq.add(new LogicElement(LogicLabels.getString("INDIVIDUAL")));
 				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(conclusion,obfuscator).getTextElements());
 				// seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 				seq.add(conclusionMarker);
+				return seq;
 			}
 			if (rule.equals(AdditionalDLRules.OBJPROPASSERIONASWITNESS)){
 				OWLClassAssertionAxiom conclusion =  (OWLClassAssertionAxiom) additions_to_antecedent.get(0);
