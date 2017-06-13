@@ -1602,11 +1602,13 @@ public enum VerbaliseTreeManager {
 					if (firstprem){
 						Sentence sen = new Sentence();
 						// seq.add(new LogicElement(LogicLabels.getString("Since")));
+						sen.setSubjekt(new LogicElement(LogicLabels.getString("Since")));
 						sen.setSubjekt(VerbalisationManager.textualise(prem.getSubClass()));
 						sen.setPraedikat(new LogicElement(LogicLabels.getString("is")));
 						sen.setObjekt(VerbalisationManager.textualise(prem.getSuperClass()));
-						sen.makeSinceSentence();
+						sen.makeSideSentence();
 						seq.concat(sen.getSentence());
+						seq.add(new LogicElement(","));
 						innerprem = true;
 					}
 					if (!firstprem && innerprem){
@@ -1614,9 +1616,10 @@ public enum VerbaliseTreeManager {
 						sen.setSubjekt(new LogicElement(LogicLabels.getString("which")));
 						sen.setPraedikat(new LogicElement(LogicLabels.getString("is")));
 						sen.setObjekt(VerbalisationManager.textualise(prem.getSuperClass()));
-						sen.makeDefaultSentence();
+						sen.makeSideSentence();
 						seq.concat(sen.getSentence());
-						seq.add(new LogicElement(","));
+						if (!(premiseformulas.indexOf(premiseObj)== premiseformulas.size()-1) )
+							seq.add(new LogicElement(","));
 					}
 					firstprem = false;	
 				}
