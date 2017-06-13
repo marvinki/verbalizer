@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
  * @author fpaffrath
  *
  */
-public class Sentence extends CompoundSentence{
+public class Sentence{
 
 	private TextElementSequence sentence = new TextElementSequence();
 			
@@ -111,6 +111,23 @@ public class Sentence extends CompoundSentence{
 			sentence.add(praedikat);
 			sentence.add(subjekt);
 			sentence.add(objekt);
+			
+		}
+
+		//English Sentence
+		if(lang == Locale.ENGLISH){
+			sentence.add(subjekt);
+			sentence.add(praedikat);
+			sentence.add(objekt);
+		}	
+	}
+	
+	public void makeSideSentence(){
+		//German Sentences
+		if(lang == Locale.GERMAN){
+			sentence.add(subjekt);
+			sentence.add(objekt);
+			sentence.add(praedikat);
 			
 		}
 

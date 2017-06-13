@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.ClassElement;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.LogicElement;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.Sentence;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.CompoundSentence;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 
