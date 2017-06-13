@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
  * @author fpaffrath
  *
  */
-public class Sentence extends CompoundSentence{
+public class Sentence{
 
 	private TextElementSequence sentence = new TextElementSequence();
 			
