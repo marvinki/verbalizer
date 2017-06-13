@@ -122,6 +122,23 @@ public class Sentence{
 		}	
 	}
 	
+	public void makeSideSentence(){
+		//German Sentences
+		if(lang == Locale.GERMAN){
+			sentence.add(subjekt);
+			sentence.add(objekt);
+			sentence.add(praedikat);
+			
+		}
+
+		//English Sentence
+		if(lang == Locale.ENGLISH){
+			sentence.add(subjekt);
+			sentence.add(praedikat);
+			sentence.add(objekt);
+		}	
+	}
+	
 	public void makeSinceSentence(){
 		sentence.add(new LogicElement(LogicLabels.getString("since")));
 		//German Sentences
