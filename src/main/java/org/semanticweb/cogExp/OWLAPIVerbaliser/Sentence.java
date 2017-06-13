@@ -125,17 +125,17 @@ public class Sentence{
 	public void makeSideSentence(){
 		//German Sentences
 		if(lang == Locale.GERMAN){
-			sentence.add(subjekt);
-			sentence.add(objekt);
-			sentence.add(praedikat);
+			sentence.concat(subjekt); // <--- use "add" instead to achieve deep nesting
+			sentence.concat(objekt);
+			sentence.concat(praedikat);
 			
 		}
 
 		//English Sentence
 		if(lang == Locale.ENGLISH){
-			sentence.add(subjekt);
-			sentence.add(praedikat);
-			sentence.add(objekt);
+			sentence.concat(subjekt);
+			sentence.concat(praedikat);
+			sentence.concat(objekt);
 		}	
 	}
 	
@@ -282,7 +282,8 @@ public class Sentence{
 	public String toString(){
 		String result = "";
 		result = "Sentence: " + sentence.toString() + "\n";
-		result = result + subjekt.toString() + " -- " + praedikat.toString() + " -- " + objekt.toString();
+		result = result + subjekt.toString() + " -- " + praedikat.toString() + " -- " + objekt.toString() 
+		+ "\n inspect: " + sentence.inspect();
 		return result;
 	}	
 	

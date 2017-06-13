@@ -55,6 +55,15 @@ public class TextElementSequence extends TextElement{
 		return result;
 	}
 	
+	public String inspect(){
+		String result = "";
+		for(TextElement elem : sequence){
+			result += "Element " + elem.getClass() + " : " + elem.content + "\n";
+		}
+		return result;
+	}
+	
+	
 	/* (non-Javadoc)
 	 * @see org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement#toHTML()
 	 */
@@ -114,6 +123,9 @@ public class TextElementSequence extends TextElement{
 		// JSONObject result = new JSONObject();
 		int itemcounter = 0;
 		for (TextElement element : sequence){
+			
+			// System.out.println("dealing with " + element + " " + element.getClass());
+			
 			if (element instanceof ClassElement){
 				ClassElement classElement = (ClassElement) element;
 				String classDescription = classElement.toString();
@@ -141,6 +153,14 @@ public class TextElementSequence extends TextElement{
 				innerobject.put("text", roleDescription);
 				innerobject.put("type", "roleDescription");
 				result.put(innerobject);
+				itemcounter++;
+			}
+			if (element instanceof ConclusionMarkerElement){
+				ConclusionMarkerElement cme = (ConclusionMarkerElement) element;
+				JSONArray recursiveResult = cme.toJSON();
+				for (Object io : recursiveResult){
+					result.put(io);
+				}
 				itemcounter++;
 			}
 		

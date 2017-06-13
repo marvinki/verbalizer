@@ -1603,10 +1603,14 @@ public enum VerbaliseTreeManager {
 						Sentence sen = new Sentence();
 						// seq.add(new LogicElement(LogicLabels.getString("Since")));
 						sen.setSubjekt(new LogicElement(LogicLabels.getString("Since")));
-						sen.setSubjekt(VerbalisationManager.textualise(prem.getSubClass()));
+						TextElementSequence subclSeq = VerbalisationManager.textualise(prem.getSubClass());
+						sen.addToSubject(subclSeq);
+						// System.out.println(subclSeq.inspect());
 						sen.setPraedikat(new LogicElement(LogicLabels.getString("is")));
-						sen.setObjekt(VerbalisationManager.textualise(prem.getSuperClass()));
+						sen.addToObject(VerbalisationManager.textualise(prem.getSuperClass()));
+						// System.out.println(sen.toString());
 						sen.makeSideSentence();
+						// System.out.println(sen.toString());
 						seq.concat(sen.getSentence());
 						seq.add(new LogicElement(","));
 						innerprem = true;
@@ -1615,7 +1619,7 @@ public enum VerbaliseTreeManager {
 						Sentence sen = new Sentence();
 						sen.setSubjekt(new LogicElement(LogicLabels.getString("which")));
 						sen.setPraedikat(new LogicElement(LogicLabels.getString("is")));
-						sen.setObjekt(VerbalisationManager.textualise(prem.getSuperClass()));
+						sen.addToObject(VerbalisationManager.textualise(prem.getSuperClass()));
 						sen.makeSideSentence();
 						seq.concat(sen.getSentence());
 						if (!(premiseformulas.indexOf(premiseObj)== premiseformulas.size()-1) )
@@ -1624,10 +1628,12 @@ public enum VerbaliseTreeManager {
 					firstprem = false;	
 				}
 				
+				// System.out.println(" inspect seq " + seq.inspect());
+				
 				seq.add(new LogicElement(LogicLabels.getString("itFollowsThat")));
 				
 				OWLSubClassOfAxiom conclusion =  (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-				System.out.println(VerbalisationManager.textualise(conclusion,obfuscator));
+				// System.out.println(VerbalisationManager.textualise(conclusion,obfuscator));
 				
 				// seq.add(new LogicElement(LogicLabels.getString("INDIVIDUAL")));
 				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(conclusion,obfuscator).getTextElements());
