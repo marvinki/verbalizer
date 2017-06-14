@@ -525,8 +525,8 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    						reasoner, 
    						reasonerFactory, 
    						ont, 
-   						50000,
-   						60000,
+   						500000,
+   						600000,
    						"OP");	
    				
    				

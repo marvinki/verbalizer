@@ -29,7 +29,7 @@ public enum VerbaliseTreeManager {
 	
 	// static boolean debug = true;
 	static boolean debug = false;
-	static Locale locale = Locale.GERMAN;
+	static Locale locale = Locale.ENGLISH;
 	
 	
 		
