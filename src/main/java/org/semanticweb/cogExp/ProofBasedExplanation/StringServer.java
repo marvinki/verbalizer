@@ -150,6 +150,7 @@ public class StringServer {
 		OWLReasoner reasoner = null;
 		if (args.length > 1 && args[1] != null) {
 			String ontologyfile = args[1];
+			ClusterExplanationService.setOntologyfile(ontologyfile);
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			java.io.File file = new java.io.File(ontologyfile);
 			// System.out.println("Ontologyfile exists?: "+ file.exists());
