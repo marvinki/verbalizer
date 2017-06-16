@@ -47,15 +47,9 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
 
-import org.apache.commons.codec.language.bm.Lang;
 // import org.apache.log4j.Level;
 // import org.apache.log4j.Logger;
 
-
-import org.semanticweb.owl.explanation.api.Explanation;
-import org.semanticweb.owl.explanation.api.ExplanationGenerator;
-import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
-import org.semanticweb.owl.explanation.api.ExplanationManager;
 
 import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
@@ -1544,8 +1538,8 @@ public enum VerbalisationManager {
 				// System.out.println("DEBUG --- Trying to add " + ax);
 				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 
-				// System.out.println("VerbalisationManager: adding: " +
-				// ConversionManager.fromOWLAPI(ax).prettyPrint());
+				System.out.println("VerbalisationManager: adding: " +
+				ConversionManager.fromOWLAPI(ax).prettyPrint());
 			}
 		} catch (Exception e) {
 			return null;
@@ -1678,14 +1672,14 @@ public enum VerbalisationManager {
 
 		VerbalisationManager.INSTANCE.setOntology(ontology);
 
-		System.out.println("DEBUG (1)");
+		// System.out.println("DEBUG (1)");
 
 		/*
 		 * TODO add a TextElement for Null ontology received as soon as there is
 		 * an proper test or delete this if statement
 		 */
 		if (ontology == null) {
-			System.out.println("DEBUG (2)");
+			// System.out.println("DEBUG (2)");
 			LogicElement element = new LogicElement("Failure! Null ontology received!");
 			resultSequence.add(element);
 			resultSequence.add(new LinebreakElement());
@@ -1694,9 +1688,11 @@ public enum VerbalisationManager {
 
 		if (ontology.getAxioms().contains(axiom)) {
 			System.out.println("DEBUG (3)");
-			LogicElement element = new LogicElement("Axiom contained.");
-			resultSequence.add(element);
-			resultSequence.add(new LinebreakElement());
+			
+			// LogicElement element = new LogicElement("Axiom contained.");
+			// resultSequence.add(element);
+			// resultSequence.add(new LinebreakElement());
+			resultSequence.concat(VerbalisationManager.textualise(axiom));
 			return resultSequence;
 		}
 
