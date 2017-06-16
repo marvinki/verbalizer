@@ -54,6 +54,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.reasoner.InferenceType;
+import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
@@ -191,10 +192,10 @@ public class ClusterExplanationService {
 				e.printStackTrace();
 			}
 			
+		
+			
 			return newaxioms;
 	}
-	
-	
 	
 	public void precomputeAxioms(){
 		Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
@@ -301,6 +302,35 @@ public class ClusterExplanationService {
 		
 	}
 	
+	public String listClasses(){
+		String result = "";
+		Set<OWLClass> classes = ontology.getClassesInSignature();
+		for (OWLClass cl : classes){
+			result += cl.asOWLClass().getIRI().getFragment() + "\n";
+		}
+		return result;
+	} 
+	
+	
+	
+	public String listClassesPanda(){
+		String result = "";
+		Set<OWLClass> classes = ontology.getClassesInSignature();
+		for (OWLClass cl : classes){
+			result += cl.asOWLClass().getIRI().getFragment() + " - Type\n";
+		}
+		return result;
+	} 
+	
+	public String listIndividuals(){
+		String result = "";
+		Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature();
+		for (OWLNamedIndividual ind : individuals){
+			result += ind.getIRI().getShortForm() + "\n";
+		}
+		return result;
+	} 
+	
 	
 	public String listInferredAxioms(List<String> input){
 		System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
@@ -341,6 +371,145 @@ public class ClusterExplanationService {
 			System.out.println("Returning list: " + result);
 		return result;
 		
+	}
+	
+	public JSONArray listInferredAxiomsJSON(String ontologyname){
+		JSONArray result = new JSONArray();
+		Set<OWLAxiom> inferredAxioms = getInferredAxioms(ontologyname);
+		Set<OWLAxiom> filteredInferredAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredClassAssertionAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredObjectPropertyAssertionAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredDataPropertyAssertionAxioms = new HashSet<OWLAxiom>();
+		inferredAxioms.addAll(ontology.getAxioms());
+		
+		// filter out trivial axioms: (top)(x), x subclassof top
+		for (OWLAxiom ax: inferredAxioms){
+			if (ax instanceof OWLClassAssertionAxiom && ((OWLClassAssertionAxiom) ax).getClassExpression().isOWLThing())
+				continue;
+			if (ax instanceof OWLDeclarationAxiom)
+				continue;
+			if (ax instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom) ax).getSuperClass().isOWLThing())
+				continue;
+			if (ax instanceof OWLAnnotationAssertionAxiom)
+				continue;
+			if (ax instanceof OWLSubObjectPropertyOfAxiom && ((OWLSubObjectPropertyOfAxiom) ax).getSuperProperty().isOWLTopObjectProperty())
+				continue;
+			if (ax instanceof OWLClassAssertionAxiom)
+				filteredClassAssertionAxioms.add(ax);
+			if (ax instanceof OWLObjectPropertyAssertionAxiom)
+				filteredObjectPropertyAssertionAxioms.add(ax);
+			if (ax instanceof OWLDataPropertyAssertionAxiom)
+				filteredDataPropertyAssertionAxioms.add(ax);
+			filteredInferredAxioms.add(ax);
+		}
+		
+		
+		System.out.println("[Sending " + filteredInferredAxioms.size() + " results]");
+		
+		for (OWLAxiom ax: filteredClassAssertionAxioms){
+			if (ax instanceof OWLClassAssertionAxiom){
+				OWLClassAssertionAxiom classAssertionAxiom = (OWLClassAssertionAxiom) ax;
+				if  (classAssertionAxiom.getClassExpression().isAnonymous())
+					continue;
+				result.put(toJSON(classAssertionAxiom));
+			}
+		}
+		
+		for (OWLAxiom ax: filteredObjectPropertyAssertionAxioms){
+			if (ax instanceof OWLObjectPropertyAssertionAxiom){
+				OWLObjectPropertyAssertionAxiom propAss = (OWLObjectPropertyAssertionAxiom) ax;
+				result.put(toJSON(propAss));
+			}
+		}
+		
+		
+		
+		for (OWLAxiom ax: filteredDataPropertyAssertionAxioms){
+			OWLDataPropertyAssertionAxiom dAss = (OWLDataPropertyAssertionAxiom) ax;
+			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("Instruction"))
+				result.put(toJSON(dAss));
+			else 
+			if (dAss.getObject().asLiteral().toString().contains("1"))
+				result.put(toJSON(dAss));
+		}
+		return result;
+	}
+	
+	public JSONArray listActivitiesJSON(String ontologyname){
+		JSONArray result = new JSONArray();
+		Set<OWLAxiom> inferredAxioms = getInferredAxioms(ontologyname);
+		Set<OWLAxiom> filteredInferredAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredClassAssertionAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredObjectPropertyAssertionAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredDataPropertyAssertionAxioms = new HashSet<OWLAxiom>();
+		inferredAxioms.addAll(ontology.getAxioms());
+		
+		// filter out trivial axioms: (top)(x), x subclassof top
+		for (OWLAxiom ax: inferredAxioms){
+			if (ax instanceof OWLClassAssertionAxiom && ((OWLClassAssertionAxiom) ax).getClassExpression().isOWLThing())
+				continue;
+			if (ax instanceof OWLDeclarationAxiom)
+				continue;
+			if (ax instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom) ax).getSuperClass().isOWLThing())
+				continue;
+			if (ax instanceof OWLAnnotationAssertionAxiom)
+				continue;
+			if (ax instanceof OWLSubObjectPropertyOfAxiom && ((OWLSubObjectPropertyOfAxiom) ax).getSuperProperty().isOWLTopObjectProperty())
+				continue;
+			if (ax instanceof OWLClassAssertionAxiom)
+				filteredClassAssertionAxioms.add(ax);
+			if (ax instanceof OWLObjectPropertyAssertionAxiom)
+				filteredObjectPropertyAssertionAxioms.add(ax);
+			if (ax instanceof OWLDataPropertyAssertionAxiom)
+				filteredDataPropertyAssertionAxioms.add(ax);
+			filteredInferredAxioms.add(ax);
+		}
+		
+		
+		System.out.println("[Sending " + filteredInferredAxioms.size() + " results]");
+		
+		for (OWLAxiom ax: filteredClassAssertionAxioms){
+			if (ax instanceof OWLClassAssertionAxiom){
+				OWLClassAssertionAxiom classAssertionAxiom = (OWLClassAssertionAxiom) ax;
+				NodeSet<OWLClass> nodeset = reasoner.getSuperClasses(classAssertionAxiom.getClassExpression(), true);
+				Set<OWLClass> flattened = nodeset.getFlattened();
+				for (OWLClass c: flattened){
+					if (c.getIRI().getFragment().contains("Activity"))
+						result.put(toJSON(classAssertionAxiom));
+				}
+			}
+		}
+		
+		/*
+		for (OWLAxiom ax: filteredObjectPropertyAssertionAxioms){
+			if (ax instanceof OWLObjectPropertyAssertionAxiom){
+				OWLObjectPropertyAssertionAxiom propAss = (OWLObjectPropertyAssertionAxiom) ax;
+				result.put(toJSON(propAss));
+			}
+		}
+		*/
+		
+		for (OWLAxiom ax: filteredDataPropertyAssertionAxioms){
+			OWLDataPropertyAssertionAxiom dAss = (OWLDataPropertyAssertionAxiom) ax;
+			OWLIndividual indiv = dAss.getSubject();
+			NodeSet<OWLClass> classes =  reasoner.getTypes(indiv.asOWLNamedIndividual(), true);
+			for (OWLClass cl : classes.getFlattened()){
+				System.out.println("class " +cl);
+				if (cl.getIRI().getFragment().contains("Activity")){
+					// System.out.println("yes!");
+					result.put(toJSON(dAss));
+				}
+			NodeSet<OWLClass> nodeset = reasoner.getSuperClasses(cl, true);
+			Set<OWLClass> flattened = nodeset.getFlattened();
+			for (OWLClass c: flattened){
+				if (c.getIRI().getFragment().contains("Activity")){
+					// System.out.println("yes!");
+					result.put(toJSON(dAss));
+				}
+			}
+			}
+		}
+		return result;
 	}
 	
 	
@@ -424,14 +593,196 @@ public class ClusterExplanationService {
 		
 		for (OWLAxiom ax: filteredDataPropertyAssertionAxioms){
 			OWLDataPropertyAssertionAxiom dAss = (OWLDataPropertyAssertionAxiom) ax;
+			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("Instruction"))
+				result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
+				+ " " + dAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm() 
+				+ " " + dAss.getObject().asLiteral().orNull().getLiteral()
+		+ ")\n";
+			else 
 			if (dAss.getObject().asLiteral().toString().contains("1"))
 			result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
 						+ " " + dAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm()
 				+ ")\n";
 		}
 		
+	
+		
 		return result;
 	}
+	
+	public String listInferredAssertions(String ontologyname){
+		String result = "";
+		Set<OWLAxiom> inferredAxioms = getInferredAxioms(ontologyname);
+		Set<OWLAxiom> filteredInferredAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredClassAssertionAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredObjectPropertyAssertionAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredDataPropertyAssertionAxioms = new HashSet<OWLAxiom>();
+		inferredAxioms.addAll(ontology.getAxioms());
+		
+		// filter out trivial axioms: (top)(x), x subclassof top
+		for (OWLAxiom ax: inferredAxioms){
+			if (ax instanceof OWLClassAssertionAxiom && ((OWLClassAssertionAxiom) ax).getClassExpression().isOWLThing())
+				continue;
+			if (ax instanceof OWLDeclarationAxiom)
+				continue;
+			if (ax instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom) ax).getSuperClass().isOWLThing())
+				continue;
+			if (ax instanceof OWLAnnotationAssertionAxiom)
+				continue;
+			if (ax instanceof OWLSubObjectPropertyOfAxiom && ((OWLSubObjectPropertyOfAxiom) ax).getSuperProperty().isOWLTopObjectProperty())
+				continue;
+			if (ax instanceof OWLClassAssertionAxiom)
+				filteredClassAssertionAxioms.add(ax);
+			if (ax instanceof OWLObjectPropertyAssertionAxiom)
+				filteredObjectPropertyAssertionAxioms.add(ax);
+			if (ax instanceof OWLDataPropertyAssertionAxiom)
+				filteredDataPropertyAssertionAxioms.add(ax);
+			filteredInferredAxioms.add(ax);
+		}
+		
+		
+		
+		
+		for (OWLAxiom ax: filteredObjectPropertyAssertionAxioms){
+			if (ax instanceof OWLObjectPropertyAssertionAxiom){
+				OWLObjectPropertyAssertionAxiom propAss = (OWLObjectPropertyAssertionAxiom) ax;
+				result += "(" + propAss.getProperty().asOWLObjectProperty().getIRI().getFragment()
+						+ " " + propAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm()
+						+ " " + propAss.getObject().asOWLNamedIndividual().getIRI().getShortForm() + ")" + "\n";
+			}
+		}
+		
+		
+		
+		for (OWLAxiom ax: filteredDataPropertyAssertionAxioms){
+			OWLDataPropertyAssertionAxiom dAss = (OWLDataPropertyAssertionAxiom) ax;
+			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("Instruction"))
+				continue;
+				// result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
+				// + " " + dAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm() 
+				// + " \"" + dAss.getObject().asLiteral().orNull().getLiteral() + "\""
+		 // +       //")\n";
+			else 
+			if (dAss.getObject().asLiteral().toString().contains("1"))
+			result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
+						+ " " + dAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm()
+				+ ")\n";
+		}
+		
+	
+		
+		return result;
+	}
+	
+	
+	public String listInferredClassAssertions(String ontologyname){
+		String result = "";
+		Set<OWLAxiom> inferredAxioms = getInferredAxioms(ontologyname);
+		Set<OWLAxiom> filteredInferredAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredClassAssertionAxioms = new HashSet<OWLAxiom>();
+		// Set<OWLAxiom> filteredObjectPropertyAssertionAxioms = new HashSet<OWLAxiom>();
+		// Set<OWLAxiom> filteredDataPropertyAssertionAxioms = new HashSet<OWLAxiom>();
+		inferredAxioms.addAll(ontology.getAxioms());
+		
+		// filter out trivial axioms: (top)(x), x subclassof top
+		for (OWLAxiom ax: inferredAxioms){
+			if (ax instanceof OWLClassAssertionAxiom)
+				filteredClassAssertionAxioms.add(ax);
+		}
+		
+		
+		System.out.println("[Sending " + filteredInferredAxioms.size() + " results]");
+		
+		for (OWLAxiom ax: filteredClassAssertionAxioms){
+			if (ax instanceof OWLClassAssertionAxiom){
+				OWLClassAssertionAxiom classAssertionAxiom = (OWLClassAssertionAxiom) ax;
+				if  (classAssertionAxiom.getClassExpression().isAnonymous())
+					continue;
+				if (classAssertionAxiom.getClassExpression().isOWLThing())
+					continue;
+				result += classAssertionAxiom.getIndividual().asOWLNamedIndividual().getIRI().getShortForm() 
+						+ " - "
+						+ classAssertionAxiom.getClassExpression().asOWLClass().getIRI().getShortForm() + "\n";
+			}
+		}
+		
+		return result;
+	}
+	
+	public String listInferredClassAssertions2(String ontologyname){
+		String result = "";
+		Set<OWLAxiom> inferredAxioms = getInferredAxioms(ontologyname);
+		Set<OWLAxiom> filteredInferredAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> filteredClassAssertionAxioms = new HashSet<OWLAxiom>();
+		// Set<OWLAxiom> filteredObjectPropertyAssertionAxioms = new HashSet<OWLAxiom>();
+		// Set<OWLAxiom> filteredDataPropertyAssertionAxioms = new HashSet<OWLAxiom>();
+		inferredAxioms.addAll(ontology.getAxioms());
+		
+		// filter out trivial axioms: (top)(x), x subclassof top
+		for (OWLAxiom ax: inferredAxioms){
+			if (ax instanceof OWLClassAssertionAxiom)
+				filteredClassAssertionAxioms.add(ax);
+		}
+		
+		
+		System.out.println("[Sending " + filteredInferredAxioms.size() + " results]");
+		
+		for (OWLAxiom ax: filteredClassAssertionAxioms){
+			if (ax instanceof OWLClassAssertionAxiom){
+				OWLClassAssertionAxiom classAssertionAxiom = (OWLClassAssertionAxiom) ax;
+				if  (classAssertionAxiom.getClassExpression().isAnonymous())
+					continue;
+				if (classAssertionAxiom.getClassExpression().isOWLThing())
+					continue;
+				result += "(TypeOf " + classAssertionAxiom.getIndividual().asOWLNamedIndividual().getIRI().getShortForm() 
+						+ " "
+						+ classAssertionAxiom.getClassExpression().asOWLClass().getIRI().getShortForm() + ")\n";
+			}
+		}
+		
+		return result;
+	}
+	
+	public static JSONObject toJSON(OWLClassAssertionAxiom classAssertionAxiom){
+	 	JSONObject result = new JSONObject();
+	 	String individual = classAssertionAxiom.getIndividual().asOWLNamedIndividual().getIRI().getShortForm(); 
+	 	String classexpression = classAssertionAxiom.getClassExpression().asOWLClass().getIRI().getShortForm();
+	 	result.put("class", classexpression);
+	 	result.put("individual", individual);
+	 	return result;
+	} 
+	
+	public static JSONObject toJSON(OWLDataPropertyAssertionAxiom propAss){
+		JSONObject result = new JSONObject();
+		String property = propAss.getProperty().asOWLDataProperty().getIRI().getFragment();
+		String subject =  propAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm();
+		String object = propAss.getObject().getLiteral();
+		result.put("individual", subject);
+		result.put("property", property);
+		result.put("value", object);
+		return result;
+	}
+	
+	public static JSONObject toJSON(OWLObjectPropertyAssertionAxiom propAss){
+		JSONObject result = new JSONObject();
+		String property = propAss.getProperty().asOWLObjectProperty().getIRI().getFragment();
+		String subject =  propAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm();
+		String object = propAss.getObject().asOWLNamedIndividual().getIRI().getShortForm();
+		result.put("subject", subject);
+		result.put("property", property);
+		result.put("object", object);
+		return result;
+	}
+	
+	public static JSONObject toJSON(OWLSubClassOfAxiom subclax){
+		JSONObject result = new JSONObject();
+		String sub = subclax.getSubClass().asOWLClass().getIRI().getFragment().toString();
+		String sup = subclax.getSuperClass().asOWLClass().getIRI().getFragment().toString();
+		result.put("subclass", sub);
+		result.put("superclass", sup);
+		return result;
+	}
+	
 	
 	public static void handleDotRequest(String dotTree){
 		try{
@@ -503,8 +854,37 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 				precomputeAxioms();
 				return output;
 		}
+   		if (command.contains("listInferredAssertions")){
+			String ontname;
+			if (inputObject.has("ontologyName"))
+				ontname = 	inputObject.getString("ontologyName");
+			else
+				ontname = ontologyfile;
+			output = listInferredAssertions( ontname);	
+			printstream.println("{" + output + "}") ;
+			return output;
+	}
+   		if (command.contains("listActivitiesJSON")){
+			String ontname;
+			if (inputObject.has("ontologyName"))
+				ontname = 	inputObject.getString("ontologyName");
+			else
+				ontname = ontologyfile;
+			output = listActivitiesJSON(ontname).toString();	
+			printstream.println(output);
+			return output;
+	}
+   		if (command.contains("listAllJSON")){
+			String ontname;
+			if (inputObject.has("ontologyName"))
+				ontname = 	inputObject.getString("ontologyName");
+			else
+				ontname = ontologyfile;
+			output = listInferredAxiomsJSON(ontname).toString();	
+			printstream.println(output);
+			return output;
+	}
    		if (command.contains("listAll")){
-				List strlist = new ArrayList<String>();
 				String ontname;
 				if (inputObject.has("ontologyName"))
 					ontname = 	inputObject.getString("ontologyName");
@@ -514,6 +894,42 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 				printstream.println(output);
 				return output;
 		}
+   		if (command.contains("listClassAssertions2")){
+			String ontname;
+			if (inputObject.has("ontologyName"))
+				ontname = 	inputObject.getString("ontologyName");
+			else
+				ontname = ontologyfile;
+			output = listInferredClassAssertions2(ontname);	
+			printstream.println("{" + output + "}");
+			return output;
+	}
+   		if (command.contains("listClassAssertions")){
+			String ontname;
+			if (inputObject.has("ontologyName"))
+				ontname = 	inputObject.getString("ontologyName");
+			else
+				ontname = ontologyfile;
+			output = listInferredClassAssertions(ontname);	
+			printstream.println("{" + output + "}");
+			return output;
+	}
+   		if (command.contains("listClassesPanda")){
+			output = listClassesPanda();	
+			printstream.println("{" + output + "}");
+			return output;
+	}
+   		if (command.contains("listClasses")){
+			output = listClasses();	
+			printstream.println(output);
+			return output;
+	}
+   		
+   		if (command.contains("listIndividuals")){
+			output = listIndividuals();	
+			printstream.println(output);
+			return output;
+	}
    		if (command.contains("list")){
    				List strlist = new ArrayList<String>();
    				strlist.add(inputObject.getString("className"));
