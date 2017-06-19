@@ -332,6 +332,28 @@ public class ClusterExplanationService {
 	} 
 	
 	
+	public String listAllAxioms(String ontologyname){
+		System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
+		System.out.println("[Retrieving list of superclasses]");
+		String result = "";
+			// find classname
+			// String classnameString = input.get(0);
+			// String ontologyname = input.get(1).replaceAll("\"", "");
+			
+			Set<OWLAxiom>  axioms = ontology.getAxioms();
+			
+			axioms.addAll(getInferredAxioms(ontologyname));
+			
+			for (OWLAxiom ax : axioms){
+				System.out.println(VerbalisationManager.prettyPrint(ax));
+			}
+			
+			return "foo";
+			}
+			
+			
+			
+	
 	public String listInferredAxioms(List<String> input){
 		System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
 		System.out.println("[Retrieving list of superclasses]");
@@ -874,6 +896,18 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 			printstream.println(output);
 			return output;
 	}
+   		
+   		if (command.contains("listAllAxioms")){
+			String ontname;
+			if (inputObject.has("ontologyName"))
+				ontname = 	inputObject.getString("ontologyName");
+			else
+				ontname = ontologyfile;
+			output = listAllAxioms(ontname);	
+			printstream.println(output);
+			return output;
+	}
+   		
    		if (command.contains("listAllJSON")){
 			String ontname;
 			if (inputObject.has("ontologyName"))

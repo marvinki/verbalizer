@@ -109,7 +109,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 	
 	private Obfuscator obfuscator;
 	
-	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("resources.LogicLabels", VerbaliseTreeManager.locale);
+	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
 
 	
 	public void setObfuscator(Obfuscator obfuscator){

@@ -87,7 +87,7 @@ public enum VerbalisationManager {
 
 //	private Language lang = Language.GERMAN;
 	private Locale lang = VerbaliseTreeManager.locale;
-	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("resources.LogicLabels", VerbaliseTreeManager.locale);
+	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
 	
 	private static boolean debug = VerbaliseTreeManager.debug;
 	

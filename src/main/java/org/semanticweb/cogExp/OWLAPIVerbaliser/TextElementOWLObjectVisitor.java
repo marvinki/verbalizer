@@ -111,7 +111,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 
 //	private Language lang = Language.GERMAN;
 	private Locale lang = VerbaliseTreeManager.locale;
-	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("resources.LogicLabels", VerbaliseTreeManager.locale);
+	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
 	
 	
 //	for Debuging reasons only

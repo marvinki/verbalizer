@@ -31,9 +31,8 @@ public enum VerbaliseTreeManager {
 	static boolean debug = false;
 	static Locale locale = Locale.ENGLISH;
 	
-	
-		
-	static ResourceBundle LogicLabels = ResourceBundle.getBundle("resources.LogicLabels", locale);
+
+	static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", locale);
 	
 	
 	public static void setLogicLabels(ResourceBundle logicLabels) {
