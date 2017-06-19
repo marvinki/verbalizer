@@ -57,22 +57,27 @@ public class ConversionAndPrettyPrintingTest {
 		System.out.println(cardForm2);
 		System.out.println(VerbalisationManager.prettyPrint(cardExpr2_b));
 		
+		
 		// Sentences
+		System.out.println("\n\n English sentences...\n");
 		WordNetQuery.INSTANCE.disableDict();
-		VerbaliseTreeManager.setLocale(Locale.ENGLISH);
+		VerbaliseTreeManager.setLocale(Locale.GERMAN);
 		SentenceOWLObjectVisitor sentenceOWLObjectVisit = new SentenceOWLObjectVisitor();
+		
 		OWLSubClassOfAxiom subcl1 =  dataFactory.getOWLSubClassOfAxiom(class1,class2);
 		System.out.println(subcl1.accept(sentenceOWLObjectVisit));
+		
 		OWLSubClassOfAxiom subcl2 =  dataFactory.getOWLSubClassOfAxiom(class1,dataFactory.getOWLObjectSomeValuesFrom(prop1,class2));
 		System.out.println(subcl2.accept(sentenceOWLObjectVisit));
+		
 		OWLSubClassOfAxiom subcl3 =  dataFactory.getOWLSubClassOfAxiom(dataFactory.getOWLObjectSomeValuesFrom(prop1,class1),class2);
 		System.out.println(subcl3.accept(sentenceOWLObjectVisit));
+		
 		OWLSubClassOfAxiom subcl4 =  dataFactory.getOWLSubClassOfAxiom(class1,dataFactory.getOWLObjectIntersectionOf(class2,class3));
 		System.out.println(subcl4.accept(sentenceOWLObjectVisit));
+		
 		OWLSubClassOfAxiom subcl5 =  dataFactory.getOWLSubClassOfAxiom(dataFactory.getOWLObjectIntersectionOf(class1,class2),class3);
 		System.out.println(subcl5.accept(sentenceOWLObjectVisit));
-		
-		
 		
 		
 		List<Pair> lst = new ArrayList<Pair>();

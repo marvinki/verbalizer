@@ -328,7 +328,7 @@ public enum RuleSetManager {
 			AdditionalDLRules.OBJPROPASSERIONASWITNESS,
 			AdditionalDLRules.ANDIVIDUAL,
 			AdditionalDLRules.INDIVTOPINTRO,
-			 AdditionalDLRules.SUBCLCHAIN,
+//			 AdditionalDLRules.SUBCLCHAIN,
 			 AdditionalDLRules.ONEOFINTRO
     };
     

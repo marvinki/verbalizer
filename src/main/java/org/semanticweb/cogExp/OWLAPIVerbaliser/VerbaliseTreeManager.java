@@ -24,12 +24,16 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 
+import com.clarkparsia.owlapi.modularity.locality.SemanticLocalityEvaluator;
+
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
 	// static boolean debug = true;
-	static boolean debug = false;
-	static Locale locale = Locale.ENGLISH;
+	static boolean debug = true;
+	
+	
+	static Locale locale = Locale.GERMAN;
 	
 	
 		
@@ -2293,8 +2297,8 @@ public enum VerbaliseTreeManager {
 			
 	}
 	
-	public static void setLocale(Locale locale) {
-		VerbaliseTreeManager.locale = locale;
+	public static void setLocale(Locale alocale) {
+		VerbaliseTreeManager.locale = alocale;
 	}
 
 
