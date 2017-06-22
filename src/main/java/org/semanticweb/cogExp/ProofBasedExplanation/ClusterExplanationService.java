@@ -534,6 +534,26 @@ public class ClusterExplanationService {
 		return result;
 	}
 	
+	public String getInstructionText(String query){
+		Set<OWLAxiom>  previousaxioms = ontology.getAxioms();
+		String result = "";
+		for (OWLAxiom ax : previousaxioms){
+			if (ax instanceof OWLDataPropertyAssertionAxiom){
+				// System.out.println(ax);
+				OWLDataPropertyAssertionAxiom dax = (OWLDataPropertyAssertionAxiom) ax;
+				// System.out.println(dax.getProperty().asOWLDataProperty().getIRI());
+				if (dax.getProperty().asOWLDataProperty().getIRI().toString().contains("hasInstructionText")
+						&& dax.getSubject().asOWLNamedIndividual().getIRI().getShortForm().equals(query)
+						){
+					result = dax.getObject().getLiteral().toString();
+					break;
+				}
+			}
+			
+			// System.out.println(ax);
+		}
+		return result ;
+	}
 	
 	public String listInferredAxioms(String ontologyname){
 		String result = "";
@@ -860,6 +880,26 @@ public class ClusterExplanationService {
 	}
 	
 	
+public String handleBoschBatchRequest(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException{
+	String result = "";
+	boolean middle = false;
+	JSONArray jsonArray = new JSONArray(input); 
+	printstream.print("[");
+	for (int i = 0; i < jsonArray.length();i++){
+		JSONObject part = (JSONObject) jsonArray.get(i);
+		if (middle){
+			result += ",";
+			printstream.print(",");
+			}
+		String res = handleBoschRequest(part.toString(), printstream);
+		middle = true;
+		result += res;
+	}
+	printstream.print("]");
+	return "[" + result + "]";
+}	
+	
+	
 public String handleBoschRequest(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException {
 			
 		
@@ -869,7 +909,24 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	    // rootlogger.setLevel(Level.OFF);
 	  	OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
 	  	
+	  	Object json = new JSONTokener(input).nextValue();
+	  	if (json instanceof JSONArray){
+	  		return handleBoschBatchRequest(input, printstream);
+	  	}
+	  	
 	  	 JSONObject inputObject = new JSONObject(input);
+	  	 
+	  	 if (inputObject.has("query")){
+	  		 if (inputObject.getString("query").equals("getInstructionText")){
+	  			 String result = getInstructionText(inputObject.getString("task"));
+	  			 JSONObject resultJSON = new JSONObject();
+	  			 resultJSON.put(inputObject.getString("task"), result);
+	  			printstream.println(resultJSON.toString());
+	  			 return resultJSON.toString();
+	  		 }
+	  		
+	  	 }
+	  	 
 	  	 String command = inputObject.getString("command");
 	
    		if (command.contains("precompute")){
@@ -972,6 +1029,7 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    				printstream.println(output);
    				return output;
    		}
+   		
    	 OWLOntology ont = ontology;
    		if (inputObject.has("ontologyName")){
    			String ontologyname = inputObject.getString("ontologyName");
