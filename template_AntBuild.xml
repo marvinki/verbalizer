@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="create_run_jar" name="Create Runnable Jar for Project verbalizer">
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
-	<!--and then modified by fp									    -->
-	<!--please abapt it to your needs								-->
-    <!--ANT 1.7 is required                                         -->
+    <!--and then modified by fp									        -->
+    <!--README: 1. abapt it to your needs								-->
+    <!--README: 2. rightclick this file > Run As Ant Build						-->
+    <!--ANT 1.7 is required                                                                             -->
+
     <!--define folder properties-->
     <property name="dir.buildfile" value="."/>
     <property name="dir.workspace" value="${dir.buildfile}/.."/>
+
 	<!--modify :: Destination folder of for the .jar file-->
     <property name="dir.jarfile" value="/home/fpaffrath/Schreibtisch"/>
     <target name="create_run_jar">
+
     	<!--modify :: Name of the .jar file-->
-        <jar destfile="${dir.jarfile}/convTest.jar" filesetmanifest="mergewithoutmain" duplicate="preserve"><!--added duplicate=preserve-->
+        <jar destfile="${dir.jarfile}/convTest.jar" filesetmanifest="mergewithoutmain" duplicate="preserve"><!--added duplicate=preserve (prevents "duplicate errors" when building)-->
             <manifest>
+
             	<!--modify :: Main class for the build-->
                 <attribute name="Main-Class" value="tests.ConversionAndPrettyPrintingTest"/>
-                <attribute name="Class-Path" value="."/>
+                
+		<!--maybe modify :: path to Main class-->
+		<attribute name="Class-Path" value="."/>
+            
             </manifest>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/com.google.guava/guava.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.p2/pool/plugins/javax.inject_1.0.0.v20091030.jar"/>
