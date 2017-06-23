@@ -332,6 +332,25 @@ public class ClusterExplanationService {
 	} 
 	
 	
+	public String listAllActions(){
+		String results = "";
+		Set<OWLAxiom>  axioms = ontology.getAxioms();
+		boolean middle = false;
+		for (OWLAxiom ax : axioms){
+			if (ax instanceof OWLClassAssertionAxiom){
+				OWLClassAssertionAxiom clax = (OWLClassAssertionAxiom) ax;
+				if (clax.getClassExpression().toString().contains("Activity")){
+					if (middle)
+						results += ",";
+					middle = true;
+					results += clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
+				}
+			}
+		}
+		return "[" + results + "]";
+	}
+	
+	
 	public String listAllAxioms(String ontologyname){
 		System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
 		System.out.println("[Retrieving list of superclasses]");
@@ -539,7 +558,7 @@ public class ClusterExplanationService {
 		String result = "";
 		for (OWLAxiom ax : previousaxioms){
 			if (ax instanceof OWLDataPropertyAssertionAxiom){
-				// System.out.println(ax);
+				System.out.println(ax);
 				OWLDataPropertyAssertionAxiom dax = (OWLDataPropertyAssertionAxiom) ax;
 				// System.out.println(dax.getProperty().asOWLDataProperty().getIRI());
 				if (dax.getProperty().asOWLDataProperty().getIRI().toString().contains("hasInstructionText")
@@ -972,6 +991,11 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 			else
 				ontname = ontologyfile;
 			output = listInferredAxiomsJSON(ontname).toString();	
+			printstream.println(output);
+			return output;
+	}
+   		if (command.contains("listAllActions")){
+			output = listAllActions();	
 			printstream.println(output);
 			return output;
 	}
