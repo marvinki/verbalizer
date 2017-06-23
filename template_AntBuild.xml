@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project verbalizer">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+	<!--and then modified by fp									    -->
+	<!--please abapt it to your needs								-->
+    <!--ANT 1.7 is required                                         -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+	<!--modify :: Destination folder of for the .jar file-->
+    <property name="dir.jarfile" value="/home/fpaffrath/Schreibtisch"/>
+    <target name="create_run_jar">
+    	<!--modify :: Name of the .jar file-->
+        <jar destfile="${dir.jarfile}/convTest.jar" filesetmanifest="mergewithoutmain" duplicate="preserve"><!--added duplicate=preserve-->
+            <manifest>
+            	<!--modify :: Main class for the build-->
+                <attribute name="Main-Class" value="tests.ConversionAndPrettyPrintingTest"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/com.google.guava/guava.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.p2/pool/plugins/javax.inject_1.0.0.v20091030.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.apache.servicemix.bundles.aopalliance/org.apache.servicemix.bundles.aopalliance.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/com.google.inject/guice.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/com.google.inject.multibindings/guice-multibindings.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/com.google.inject.assistedinject/guice-assistedinject.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.p2/pool/plugins/javax.servlet_3.1.0.v201410161800.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/ch.qos.logback.core/logback-core.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/ch.qos.logback.classic/logback-classic.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/slf4j.api/slf4j-api.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/owlapi-osgidistribution.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/jackson-core-2.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/jackson-databind-2.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/jackson-annotations-2.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/jsonld-java-sesame-0.5.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/jsonld-java-0.5.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/trove4j-3.0.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/httpclient-4.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/httpclient-cache-4.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/httpcore-4.4.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-model-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-api-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-languages-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-datatypes-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-binary-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-n3-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-nquads-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-ntriples-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-rdfjson-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-rdfxml-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-trix-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-turtle-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-rio-trig-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/sesame-util-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/semargl-sesame-0.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/semargl-core-0.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/semargl-rdfa-0.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/semargl-rdf-0.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/xz-1.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/commons-codec-1.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/commons-logging-1.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/org.semanticweb.owl.owlapi/lib/commons-io-2.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/net.sourceforge.owlapi.telemetry/telemetry-2.0.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/net.sourceforge.owlapi.owlexplanation/owlexplanation-2.0.0.jar"/>
+            <fileset dir="/home/fpaffrath/git/protege/protege-editor-core/target/classes"/>
+            <fileset dir="/home/fpaffrath/git/protege/protege-editor-core/target/test-classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/git/protege/protege-editor-core/target/lib/mdock-2.0.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/git/protege/protege-editor-core/target/lib/jgoodies-looks-2.5.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/git/protege/protege-editor-core/target/lib/jgoodies-common-1.6.0.jar"/>
+            <fileset dir="/home/fpaffrath/git/protege/protege-launcher/target/classes"/>
+            <fileset dir="/home/fpaffrath/git/protege/protege-launcher/target/test-classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/owlapi-osgidistribution/4.2.8/owlapi-osgidistribution-4.2.8.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.5.1/jackson-core-2.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.5.1/jackson-databind-2.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.5.1/jackson-annotations-2.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/tukaani/xz/1.5/xz-1.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-model/2.7.16/sesame-model-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-api/2.7.16/sesame-rio-api-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-languages/2.7.16/sesame-rio-languages-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-datatypes/2.7.16/sesame-rio-datatypes-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-binary/2.7.16/sesame-rio-binary-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-n3/2.7.16/sesame-rio-n3-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-nquads/2.7.16/sesame-rio-nquads-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-ntriples/2.7.16/sesame-rio-ntriples-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-rdfjson/2.7.16/sesame-rio-rdfjson-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-rdfxml/2.7.16/sesame-rio-rdfxml-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-trix/2.7.16/sesame-rio-trix-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-turtle/2.7.16/sesame-rio-turtle-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-rio-trig/2.7.16/sesame-rio-trig-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/openrdf/sesame/sesame-util/2.7.16/sesame-util-2.7.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/github/jsonld-java/jsonld-java-sesame/0.5.0/jsonld-java-sesame-0.5.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/github/jsonld-java/jsonld-java/0.5.0/jsonld-java-0.5.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/slf4j/jcl-over-slf4j/1.7.7/jcl-over-slf4j-1.7.7.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/apache/httpcomponents/httpclient/4.5.1/httpclient-4.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/apache/httpcomponents/httpclient-cache/4.5.1/httpclient-cache-4.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/apache/httpcomponents/httpcore/4.4.3/httpcore-4.4.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/commons-codec/commons-codec/1.9/commons-codec-1.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semarglproject/semargl-sesame/0.6.1/semargl-sesame-0.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semarglproject/semargl-core/0.6.1/semargl-core-0.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semarglproject/semargl-rdfa/0.6.1/semargl-rdfa-0.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semarglproject/semargl-rdf/0.6.1/semargl-rdf-0.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/google/inject/guice/4.0/guice-4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/google/inject/extensions/guice-assistedinject/4.0/guice-assistedinject-4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/google/inject/extensions/guice-multibindings/4.0/guice-multibindings-4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/apache/felix/org.apache.felix.main/4.4.1/org.apache.felix.main-4.4.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/apache/felix/org.apache.felix.framework/4.4.1/org.apache.felix.framework-4.4.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/slf4j/slf4j-api/1.7.12/slf4j-api-1.7.12.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/ch/qos/logback/logback-core/1.1.3/logback-core-1.1.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/ch/qos/logback/logback-classic/1.1.3/logback-classic-1.1.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/slf4j/log4j-over-slf4j/1.7.12/log4j-over-slf4j-1.7.12.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/slf4j/jul-to-slf4j/1.7.12/jul-to-slf4j-1.7.12.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/google/guava/guava/18.0/guava-18.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/google/code/findbugs/jsr305/3.0.1/jsr305-3.0.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.registry/3.5.0.v20100503/org.eclipse.equinox.registry-3.5.0.v20100503.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/eclipse/core/org.eclipse.core.jobs/3.5.0.v20100515/org.eclipse.core.jobs-3.5.0.v20100515.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.common/3.6.0.v20100503/org.eclipse.equinox.common-3.6.0.v20100503.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/eclipse/osgi/org.eclipse.osgi/3.6.0.v20100517/org.eclipse.osgi-3.6.0.v20100517.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/apache/servicemix/bundles/org.apache.servicemix.bundles.aopalliance/1.0_6/org.apache.servicemix.bundles.aopalliance-1.0_6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/apache/servicemix/bundles/org.apache.servicemix.bundles.javax-inject/1_2/org.apache.servicemix.bundles.javax-inject-1_2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/apache/maven/maven-artifact/3.3.9/maven-artifact-3.3.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.22/plexus-utils-3.0.22.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/junit/junit/4.12/junit-4.12.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/mockito/mockito-all/2.0.2-beta/mockito-all-2.0.2-beta.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/googlecode/mdock/mdock/2.0.1/mdock-2.0.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/jgoodies/jgoodies-looks/2.5.3/jgoodies-looks-2.5.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/jgoodies/jgoodies-common/1.6.0/jgoodies-common-1.6.0.jar"/>
+            <fileset dir="/home/fpaffrath/git/protege/protege-editor-owl/target/classes"/>
+            <fileset dir="/home/fpaffrath/git/protege/protege-editor-owl/target/test-classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/git/protege/protege-editor-owl/target/lib/org.protege.xmlcatalog-1.0.5.jar"/>
+            <fileset dir="/home/fpaffrath/git/protege/protege-common/target/classes"/>
+            <fileset dir="/home/fpaffrath/git/protege/protege-common/target/test-classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/mockito/mockito-core/1.9.5/mockito-core-1.9.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/objenesis/objenesis/1.0/objenesis-1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/edu/stanford/protege/org.protege.xmlcatalog/1.0.5/org.protege.xmlcatalog-1.0.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/xml-resolver/xml-resolver/1.2/xml-resolver-1.2.jar"/>
+            <fileset dir="${dir.buildfile}/target/test-classes"/>
+            <fileset dir="${dir.buildfile}/target/classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/target/dependency/jaws-1.3.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/edu/stanford/protege/protege-common/5.1.0/protege-common-5.1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/edu/stanford/protege/protege-editor-core/5.1.0/protege-editor-core-5.1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/edu/stanford/protege/protege-editor-owl/5.1.0/protege-editor-owl-5.1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/google/code/findbugs/jsr305/2.0.1/jsr305-2.0.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/slf4j/slf4j-api/1.7.10/slf4j-api-1.7.10.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/owlexplanation/2.0.0/owlexplanation-2.0.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/telemetry/2.0.0/telemetry-2.0.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/com/github/jaytaylor/jaws/1.3.1/jaws-1.3.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semanticweb/elk/elk-owlapi/0.4.0/elk-owlapi-0.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/owlapi-apibinding/3.4.4/owlapi-apibinding-3.4.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/owlapi-parsers/3.4.4/owlapi-parsers-3.4.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/owlapi-tools/3.4.4/owlapi-tools-3.4.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/apache/felix/org.osgi.core/1.0.0/org.osgi.core-1.0.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/owlapi-api/3.4.4/owlapi-api-3.4.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/owlapi-impl/3.4.4/owlapi-impl-3.4.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semanticweb/elk/elk-owl-model/0.4.0/elk-owl-model-0.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semanticweb/elk/elk-owl-implementation/0.4.0/elk-owl-implementation-0.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semanticweb/elk/elk-util-logging/0.4.0/elk-util-logging-0.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/jfact/1.0.0/jfact-1.0.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/owlapi-distribution/3.4.3/owlapi-distribution-3.4.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/net/sourceforge/owlapi/owlapi-contract/3.4.3/owlapi-contract-3.4.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semanticweb/elk/elk-reasoner/0.4.0/elk-reasoner-0.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semanticweb/elk/elk-util-collections/0.4.0/elk-util-collections-0.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semanticweb/elk/elk-util-concurrent/0.4.0/elk-util-concurrent-0.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semanticweb/elk/elk-util-hashing/0.4.0/elk-util-hashing-0.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semanticweb/elk/elk-util-common/0.4.0/elk-util-common-0.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/fpaffrath/.m2/repository/org/semanticweb/elk/elk-util-io/0.4.0/elk-util-io-0.4.0.jar"/>
+        </jar>
+    </target>
+</project>
