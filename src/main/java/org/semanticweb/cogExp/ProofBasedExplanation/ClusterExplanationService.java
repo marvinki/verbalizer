@@ -35,6 +35,8 @@ import org.semanticweb.elk.reasoner.Reasoner;
 import org.semanticweb.elk.reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.FileDocumentSource;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -42,10 +44,12 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -279,6 +283,8 @@ public class ClusterExplanationService {
 			OWLOntology infOnt = outputOntologyManager.createOntology();
 			previousaxioms = ontology.getAxioms();
 			// System.out.println("Previous axioms " + previousaxioms.size());
+			
+
 			InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 			
 			OWLDataFactory dataFactory2=manager.getOWLDataFactory();
@@ -340,6 +346,26 @@ public class ClusterExplanationService {
 			if (ax instanceof OWLClassAssertionAxiom){
 				OWLClassAssertionAxiom clax = (OWLClassAssertionAxiom) ax;
 				if (clax.getClassExpression().toString().contains("Activity")){
+					if (middle)
+						results += ",";
+					middle = true;
+					results += clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
+				}
+			}
+		}
+		return "[" + results + "]";
+	}
+	
+	public String listAllMaterials(){
+		String results = "";
+		Set<OWLAxiom>  axioms = ontology.getAxioms();
+		axioms.addAll(inferredAxioms);
+		
+		boolean middle = false;
+		for (OWLAxiom ax : axioms){
+			if (ax instanceof OWLClassAssertionAxiom){
+				OWLClassAssertionAxiom clax = (OWLClassAssertionAxiom) ax;
+				if (clax.getClassExpression().toString().contains("MaterialsAndTools")){
 					if (middle)
 						results += ",";
 					middle = true;
@@ -553,7 +579,7 @@ public class ClusterExplanationService {
 		return result;
 	}
 	
-	public String getInstructionText(String query){
+	public String getDataPropertyText(String query, String dataproperty){
 		Set<OWLAxiom>  previousaxioms = ontology.getAxioms();
 		String result = "";
 		for (OWLAxiom ax : previousaxioms){
@@ -561,7 +587,7 @@ public class ClusterExplanationService {
 				System.out.println(ax);
 				OWLDataPropertyAssertionAxiom dax = (OWLDataPropertyAssertionAxiom) ax;
 				// System.out.println(dax.getProperty().asOWLDataProperty().getIRI());
-				if (dax.getProperty().asOWLDataProperty().getIRI().toString().contains("hasInstructionText")
+				if (dax.getProperty().asOWLDataProperty().getIRI().toString().contains(dataproperty)
 						&& dax.getSubject().asOWLNamedIndividual().getIRI().getShortForm().equals(query)
 						){
 					result = dax.getObject().getLiteral().toString();
@@ -572,6 +598,14 @@ public class ClusterExplanationService {
 			// System.out.println(ax);
 		}
 		return result ;
+	}
+	
+	public String getInstructionText(String query){
+		return getDataPropertyText(query, "hasInstructionText");
+	}
+	
+	public String getIllustrationURL(String query){
+		return getDataPropertyText(query, "hasIllustrationURL");
 	}
 	
 	public String listInferredAxioms(String ontologyname){
@@ -916,7 +950,111 @@ public String handleBoschBatchRequest(String input, PrintStream printstream) thr
 	}
 	printstream.print("]");
 	return "[" + result + "]";
-}	
+}
+
+public String elaborate(JSONObject input){
+	String activity = input.getString("elaborate");
+	Set<String> keys = input.keySet();
+	OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+	OWLDataFactory dataFactory2=manager.getOWLDataFactory();
+	for (String key : keys){
+		if (key.equals("elaborate")){
+			OWLObjectProperty performsActivityProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#performsActivity"));
+			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#event"));
+			OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + input.get(key)));
+			OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(performsActivityProp,new_indiv, target_indiv);
+			AddAxiom addAxiomAction= new AddAxiom(ontology,ax);
+			manager.applyChange(addAxiomAction);
+			System.out.println("adding + " + ax);
+			continue;
+		}
+		// establish whether we are talking about an object or a data property
+		Set<OWLDataProperty> dataproperties = ontology.getDataPropertiesInSignature();
+		OWLDataProperty targetDataProperty = null;
+		for (OWLDataProperty datprop : dataproperties){
+			if (datprop.getIRI().getShortForm().equals(key)){
+				targetDataProperty = datprop;
+				break;
+			}
+		}
+		if (targetDataProperty!=null){
+			
+			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("IRI-foo#foo"));
+			OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("IRI-foo#" + input.get(key)));
+			// OWLDataPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(arg0, arg1, arg2)  (new_indiv,targetDataProperty, target_indiv); 
+		} else {// Object property
+			Set<OWLObjectProperty> objectproperties = ontology.getObjectPropertiesInSignature();
+			OWLObjectProperty targetObjectProperty = null;
+			for (OWLObjectProperty obprop : objectproperties){
+				if (obprop.getIRI().getShortForm().equals(key)){
+					targetObjectProperty = obprop;
+					break;
+				}
+			}
+			
+			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#event"));
+			OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + input.get(key)));
+			OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(targetObjectProperty,new_indiv, target_indiv);
+			AddAxiom addAxiomAction= new AddAxiom(ontology,ax);
+			manager.applyChange(addAxiomAction);
+			System.out.println("adding + " + ax);
+		}
+		
+	}
+	
+	try {
+		OWLOntology infOnt = manager.createOntology();
+	
+	Set<OWLAxiom> previousaxioms = ontology.getAxioms();
+	previousaxioms.addAll(inferredAxioms);
+	// System.out.println("Previous axioms " + previousaxioms.size());
+	
+	SimpleConfiguration configuration = new SimpleConfiguration(50000);
+	reasoner = reasonerFactory.createReasoner(ontology, configuration);
+	
+	InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+	
+	iog.fillOntology(dataFactory2, infOnt);
+	// iog.fillOntology(outputOntologyManager, infOnt);
+	Set<OWLAxiom> newaxioms = infOnt.getAxioms();
+	
+	newaxioms.removeAll(previousaxioms);
+	
+	System.out.println(newaxioms);
+	
+	JSONArray na = new JSONArray();
+	
+	for (OWLAxiom ax: newaxioms){
+		if (ax instanceof OWLObjectPropertyAssertionAxiom){
+			OWLObjectPropertyAssertionAxiom axio = (OWLObjectPropertyAssertionAxiom) ax;
+			JSONObject jo = new JSONObject();
+			jo.put("subject", axio.getSubject().asOWLNamedIndividual().getIRI().getShortForm());
+			jo.put("relation", axio.getProperty().asOWLObjectProperty().getIRI().getShortForm());
+			jo.put("object", axio.getObject().asOWLNamedIndividual().getIRI().getShortForm());
+			na.put(jo);
+		}
+		if (ax instanceof OWLClassAssertionAxiom){
+			OWLClassAssertionAxiom axio = (OWLClassAssertionAxiom) ax;
+			if (axio.getClassExpression().isOWLThing())
+				continue;
+			JSONObject jo = new JSONObject();
+			jo.put("individual", axio.getIndividual().asOWLNamedIndividual().getIRI().getShortForm());
+			jo.put("relation", "has-type");
+			jo.put("class", axio.getClassExpression().asOWLClass().getIRI().getShortForm());
+			na.put(jo);
+		}
+	}
+	return na.toString();
+	
+	} catch (OWLOntologyCreationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+	
+	return "";
+}
+
 	
 	
 public String handleBoschRequest(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException {
@@ -934,12 +1072,28 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	}
 	  	
 	  	 JSONObject inputObject = new JSONObject(input);
+	  	 	
+	  	if (inputObject.has("elaborate")){
+	  		 String result = elaborate(inputObject);
+	  		printstream.println(result);
+	  		return result;
+	  	}
 	  	 
 	  	 if (inputObject.has("query")){
 	  		 if (inputObject.getString("query").equals("getInstructionText")){
 	  			 String result = getInstructionText(inputObject.getString("task"));
 	  			 JSONObject resultJSON = new JSONObject();
-	  			 resultJSON.put(inputObject.getString("task"), result);
+	  			 resultJSON.put("action", inputObject.getString("task"));
+	  			 resultJSON.put("text", result);
+	  			 System.out.println("resultJSON " + resultJSON);;
+	  			printstream.println(resultJSON.toString());
+	  			 return resultJSON.toString();
+	  		 }
+	  		if (inputObject.getString("query").equals("getIllustration")){
+	  			 String result = getIllustrationURL(inputObject.getString("task"));
+	  			 JSONObject resultJSON = new JSONObject();
+	  			 resultJSON.put("action", inputObject.getString("task"));
+	  			 resultJSON.put("illustration", result);
 	  			printstream.println(resultJSON.toString());
 	  			 return resultJSON.toString();
 	  		 }
@@ -991,6 +1145,11 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 			else
 				ontname = ontologyfile;
 			output = listInferredAxiomsJSON(ontname).toString();	
+			printstream.println(output);
+			return output;
+	}
+   		if (command.contains("listAllMaterials")){
+			output = listAllMaterials();	
 			printstream.println(output);
 			return output;
 	}
