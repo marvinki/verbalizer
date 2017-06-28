@@ -11,9 +11,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.FileDocumentSource;
@@ -142,6 +144,12 @@ public class StringServer {
 	public static void main(String[] args) throws IOException {
 		int port = 3111;
 		System.out.println("[Server preparation. Please wait.]");
+		if (args.length > 2 && args[2] != null) {
+			String lang = args[2];
+			if (lang.equals("de")){
+				VerbaliseTreeManager.setLocale(Locale.GERMAN);
+			}
+		}
 		if (args.length > 0 && args[0] != null) {
 			port = Integer.parseInt(args[0]);
 		}
