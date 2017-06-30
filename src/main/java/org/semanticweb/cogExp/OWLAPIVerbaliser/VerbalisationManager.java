@@ -1541,8 +1541,8 @@ public enum VerbalisationManager {
 				// System.out.println("DEBUG --- Trying to add " + ax);
 				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 
-				System.out.println("VerbalisationManager: adding: " +
-				ConversionManager.fromOWLAPI(ax).prettyPrint());
+				// System.out.println("VerbalisationManager: adding: " +
+				// ConversionManager.fromOWLAPI(ax).prettyPrint());
 			}
 		} catch (Exception e) {
 			return null;

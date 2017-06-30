@@ -225,7 +225,14 @@ TOPINTRO{
 			result.setMaxFormulaDepth(InferenceApplicationService.computeRuleBindingMaxDepth(sequent, binding));
 			return results;
 		}
-		
+	
+		@Override
+		public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+			for (OWLFormula form : formulalist){
+					return form;
+			}
+			return null;
+		}
 		
 	}, // END TOPINTRO
 

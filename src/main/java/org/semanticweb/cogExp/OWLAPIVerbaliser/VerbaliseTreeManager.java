@@ -29,11 +29,12 @@ import com.clarkparsia.owlapi.modularity.locality.SemanticLocalityEvaluator;
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
+	static boolean debug = false;
 	// static boolean debug = true;
-	static boolean debug = true;
 	
 	
-	static Locale locale = Locale.GERMAN;
+	static Locale locale = Locale.ENGLISH;
+	// static Locale locale = Locale.GERMAN;
 	
 	
 		
@@ -1362,7 +1363,7 @@ public enum VerbaliseTreeManager {
 
 									// System.out.println("DEBUG --- Absolute Else case");
 
-									System.out.println("DEBUG --- Absolute Else case");
+									// System.out.println("DEBUG --- Absolute Else case");
 										
 
 									seq.add(new LogicElement(LogicLabels.getString("since"))); 
