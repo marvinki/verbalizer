@@ -29,7 +29,8 @@ public enum VerbaliseTreeManager {
 	
 	// static boolean debug = true;
 	static boolean debug = false;
-	static Locale locale = Locale.ENGLISH;
+	// static Locale locale = Locale.ENGLISH;
+	static Locale locale = Locale.GERMAN;
 	
 
 	static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", locale);
@@ -623,6 +624,8 @@ public enum VerbaliseTreeManager {
 			}
 			
 			if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && !premiseformulas.contains(previousconclusion) &&  premiseformulas.size()==2){
+				System.out.println("RULE 12 case!!!");
+				
 				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) additions_to_antecedent.get(0); 
 				OWLClassExpression superclass = subcl.getSuperClass();
 				OWLClassExpression subclass = subcl.getSubClass();

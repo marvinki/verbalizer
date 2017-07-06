@@ -124,7 +124,7 @@ public class TextElementSequence extends TextElement{
 		int itemcounter = 0;
 		for (TextElement element : sequence){
 			
-			// System.out.println("dealing with " + element + " " + element.getClass());
+			System.out.println("dealing with " + element + " " + element.getClass());
 			
 			if (element instanceof ClassElement){
 				ClassElement classElement = (ClassElement) element;
@@ -162,6 +162,15 @@ public class TextElementSequence extends TextElement{
 					result.put(io);
 				}
 				itemcounter++;
+			}
+			
+			if (element instanceof TextElementSequence){
+				TextElementSequence innersequence = (TextElementSequence) element;
+				JSONArray innerarray = innersequence.toJSON();
+				for (Object ob : innerarray){
+					JSONObject oj = (JSONObject) ob;
+					result.put(oj);
+				}
 			}
 		
 		}

@@ -51,6 +51,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
@@ -355,6 +356,41 @@ public class ClusterExplanationService {
 		}
 		return "[" + results + "]";
 	}
+	
+	public String reportConfigs(){
+		String results = "";
+		Set<OWLAxiom>  axioms = ontology.getAxioms();
+		axioms.addAll(inferredAxioms);
+		boolean middle = false;
+		for (OWLAxiom ax : axioms){
+			if (ax instanceof OWLClassAssertionAxiom){
+				OWLClassAssertionAxiom clax = (OWLClassAssertionAxiom) ax;
+				if (clax.getClassExpression().toString().contains("ValidDrillingConfig")){
+					for (OWLAxiom innerax : axioms){
+						if (innerax instanceof OWLClassAssertionAxiom){
+						OWLClassAssertionAxiom clinnerax = (OWLClassAssertionAxiom) innerax;
+						if (clax.getIndividual().equals(clinnerax.getIndividual())){
+							if (clinnerax instanceof  
+									OWLObjectSomeValuesFrom){
+								OWLObjectSomeValuesFrom someclax = (OWLObjectSomeValuesFrom) clinnerax;
+								System.out.println(someclax.getProperty().asOWLObjectProperty().getIRI().getShortForm());
+								System.out.println(someclax.getCl);
+							}
+							System.out.println("clinnerax " + clinnerax);
+						}
+						}
+					}
+					if (middle)
+						results += ",";
+					middle = true;
+					results += clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
+				}
+			}
+		}
+		return "[" + results + "]";
+	}
+	
+	
 	
 	public String listAllMaterials(){
 		String results = "";
@@ -1073,6 +1109,9 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	
 	  	 JSONObject inputObject = new JSONObject(input);
 	  	 	
+	  	 
+	  
+	  	 
 	  	if (inputObject.has("elaborate")){
 	  		 String result = elaborate(inputObject);
 	  		printstream.println(result);
@@ -1102,6 +1141,12 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	 
 	  	 String command = inputObject.getString("command");
 	
+	 	if (command.contains("reportConfigs")){
+	  		 String result = reportConfigs();
+	  		printstream.println(result);
+	  		return result;
+	  	}
+	  	 
    		if (command.contains("precompute")){
 				precomputeAxioms();
 				return output;
@@ -1305,10 +1350,38 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    	   			 }  			 		 
    	   			
    	   			 axiom = dataFactory.getOWLClassAssertionAxiom(classExp, indivExp);
+   	   			 
+   	   		/* SHORTCUT FOR DEMO */
+    				if (command.contains("explainClassAssertion")){
+    					Set<OWLAxiom>  axioms = ontology.getAxioms();
+    					axioms.addAll(inferredAxioms);
+    					
+    					for (OWLAxiom infax : inferredAxioms){
+    						if (infax instanceof OWLClassAssertionAxiom){
+    							OWLClassAssertionAxiom infaxCl = (OWLClassAssertionAxiom) infax;
+    							for (OWLAxiom testax : axioms){
+    								if (testax instanceof OWLSubClassOfAxiom){
+    									OWLSubClassOfAxiom testSub = (OWLSubClassOfAxiom) testax;
+    									// OWLClassAssertionAxiom axiomCl = (OWLClassAssertionAxiom) axiom;
+    									if (testSub.getSubClass().equals(infaxCl.getClassExpression())
+    											&& testSub.getSuperClass().equals(classExp)
+    											){
+    												axiom = testSub;
+    												System.out.println("Explaining instead " + axiom);
+    												break;
+    									}
+    								}
+    							}
+    						}	
+    					}
+    				}
+    				
+   	   			 
+   	   			 
    	   				}
    				
    			 
-   			 
+   			 /*
    				GentzenTree tree = VerbalisationManager.computeGentzenTree(axiom, 
    						reasoner, 
    						reasonerFactory, 
@@ -1323,6 +1396,10 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    					printstream.println("ERROR. Axiom could not be proven.");
    					return "ERROR";
    				}
+   				*/
+   				
+   				
+   				
    				
    				TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(axiom, reasoner, reasonerFactory, ontology,100, 10000, "OP",true,false);
    				
@@ -1330,6 +1407,7 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    				System.out.println(sequence.toString());
    				
    				JSONArray jsonObject = sequence.toJSON();
+   				System.out.println("jsonObject: " + jsonObject);
    				output = jsonObject.toString();
    				printstream.println(output);
    				// System.out.println(result);

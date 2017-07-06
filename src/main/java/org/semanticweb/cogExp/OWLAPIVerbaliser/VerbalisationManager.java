@@ -62,6 +62,7 @@ public enum VerbalisationManager {
 
 	static final VerbaliseOWLObjectVisitor verbOWLObjectVisit = new VerbaliseOWLObjectVisitor();
 	static final TextElementOWLObjectVisitor textOWLObjectVisit = new TextElementOWLObjectVisitor();
+	static final SentenceOWLObjectVisitor sentenceOWLObjectVisit = new SentenceOWLObjectVisitor();
 	static final PrettyPrintClassExpressionVisitor ppCEvisit = new PrettyPrintClassExpressionVisitor();
 	static final PrettyPrintOWLAxiomVisitor ppOAvisit = new PrettyPrintOWLAxiomVisitor();
 	static final PrettyPrintOWLObjectVisitor ppOOvisit = new PrettyPrintOWLObjectVisitor();
@@ -90,7 +91,11 @@ public enum VerbalisationManager {
 	}
 
 	public static TextElementSequence textualise(OWLObject ob) {
-		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
+		Sentence sentence = ob.accept(sentenceOWLObjectVisit);
+		System.out.println("Sentence: " + sentence);
+		sentence.makeDefaultSentence();
+		TextElementSequence seq = sentence.getSentence();
+		// TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
 		if(debug) seq.add(new LogicElement("<--visitor--"));
 		return seq;
 	}
@@ -1818,7 +1823,7 @@ public enum VerbalisationManager {
 		}
 
 		if (ontology.getAxioms().contains(axiom)) {
-			System.out.println("DEBUG (3)");	
+			// System.out.println("DEBUG (3)");	
 			// LogicElement element = new LogicElement("Axiom contained.");
 			// resultSequence.add(element);
 			// resultSequence.add(new LinebreakElement());

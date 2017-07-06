@@ -100,7 +100,19 @@ public class StringServer {
 		int idlecount = 0;
 		while (socket != null && socket.isConnected()) {
 			if (inputReader.ready()) {
-				s = inputReader.readLine();
+				s = "";
+				
+				char fc = (char)inputReader.read();
+				s += fc;
+				int oc = 1;
+				while (oc != 0){
+					char nc = (char)inputReader.read();
+					if (nc == fc) oc++;
+					else if (fc == '[' && nc == ']') oc--;
+					else if (fc == '{' && nc == '}') oc--;
+					s +=nc;
+				}
+				
 				if (s == null) {
 					System.out.println("We've lost connection");
 					break;
