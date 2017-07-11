@@ -46,6 +46,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -56,6 +57,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.reasoner.InferenceType;
@@ -84,7 +86,8 @@ import javax.swing.JScrollPane;
 
 // import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.*;
 
 import uk.ac.manchester.cs.jfact.JFactFactory;
@@ -357,7 +360,28 @@ public class ClusterExplanationService {
 		return "[" + results + "]";
 	}
 	
+	public String listAllNumbers(){
+		System.out.println("list all numbers called");
+		String results = "";
+		Set<OWLAxiom>  axioms = ontology.getAxioms();
+		for (OWLAxiom ax : axioms){
+			if (ax instanceof OWLDataPropertyAssertionAxiom){
+				OWLDataPropertyAssertionAxiom datax =  (OWLDataPropertyAssertionAxiom) ax;
+				String lit = datax.getObject().getLiteral();
+				System.out.println("looking at " + lit);
+				if (NumberUtils.isNumber(lit)){
+					lit = "n" + lit; 
+					results = results + lit + " ";
+				}
+				
+			}
+		}
+		System.out.println(results);
+		return results;
+	}
+	
 	public String reportConfigs(){
+		JSONArray resultarray = new JSONArray();
 		String results = "";
 		Set<OWLAxiom>  axioms = ontology.getAxioms();
 		axioms.addAll(inferredAxioms);
@@ -366,18 +390,46 @@ public class ClusterExplanationService {
 			if (ax instanceof OWLClassAssertionAxiom){
 				OWLClassAssertionAxiom clax = (OWLClassAssertionAxiom) ax;
 				if (clax.getClassExpression().toString().contains("ValidDrillingConfig")){
+					String configString = clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
 					for (OWLAxiom innerax : axioms){
 						if (innerax instanceof OWLClassAssertionAxiom){
 						OWLClassAssertionAxiom clinnerax = (OWLClassAssertionAxiom) innerax;
 						if (clax.getIndividual().equals(clinnerax.getIndividual())){
-							if (clinnerax instanceof  
+							OWLClassExpression clinneraxclass = clinnerax.getClassExpression();
+							if (clinneraxclass instanceof  
 									OWLObjectSomeValuesFrom){
-								OWLObjectSomeValuesFrom someclax = (OWLObjectSomeValuesFrom) clinnerax;
-								System.out.println(someclax.getProperty().asOWLObjectProperty().getIRI().getShortForm());
-								System.out.println(someclax.getCl);
-							}
-							System.out.println("clinnerax " + clinnerax);
+								OWLObjectSomeValuesFrom someclax = (OWLObjectSomeValuesFrom) clinneraxclass;
+								String fillerString = someclax.getFiller().asOWLClass().getIRI().getShortForm();
+								String propString = someclax.getProperty().asOWLObjectProperty().getIRI().getShortForm();
+								System.out.println("(" + propString + " " + configString + " " + fillerString + ")");
+								JSONObject axJSON = new JSONObject();
+								axJSON.put("predicate", propString);
+								axJSON.put("arg1", configString);
+								axJSON.put("arg2", fillerString);
+								resultarray.put(axJSON);
+								// results += axJSON.toString();
+							} // endif for some values from
+							//System.out.println("clinnerax " + clinnerax);
 						}
+						} // endif for class assertions
+						if (innerax instanceof OWLDataPropertyAssertionAxiom){
+							OWLDataPropertyAssertionAxiom datax =  (OWLDataPropertyAssertionAxiom) innerax;
+							if (datax.getSubject().equals(clax.getIndividual())){
+								OWLIndividual subject = datax.getSubject();
+								String lit = datax.getObject().getLiteral();
+								if (NumberUtils.isNumber(lit)){
+									lit = "n" + lit; 
+								}
+								OWLDataPropertyExpression datprop = datax.getProperty();
+								String propStr = datprop.asOWLDataProperty().getIRI().getShortForm();
+								System.out.println("(" + propStr + " " + configString + " " + lit + ")");
+								JSONObject axJSON = new JSONObject();
+								axJSON.put("predicate", propStr);
+								axJSON.put("arg1", configString);
+								axJSON.put("arg2", lit);
+								resultarray.put(axJSON);
+							}
+							// System.out.println("dataprop " + innerax);
 						}
 					}
 					if (middle)
@@ -387,7 +439,8 @@ public class ClusterExplanationService {
 				}
 			}
 		}
-		return "[" + results + "]";
+		return resultarray.toString();
+		// return "[" + results + "]";
 	}
 	
 	
@@ -741,6 +794,9 @@ public class ClusterExplanationService {
 		return result;
 	}
 	
+	/*
+	 * Wird von Gregor genutzt
+	 */
 	public String listInferredAssertions(String ontologyname){
 		String result = "";
 		Set<OWLAxiom> inferredAxioms = getInferredAxioms(ontologyname);
@@ -794,10 +850,24 @@ public class ClusterExplanationService {
 				// + " \"" + dAss.getObject().asLiteral().orNull().getLiteral() + "\""
 		 // +       //")\n";
 			else 
-			if (dAss.getObject().asLiteral().toString().contains("1"))
+			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("hasEnergy") && dAss.getObject().asLiteral().toString().contains("1"))
 			result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
 						+ " " + dAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm()
-				+ ")\n";
+				+ ")\n"; 
+			else{
+				OWLIndividual subject = dAss.getSubject();
+				String lit = dAss.getObject().getLiteral();
+				if (NumberUtils.isNumber(lit)){
+					lit = "n" + lit; 
+				}
+				OWLDataPropertyExpression datprop = dAss.getProperty();
+				if (datprop.asOWLDataProperty().getIRI().getShortForm().contains("hasIllustrationURL")) //<-- remove this for Gregor, slashes make his parser crash
+						continue;
+				if (datprop.asOWLDataProperty().getIRI().getShortForm().contains("hasInstructionText")) //<-- remove this for Gregor
+				continue;
+				String propStr = datprop.asOWLDataProperty().getIRI().getShortForm();
+				result += "(" + propStr + " " + subject.asOWLNamedIndividual().getIRI().getShortForm() + " " + lit +")\n";
+ 			}
 		}
 		
 	
@@ -865,7 +935,7 @@ public class ClusterExplanationService {
 					continue;
 				if (classAssertionAxiom.getClassExpression().isOWLThing())
 					continue;
-				result += "(TypeOf " + classAssertionAxiom.getIndividual().asOWLNamedIndividual().getIRI().getShortForm() 
+				result += "(hasType " + classAssertionAxiom.getIndividual().asOWLNamedIndividual().getIRI().getShortForm() 
 						+ " "
 						+ classAssertionAxiom.getClassExpression().asOWLClass().getIRI().getShortForm() + ")\n";
 			}
@@ -1151,6 +1221,11 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 				precomputeAxioms();
 				return output;
 		}
+   		if (command.contains("listAllNumbers")){
+   			String out = listAllNumbers();
+   			printstream.println("{" + out + "}");
+			return "{" + out + "}";
+   		}
    		if (command.contains("listInferredAssertions")){
 			String ontname;
 			if (inputObject.has("ontologyName"))
@@ -1233,6 +1308,12 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 			printstream.println("{" + output + "}");
 			return output;
 	}
+   		if (command.contains("listClassesBraced")){
+			output = listClasses();	
+			printstream.println("{" + output + "}");
+			return output;
+	}
+   		
    		if (command.contains("listClassesPanda")){
 			output = listClassesPanda();	
 			printstream.println("{" + output + "}");
@@ -1243,6 +1324,7 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 			printstream.println(output);
 			return output;
 	}
+   		
    		
    		if (command.contains("listIndividuals")){
 			output = listIndividuals();	

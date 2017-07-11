@@ -103,6 +103,8 @@ public class StringServer {
 				s = "";
 				
 				char fc = (char)inputReader.read();
+				while (fc != '[' && fc != '{')
+					fc = (char)inputReader.read();
 				s += fc;
 				int oc = 1;
 				while (oc != 0){
