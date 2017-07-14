@@ -54,7 +54,7 @@ public class RunTroughExample {
 	File file = new File(".");
 	File ontologyfile = new java.io.File(Paths.get(file.getAbsoluteFile().getParentFile().getAbsolutePath(),
 	 								  "resource", 
-	 								  "TinyExampleOntology2.owl").toString());
+	 								  "tinyExampleOntology2.owl").toString());
 	
 	// File ontologyfile = new java.io.File("/Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-galen.owl");
 	
