@@ -322,13 +322,14 @@ public enum RuleSetManager {
 			INLG2012NguyenEtAlRules.RULE42,
 			AdditionalDLRules.ONLYSOME,
             AdditionalDLRules.UNIONINTRO, // <--- is slow
+            AdditionalDLRules.SUBCLCHAIN,
+            // Rules for dealing with the A-Box/Individuals
 			AdditionalDLRules.INDIVIDUAL,
 			AdditionalDLRules.INVERSEOBJECTPROPERTY,
 			AdditionalDLRules.OBJPROPASSERIONEXISTS,
 			AdditionalDLRules.OBJPROPASSERIONASWITNESS,
 			AdditionalDLRules.ANDIVIDUAL,
 			AdditionalDLRules.INDIVTOPINTRO,
-			AdditionalDLRules.SUBCLCHAIN,
 			AdditionalDLRules.ONEOFINTRO
     };
     
