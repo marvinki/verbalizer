@@ -656,7 +656,7 @@ public List<RuleKind> qualifyRule(){
 
 }, // ELEXISTSMINUS
 
-//$9
+//$9 
 EQUIVEXTRACT{	@Override
 public java.lang.String getName(){return "EQUIVEXTRACT";};
 @Override
@@ -1002,7 +1002,7 @@ public List<RuleKind> qualifyRule(){
 				
 			}, // END DEFDOMAIN
 		
-		//$12
+		//$12  // range(r,A) and B subcl \exists r. C --> B subcl \exists r. A
 		APPLRANGE{	@Override
 				public java.lang.String getName(){return "AdditionalDLRules-ApplicationOfRange";};
 				@Override
@@ -1405,7 +1405,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 		
 		
 
-		//$14
+		//$14 // n-ary version of Rule 5: A \sqsubseteq B, ... A \sqsubseteq Z --> A \sqsubseteq A and ... and Z.
 		RULE5MULTI{	@Override
 		public java.lang.String getName(){return "R5M";};
 		@Override
