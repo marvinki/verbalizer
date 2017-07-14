@@ -389,7 +389,7 @@ public class ClusterExplanationService {
 		for (OWLAxiom ax : axioms){
 			if (ax instanceof OWLClassAssertionAxiom){
 				OWLClassAssertionAxiom clax = (OWLClassAssertionAxiom) ax;
-				if (clax.getClassExpression().toString().contains("ValidDrillingConfig")){
+				if (clax.getClassExpression().toString().contains("Config")){
 					String configString = clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
 					for (OWLAxiom innerax : axioms){
 						if (innerax instanceof OWLClassAssertionAxiom){
@@ -1059,7 +1059,7 @@ public String handleBoschBatchRequest(String input, PrintStream printstream) thr
 }
 
 public String elaborate(JSONObject input){
-	String activity = input.getString("elaborate");
+	// String activity = input.getString("elaborate");
 	Set<String> keys = input.keySet();
 	OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	OWLDataFactory dataFactory2=manager.getOWLDataFactory();
@@ -1149,6 +1149,7 @@ public String elaborate(JSONObject input){
 			jo.put("class", axio.getClassExpression().asOWLClass().getIRI().getShortForm());
 			na.put(jo);
 		}
+		inferredAxioms.add(ax);
 	}
 	return na.toString();
 	
@@ -1438,13 +1439,21 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
     					Set<OWLAxiom>  axioms = ontology.getAxioms();
     					axioms.addAll(inferredAxioms);
     					
-    					for (OWLAxiom infax : inferredAxioms){
+    				
+    					
+    					// classExp : to be explained class 
+    					
+    					for (OWLAxiom infax : axioms){
     						if (infax instanceof OWLClassAssertionAxiom){
     							OWLClassAssertionAxiom infaxCl = (OWLClassAssertionAxiom) infax;
+    							if (infaxCl.getClassExpression().isTopEntity())
+    								continue;
     							for (OWLAxiom testax : axioms){
     								if (testax instanceof OWLSubClassOfAxiom){
     									OWLSubClassOfAxiom testSub = (OWLSubClassOfAxiom) testax;
     									// OWLClassAssertionAxiom axiomCl = (OWLClassAssertionAxiom) axiom;
+    									if (infaxCl.toString().contains("DrillingInSoftwood"))
+    									System.out.println("checking " + testSub + " for : " + infaxCl);
     									if (testSub.getSubClass().equals(infaxCl.getClassExpression())
     											&& testSub.getSuperClass().equals(classExp)
     											){

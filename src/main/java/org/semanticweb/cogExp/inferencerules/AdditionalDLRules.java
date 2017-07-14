@@ -2016,6 +2016,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						List<Pair> input = new ArrayList<Pair>();
 						
 						for (OWLFormula cand : candidates){
+							
 							if (!cand.getHead().equals(OWLSymb.SUBCL))
 								continue;
 							
@@ -2033,6 +2034,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						List<List<Pair>> chains = findAllChains(input);
 							
 						for (List<Pair> pairs : chains){
+							System.out.println("Building chains... " + resultchains.size());
 							List<OWLFormula> chain = new ArrayList<OWLFormula>();
 							for (Pair p : pairs){
 								OWLFormula form = OWLFormula.createFormulaSubclassOf((OWLFormula) p.t, (OWLFormula)p.u) ;
@@ -2049,7 +2051,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 									OWLFormula resultformula = OWLFormula.createFormula(OWLSymb.SUBCL, 
 											chain.get(i).getArgs().get(0),
 											chain.get(j).getArgs().get(1));
-									// System.out.println("considering conclusion : " + resultformula.prettyPrint());
+									 System.out.println("considering conclusion : " + resultformula.prettyPrint());
 									if(!s.alreadyContainedInAntecedent(resultformula)){
 										RuleBinding binding = new RuleBinding(resultformula,null);
 										
@@ -2821,7 +2823,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							} // end second loop
 						} // end formula 1 loop
 						// System.out.println("DEBUG === results " + results);		
-						// System.out.println("AND-I: " + results.size());
+						System.out.println("AND-I: " + results.size());
 						return results;
 					}
 					
