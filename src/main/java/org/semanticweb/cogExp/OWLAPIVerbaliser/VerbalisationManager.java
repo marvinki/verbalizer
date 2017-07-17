@@ -1617,7 +1617,10 @@ public enum VerbalisationManager {
 			List<SequentInferenceRule> rules = tree.getInfRules();
 			if (rules.size() == 0) {
 				System.out.println("Zero rules");
-				String result = "That's already stated in the ontology. ";
+			// TODO LogicLabels should be used here:
+			//example:	String result = LogicLabels.getString("thatsAlreadyStated");
+
+			String result = "That's already stated in the ontology. ";
 				result += VerbaliseTreeManager.makeUppercaseStart(
 						VerbalisationManager.verbalise(ConversionManager.toOWLAPI(axiomFormula))) + ".";
 				// for (OWLFormula just : justificationFormulas){

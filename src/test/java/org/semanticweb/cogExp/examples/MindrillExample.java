@@ -48,7 +48,7 @@ public class MindrillExample {
 			
 			OWLReasonerFactory reasonerFactory = new JFactFactory();
 
-			File ontologyfile = new java.io.File("/home/fpaffrath/svn/Bosch-intern/ontologies/mindrill02.owl");
+			File ontologyfile = new java.io.File("/home/fpaffrath/svn/Bosch-intern/ontologies/mindrill03.owl");
 			
 			OWLOntology boschOntology = 
 					OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
@@ -63,8 +63,9 @@ public class MindrillExample {
 			
 			System.out.println("Classes : ");
 			
-			String a = "Drill";
-			String b = "MaterialsAndTools";
+			
+			String a = "HomObj";
+			String b = "MaterialsAndTools";//"MaterialsAndTools";
 			String result = getResult(a, b, ontologyfile.getPath(), reasonerFactory, reasoner );
 			
 			System.out.println(result);
