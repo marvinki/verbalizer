@@ -29,7 +29,7 @@ import com.clarkparsia.owlapi.modularity.locality.SemanticLocalityEvaluator;
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
-	static boolean debug = true;
+	static boolean debug = false;
 	// static boolean debug = true;
 	
 	

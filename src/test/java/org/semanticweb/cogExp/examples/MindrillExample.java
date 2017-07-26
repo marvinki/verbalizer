@@ -48,7 +48,7 @@ public class MindrillExample {
 			
 			OWLReasonerFactory reasonerFactory = new JFactFactory();
 
-			File ontologyfile = new java.io.File("/home/fpaffrath/svn/Bosch-intern/ontologies/mindrill03.owl");
+			File ontologyfile = new java.io.File("/home/fpaffrath/svn/Bosch-intern/ontologies/mindrill04.owl");
 			
 			OWLOntology boschOntology = 
 					OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
@@ -64,7 +64,7 @@ public class MindrillExample {
 			System.out.println("Classes : ");
 			
 			
-			String a = "HomObj";
+			String a = "Drill";
 			String b = "MaterialsAndTools";//"MaterialsAndTools";
 			String result = getResult(a, b, ontologyfile.getPath(), reasonerFactory, reasoner );
 			
@@ -88,8 +88,8 @@ public class MindrillExample {
 //		  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drillingEvent2"));
 //		  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(drillingInWoodWithTooMuchSpeed, drillingEvent2);
 			
-			OWLClass drillingInWoodWithTooMuchSpeed = dataFactory.getOWLClass(IRI.create(ontologyuri + "DrillBitOfSmallDiameter"));
-		  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drill-bit-1"));
+			OWLClass drillingInWoodWithTooMuchSpeed = dataFactory.getOWLClass(IRI.create(ontologyuri + "BatteryConfig"));
+		  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "battery-config-1"));
 		  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(drillingInWoodWithTooMuchSpeed, drillingEvent2);
 			
 		  	System.out.println("Individuals: ");
