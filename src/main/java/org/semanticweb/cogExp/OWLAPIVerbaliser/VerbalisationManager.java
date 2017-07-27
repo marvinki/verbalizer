@@ -1603,7 +1603,7 @@ public enum VerbalisationManager {
 		if (ontology == null) {
 			return "failure! null ontology received!";
 		}
-
+		
 		System.out.println("verbalizeAxiom called with axiom: " + axiom);
 
 		GentzenTree tree = computeGentzenTree(axiom, reasoner, factory, ontology, maxsteps, maxtime, ruleset);
@@ -1617,7 +1617,10 @@ public enum VerbalisationManager {
 			List<SequentInferenceRule> rules = tree.getInfRules();
 			if (rules.size() == 0) {
 				System.out.println("Zero rules");
-				String result = "That's already stated in the ontology. ";
+			// TODO LogicLabels should be used here:
+			//example:	String result = LogicLabels.getString("thatsAlreadyStated");
+
+			String result = LogicLabels.getString("thatsAlreadyStated");
 				result += VerbaliseTreeManager.makeUppercaseStart(
 						VerbalisationManager.verbalise(ConversionManager.toOWLAPI(axiomFormula))) + ".";
 				// for (OWLFormula just : justificationFormulas){
