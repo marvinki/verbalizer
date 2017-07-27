@@ -495,6 +495,14 @@ public List<RuleKind> qualifyRule(){
 	return Arrays.asList(a);
 }
 
+@Override
+public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+	for (OWLFormula form : formulalist){
+			return form;
+	}
+	return null;
+}
+
 }, // END RULE2
 
 /*
@@ -6977,6 +6985,14 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 	}
 	
 	public OWLFormula getP4(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
+	public OWLFormula getP5(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
+	public OWLFormula getP6(List<OWLFormula> formulalist, OWLFormula conclusion){
 		return null;
 	}
 	

@@ -525,20 +525,20 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		while(runningRules.size()>0 && bindings.size()==0){
 			current_rule = runningRules.get(0);				
 			runningRules.remove(0);
-			  // System.out.println("trying rule " + current_rule.getName());
+			//  System.out.println("trying rule " + current_rule.getName());
 			// positions = findPositionsWhereInferenceApplicable(initialtree, runningRules.get(0));
 			// System.out.println("before getting bindings");
 			// System.out.println("DEBUG runSimpleLoop trying: " + runningRules.get(0).getName());
 			// List<RuleBindingForNode> bindings_pre = new ArrayList(); 
 			List<RuleBindingForNode> foundBindings = new ArrayList<RuleBindingForNode>();
 			if (saturate.length>0){	
-					// System.out.println("case1");
+					 // System.out.println("case1");
 					//bindings.addAll(current_rule.findRuleBindings(seq));
 					foundBindings = findRuleBindingsWhereInferenceApplicableDepthLimited(opennode, seq,current_rule, bfsLevel, true);
 				} else 
 					{	
 					// bindings.addAll(current_rule.findRuleBindings(seq));
-						// System.out.println("case2");
+						//  System.out.println("case2");
 				     foundBindings = findRuleBindingsWhereInferenceApplicableDepthLimited(opennode, seq,current_rule,bfsLevel);
 							// System.out.println("case2 after");
 						} 

@@ -5,7 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import org.semanticweb.cogExp.core.AbstractSequentPositions;
@@ -26,6 +29,7 @@ import org.semanticweb.cogExp.core.SequentList;
 import org.semanticweb.cogExp.core.SequentPart;
 import org.semanticweb.cogExp.core.SequentPosition;
 import org.semanticweb.cogExp.core.SequentSinglePosition;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLAtom;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
@@ -769,6 +773,10 @@ public List<RuleKind> qualifyRule(){
 	return Arrays.asList(a);
 }
 
+public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+	return formulalist.get(0);
+}
+
 }, // EQUIVEXTRACT
 
 //$10
@@ -1268,9 +1276,23 @@ public List<RuleKind> qualifyRule(){
 				return;
 							}
 							
+			public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+				for (OWLFormula form: formulalist){
+					if (form.getHead().equals(OWLSymb.SUBCL))
+						return form;
+				}
+				return null;
+			}
 			
+			public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+				for (OWLFormula form: formulalist){
+					if (form.getHead().equals(OWLSymb.EQUIV))
+						return form;
+				}
+				return null;
+			}
 			
-		}, // END RULE31
+		}, // END SUBCLANDEQUIVELIM
 		
 /*
 TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,exists rel. C) --> SubCla(A,exists rel.C)  (order of equiv does not matter)
@@ -1540,6 +1562,31 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 		public List<RuleKind> qualifyRule(){
 			RuleKind[] a = {RuleKind.FORWARD};
 			return Arrays.asList(a);
+		}
+		
+		public OWLFormula getPx(List<OWLFormula> formulalist, OWLFormula conclusion, int x){
+			OWLFormula ints = conclusion.getArgs().get(1);
+			if (ints.getArgs().size()>x){
+				OWLFormula p = OWLFormula.createFormula(OWLSymb.SUBCL,conclusion.getArgs().get(0),ints.getArgs().get(x));
+					return p;	
+			}
+			return null;
+		}
+		
+		public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+			return getPx(formulalist,conclusion,0);
+		}
+		
+		public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+			return getPx(formulalist,conclusion,1);
+		}
+		
+		public OWLFormula getP3(List<OWLFormula> formulalist, OWLFormula conclusion){
+			return getPx(formulalist,conclusion,2);
+		}
+		
+		public OWLFormula getP4(List<OWLFormula> formulalist, OWLFormula conclusion){
+			return getPx(formulalist,conclusion,3);
 		}
 
 		}, // end Rule5Multi
@@ -2020,7 +2067,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						List<List<OWLFormula>> chainqueue = new ArrayList<List<OWLFormula>>();
 						List<List<OWLFormula>> resultchains = new ArrayList<List<OWLFormula>>();
 						
-						List<Pair> input = new ArrayList<Pair>();
+						Set<Pair<OWLFormula,OWLFormula>> input = new HashSet<Pair<OWLFormula,OWLFormula>>();
 						
 						for (OWLFormula cand : candidates){
 							if (!cand.getHead().equals(OWLSymb.SUBCL))
@@ -2037,30 +2084,43 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							input.add(inp);
 						}
 						
-						List<List<Pair>> chains = findAllChains(input);
+						// System.out.println("chains: before findAllChains");
+						
+						Set<List<Pair<OWLFormula,OWLFormula>>> chains = findAllChains2(input);
+						
+						// System.out.println("chains: after findAllChains");
 							
-						for (List<Pair> pairs : chains){
+						for (List<Pair<OWLFormula,OWLFormula>> pairs : chains){
 							List<OWLFormula> chain = new ArrayList<OWLFormula>();
 							for (Pair p : pairs){
 								OWLFormula form = OWLFormula.createFormulaSubclassOf((OWLFormula) p.t, (OWLFormula)p.u) ;
 								chain.add(form);
 							}
+							if (!resultchains.contains(chain))	
 								resultchains.add(chain);
 						}
 						
-				
+						// System.out.println("Resultchains " + resultchains.size());
+						
+						Set<OWLFormula> already_considered_conclusions = new HashSet<OWLFormula>();
 						
 						for (List<OWLFormula> chain : resultchains){
 							for (int i = 0; i< chain.size();i++){
 								for (int j = i; j< chain.size();j++){
+									if (chain.get(i).getArgs().get(0).equals(chain.get(j).getArgs().get(1))){
+										continue;
+									}
 									OWLFormula resultformula = OWLFormula.createFormula(OWLSymb.SUBCL, 
 											chain.get(i).getArgs().get(0),
 											chain.get(j).getArgs().get(1));
+									if (already_considered_conclusions.contains(resultformula))
+										continue;
+									already_considered_conclusions.add(resultformula);
 									// System.out.println("considering conclusion : " + resultformula.prettyPrint());
 									if(!s.alreadyContainedInAntecedent(resultformula)){
 										RuleBinding binding = new RuleBinding(resultformula,null);
 										
-										int ind = 1;
+										int ind = 0;
 										for(int p = i; p<=j ; p++){
 											ind=ind+1;
 											SequentPosition pos = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(chain.get(p)));
@@ -2071,7 +2131,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 								} // j loop
 							} // i loop
 						}
-						
+						// System.out.println("Returning results " + results.size());
 					
 						return results;
 					}
@@ -2282,6 +2342,80 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						return;
 									}
 									
+					
+					@Override
+					public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+						for (OWLFormula form : formulalist){
+							if (form.getArgs().get(0).equals(conclusion.getArgs().get(0)))
+								return form;
+						}
+						return null;
+					}
+					
+					public List<OWLFormula> getChain(List<OWLFormula> formulalist, OWLFormula conclusion){
+						List<OWLFormula> tmpChain = new ArrayList<OWLFormula>(formulalist);
+						List<OWLFormula> chain = new LinkedList<OWLFormula>();
+						OWLFormula current = conclusion.getArgs().get(0);
+						chain.add(current);
+						while (tmpChain.size()>0){
+							for (OWLFormula form : tmpChain){
+								if (form.getArgs().get(0).equals(form.getArgs().get(0))){
+									current = form.getArgs().get(1);
+									chain.add(current);
+									tmpChain.remove(form);
+									break;
+								}
+							}
+						}
+						return chain;
+					}
+					
+					public OWLFormula getP2(List<OWLFormula> formulalist, OWLFormula conclusion){
+						List<OWLFormula> chain = getChain(formulalist, conclusion);
+						if (chain.size()<3){
+							return null;
+						}
+						OWLFormula form = OWLFormula.createFormula(OWLSymb.SUBCL, chain.get(1), chain.get(2));
+						return form;
+					}
+					
+					public OWLFormula getP3(List<OWLFormula> formulalist, OWLFormula conclusion){
+						List<OWLFormula> chain = getChain(formulalist, conclusion);
+						if (chain.size()<4){
+							return null;
+						}
+						OWLFormula form = OWLFormula.createFormula(OWLSymb.SUBCL, chain.get(2), chain.get(3));
+						return form;
+					}
+					
+					public OWLFormula getP4(List<OWLFormula> formulalist, OWLFormula conclusion){
+						List<OWLFormula> chain = getChain(formulalist, conclusion);
+						if (chain.size()<5){
+							return null;
+						}
+						OWLFormula form = OWLFormula.createFormula(OWLSymb.SUBCL, chain.get(3), chain.get(4));
+						return form;
+					}
+					
+					public OWLFormula getP5(List<OWLFormula> formulalist, OWLFormula conclusion){
+						List<OWLFormula> chain = getChain(formulalist, conclusion);
+						if (chain.size()<6){
+							return null;
+						}
+						OWLFormula form = OWLFormula.createFormula(OWLSymb.SUBCL, chain.get(4), chain.get(5));
+						return form;
+					}
+					
+					public OWLFormula getP6(List<OWLFormula> formulalist, OWLFormula conclusion){
+						List<OWLFormula> chain = getChain(formulalist, conclusion);
+						if (chain.size()<7){
+							return null;
+						}
+						OWLFormula form = OWLFormula.createFormula(OWLSymb.SUBCL, chain.get(5), chain.get(6));
+						return form;
+					}
+					
+					
 					
 					
 				}, // END RULEPROPCHAIN
@@ -3387,19 +3521,44 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 		return null;
 	}
 	
+	public OWLFormula getP5(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
+	public OWLFormula getP6(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
 	public void clearCaches(){}
 	
-	public static List<List<Pair>> findAllChains(List<Pair> input){
-		List<List<Pair>> result = new ArrayList<List<Pair>>();
-		List<Pair> toBeConsumed = new ArrayList(input);
-		List<List<Pair>> candidateChains = new ArrayList<List<Pair>>();
+	public static Set<List<Pair<OWLFormula,OWLFormula>>> findAllChains(Set<Pair<OWLFormula,OWLFormula>> input){
+		Iterator<Pair<OWLFormula,OWLFormula>> setIt = input.iterator();
+		while(setIt.hasNext()){
+			Pair p = setIt.next();
+			if (p.t.equals(p.u))
+				setIt.remove();
+			if (((OWLFormula) p.t).isBot())
+				setIt.remove();
+			if (((OWLFormula) p.u).isTop())
+				setIt.remove();
+		}
+		
+		if (CHAINS_SAVED.containsKey(input)){
+			return CHAINS_SAVED.get(input);
+		}
+		
+		Set<List<Pair<OWLFormula,OWLFormula>>> result = new HashSet<List<Pair<OWLFormula,OWLFormula>>>();
+		Set<Pair> toBeConsumed = new HashSet<Pair>(input);
+		List<List<Pair>> candidateChains = new LinkedList<List<Pair>>();
 		// Idea: Every input element must at least be inserted once (use a list that is consumed)
 		// For each chain, check if the start or the end can be extended (with all elements)
 		boolean chainsChanged = false;
+		
 		while (toBeConsumed.size()>0 || chainsChanged){
+			// System.out.println("to-be-consumed: " + toBeConsumed.size() + "   changed " + chainsChanged);
 			// initialize the first chain
 			if (candidateChains.size()==0 || !chainsChanged){
-					Pair consumable = toBeConsumed.get(0);
+					Pair consumable = toBeConsumed.iterator().next();
 					toBeConsumed.remove(consumable);
 					List<Pair> firstlist = new ArrayList<Pair>();
 					firstlist.add(consumable);
@@ -3408,35 +3567,54 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 			}
 			else{ // there is at least some chain, so now try to extend all the chains
 				int i = 0;
-				while (i<candidateChains.size()){
+				// while(candIt.hasNext()){
+				while (i<candidateChains.size()){ // run through the candidate chains individually
+					// System.out.println("Number of candidate chains " + candidateChains.size() + " i: "+ i);
 					List<Pair> currentchain = candidateChains.get(i);
+					// List<Pair> currentchain = candIt.next();
 					Pair firstpair = currentchain.get(0);
 					Pair lastpair = currentchain.get(currentchain.size()-1);
 					
 					chainsChanged = false;
 					
 					for (Pair candidatepair : input){
-						if (candidatepair.u.equals(firstpair.t)){
+						if (candidatepair.u.equals(firstpair.t) && !currentchain.contains(candidatepair)){ //<--- limit (in case of cycles)
 							// make a copy and append candidate to front of copied chain
 							List<Pair> copyOfChain = new ArrayList<Pair>(currentchain);
 							copyOfChain.add(0,candidatepair);
-							candidateChains.add(copyOfChain);
-							if (toBeConsumed.contains(candidatepair)){
-								toBeConsumed.remove(candidatepair);
+							if (!candidateChains.contains(copyOfChain)){
+								candidateChains.add(copyOfChain);
+								if (toBeConsumed.contains(candidatepair)){
+									toBeConsumed.remove(candidatepair);
+								}
+								chainsChanged = true;
+								
+								// System.out.println(copyOfChain.size());
+							   //  for (Pair p: copyOfChain){
+								// 	 System.out.print(VerbalisationManager.prettyPrint((OWLFormula) p.t) + " " + VerbalisationManager.prettyPrint((OWLFormula) p.u) + ", ");
+							    // 	System.out.print(p.u + " " + p.t + ", ");
+							    // }
+							    //  System.out.println();		
 							}
-							
-							chainsChanged = true;
+											
 						}
-						if (candidatepair.t.equals(lastpair.u)){
+						if (candidatepair.t.equals(lastpair.u) && !currentchain.contains(candidatepair)){  //<--- limit (in case of cycles
 							List<Pair> copyOfChain = new ArrayList<Pair>(currentchain);
 							// append candidate to back of chain
 							copyOfChain.add(candidatepair);
-							candidateChains.add(copyOfChain);
-							if (toBeConsumed.contains(candidatepair)){
-								toBeConsumed.remove(candidatepair);
-							}
-										
-							chainsChanged = true;
+							if (!candidateChains.contains(copyOfChain)){
+								candidateChains.add(copyOfChain);
+								if (toBeConsumed.contains(candidatepair)){
+									toBeConsumed.remove(candidatepair);
+								}
+								chainsChanged = true;
+								//  System.out.println(copyOfChain.size());			
+								//  for (Pair p: copyOfChain){
+								//  	 System.out.print(VerbalisationManager.prettyPrint((OWLFormula) p.t) + " " + VerbalisationManager.prettyPrint((OWLFormula) p.u) + ", ");
+									// System.out.print(p.u + " " + p.t + ", ");
+								 // }
+								// System.out.println();
+							}	   					
 						}
 					}
 					i++;
@@ -3446,16 +3624,16 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 		
 		// now extract all kinds of different chains
 		
-	
+		// System.out.println("now cutting away small chains ");
 		
-		List<String> hash = new ArrayList<String>();
+		Set<String> hash = new HashSet<String>();
 		
 		for (List<Pair> candidateChain:  candidateChains){
 			if (candidateChain.size()<3)
 				continue;
 			for (int i = 0; i<candidateChain.size(); i++){
 				for (int j = i+2; j<candidateChain.size(); j++){
-					List<Pair> seq = new ArrayList<Pair>();
+					List<Pair<OWLFormula,OWLFormula>> seq = new ArrayList<Pair<OWLFormula,OWLFormula>>();
 					for (int k = i;k<=j;k++){
 						seq.add(candidateChain.get(k));
 					}
@@ -3467,7 +3645,99 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 			}
 		}
 		
+		
+		CHAINS_SAVED.put(input, result);
+		
 		return result;
 	}
+	
+	
+	public static Set<List<OWLFormula>> enchain(HashMap<OWLFormula,List<OWLFormula>> map, 
+			List<OWLFormula> current_chain){
+		// System.out.println( " current chain " + current_chain);
+		Set<List<OWLFormula>> results = new HashSet<List<OWLFormula>>();
+		OWLFormula last_element = current_chain.get(current_chain.size()-1);
+		if (map.containsKey(last_element)){
+			List<OWLFormula> targets = map.get(last_element);
+			for (OWLFormula target : targets){
+				List<OWLFormula> newchain = new LinkedList<OWLFormula>(current_chain);
+				if (!current_chain.contains(target)){ // <--- cycle checking!
+					newchain.add(target);
+					// System.out.println( " new chain " + newchain);
+					results.addAll(enchain(map,newchain));
+					// System.out.println("Size :"  + results);
+				}
+				// System.out.println("newchain " + newchain);
+			}
+		} else {
+			results.add(current_chain);
+		}
+		return results;
+	}
+	
+	
+	
+	
+	public static Set<List<Pair<OWLFormula,OWLFormula>>> findAllChains2(Set<Pair<OWLFormula,OWLFormula>> input){
+		Set<List<Pair<OWLFormula,OWLFormula>>> results = new HashSet<List<Pair<OWLFormula,OWLFormula>>>();
+		HashMap<OWLFormula,List<OWLFormula>> incidence = new HashMap<OWLFormula,List<OWLFormula>>();
+		for (Pair<OWLFormula,OWLFormula> pair : input){
+			if (pair.t.equals(pair.u))
+				continue;
+			if (incidence.containsKey(pair.t)){
+				List<OWLFormula> targets = incidence.get(pair.t);
+				targets.add(pair.u);
+			}
+			else{
+				List<OWLFormula> targets = new LinkedList<OWLFormula>();
+				targets.add(pair.u);
+				incidence.put(pair.t, targets);
+			}
+		}
+		// System.out.println("before enchaining");
+		List<List<OWLFormula>> chains = new LinkedList<List<OWLFormula>>();
+		for (OWLFormula form : incidence.keySet()){
+			List<OWLFormula> chain = new LinkedList<OWLFormula>();
+			chain.add(form);
+			chains.addAll(enchain(incidence,chain));
+		}
+		/*
+		System.out.println("enchaining results");
+		for (List<OWLFormula> lst : chains){
+			for (OWLFormula f : lst){
+				System.out.print(f + ",");
+				}
+			System.out.println();
+		}
+		*/
+		// System.out.println("pairing");
+		for (List<OWLFormula> chain : chains){
+			for (int i = 0; i < chain.size(); i++){
+				for (int j = i+3; j < chain.size();j++){
+					List<Pair<OWLFormula,OWLFormula>> pairs = new LinkedList<Pair<OWLFormula,OWLFormula>>();
+					for (int x=i; x<j;x++){
+						Pair p = new Pair(chain.get(x),chain.get(x+1));
+						pairs.add(p);
+					}
+					if (!results.contains(pairs))
+						results.add(pairs);
+				}
+			}
+		}
+		/* System.out.println("Pairs " + results.size());
+		for (List<Pair<OWLFormula,OWLFormula>> lst : results){
+			for (Pair p : lst){
+				System.out.print(p.t + " "+ p.u  + ",");
+				}
+			System.out.println();
+		}
+		*/
+		return results;
+	}
+	
+	
+	
+	public static HashMap<Set<Pair<OWLFormula,OWLFormula>>, Set<List<Pair<OWLFormula,OWLFormula>>>> CHAINS_SAVED = new HashMap<Set<Pair<OWLFormula,OWLFormula>>, Set<List<Pair<OWLFormula,OWLFormula>>>>();
+	
 	
 }

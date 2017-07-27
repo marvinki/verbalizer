@@ -18,7 +18,9 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
+import org.semanticweb.cogExp.core.RuleSetManager;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
+import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -52,15 +54,19 @@ public class RunTroughExample {
 	
 	// load an ontology through the OWL API
 	File file = new File(".");
-	File ontologyfile = new java.io.File(Paths.get(file.getAbsoluteFile().getParentFile().getAbsolutePath(),
-	 								  "resource", 
-	 								  "tinyExampleOntology2.owl").toString());
+	// File ontologyfile = new java.io.File(Paths.get(file.getAbsoluteFile().getParentFile().getAbsolutePath(),
+	 // 								  "resource", 
+	 // 								  "tinyExampleOntology2.owl").toString());
 	
-	// File ontologyfile = new java.io.File("/Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-galen.owl");
+	File ontologyfile = new java.io.File("/Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-galen.owl");
+	// File ontologyfile = new java.io.File("/Users/marvin/work/workspace/justifications/originaltones-modified/Ontology-galen1.owl");
+	
+	
 	
 	OWLOntology ontology = 
 			OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
 	
+	System.out.println("loaded");
 	
 	// indicate a reasoner and a reasoner factory to be used for justification finding (here we use ELK)
 	OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
@@ -78,6 +84,8 @@ public class RunTroughExample {
 	
 	// Classify the ontology.
 	reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+	
+	System.out.println("precomputed");
 
 	// To generate an inferred ontology we use implementations of
 	// inferred axiom generators
@@ -98,6 +106,8 @@ public class RunTroughExample {
 		
 		iog.fillOntology(outputOntologyManager.getOWLDataFactory(), newontology);
 		
+		System.out.println("filled");
+		
 	
 		newaxioms = newontology.getAxioms();
 		System.out.println("No. of new axioms: " + (newaxioms.size()));
@@ -105,12 +115,24 @@ public class RunTroughExample {
 	{e.printStackTrace();
 	}
 	
+	//RuleSetManager.INSTANCE.removeRule("OP", AdditionalDLRules.SUBCLCHAIN);
+	
+	int failedProofs = 0;
+	List<OWLAxiom> failed = new ArrayList<OWLAxiom>();
+
+	
 	for (OWLAxiom ax : newaxioms){
 		GentzenTree tree = VerbalisationManager.computeGentzenTree(ax, reasoner, reasonerFactory,
-				ontology, 100, 10000, "OP");
+				ontology, 
+				100,      // <-- search depth 
+				1000000,    // <-- time in ms
+				"OP");  
 		
-		if (tree==null)
+		if (tree==null){
+			failed.add(ax);
+			failedProofs++;
 			continue;
+		}
 		
 		try{
 		WordNetQuery.INSTANCE.disableDict();
@@ -134,6 +156,10 @@ public class RunTroughExample {
 			OWLFormula conclusion = step.getConclusionFormula();	
 			OWLFormula prem1 = infrule.getP1(premises,conclusion);
 			OWLFormula prem2 = infrule.getP2(premises,conclusion);
+			OWLFormula prem3 = infrule.getP3(premises,conclusion);
+			OWLFormula prem4 = infrule.getP4(premises,conclusion);
+			OWLFormula prem5 = infrule.getP5(premises,conclusion);
+			OWLFormula prem6 = infrule.getP6(premises,conclusion);
 			
 			// Convert everything to OWLAPI format
 			List<OWLObject> premisesOWLAPI = ConversionManager.toOWLAPI(premises);
@@ -144,16 +170,46 @@ public class RunTroughExample {
 			OWLObject prem2OWLAPI = null;
 			if (prem2 !=null)
 				prem2OWLAPI = ConversionManager.toOWLAPI(prem2);
+			OWLObject prem3OWLAPI = null;
+			if (prem3 !=null)
+				prem3OWLAPI = ConversionManager.toOWLAPI(prem3);
+			OWLObject prem4OWLAPI = null;
+			if (prem4 !=null)
+				prem4OWLAPI = ConversionManager.toOWLAPI(prem4);
+			OWLObject prem5OWLAPI = null;
+			if (prem5 !=null)
+				prem5OWLAPI = ConversionManager.toOWLAPI(prem5);
+			OWLObject prem6OWLAPI = null;
+			if (prem6 !=null)
+				prem6OWLAPI = ConversionManager.toOWLAPI(prem6);
 			
 			// Output	
 			if (prem1OWLAPI!=null)
 				System.out.println("Premise 1 " + VerbalisationManager.prettyPrint(prem1OWLAPI));
 			if (prem2OWLAPI!=null)
 				System.out.println("Premise 2 " + VerbalisationManager.prettyPrint(prem2OWLAPI));
+			if (prem3OWLAPI!=null)
+				System.out.println("Premise 3 " + VerbalisationManager.prettyPrint(prem3OWLAPI));
+			if (prem4OWLAPI!=null)
+				System.out.println("Premise 4 " + VerbalisationManager.prettyPrint(prem4OWLAPI));
+			if (prem5OWLAPI!=null)
+				System.out.println("Premise 5 " + VerbalisationManager.prettyPrint(prem5OWLAPI));
+			if (prem6OWLAPI!=null)
+				System.out.println("Premise 6 " + VerbalisationManager.prettyPrint(prem6OWLAPI));
+			System.out.println("Number of premises: " + premises.size());
+			for (OWLObject prem: premisesOWLAPI){
+				System.out.println("premise: " + VerbalisationManager.prettyPrint(prem));
+			}
+			
 			System.out.println("Conclusion: " + VerbalisationManager.prettyPrint(conclusionOWLAPI) + "\n");
 		}
 	}
-   
+	
+	System.out.println("Failed proof attempts: " + failedProofs);
+	for (OWLAxiom fail : failed){
+		System.out.println(fail);
+	}
+	
 	/*
 	
 	

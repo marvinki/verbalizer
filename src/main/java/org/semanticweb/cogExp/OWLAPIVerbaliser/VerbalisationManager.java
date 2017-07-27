@@ -1839,8 +1839,8 @@ public enum VerbalisationManager {
 	 */
 
 	public static String computeVerbalization(GentzenTree tree, boolean asHTML, Obfuscator obfuscator) {
-		WordNetQuery.INSTANCE.disableDict();
-		String result = VerbaliseTreeManager.verbaliseNL(tree, false, asHTML, obfuscator);
+		// WordNetQuery.INSTANCE.disableDict();
+		String result = VerbaliseTreeManager.verbaliseNL(tree, true, asHTML, obfuscator);
 		return result;
 	}
 
