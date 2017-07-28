@@ -82,7 +82,7 @@ public class RuleBinding extends AbstractSequentPositions {
 		RuleBinding newBinding = new RuleBinding(newHashMap,newantecedent, newsuccedent);
 		// System.out.println("New antecedent " + newBinding.getNewAntecedent());
 		if (newantecedent !=null && target.alreadyContainedInAntecedent(newantecedent))
-			return null;
+		return null;
 		
 		return newBinding;
 	}

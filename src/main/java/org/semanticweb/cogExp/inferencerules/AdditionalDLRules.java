@@ -2082,14 +2082,49 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 								continue;
 							Pair inp = new Pair(cand.getArgs().get(0),cand.getArgs().get(1));
 							input.add(inp);
+							// System.out.println(inp.t + " " + inp.u);
 						}
 						
 						// System.out.println("chains: before findAllChains");
 						
 						Set<List<Pair<OWLFormula,OWLFormula>>> chains = findAllChains2(input);
 						
-						// System.out.println("chains: after findAllChains");
+						// System.out.println("chains: after findAllChains, number of chains " + chains.size());
 							
+						Set<OWLFormula> already_considered_conclusions = new HashSet<OWLFormula>();
+						
+											
+							
+						for (List<Pair<OWLFormula,OWLFormula>> chain : chains){
+							for (int i = 0; i< chain.size();i++){
+								for (int j = i; j< chain.size();j++){
+									if (chain.get(i).t.equals(chain.get(j).u)){
+										continue;
+									}
+									OWLFormula resultformula = OWLFormula.createFormula(OWLSymb.SUBCL, 
+											chain.get(i).t,
+											chain.get(j).u);
+									if (already_considered_conclusions.contains(resultformula))
+										continue;
+									already_considered_conclusions.add(resultformula);
+									// System.out.println("considering conclusion : " + resultformula.prettyPrint());
+									if(!s.alreadyContainedInAntecedent(resultformula)){
+										RuleBinding binding = new RuleBinding(resultformula,null);
+										
+										int ind = 0;
+										for(int p = i; p<=j ; p++){
+											ind=ind+1;
+											OWLFormula premform = OWLFormula.createFormula(OWLSymb.SUBCL,chain.get(p).t,chain.get(p).u);
+											SequentPosition pos = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(premform));
+											binding.insertPosition("A" + ind, pos);
+										}			
+										results.add(binding);
+									} // end if 
+								} // j loop
+							} // i loop
+						}
+						
+						/*
 						for (List<Pair<OWLFormula,OWLFormula>> pairs : chains){
 							List<OWLFormula> chain = new ArrayList<OWLFormula>();
 							for (Pair p : pairs){
@@ -2099,6 +2134,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							if (!resultchains.contains(chain))	
 								resultchains.add(chain);
 						}
+						
 						
 						// System.out.println("Resultchains " + resultchains.size());
 						
@@ -2131,6 +2167,8 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 								} // j loop
 							} // i loop
 						}
+						*/
+						
 						// System.out.println("Returning results " + results.size());
 					
 						return results;
@@ -2470,7 +2508,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 								matcher2.addAll(matcher);
 											
 									OWLFormula conclusion = result.applyMatcher(matcher2);	
-									  System.out.println("INDIVIDUAL conclusion: " + conclusion);
+									 //  System.out.println("INDIVIDUAL conclusion: " + conclusion);
 									// System.out.println(s.alreadyContainedInAntecedent(conclusion));
 									if (!s.alreadyContainedInAntecedent(conclusion)){
 										RuleBinding binding = new RuleBinding(conclusion,null);																						
@@ -3543,9 +3581,9 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 				setIt.remove();
 		}
 		
-		if (CHAINS_SAVED.containsKey(input)){
-			return CHAINS_SAVED.get(input);
-		}
+		// if (CHAINS_SAVED.containsKey(input)){
+		//	return CHAINS_SAVED.get(input);
+		// }
 		
 		Set<List<Pair<OWLFormula,OWLFormula>>> result = new HashSet<List<Pair<OWLFormula,OWLFormula>>>();
 		Set<Pair> toBeConsumed = new HashSet<Pair>(input);
@@ -3646,7 +3684,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 		}
 		
 		
-		CHAINS_SAVED.put(input, result);
+		// CHAINS_SAVED.put(input, result);
 		
 		return result;
 	}
@@ -3660,16 +3698,23 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 		if (map.containsKey(last_element)){
 			List<OWLFormula> targets = map.get(last_element);
 			for (OWLFormula target : targets){
+				// System.out.println("target : " + target);
 				List<OWLFormula> newchain = new LinkedList<OWLFormula>(current_chain);
 				if (!current_chain.contains(target)){ // <--- cycle checking!
 					newchain.add(target);
 					// System.out.println( " new chain " + newchain);
+					// results.addAll(enchain(map,newchain));
+					// results.addAll(enchain(map,newchain));
 					results.addAll(enchain(map,newchain));
 					// System.out.println("Size :"  + results);
+				}
+				else{
+					// 
 				}
 				// System.out.println("newchain " + newchain);
 			}
 		} else {
+			// System.out.println(" adding (2) " + current_chain);
 			results.add(current_chain);
 		}
 		return results;
@@ -3679,8 +3724,16 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 	
 	
 	public static Set<List<Pair<OWLFormula,OWLFormula>>> findAllChains2(Set<Pair<OWLFormula,OWLFormula>> input){
+		if (input.equals(CHAINS_INPUT_CACHE)){
+			// System.out.println("using cached result");
+			return CHAINS_CACHE;
+		}
+		
 		Set<List<Pair<OWLFormula,OWLFormula>>> results = new HashSet<List<Pair<OWLFormula,OWLFormula>>>();
 		HashMap<OWLFormula,List<OWLFormula>> incidence = new HashMap<OWLFormula,List<OWLFormula>>();
+		
+		
+		
 		for (Pair<OWLFormula,OWLFormula> pair : input){
 			if (pair.t.equals(pair.u))
 				continue;
@@ -3694,22 +3747,39 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 				incidence.put(pair.t, targets);
 			}
 		}
+		
+		Set<OWLFormula> visitedNodes = new HashSet<OWLFormula>();
+		
+		
+		
+		
+		
 		// System.out.println("before enchaining");
-		List<List<OWLFormula>> chains = new LinkedList<List<OWLFormula>>();
+		Set<List<OWLFormula>> chains = new HashSet<List<OWLFormula>>();
 		for (OWLFormula form : incidence.keySet()){
+		// for (OWLFormula form : incidence.keySet()){
+			if (visitedNodes.contains(form))
+				continue;
 			List<OWLFormula> chain = new LinkedList<OWLFormula>();
 			chain.add(form);
-			chains.addAll(enchain(incidence,chain));
+			Set<List<OWLFormula>> enchained = enchain(incidence,chain);
+			chains.addAll(enchained);
+			for (List<OWLFormula> lst : enchained){
+				visitedNodes.addAll(lst);
+			}
 		}
+		
 		/*
 		System.out.println("enchaining results");
 		for (List<OWLFormula> lst : chains){
+			System.out.print("--e--  ");
 			for (OWLFormula f : lst){
 				System.out.print(f + ",");
 				}
 			System.out.println();
 		}
 		*/
+		
 		// System.out.println("pairing");
 		for (List<OWLFormula> chain : chains){
 			for (int i = 0; i < chain.size(); i++){
@@ -3732,12 +3802,17 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 			System.out.println();
 		}
 		*/
+		
+		CHAINS_CACHE = results;
+		CHAINS_INPUT_CACHE = input;
+		
 		return results;
 	}
 	
 	
 	
-	public static HashMap<Set<Pair<OWLFormula,OWLFormula>>, Set<List<Pair<OWLFormula,OWLFormula>>>> CHAINS_SAVED = new HashMap<Set<Pair<OWLFormula,OWLFormula>>, Set<List<Pair<OWLFormula,OWLFormula>>>>();
-	
+	// public static HashMap<Set<Pair<OWLFormula,OWLFormula>>, Set<List<Pair<OWLFormula,OWLFormula>>>> CHAINS_SAVED = new HashMap<Set<Pair<OWLFormula,OWLFormula>>, Set<List<Pair<OWLFormula,OWLFormula>>>>();
+	public static Set<Pair<OWLFormula,OWLFormula>> CHAINS_INPUT_CACHE;
+	public static Set<List<Pair<OWLFormula,OWLFormula>>> CHAINS_CACHE;
 	
 }
