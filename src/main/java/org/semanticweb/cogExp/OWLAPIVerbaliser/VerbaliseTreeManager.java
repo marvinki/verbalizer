@@ -297,15 +297,8 @@ public enum VerbaliseTreeManager {
 
 				if (withrulenames)
 					result = result + infrule.getName() + ">: " + output + "." + linebr;
-				else
-					
-					if (previoustexts.contains(output))//
-						result = result; //
-	
-					else 
-						result = result; //  
-
-				result = result + output + "." + linebr;
+				else 
+					result = result + output + "." + linebr;
 				// result = result + "\t\t• " + output + "." + linebr; // <-- Koelle stuff
 
 
