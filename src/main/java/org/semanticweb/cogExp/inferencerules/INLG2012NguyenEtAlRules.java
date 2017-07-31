@@ -495,6 +495,14 @@ public List<RuleKind> qualifyRule(){
 	return Arrays.asList(a);
 }
 
+@Override
+public OWLFormula getP1(List<OWLFormula> formulalist, OWLFormula conclusion){
+	for (OWLFormula form : formulalist){
+			return form;
+	}
+	return null;
+}
+
 }, // END RULE2
 
 /*
@@ -1197,25 +1205,6 @@ RULE5{ //SubClass(X,Y) and SubClass(X,Z) --> Subclass(X,Y^Z)
 			}
 		}
 		
-		/*
-		for (int i = 0 ; i < candidates.size(); i++){
-			// System.out.println("candidate: " + candidates.get(i));
-			// System.out.println(s.findMatchingFormulasInAntecedent(candidates.get(i)));
-			List<OWLFormula> candidates2 = new ArrayList<OWLFormula>();
-			List<OWLFormula> candidates2bis = new ArrayList<OWLFormula>();
-			// get matcher (potential speed - up: do not compute candidates and matcher separately)
-			try{
-			List<Pair<OWLFormula,OWLFormula>> matcher = candidates.get(i).match(prem1);
-			// System.out.println("prem 2 " + prem2 +  " Matcher: " + matcher);
-			// now build new formula using the matcher
-			OWLFormula prem_2 = prem2.applyMatcher(matcher);
-			// System.out.println("prem_2 " + prem_2);
-			// now search for this formula in sequent
-			candidates2 = s.findMatchingFormulasInAntecedent(prem_2);
-			 // System.out.println("candidates 2" + candidates2);
-			 // Check if found formulas actually match
-			for (OWLFormula form: candidates2){
-			*/
 		
 		
 		Set<OWLFormula> keys = bins.keySet();
@@ -1242,29 +1231,7 @@ RULE5{ //SubClass(X,Y) and SubClass(X,Z) --> Subclass(X,Y^Z)
 				
 					OWLFormula intersection = OWLFormula.createFormula(OWLSymb.INT,p2,p3);
 					
-					/*
-					if (p2.getHead().equals(OWLSymb.INT) && p3.getHead().equals(OWLSymb.INT)){
-						List<OWLFormula> args = new ArrayList<OWLFormula>(p2.getArgs());
-						args.addAll(p3.getArgs());
-						intersection = OWLFormula.createFormula(OWLSymb.INT,args);
-					}
 					
-					if (p2.getHead().equals(OWLSymb.INT) && !p3.getHead().equals(OWLSymb.INT)){
-						List<OWLFormula> args = new ArrayList<OWLFormula>(p2.getArgs());
-						args.add(p3);
-						intersection = OWLFormula.createFormula(OWLSymb.INT,args);
-					}
-					
-					if (p3.getHead().equals(OWLSymb.INT) && !p2.getHead().equals(OWLSymb.INT)){
-						List<OWLFormula> args = new ArrayList<OWLFormula>(p3.getArgs());
-						args.add(p2);
-						intersection = OWLFormula.createFormula(OWLSymb.INT,args);
-					}
-					*/
-					
-					// System.out.println("intersectionformula " + intersection);
-					
-					// OWLFormula conclusion = OWLFormula.createFormulaSubclassOf(p1,intersection);
 					
 					OWLFormula prem1 = OWLFormula.createFormulaSubclassOf(p1,p2);
 					OWLFormula prem2 = OWLFormula.createFormulaSubclassOf(p1,p3);
@@ -1316,7 +1283,7 @@ RULE5{ //SubClass(X,Y) and SubClass(X,Z) --> Subclass(X,Y^Z)
 			
 		}
 		results.addAll(resultset);
-		// System.out.println("DEBUG: results!" + results);
+		// System.out.println("DEBUG: results! " + results.size());
 		return results;
 	}
 	
@@ -1357,7 +1324,7 @@ RULE5{ //SubClass(X,Y) and SubClass(X,Z) --> Subclass(X,Y^Z)
 				
 				// List<Pair<OWLFormula,OWLFormula>> matcher2  = OWLFormula.getMatcher2Ary(formula1, formula2, prem1, prem2);
 				// OWLFormula conclusion = computeConclusionFormula(matcher2);
-				OWLFormula  conclusion = intersection;
+				OWLFormula  conclusion = OWLFormula.createFormula(OWLSymb.SUBCL, formula1.getArgs().get(0), intersection);
 				// System.out.println("Rule 5 conclusion " + VerbalisationManager.prettyPrint(conclusion));
 				boolean notcontained = true;
 				if (s.alreadyContainedInAntecedent(conclusion))
@@ -1365,7 +1332,7 @@ RULE5{ //SubClass(X,Y) and SubClass(X,Z) --> Subclass(X,Y^Z)
 				if (s instanceof IncrementalSequent && ((IncrementalSequent) s).getMasterSequent().alreadyContainedInAntecedent(conclusion))
 					notcontained = false; 
 				if (notcontained){
-					// System.out.println("Rule 5 debug generated binding with conclusion " + conclusion);
+				    // System.out.println("Rule 5 debug generated binding with conclusion " + conclusion);
 					RuleBinding binding = new RuleBinding(conclusion,null);
 					SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(formula1));
 					SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(formula2));
@@ -3284,105 +3251,6 @@ RULE14{
 		}
 		
 	
-		
-		/* OLD 15 */
-		/*
-		@Override
-		public List<RuleBinding> findRuleBindings(Sequent s, boolean... one_suffices){
-			boolean exhaustive = false;
-			ArrayList<RuleBinding> results = new ArrayList<RuleBinding>();
-			// fill cache
-			List<Pair<Integer,Integer>> cache = new ArrayList<Pair<Integer,Integer>>();
-			if (one_suffices.length>0 && one_suffices[0]==true){
-				if (premisesCache.containsKey(s.getID())){
-					cache = premisesCache.get(s.getID());
-					if (cache.size()==0){
-						exhaustive = true;
-						List<Pair<Integer,Integer>> prems2 = findPremFormulas(s);
-						List<Pair<Integer,Integer>> prems = new ArrayList<Pair<Integer,Integer>>(prems2);
-						
-						if (doneCache.containsKey(s.getID())){
-							Timer.INSTANCE.start("rule15 - comp removal");
-							prems.removeAll(doneCache.get(s.getID()));
-							Timer.INSTANCE.stop("rule15 - comp removal");
-							
-							if(prems.size()<=0){
-								return results;
-							}
-						}
-						cache.addAll(prems);
-					}
-				} else{
-					cache = findPremFormulas(s);
-					premisesCache.put(s.getID(), cache);
-				}
-			}
-			List<Pair<Integer,Integer>> currentpairs;
-			if (one_suffices.length>0 && one_suffices[0]==true){
-				currentpairs = cache;
-			} else{
-				currentpairs = findPremFormulas(s);
-			}
-			// System.out.println("currentpairs: " + currentpairs.size());
-			while(currentpairs.size()>0){
-				if (premisesCache.containsKey(s.getID())){
-					// System.out.println("Cache size: " +  premisesCache.get(s.getID()).size());
-				}
-				
-			    Pair<Integer,Integer> pair = currentpairs.remove(0);
-				OWLFormula formula1 = s.antecedentGetFormula(pair.t);
-				OWLFormula formula2 = s.antecedentGetFormula(pair.u);
-				
-				boolean ok = false;
-				
-				// check if the generated intersection already appears somewhere (should not)
-				// check also if the superclass does appear somewhere (side condition)
-				try{
-					List<Pair<OWLFormula,OWLFormula>> matcher2  = OWLFormula.getMatcher2Ary(formula1, formula2, prem1, prem2);
-					OWLFormula conclusion = computeConclusionFormula(matcher2);
-					// System.out.println("rule 15 -- computed conclusion: " + conclusion);
-					// System.out.println("rule 15 -- checking: superclass contained in ant? " + s.antecedentContainsOrDeeplyContains(conclusion.getArgs().get(1)) + "  " + conclusion.getArgs().get(1));
-					// System.out.println("rule 15 -- checking: superclass contained in succ? " + s.succedentContainsOrDeeplyContains(conclusion.getArgs().get(1)) + "  " + conclusion.getArgs().get(1));
-					// System.out.println("rule 15 -- checking: whole formula not contained yet ?" + !(s.alreadyContainedInAntecedent(conclusion)));
-					if (((s.antecedentContainsOrDeeplyContains(conclusion.getArgs().get(1))) || 
-					    (s.succedentContainsOrDeeplyContains(conclusion.getArgs().get(1))))	
-							&& !(s.alreadyContainedInAntecedent(conclusion))
-							){
-						if(!doneCache.containsKey(s.getID())){
-							doneCache.put(s.getID(), new ArrayList<Pair<Integer,Integer>>());
-						}
-						doneCache.get(s.getID()).add(pair);
-						// System.out.println("Rule 15 checking: superclass in the conclusion contained any where? " + conclusion.getArgs().get(1) + " " + s.antecedentContainsOrDeeplyContains(conclusion.getArgs().get(1)));
-						ok = true;
-					}
-				} catch(Exception e){
-					e.printStackTrace();
-				}
-				
-				Timer.INSTANCE.start("rule15 - do binding");
-				if (!formula1.equals(formula2) && ok){
-					generateRuleBinding(s, formula1, formula2, results);
-				}
-				Timer.INSTANCE.stop("rule15 - do binding");
-				if(!doneCache.containsKey(s.getID())){
-					doneCache.put(s.getID(), new ArrayList<Pair<Integer,Integer>>());
-				}
-				doneCache.get(s.getID()).add(pair);
-				// System.out.println("Rule 15, done cache size: " + doneCache.get(s.getID()).size());
-				if (one_suffices.length>0 && one_suffices[0]==true && results.size()>1){
-					// System.out.println("rule15 is satisficing");
-					return results;
-				}
-			}
-			if (one_suffices.length>0 && one_suffices[0]==true && results.size()==0 && !exhaustive){
-				// empty cache to force it to be filled (avoid eternal loop)
-				premisesCache.put(s.getID(), new ArrayList<Pair<Integer,Integer>>());
-				return findRuleBindings(s,true);
-			}
-			// System.out.println("rule binding results " + results);
-			return results;
-		}
-		*/
 		
 		// not used at the moment
 		public void generateRuleBinding(Sequent s, OWLFormula candidate1, OWLFormula candidate2, ArrayList<RuleBinding> results){
@@ -6977,6 +6845,14 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 	}
 	
 	public OWLFormula getP4(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
+	public OWLFormula getP5(List<OWLFormula> formulalist, OWLFormula conclusion){
+		return null;
+	}
+	
+	public OWLFormula getP6(List<OWLFormula> formulalist, OWLFormula conclusion){
 		return null;
 	}
 	

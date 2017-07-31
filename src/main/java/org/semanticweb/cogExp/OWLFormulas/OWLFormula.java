@@ -122,6 +122,7 @@ public class OWLFormula {
 			       || this.head.equals(OWLSymb.UNION)
 			       || this.head.equals(OWLSymb.EQUIV)){
 					// this should only be relevant for formulas where subformulas are commutative (e.g. int, union)
+					if (this.tail.size()!=other.tail.size()){equaltail = false; return false;}
 					if (!other.tail.containsAll(this.tail)){equaltail = false; return false;}
 					if (!this.tail.containsAll(other.tail)){equaltail = false; return false;}
 				}

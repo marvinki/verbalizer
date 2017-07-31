@@ -24,15 +24,16 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 
+import com.clarkparsia.owlapi.modularity.locality.SemanticLocalityEvaluator;
+
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
-	// static boolean debug = true;
 	static boolean debug = false;
-	// static Locale locale = Locale.ENGLISH;
-	static Locale locale = Locale.GERMAN;
+	static Locale locale = Locale.ENGLISH;
+	// static Locale locale = Locale.GERMAN;
+	// static boolean debug = true;
 	
-
 	static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", locale);
 	
 	
@@ -326,16 +327,15 @@ public enum VerbaliseTreeManager {
 				
 				if (asHTML){
 					linebr = "<br>";
+
+				if (withrulenames)
+					result = result + infrule.getName() + ">: " + output + "." + linebr;
+				else 
+					result = result + output + "." + linebr;
+				// result = result + "\t\t• " + output + "." + linebr; // <-- Koelle stuff
 				}
-				
-					if (withrulenames){
-						result = result + infrule.getName() + ">: " + output + "." + linebr;
-					}
-					
-					else{
-						result = result +  output + "." + linebr;
-					}
 			}
+			
 			
 			before_previousconclusion = previousconclusion;
 			previousconclusion = conclusion;
@@ -1403,7 +1403,7 @@ public enum VerbaliseTreeManager {
 
 									// System.out.println("DEBUG --- Absolute Else case");
 
-									System.out.println("DEBUG --- Absolute Else case");
+									// System.out.println("DEBUG --- Absolute Else case");
 										
 
 									seq.add(new LogicElement(LogicLabels.getString("since"))); 
@@ -2378,8 +2378,8 @@ public enum VerbaliseTreeManager {
 			
 	}
 	
-	public static void setLocale(Locale locale) {
-		VerbaliseTreeManager.locale = locale;
+	public static void setLocale(Locale alocale) {
+		VerbaliseTreeManager.locale = alocale;
 	}
 
 

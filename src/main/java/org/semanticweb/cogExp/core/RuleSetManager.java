@@ -319,17 +319,18 @@ public enum RuleSetManager {
 			AdditionalDLRules.R0, // introduce trivial subsumptions
 			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
 			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
-			// INLG2012NguyenEtAlRules.RULE42
+			INLG2012NguyenEtAlRules.RULE42,
 			AdditionalDLRules.ONLYSOME,
-                        AdditionalDLRules.UNIONINTRO, // <--- is slow
+            AdditionalDLRules.UNIONINTRO, // <--- is slow
+            AdditionalDLRules.SUBCLCHAIN,
+            // Rules for dealing with the A-Box/Individuals
 			AdditionalDLRules.INDIVIDUAL,
 			AdditionalDLRules.INVERSEOBJECTPROPERTY,
 			AdditionalDLRules.OBJPROPASSERIONEXISTS,
 			AdditionalDLRules.OBJPROPASSERIONASWITNESS,
 			AdditionalDLRules.ANDIVIDUAL,
 			AdditionalDLRules.INDIVTOPINTRO,
-			 // AdditionalDLRules.SUBCLCHAIN,
-			 AdditionalDLRules.ONEOFINTRO
+			AdditionalDLRules.ONEOFINTRO
     };
     
     ArrayList<SequentInferenceRule> ontopand = new ArrayList<SequentInferenceRule>(Arrays.asList(ontopandInit));
@@ -374,5 +375,19 @@ public enum RuleSetManager {
 	public List<SequentInferenceRule> getRuleSet(java.lang.String str){
 		return rulesets.get(str);
 	}
+	
+	public void removeRule(String rulesetstr, SequentInferenceRule rule){
+		List<SequentInferenceRule> ruleset = rulesets.get(rulesetstr);
+		ruleset.remove(rule);
+		return;
+	}
+	
+	public void addRule(String rulesetstr, SequentInferenceRule rule){
+		List<SequentInferenceRule> ruleset = rulesets.get(rulesetstr);
+		if (!ruleset.contains(rule))
+			ruleset.add(rule);
+		return;
+	}
+	
 
 }

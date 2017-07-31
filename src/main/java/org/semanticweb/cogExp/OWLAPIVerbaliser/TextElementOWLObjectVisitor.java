@@ -1323,11 +1323,11 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				}
 			}
 		result.add(new LogicElement(indivlist.get(0).asOWLNamedIndividual().getIRI().getFragment()));
-		System.out.println("DEBUG --- " + indivlist.get(0).asOWLNamedIndividual().getIRI().getFragment());
+		// System.out.println("DEBUG --- " + indivlist.get(0).asOWLNamedIndividual().getIRI().getFragment());
 		return result;
 		}
 		// TODO Auto-generated method stub
-		System.out.println("DEBUG --- returning null ");
+		// System.out.println("DEBUG --- returning null ");
 		return null;
 	}
 

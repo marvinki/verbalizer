@@ -191,7 +191,7 @@ public class PrettyPrintClassExpressionVisitor implements OWLClassExpressionVisi
 			// System.out.println(arg0.toString());
 			String fragment = arg0.getIRI().getFragment();
 			if (arg0.toString().contains("/") && arg0.toString().contains("#")){
-				System.out.println("DEBUG " + arg0.toString());
+				// System.out.println("DEBUG " + arg0.toString());
 				Pattern p = Pattern.compile("#(.*?)>");
 				Matcher m = p.matcher(arg0.toString());
 				boolean b = m.find();

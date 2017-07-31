@@ -94,4 +94,12 @@ public OWLFormula getP4(List<OWLFormula> formulalist, OWLFormula conclusion){
 	return null;
 }
 
+public OWLFormula getP5(List<OWLFormula> formulalist, OWLFormula conclusion){
+	return null;
+}
+
+public OWLFormula getP6(List<OWLFormula> formulalist, OWLFormula conclusion){
+	return null;
+}
+
 }

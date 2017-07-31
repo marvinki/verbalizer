@@ -17,7 +17,8 @@
 		<!--   <elk.version>0.4.0</elk.version>-->
 		<!--   <elk.version>0.5.0-SNAPSHOT</elk.version> -->
 		<!--  <elk.version>0.3.2</elk.version> -->
-		<elk.version>0.4.0</elk.version>
+		<!--  <elk.version>0.4.0</elk.version> -->
+		<elk.version>0.4.3</elk.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -119,6 +120,13 @@
 			<version>${elk.version}</version>
 			<!--   <scope>test</scope> -->
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+	<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.2.3</version>
+    <scope>test</scope>
+	</dependency>
 		<dependency>
     <groupId>net.sourceforge.owlapi</groupId>
     <artifactId>jfact</artifactId>
@@ -154,7 +162,12 @@
     	<artifactId>json</artifactId>
     	<version>20160810</version>
 	</dependency>
-	
+	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.0</version>
+</dependency>
 		
 	</dependencies>
 

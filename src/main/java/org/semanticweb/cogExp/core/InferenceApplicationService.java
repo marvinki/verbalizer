@@ -127,6 +127,9 @@ public List<RuleBindingForNode> findRuleBindingsWhereInferenceApplicableDepthLim
 		else { 
 			bindings =  rule.findRuleBindings(amputatedSequent);
 			}
+		if (bindings.size()==0){
+			return rule_bindings;
+		}
 		// System.out.println("DEBUG (Inference appl.): after getting bindings in findRuleBindingsWhereInferenceApplicable " + bindings);
 		// check which bindings are obviously redundant
 		List<RuleBinding> tmpBindings = new ArrayList(bindings);
@@ -145,33 +148,68 @@ public List<RuleBindingForNode> findRuleBindingsWhereInferenceApplicableDepthLim
 		boolean ok = true;
 		List<RuleBindingForNode> rule_bindings_alt = new ArrayList<RuleBindingForNode>();
 		for (RuleBinding rb2: bindings){
+			// System.out.println("rule " + rule.getName() + " old " + rb2);
 			RuleBinding newBinding = rb2.convert(amputatedSequent, sequent);
+			// System.out.println("new " + newBinding + " with conclusion  " + newBinding.getNewAntecedent());
 			if (newBinding!=null){
 				RuleBindingForNode binding_fornode = new RuleBindingForNode(open_node.getId(),
 						newBinding,newBinding.getNewAntecedent(),newBinding.getNewSuccedent());
 				rule_bindings_alt.add(binding_fornode);
-			} else ok = false;
+			} else{ 
+				ok = false;
+			}
 		}
+		if (        rule.getName().equals("SimpleTermination")
+			    ||	rule.getName().equals("TerminationAxiom")
+			    ||	rule.getName().equals("Topintro")
+			    ||	rule.getName().equals("Botintro")
+			    ||	rule.getName().equals("R0")
+				|| rule.getName().equals("Subclass-chain")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule23Repeat")
+				|| rule.getName().equals("R5M")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule12")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule2")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule5")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule15")
+				|| rule.getName().equals("ONLYSOME")
+				|| rule.getName().equals("EQUIVEXTRACT")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule23")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule37")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule42")
+				|| rule.getName().equals("INLG2012NguyenEtAlRule34")
+				|| rule.getName().equals("obj-wit")
+				|| rule.getName().equals("UNIONINTRO")
+				|| rule.getName().equals("AdditionalDLRules-DefinitionOfDomain")
+				|| rule.getName().equals("ELEXISTSMINUS")
+				|| rule.getName().equals("AdditionalDLRules-SubclassAndEquiv")
+				// Individuals stuff
+				|| rule.getName().equals("Individual")
+				|| rule.getName().equals("Indiv Topintro")
+				){
+			 return rule_bindings_alt;
+		}
+		
 		if (ok && (rule.getName().equals("INLG2012NguyenEtAlRule12")
 				|| rule.getName().equals("INLG2012NguyenEtAlRule15")
 				|| rule.getName().equals("Botintro")
 				|| rule.getName().equals("Topintro")
 				|| rule.getName().equals("R0")
-				|| rule.getName().equals("R0")
 				|| rule.getName().equals("AdditionalDLRules-Propchain")
+				|| rule.getName().equals("Additional-Forall-Union")
 				|| rule.getName().equals("INLG2012NguyenEtAlRule5")
 				)
 				){
 			 return rule_bindings_alt;
 		}
 		
-		
-		
+	   
 		if (bindings.size()>0){
 			if (saturation.length>0){ 
+				// System.out.println("Actually redoing, rule " + rule.getName());
 				bindings =  rule.findRuleBindings(sequent,true);
 				}
 			else { 
+				// System.out.println("Actually redoing, rule " + rule.getName());
 				bindings =  rule.findRuleBindings(sequent);
 				}	
 		}
@@ -525,20 +563,20 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		while(runningRules.size()>0 && bindings.size()==0){
 			current_rule = runningRules.get(0);				
 			runningRules.remove(0);
-			  // System.out.println("trying rule " + current_rule.getName());
+			//  System.out.println("trying rule " + current_rule.getName());
 			// positions = findPositionsWhereInferenceApplicable(initialtree, runningRules.get(0));
 			// System.out.println("before getting bindings");
 			// System.out.println("DEBUG runSimpleLoop trying: " + runningRules.get(0).getName());
 			// List<RuleBindingForNode> bindings_pre = new ArrayList(); 
 			List<RuleBindingForNode> foundBindings = new ArrayList<RuleBindingForNode>();
 			if (saturate.length>0){	
-					// System.out.println("case1");
+					 // System.out.println("case1");
 					//bindings.addAll(current_rule.findRuleBindings(seq));
 					foundBindings = findRuleBindingsWhereInferenceApplicableDepthLimited(opennode, seq,current_rule, bfsLevel, true);
 				} else 
 					{	
 					// bindings.addAll(current_rule.findRuleBindings(seq));
-						// System.out.println("case2");
+						//  System.out.println("case2");
 				     foundBindings = findRuleBindingsWhereInferenceApplicableDepthLimited(opennode, seq,current_rule,bfsLevel);
 							// System.out.println("case2 after");
 						} 
@@ -760,12 +798,14 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 						break;
 					ProofNode newopennode = (ProofNode) initialtree.getOpenNodes().get(0);
 					RuleBindingForNode rb = bindings.get(h);
+					// System.out.println("checkpoint1 " + rb.getNewAntecedent());
 					Sequent seqnew = (Sequent) newopennode.getContent();
 					Sequent oldseq = (Sequent) initialtree.getProofNode(rb.getNodeId()).getContent();
 					
 					// System.out.println(seqnew.getStatistics());
 					
 					RuleBinding rbnew = rb.convert(oldseq, seqnew);
+					// System.out.println("checkpoint2 " + rbnew.getNewAntecedent());
 					if ( rbnew!=null && (rbnew.getNewAntecedent()==null 
 							|| !seqnew.alreadyContainedInAntecedent(rbnew.getNewAntecedent()))
 							// && !detectedRules.get(h).getName().equals("ELEXISTSMINUS")
