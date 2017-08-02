@@ -29,6 +29,9 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
 public class ConversionAndPrettyPrintingTest {
 	public static void main(String[] args) {
+	
+		VerbalisationManager.treatCamelCaseAndUnderscores("2009/09/28 Alan Ruttenberg. Fucoidan-use-case");
+		
 		
 		OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
 		OWLClass class1 = dataFactory.getOWLClass(IRI.create("http://foo#" + "Class1"));

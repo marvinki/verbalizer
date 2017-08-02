@@ -50,10 +50,13 @@ import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.io.OWLOntologyDocumentSource;
 import org.semanticweb.owlapi.io.OWLParser;
 import org.semanticweb.owlapi.io.StreamDocumentSource;
+import org.semanticweb.owlapi.io.StringDocumentSource;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLDocumentFormat;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
@@ -67,6 +70,7 @@ import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
@@ -74,7 +78,16 @@ import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.util.BidirectionalShortFormProvider;
 import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.util.InferredAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredOntologyGenerator;
+import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import uk.ac.manchester.cs.jfact.JFactFactory;
 
 
 
@@ -202,7 +215,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		String ontologyfile = readJustifications(filestring,conclusions,justifications);
 		
 		
-		String corpus = "unkonwn";
+		String corpus = "unknown";
 		if (ontologyfile.contains("ore_ont"))
 			corpus = "ore2015";
 		if (ontologyfile.contains("Ontology-"))
@@ -2252,7 +2265,404 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-property.owl")));
 		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://sweet.jpl.nasa.gov/1.1/units.owl"),
 		           IRI.create("file:///Users/marvin/work/workspace/justifications/originaltones-ontologies/Ontology-units.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://www.co-ode.org/ontologies/lists/2008/09/11/list.owl"),
+		           IRI.create("file:///Users/marvin/Downloads/6537658-811aec9d3c507976efd6aba1599ea3c12f8ed61c/list.owl")));
+		manager.getIRIMappers().add(new SimpleIRIMapper(IRI.create("http://translationalmedicineontology.googlecode.com/svn/trunk/ontology/tmo-external.owl"),
+		           IRI.create("https://raw.githubusercontent.com/micheldumontier/translationalmedicineontology/master/ontology/tmo-external.owl")));
 		return manager;
 	}
+	
+	public static Set<OWLAxiom> computeInferredAxioms(OWLOntology ontology){
+	// indicate a reasoner and a reasoner factory to be used for justification finding (here we use ELK)
+		
+		// ELK
+		// OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
+		// OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
+		
+		OWLReasonerFactory reasonerFactory = new JFactFactory();
+		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
+		
+		// Logger.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
+		
+		 Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+	     rootlogger.setLevel(Level.OFF); 
+	    // Logger iogLogger = (Logger) LoggerFactory.getLogger(InferredOntologyGenerator.class.getName());
+	    
+	     // LogManager.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
+		// Classify the ontology.
+		// reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+		
+		// System.out.println("precomputed");
+
+		// To generate an inferred ontology we use implementations of
+		// inferred axiom generators
+		// List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+		// gens.add(new InferredSubClassAxiomGenerator());
+		// gens.add(new InferredEquivalentClassAxiomGenerator());
+		
+	    
+		/*
+		Compute the inferrable axioms
+		*/
+		// InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner,gens);
+		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+		// OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLOntologyManager outputOntologyManager = OWLManager.createOWLOntologyManager();
+		Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
+		try {
+			
+			OWLOntology newontology = outputOntologyManager.createOntology();
+			
+			iog.fillOntology(outputOntologyManager.getOWLDataFactory(), newontology);
+			
+			System.out.println("filled");
+			
+		
+			newaxioms = newontology.getAxioms();
+		} catch(Exception e)
+		{e.printStackTrace();
+		}
+		
+		System.out.println("=== Previous Axioms === ");
+		for (OWLAxiom old : ontology.getAxioms()){
+			if (old instanceof OWLAnnotationAssertionAxiom)
+				continue;
+			if (old instanceof OWLDeclarationAxiom)
+				continue;
+			System.out.println(old);
+			System.out.println(VerbalisationManager.prettyPrint(old));
+		}
+	
+		
+		newaxioms.removeAll(ontology.getAxioms());
+		
+		Set<OWLAxiom> subclaxs = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> equivaxs = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> notSubclAxs = new HashSet<OWLAxiom>();
+		
+		for(OWLAxiom ax: newaxioms){
+			if (ax instanceof OWLEquivalentClassesAxiom){
+				subclaxs.add(dataFactory.getOWLSubClassOfAxiom(((OWLEquivalentClassesAxiom) ax).getClassExpressionsAsList().get(0), 
+						((OWLEquivalentClassesAxiom) ax).getClassExpressionsAsList().get(1)
+						));
+				subclaxs.add(dataFactory.getOWLSubClassOfAxiom(((OWLEquivalentClassesAxiom) ax).getClassExpressionsAsList().get(1), 
+						((OWLEquivalentClassesAxiom) ax).getClassExpressionsAsList().get(0)
+						));
+				equivaxs.add(ax);
+			}
+			if (!(ax instanceof OWLSubClassOfAxiom)){
+				notSubclAxs.add(ax); 
+			}
+		}
+		
+		newaxioms.addAll(subclaxs);
+		newaxioms.removeAll(equivaxs);
+		newaxioms.removeAll(notSubclAxs);
+		
+		Set<OWLAxiom> subthings = new HashSet<OWLAxiom>();
+		
+		for(OWLAxiom ax: newaxioms){
+			if (ax instanceof OWLSubClassOfAxiom){
+				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) ax;
+				if (subcl.getSuperClass().isTopEntity())
+					subthings.add(ax);
+			}
+		}
+		newaxioms.removeAll(subthings);
+		System.out.println("No. of new axioms: " + (newaxioms.size()));
+		
+		System.out.println("=== Inferred Axioms === ");
+		for (OWLAxiom inf : newaxioms)
+			System.out.println(VerbalisationManager.prettyPrint(inf));
+		
+		return newaxioms;
+	}
+	
+	
+	public static void runBioportalOntology(String input){
+		OWLOntology ontology = null;
+		try {
+			OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
+			OWLOntologyDocumentSource source = new StringDocumentSource(input);
+			ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
+			System.out.println(" ONTOLOGY INITIALLY CONTAINS " + ontology.getAxioms().size() + " AXIOMS ");
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(" Ontology axiom count " + ontology.getAxiomCount());
+		
+		Set<OWLAxiom> inferredAxioms = computeInferredAxioms(ontology);
+		System.out.println("Axioms " + inferredAxioms);
+		runBioportalOntology(ontology,inferredAxioms,10);
+		
+		
+		
+	}
+	
+	public static Statistic runBioportalOntology(OWLOntology ontology, Set<OWLAxiom> axioms, int timelimit1){
+		
+		
+		
+		System.out.println(" ONTOLOGY NOW CONTAINS " + ontology.getAxioms().size() + " AXIOMS ");
+		
+		// OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
+		// OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
+		
+		OWLReasonerFactory reasonerFactory = new JFactFactory();
+		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
+		
+		RuleSetManager.INSTANCE.addRule("EL", AdditionalDLRules.SUBCLCHAIN);
+		
+	
+		
+		// Preparations for using dictionary
+		String pathstring = "";
+		File f = new File("/Users/marvin/software/wordnet/WordNet-3.0/dict");
+		if (f.exists())
+			pathstring = "/Users/marvin/software/wordnet/WordNet-3.0/dict";
+		f = new File("/gdisk/ki/home/mschiller/software/remote/wordnet/WordNet-3.0/dict");
+		if (f.exists())
+			pathstring = "/gdisk/ki/home/mschiller/software/remote/wordnet/WordNet-3.0/dict";
+		if (pathstring.equals(""))
+			WordNetQuery.INSTANCE.disableDict();
+		else	
+			WordNetQuery.INSTANCE.setDict(pathstring);
+		
+		 int nontrivCounter = 0;
+		    
+		    // int subsumptionCounter = 0;
+		    int verbalizedSubsumptionCounter = 0;
+		    int timedoutCounter = 0;
+		    Long sumVerbTimes = 0l;
+		    int sumN = 0;
+		    // List<Long> justTimes = new ArrayList<Long>();
+		    int noSteps = 0;
+		    int noSteps2 = 0;
+		    int noSteps2calculated = 0;
+		    int subPropOfProblems = 0;
+		    int unionProblems = 0;
+		    int disjProblems = 0;
+		    List<Integer> noStepsList = new ArrayList<Integer>();
+		    List<Integer> noNoncompressedStepsList = new ArrayList<Integer>();
+		    List<Integer> noNoncompressedStepsCalculatedList =  new ArrayList<Integer>();
+		    List<Integer> noVerbalizedStepsList = new ArrayList<Integer>();
+		    List<String> verbalizations = new ArrayList<String>();
+		    List<String> proofListings = new ArrayList<String>();
+		    List<String> longVerbalizations = new ArrayList<String>();
+		    List<String> longProofListings = new ArrayList<String>();
+		    List<List<String>> infrulesUsedReport = new ArrayList<List<String>>();
+		    List<List<String>>longInfrulesUsedReport = new ArrayList<List<String>>();
+		    List<OWLAxiom> unprovenConclusions = new ArrayList<OWLAxiom>();
+		    List<Set<OWLAxiom>> justsForUnprovenConclusions = new ArrayList<Set<OWLAxiom>>();
+		    Set<String> usedrules = new HashSet<String>();
+		    List<Integer> compressions = new ArrayList<Integer>();
+		    
+		    Long[] computationtimes = new Long[100];
+		    Long[] computationtimesN = new Long[100];
+		    Arrays.fill(computationtimes, 0l);
+		    Arrays.fill(computationtimesN, 0l);
+		    
+		    boolean featClAgg = false;
+		    boolean featRAgg = false;
+		    boolean featAtt = false;
+		
+		    List<SequentInferenceRule> allInferenceRules = RuleSetManager.INSTANCE.getRuleSet("EL");
+		    List<SequentInferenceRule> nonredundantInferenceRules = RuleSetManager.INSTANCE.getRuleSet("ELnonredundant");
+		    
+		    int failedProofs = 0;
+			List<OWLAxiom> failed = new ArrayList<OWLAxiom>();
+
+			
+			boolean identical = false;
+			
+			for (OWLAxiom ax : axioms){
+				OWLSubClassOfAxiom subAx = (OWLSubClassOfAxiom ) ax;
+				
+				/* 
+				OWLSubClassOfAxiom axSub = (OWLSubClassOfAxiom) ax;
+				for (OWLAxiom checkAx : ontology.getAxioms()){
+					if (checkAx instanceof OWLSubClassOfAxiom){
+						OWLSubClassOfAxiom checkAxSub = (OWLSubClassOfAxiom) checkAx;
+						System.out.println("comparing " + axSub + " and " + checkAxSub);
+						
+						
+							if (checkAxSub.getSubClass().equals(axSub.getSubClass())
+									&& checkAxSub.getSuperClass().equals(axSub.getSuperClass())
+									){
+								System.out.println("Axiom already contained.");
+								identical = true;
+						}
+					}
+				}
+				
+				if (identical)
+					continue;
+					*/
+				
+				// check database before starting
+				List<String> queryResult = DatabaseManager.INSTANCE.getExplanation(
+    					subAx.getSubClass().toString(), 
+    					subAx.getSuperClass().toString(), 
+    					ontology.getOntologyID().toString());
+    			
+    			boolean solved = DatabaseManager.INSTANCE.getSolved(queryResult);
+    			// System.out.println("solved? " + solved);
+    			
+    			// if this has been done before
+    			if (solved){
+    				System.out.println("Found as solved in database: " + subAx);
+    				// System.out.println("already in database: " + subAx.toString());
+    				// System.out.println(queryResult);
+    				continue;
+    			}
+    			
+    			// if this has timed out before when given at least the same time
+    			if (!solved &&  DatabaseManager.INSTANCE.getTime(queryResult)>0){
+    				if (DatabaseManager.INSTANCE.getTime(queryResult) >= timelimit1 * 1000){
+    					System.out.println("Timeout in DB: " + subAx);
+    					System.out.println("had timed out before at: " + DatabaseManager.INSTANCE.getTime(queryResult)  + "ms" );
+    					continue;
+    				}
+    			}
+				
+    			long starttime = System.currentTimeMillis();
+				GentzenTree tree = VerbalisationManager.computeGentzenTree(ax, reasoner, reasonerFactory,
+						ontology, 
+						100,      // <-- search depth 
+						timelimit1 * 1000,    // <-- time in ms
+						"EL");
+				long endtime = System.currentTimeMillis();
+				
+				if (tree==null || tree.getInfRules().size()==0){
+					System.out.println("OMG we have failed!");
+					failed.add(ax);
+					failedProofs++;
+					
+					
+	    				System.out.println("open nodes remain.");
+	    				System.out.println("unproved sub ax: " + subAx);
+	    				// System.out.println("Explanations : " + explanation);
+	    				// if (true)
+	    				// 	throw new RuntimeException();
+	    				unprovenConclusions.add(subAx);
+	    				// justsForUnprovenConclusions.add(explanation);
+	    				// prooftree.print(); 
+	    				timedoutCounter++;
+	    				
+	    				/*
+	    				System.out.println("Unsolved " + subAx.getSubClass().toString() 
+	    											    + " subcl "
+	    											    + subAx.getSuperClass().toString() );
+	    				System.out.println("Justifications " +  );
+	    				*/
+	    				
+	    				DatabaseManager.INSTANCE.insertBioExplanation(
+		    					subAx.getSubClass().toString(), 
+		    					subAx.getSuperClass().toString(), 
+		    					ontology.getOntologyID().getOntologyIRI().toString(),
+		    					"bio", 
+		    					false, 
+		    					"", 
+		    					"", 
+		    					"", 
+		    					0, 
+		    					0, 
+		    					0, 
+		    					timelimit1 * 1000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+		    					
+	    			
+					
+					continue;
+				}
+				
+				try{
+					String explanation = VerbalisationManager.computeVerbalization(tree, false, false,null);
+					System.out.println("Explanation for \"" + VerbalisationManager.verbalise(ax) + "\":\n");
+					System.out.println(VerbaliseTreeManager.listOutput(tree));
+					System.out.println(explanation);
+					String result = explanation;
+					
+					GentzenTree tree2 = VerbalisationManager.computeGentzenTree(ax, reasoner, reasonerFactory,
+							ontology, 
+							100,      // <-- search depth 
+							timelimit1 * 1000,    // <-- time in ms
+							"ELnonredundant");  
+					
+					String explanation2 = VerbalisationManager.computeVerbalization(tree2, false, false,null);
+					String result3 = VerbaliseTreeManager.listOutput(tree);
+					String result4 = VerbaliseTreeManager.listOutput(tree2);
+					
+					List<SequentInferenceRule> infRules = tree.getInfRules();
+					int noVerbalizedSteps = 0;
+	    			
+	    			for (SequentInferenceRule rule: infRules){
+	    				if (RuleSetManager.isVerbalisedELRule(rule)){
+	    					noVerbalizedSteps++;
+	    				}
+	    				usedrules.add(rule.getShortName());
+	    				
+	    			}
+	    			Long time = endtime-starttime;
+					
+					DatabaseManager.INSTANCE.insertBioExplanation(
+	    					subAx.getSubClass().toString(), 
+	    					subAx.getSuperClass().toString(), 
+	    					ontology.getOntologyID().getOntologyIRI().toString(),
+	    					"bio", 
+	    					true, 
+	    					result, 
+	    					result3, 
+	    					result4, 
+	    					noVerbalizedSteps, 
+	    					noSteps, 
+	    					noSteps2, 
+	    					time.intValue(),
+	    					countRules(infRules,"EQUIVEXTRACT"), 
+	    					countRules(infRules,"SUBCLASSANDEQUIVELIM"),
+	    					countRules(infRules,"R0"), 
+	    					countRules(infRules,"INLG2012NguyenEtAlRule1"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule1neo"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule2"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule3"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule5"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule5new"),
+	    					countRules(infRules,"R5M"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule6"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule6neo"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule12"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule12new"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule15"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule23"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule23Repeat"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule34"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule35"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule37"),
+	    					countRules(infRules,"INLG2012NguyenEtAlRule42"),
+	    					countRules(infRules,"Botintro"),
+	    					countRules(infRules,"Topintro"),
+	    					countRules(infRules,"AdditionalDLRules-DefinitionOfDomain"),
+	    					countRules(infRules,"ELEXISTSMINUS"),
+	    					countRules(infRules,"AdditionalDLRules-ApplicationOfRange"),
+	    					countRules(infRules,"AdditionalDLRules-PROPCHAIN"),
+	    					countRules(infRules,"Additional-Forall-Union"),
+	    					countRules(infRules,"SUBCLCHAIN")
+							);
+					
+					
+					
+					} catch (Exception e){
+						e.printStackTrace();
+						continue;
+					}
+				
+				
+			}
+		    
+		
+		return null;
+	}
+	
+	
 	
 }

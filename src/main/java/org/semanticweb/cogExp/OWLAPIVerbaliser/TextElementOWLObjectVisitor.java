@@ -111,8 +111,8 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 
 //	private Language lang = Language.GERMAN;
 	private Locale lang = VerbaliseTreeManager.locale;
-	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
-	
+	// private static ResourceBundle VerbalisationManager.LogicLabels = ResourceBundle.getBundle(VerbalisationManager.VerbalisationManager.LogicLabelsPath, VerbaliseTreeManager.locale);
+	// static ResourceBundle VerbalisationManager.LogicLabels = VerbalisationManager.VerbalisationManager.LogicLabels;
 	
 //	for Debuging reasons only
 	private boolean debug = VerbaliseTreeManager.debug;
@@ -319,10 +319,10 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	public List<TextElement> visit(OWLSubClassOfAxiom arg0) {
 		// System.out.println("-------" + arg0);
 		// define some elements that will be used later
-		LogicElement somethingthatElement = new LogicElement(LogicLabels.getString("somethingThat"));
-		LogicElement thatElement =  new LogicElement(LogicLabels.getString("that"));
+		LogicElement somethingthatElement = new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat"));
+		LogicElement thatElement =  new LogicElement(VerbalisationManager.LogicLabels.getString("that"));
 		LogicElement commaElement =  new LogicElement(",");
-		LogicElement isElement =  new LogicElement(LogicLabels.getString("is"));
+		LogicElement isElement =  new LogicElement(VerbalisationManager.LogicLabels.getString("is"));
 		
 		// System.out.println("visit subclassof called with " + arg0);
 		// Left hand side
@@ -514,6 +514,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	public List<TextElement> visit(OWLClass ce) {
 		// System.out.println("visiting OWL Class "  + ce);
 		String clstr = VerbalisationManager.INSTANCE.getClassNLString(ce);
+		// System.out.println("got "  + clstr);
 		String tooltiptext = ce.getIRI().toString();
 		ClassElement clelem = new ClassElement(clstr,tooltiptext);
 		List<TextElement> textElement = new ArrayList<TextElement>();
@@ -554,7 +555,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		seq.add(headElement);
 		// is there more?
 		if (someExps.size()>0 || allExps.size()>0 || allelseExps.size()>0 || someDataExps.size()>0 || dataHasValueExps.size()>0){
-			seq.add(new LogicElement(LogicLabels.getString("that")));
+			seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("that")));
 			// head += " that ";
 		}
 		if (dataHasValueExps.size()==1){
@@ -590,7 +591,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 			boolean isFirst = true;
 			for(OWLObjectAllValuesFrom all : allExps){
 				if (!isFirst)
-					seq4.add(new LogicElement(LogicLabels.getString("and"))) ;
+					seq4.add(new LogicElement(VerbalisationManager.LogicLabels.getString("and"))) ;
 				seq4.concat(new TextElementSequence(all.accept(this)));
 				isFirst = false;
 			}
@@ -604,7 +605,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 			boolean isFirst = true;
 			for(OWLClassExpression allelse : allelseExps){
 				if (!isFirst)
-					seq4.add(new LogicElement(LogicLabels.getString(("and")))) ;
+					seq4.add(new LogicElement(VerbalisationManager.LogicLabels.getString(("and")))) ;
 				List<TextElement> allelseString = allelse.accept(this);
 				if (allelseString == null){
 					seq.add(new LogicElement("{NULL}"));
@@ -621,7 +622,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 
 	public List<TextElement> visit(OWLObjectIntersectionOf arg0) {
 		// System.out.println(" intersection text visitor called with: " + arg0);
-		LogicElement somethingthatElement = new LogicElement(LogicLabels.getString("somethingThat"));
+		LogicElement somethingthatElement = new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat"));
 		List<TextElement> resultList = new ArrayList<TextElement>();
 		if (VerbalisationManager.checkMultipleExistsPattern(arg0)){
 			resultList.add(somethingthatElement);
@@ -666,7 +667,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		boolean firstp = true;
 		for (OWLClassExpression exp: ((OWLObjectUnionOf) arg0).getOperandsAsList()){
 			if (!firstp){
-				LogicElement orElement = new LogicElement(LogicLabels.getString("or"));
+				LogicElement orElement = new LogicElement(VerbalisationManager.LogicLabels.getString("or"));
 				resultList.add(orElement);}
 			firstp = false;
 			resultList.addAll(exp.accept(this));
@@ -679,7 +680,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	
 	public List<TextElement> visit(OWLObjectComplementOf arg0) {
 		List<TextElement> resultList = new ArrayList<TextElement>();
-		LogicElement notElement = new LogicElement(LogicLabels.getString("not"));
+		LogicElement notElement = new LogicElement(VerbalisationManager.LogicLabels.getString("not"));
 		resultList.add(notElement);
 		resultList.addAll(arg0.getOperand().accept(this));
 		System.out.println("_OWLObjectComplementOf arg0_");
@@ -692,9 +693,9 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		OWLClassExpression filler = existsexpr.getFiller();
 		List<List<TextElement>> fillerstrs = new ArrayList<List<TextElement>>();
 		List<TextElement> middlestring = new ArrayList<TextElement>();
-		middlestring.add(new LogicElement(LogicLabels.getString("nothing but")));
+		middlestring.add(new LogicElement(VerbalisationManager.LogicLabels.getString("nothingBut")));
 		if (filler instanceof OWLObjectSomeValuesFrom)
-			middlestring.add(new LogicElement(LogicLabels.getString("somethingThat")));
+			middlestring.add(new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat")));
 		fillerstrs.add(filler.accept(this));
 		
 		System.out.println("_OWLObjectAllValuesFrom existsexpr_");
@@ -733,7 +734,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 						List<TextElement> result = VerbalisationManager.textualiseProperty(property,fillerstrs,middle);
 						return result;
 					} else	
-			middle.add(new LogicElement(LogicLabels.getString("somethingThat")));
+			middle.add(new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat")));
 			}
 		}
 		fillerstrs.add(filler.accept(this));
@@ -765,14 +766,14 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		if (classexp!=null){
 
 			if(lang == Locale.ENGLISH){
-				result.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
+				result.add(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
 				result.addAll(classexp.accept(this));
 				result.add(new LogicElement("is"));
 				boolean firstp = true;
 				for (OWLClassExpression ex:exprs){
 					if (!ex.equals(classexp)){
 							if (!firstp){
-								result.add(new LogicElement(LogicLabels.getString("and")));
+								result.add(new LogicElement(VerbalisationManager.LogicLabels.getString("and")));
 								firstp = false;
 
 							}
@@ -784,20 +785,20 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 				}
 			}
 			if(lang == Locale.GERMAN){
-				result.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
+				result.add(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
 				
-				result.add(new LogicElement(LogicLabels.getString("is")));
+				result.add(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
 				result.addAll(classexp.accept(this));
 				
 				boolean firstp = true;
 				for (OWLClassExpression ex:exprs){
 					if (!ex.equals(classexp)){
 							if (!firstp){
-								result.add(new LogicElement(LogicLabels.getString("and")));
+								result.add(new LogicElement(VerbalisationManager.LogicLabels.getString("and")));
 								firstp = false;
 							}
 							if (ex instanceof OWLObjectSomeValuesFrom)
-								result.add(new LogicElement(LogicLabels.getString("something that")));
+								result.add(new LogicElement(VerbalisationManager.LogicLabels.getString("something that")));
 								result.addAll(ex.accept(this));
 								
 					}
@@ -1124,7 +1125,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	public List<TextElement> visit(OWLClassAssertionAxiom arg0) {
 		List<TextElement> result = new ArrayList<TextElement>();
 		result.addAll(arg0.getIndividual().accept(this));
-		result.add(new LogicElement(LogicLabels.getString("is")));
+		result.add(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
 		result.addAll(arg0.getClassExpression().accept(this));
 		return result;
 	} 

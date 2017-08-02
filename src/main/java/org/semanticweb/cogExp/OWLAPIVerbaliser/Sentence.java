@@ -23,7 +23,7 @@ public class Sentence{
 	
 	
 	private Locale lang = VerbaliseTreeManager.locale;
-	private ResourceBundle LogicLabels = VerbaliseTreeManager.LogicLabels;
+	// private ResourceBundle LogicLabels = VerbalisationManager.LogicLabels;
 	/**
 	 * 
 	 */
@@ -69,7 +69,7 @@ public class Sentence{
 	}
 	
 	public void makeAisBSentence(){
-		setPraedikat(new LogicElement(LogicLabels.getString("is")));
+		setPraedikat(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
 		//German Sentences
 		if(lang == Locale.GERMAN){				
 		 	sentence.add(subjekt);
@@ -87,7 +87,7 @@ public class Sentence{
 	}
 	
 	public void makeAccordingToItsDefSentence(){
-		sentence.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
+		sentence.add(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
 		 	sentence.add(praedikat);
@@ -105,7 +105,7 @@ public class Sentence{
 	}
 	
 	public void makeThusSentence(){
-		sentence.add(new LogicElement(LogicLabels.getString("thus")));
+		sentence.add(new LogicElement(VerbalisationManager.LogicLabels.getString("thus")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
 			sentence.add(praedikat);
@@ -140,7 +140,7 @@ public class Sentence{
 	}
 	
 	public void makeSinceSentence(){
-		sentence.add(new LogicElement(LogicLabels.getString("since")));
+		sentence.add(new LogicElement(VerbalisationManager.LogicLabels.getString("since")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
 			sentence.add(praedikat);
@@ -158,8 +158,10 @@ public class Sentence{
 	}
 	
 	public void makebyDefinitionItIsSentence(){
-		sentence.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
+		System.out.println("makebyDefinitionItIsSentence (1)");
+		sentence.add(new LogicElement(VerbalisationManager.LogicLabels.getString("byDefinitionItIs")));
 		//German Sentences
+		System.out.println("makebyDefinitionItIsSentence (2)");
 		if(lang == Locale.GERMAN){
 			sentence.add(new LogicElement(", "));
 			sentence.add(subjekt);		
@@ -169,6 +171,7 @@ public class Sentence{
 		if(lang == Locale.ENGLISH){
 			sentence.add(subjekt);
 		}	
+		System.out.println("makebyDefinitionItIsSentence (3)");
 	}
 	
 	

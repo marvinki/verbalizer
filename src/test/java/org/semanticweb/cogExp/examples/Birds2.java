@@ -54,7 +54,7 @@ public class Birds2 {
 //		VerbaliseTreeManager.INSTANCE.setLanguage(Locale.ENGLISH);
 		Locale locale = Locale.GERMAN;
 		VerbaliseTreeManager.setLocale(locale);
-		VerbaliseTreeManager.setLogicLabels(ResourceBundle.getBundle("LogicLabels", locale));
+		// VerbaliseTreeManager.setLogicLabels(ResourceBundle.getBundle("LogicLabels", locale));
 		
 		System.out.println("Birds : \n");
 		

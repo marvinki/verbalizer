@@ -59,7 +59,7 @@ public class MindrillExample {
 
 			Locale locale = Locale.GERMAN;
 			VerbaliseTreeManager.setLocale(locale);
-			VerbaliseTreeManager.setLogicLabels(ResourceBundle.getBundle("LogicLabels", locale));
+			// VerbaliseTreeManager.setLogicLabels(ResourceBundle.getBundle("LogicLabels", locale));
 			
 			System.out.println("Classes : ");
 			

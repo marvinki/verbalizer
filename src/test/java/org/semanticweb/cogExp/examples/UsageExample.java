@@ -77,7 +77,7 @@ public class UsageExample {
 	System.out.println("Prooftree \n" + VerbaliseTreeManager.listOutput(tree) + "\n");
 	
 	// Generate the explanation from the proof tree
-	String explanation = VerbalisationManager.computeVerbalization(tree, false, null);
+	String explanation = VerbalisationManager.computeVerbalization(tree, false, false, null);
 	
 	System.out.println("Explanation for \"" + VerbalisationManager.verbalise(axiom) + "\":\n");
 	System.out.println(explanation);

@@ -366,7 +366,16 @@ public enum RuleSetManager {
 	    	rule.equals(AdditionalDLRules.APPLRANGE) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE23Repeat) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE23) ||
-	    	rule.equals(INLG2012NguyenEtAlRules.RULE42)
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE42) ||
+	    	rule.equals(AdditionalDLRules.SUBCLCHAIN) ||
+            // Rules for dealing with the A-Box/Individuals
+	    	rule.equals(AdditionalDLRules.INDIVIDUAL) ||
+	    	rule.equals(AdditionalDLRules.INVERSEOBJECTPROPERTY) ||
+	    	rule.equals(AdditionalDLRules.OBJPROPASSERIONEXISTS) ||
+	    	rule.equals(AdditionalDLRules.OBJPROPASSERIONASWITNESS) ||
+	    	rule.equals(AdditionalDLRules.ANDIVIDUAL) ||
+	    	rule.equals(AdditionalDLRules.INDIVTOPINTRO) ||
+	    	rule.equals(AdditionalDLRules.ONEOFINTRO)
 	    	)
 	    		return true;
 	    	else return false;

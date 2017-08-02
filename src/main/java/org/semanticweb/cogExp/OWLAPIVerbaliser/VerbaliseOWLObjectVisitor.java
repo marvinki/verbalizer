@@ -109,7 +109,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 	
 	private Obfuscator obfuscator;
 	
-	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
+	// private static ResourceBundle VerbalisationManager.LogicLabels = ResourceBundle.getBundle("VerbalisationManager.LogicLabels", VerbaliseTreeManager.locale);
 
 	
 	public void setObfuscator(Obfuscator obfuscator){
@@ -613,7 +613,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 			}
 		}
 		if (classexp!=null){
-			result += LogicLabels.getString("AccordingToItsDefinition");
+			result += VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition");
 			result += classexp.accept(this);
 			result += " is ";
 			boolean firstp = true;
@@ -630,7 +630,7 @@ public class VerbaliseOWLObjectVisitor implements OWLObjectVisitorEx<String>{
 			}		
 		} else{
 			result += exprs.get(0).accept(this);
-			result += LogicLabels.getString("isTheSameAs");
+			result += VerbalisationManager.LogicLabels.getString("isTheSameAs");
 			boolean firstp = true;
 			for (OWLClassExpression ex:exprs){
 				if (!ex.equals(exprs.get(0))){

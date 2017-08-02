@@ -83,8 +83,54 @@ public class LoadDriver {
 	                         "propchain INTEGER, " +
 	                         "forallunion INTEGER, " +
 	                         " PRIMARY KEY (subclass, superclass, ontologypath))"; 
+	            
+	            
+	            String sql2 = "CREATE TABLE BIOEXPLANATIONS " +
+                        "(id INTEGER, " + // (id INTEGER not NULL AUTO_INCREMENT, " +
+                        " subclass VARCHAR(256), " + 
+                        " superclass VARCHAR(256), " + 
+                        " ontologypath VARCHAR(256), " + 
+                        " corpus VARCHAR(255), " + 
+                        " solved TINYINT(1), " + 
+                        " explanation VARCHAR(2048), " + 
+                        " listing VARCHAR(2048), " + 
+                        " longlisting VARCHAR(2048), " +
+                        " equivextract INTEGER, " +
+                        " subclandequivelim INTEGER, " +
+                        " verbsteps INTEGER, " +
+                        " listingsteps INTEGER, " +
+                        " longlistingsteps INTEGER, " +
+                        " time INTEGER, " + //<== time in ms, in case problem not solved, limit time
+                        " r0 INTEGER, " +
+                        " r1 INTEGER, " +
+                        " r1neo INTEGER, " +
+                        " r2 INTEGER, " +
+                        " r3 INTEGER, " +
+                        " r5 INTEGER, " +
+                        " r5new INTEGER, " +
+                        " r5multi INTEGER, " +
+                        " r6 INTEGER, " +
+                        " r6neo INTEGER, " +
+                        " r12 INTEGER, " +
+                        " r12new INTEGER, " +
+                        " r15 INTEGER, " +
+                        " r23 INTEGER, " +
+                        " r23repeat INTEGER, " +
+                        " r34 INTEGER, " +
+                        " r35 INTEGER, " +
+                        " r37 INTEGER, " +
+                        " r42 INTEGER, " +
+                        " botintro INTEGER, " +
+                        " topintro INTEGER, " +
+                        " defdomain INTEGER, " + 
+                        "elexistsminus INTEGER, " +
+                        "applrange INTEGER, " +
+                        "propchain INTEGER, " +
+                        "forallunion INTEGER, " +
+                        "subclchain INTEGER, " +
+                        " PRIMARY KEY (subclass, superclass, ontologypath))";
 
-	            stmt.executeUpdate(sql);
+	            stmt.executeUpdate(sql2);
 	            
 	           
 	        } catch (SQLException ex) {

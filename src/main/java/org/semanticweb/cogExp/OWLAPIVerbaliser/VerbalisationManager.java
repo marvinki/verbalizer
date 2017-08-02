@@ -1,5 +1,9 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -83,9 +87,25 @@ public enum VerbalisationManager {
 //	private Language lang = Language.GERMAN;
 	private Locale lang = VerbaliseTreeManager.locale;
 	
+	private static URL[] getUrls(){
+		try {
+			URL[] urls = {file.toURI().toURL()};
+			return urls;
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
+	private static File file = new File("./resource");
+	private static URL[] urls = getUrls();
+	private static ClassLoader loader = new URLClassLoader(urls);
+	public final static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", Locale.getDefault(), loader);
+	
+	// public final static String logiclabelsPath = "resource.LogicLabels";
 
-	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
+	// private static ResourceBundle LogicLabels = ResourceBundle.getBundle(logiclabelsPath, VerbaliseTreeManager.locale);
 	
 	private static boolean debug = VerbaliseTreeManager.debug;
 	
@@ -106,8 +126,9 @@ public enum VerbalisationManager {
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator) {
 		textOWLObjectVisit.setObfuscator(obfuscator);
 		verbOWLObjectVisit.setObfuscator(obfuscator);
-		// System.out.println("dealing with owl object " + ob);
+		System.out.println("dealing with owl object " + ob);
 		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
+		System.out.println("done with owl object " + ob);
 		return seq;
 	}
 
@@ -641,11 +662,13 @@ public enum VerbalisationManager {
 			// detect THE END
 			if (i == str.length() - 1) {
 				currenttoken = currenttoken + str.substring(i, i + 1);
+				// System.out.println("adding token (1) >" + currenttoken + "<");
 				tokens.add(currenttoken);
 				break;
 			}
 			// detect seperator
 			if (str.substring(i, i + 1).equals("_") || str.substring(i, i + 1).equals(" ")) {
+				// System.out.println("adding token (2) >" + currenttoken + "<");
 				tokens.add(currenttoken);
 				currenttoken = "";
 				lastChar = "";
@@ -654,6 +677,7 @@ public enum VerbalisationManager {
 			// detect camelcasing
 			if (Character.isUpperCase(str.charAt(i)) && lastChar.length() > 0
 					&& Character.isLowerCase(lastChar.charAt(0))) {
+				// System.out.println("adding token (3) >" + currenttoken + "<");
 				tokens.add(currenttoken);
 				currenttoken = str.substring(i, i + 1);
 				lastChar = currenttoken;
@@ -662,9 +686,11 @@ public enum VerbalisationManager {
 			currenttoken = currenttoken + str.substring(i, i + 1);
 			lastChar = str.substring(i, i + 1);
 		}
+		// System.out.println("postprocessing");
 		// now postprocess all tokens
 		List<String> processedtokens = new ArrayList<String>();
 		for (String token : tokens) {
+			// System.out.println(">" + token + "<");
 			// if acronym (both first letters are capitals), do nothing
 			if (token.length() > 1 && Character.isUpperCase(str.charAt(0)) && Character.isUpperCase(str.charAt(1))) {
 				processedtokens.add(token);
@@ -674,17 +700,21 @@ public enum VerbalisationManager {
 			token = token.substring(0, 1).toLowerCase() + token.substring(1, token.length());
 			// now find hypens and lowercase
 			int ind = 0;
+			// System.out.println("working on token" + token);
 			while (ind < token.length()) {
-				int foundint = token.substring(ind).indexOf("-");
-				// System.out.println(token.charAt(foundint+1));
-				if (foundint < 0 || foundint + 1 > token.length())
+				// System.out.println("ind " + ind + " token.length() " + token.length());
+				int foundint = token.substring(ind).indexOf("-") + ind;
+				//System.out.println(token.charAt(foundint+1) + " " + foundint + " " + ind);
+				if (foundint < 0 || foundint < ind || foundint + 1 > token.length())
 					break;
 				token = token.substring(0, foundint) + "-" + Character.toLowerCase(token.charAt(foundint + 1))
 						+ token.substring(foundint + 2);
+				// System.out.println("token " + token);
 				ind = foundint + 1;
 			}
 			processedtokens.add(token);
 		}
+		// System.out.println("joining");
 		// now join all tokens together
 		for (int i = 0; i < processedtokens.size(); i++) {
 			if (i == processedtokens.size() - 1) {
@@ -809,7 +839,9 @@ public enum VerbalisationManager {
 		boolean labelFound = false;
 		
 		if (this.ontology != null) {
+			// System.out.println("before collecting annotations");
 			Set<OWLAnnotation> annotations = collectAnnotations(classname);
+			// System.out.println("after collecting annotations " + annotations.size());
 			for (OWLAnnotation annotation : annotations) {
 				
 				if (VerbaliseTreeManager.locale==Locale.GERMAN) {
@@ -827,10 +859,10 @@ public enum VerbalisationManager {
 				
 				
 				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
-					if(annotation.getValue().asLiteral().orNull().hasLang("en")){
+					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("en")){
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
 						labelFound = true;
-					}if(!labelFound){
+					}if(!labelFound && annotation.getValue().asLiteral().isPresent()){
 						// Marvin: using quotes makes Mrs Koelle's structural cueing module crash.
 						str = annotation.getValue().asLiteral().orNull().getLiteral();
 						// str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"" ;
@@ -848,11 +880,12 @@ public enum VerbalisationManager {
 //					}
 //				} 
 				
-			}
+			}  // end for annotations 
 			// remove unnecessary stuff
 			if (str.indexOf("@e") > 0)
 				str = str.substring(0, str.length() - 3);
 		}
+		// System.out.println("get class NL String (2) " + classname);
 		if (!str.equals("") || !str2.equals(""))
 			hasLabel = true;
 		// search for the type tag of the annotation (e.g. ^^xsd:string)
@@ -865,7 +898,9 @@ public enum VerbalisationManager {
 				// str= str.substring(i+1,str.length()-1);
 			}
 			if (lang.equals(Locale.ENGLISH))
+				// System.out.println("str (A) " + str);
 				str = treatCamelCaseAndUnderscores(str);
+				// System.out.println("str (B) " + str);
 			// System.out.println("returning (1) " + str);
 			// Cheating
 			if (str.equals("exercise")) {
@@ -873,8 +908,11 @@ public enum VerbalisationManager {
 			}
 			return str;
 		}
+		// System.out.println("get class NL String (3) " + classname);
 		if (str == "") {
-			str = ppCEvisit.visit(classname);
+				str = classname.getIRI().getFragment();
+			
+			// str = ppCEvisit.visit(classname);
 			// System.out.println("DBG after pretty print visit --- " + str);
 			if (verbOWLObjectVisit.getObfuscator() != null) {
 				str = verbOWLObjectVisit.getObfuscator().obfuscateName(str);
@@ -1670,15 +1708,17 @@ public enum VerbalisationManager {
 		OWLFormula axiomFormula;
 		List<OWLFormula> justificationFormulas = new ArrayList<OWLFormula>();
 		try {
-			// System.out.println("DEBUG --- Trying to add " + axiom);
+			System.out.println("DEBUG --- to be proven " + axiom);
 			axiomFormula = ConversionManager.fromOWLAPI(axiom);
 
 			for (OWLAxiom ax : explanation) {
 				// System.out.println("DEBUG --- Trying to add " + ax);
 				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 
-				// System.out.println("VerbalisationManager: adding: " +
-				// ConversionManager.fromOWLAPI(ax).prettyPrint());
+				System.out.println("VerbalisationManager: adding: " +
+						  ax);
+				System.out.println("VerbalisationManager: adding: " +
+				  ConversionManager.fromOWLAPI(ax).prettyPrint());
 			}
 		} catch (Exception e) {
 			return null;

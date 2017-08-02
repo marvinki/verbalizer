@@ -1,5 +1,6 @@
 package org.semanticweb.cogExp.PrettyPrint;
 
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +14,7 @@ import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
 import org.semanticweb.owlapi.model.OWLDataMinCardinality;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
@@ -34,6 +36,7 @@ public class PrettyPrintClassExpressionVisitor implements OWLClassExpressionVisi
 
 	    private PrettyPrintPropertyExpressionVisitor ppPropVisit = new PrettyPrintPropertyExpressionVisitor();
 	    private PrettyPrintDataRangeVisitor ppDataRangeVisit = new PrettyPrintDataRangeVisitor();
+	    private PrettyPrintIndividualVisitor ppIndivVisit = new PrettyPrintIndividualVisitor();
 	
 		public String visit(OWLObjectIntersectionOf arg0) {
 			String resultstring = "";
@@ -129,8 +132,16 @@ public class PrettyPrintClassExpressionVisitor implements OWLClassExpressionVisi
 		}
 
 		public String visit(OWLObjectOneOf arg0) {
-			// TODO Auto-generated method stub
-			return null;
+			Set<OWLIndividual> individuals = arg0.getIndividuals();
+			String result = "oneof(";
+			boolean first = true;
+			for (OWLIndividual individual : individuals){
+				if (!first)
+					result += ",";
+				first = false;
+				result += individual.accept(ppIndivVisit);		
+			}	
+			return result + ")";
 		}
 
 		public String visit(OWLDataSomeValuesFrom arg0) {

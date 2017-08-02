@@ -155,6 +155,114 @@ public enum DatabaseManager {
 		
 	}
 	
+	public void insertBioExplanation(String subclass, 
+			  String superclass, 
+			  String ontologypath, 
+			  String corpus,
+			  boolean solved, 
+			  String explanation,
+			  String listing,
+			  String longlisting,
+			  int explanationsteps,
+			  int listingsteps,
+			  int longlistingsteps,
+			  int time,
+			  int EQUIVEXTRACT,
+			  int SUBCLANDEQUIVELIM,
+			  int R0,
+			  int RULE1,
+  		  int RULE1neo,
+  		  int RULE2,
+  	      int RULE3,
+  	      int RULE5,
+  	      int RULE5new,
+  		  int RULE5MULTI,
+  		  int RULE6,
+  		  int RULE6neo,
+  		  int RULE12,
+  		  int RULE12new,
+  		  int RULE15,
+  		  int RULE23, // transitivity
+  	      int RULE23Repeat, // transitivity
+  	      int RULE34, 
+  	      int RULE35, 
+  		  int RULE37, // handle subpropertyof
+  		  int RULE42,
+  		  int BOTINTRO, 
+  		  int TOPINTRO,
+  		  int DEFDOMAIN,
+  		  int ELEXISTSMINUS,
+  		  int APPLRANGE,
+  		  int PROPCHAIN,
+  		  int FORALLUNION,
+  		  int SUBCLCHAIN
+			  
+				) {
+
+Statement stmt;
+try {
+stmt = conn.createStatement();
+
+
+explanation = explanation.replace("'", "\\'");
+listing=listing.replace("'", "\\'");
+longlisting=longlisting.replace("'", "\\'");
+
+String sql = "INSERT IGNORE INTO BIOEXPLANATIONS " +
+"(id, subclass, superclass, ontologypath, corpus, solved, explanation, listing, longlisting," + 
+"verbsteps, listingsteps, longlistingsteps, time," +
+"equivextract, subclandequivelim, r0, r1, r1neo, r2, r3, r5, r5new, r5multi, r6, r6neo, r12, r12new, r15, r23, r23repeat," +
+" r34, r35, r37, r42, botintro, topintro, defdomain, elexistsminus, applrange, propchain, forallunion,subclchain)" + //<--24
+" VALUES(0,"
++  "'" + subclass + "','" + superclass + "','" + ontologypath + "','" + corpus + "',"
+; 
+if (solved)
+sql += "1,";
+else 
+sql += "0,";
+
+sql += "'" + explanation + "','" + listing + "','" + longlisting + "',";
+
+sql += explanationsteps + "," + listingsteps + ","  + longlistingsteps + "," + time + ",";
+
+sql += EQUIVEXTRACT + "," + SUBCLANDEQUIVELIM + "," + R0 + "," + RULE1 + ",";
+sql += RULE1neo +  "," +  RULE2 + "," + RULE3 +  "," + RULE5 + "," + RULE5new + "," + RULE5MULTI + ",";
+sql += RULE6 + "," + RULE6neo + "," +RULE12 +"," +RULE12new + "," + RULE15 + "," + RULE23 + "," + RULE23Repeat + ",";
+sql += RULE34 +"," +  RULE35 +"," + RULE37 +"," + RULE42 +"," + BOTINTRO +"," + TOPINTRO + "," + DEFDOMAIN + "," + ELEXISTSMINUS +"," + APPLRANGE + "," ;
+sql += PROPCHAIN + "," + FORALLUNION + "," + SUBCLCHAIN + ")";
+
+
+
+
+
+// sql = sql.replace("/", "\\/");
+// sql = sql.replace("'", "\\'");
+
+System.out.println("insert statement " + sql);
+
+
+stmt.executeUpdate(sql);
+stmt.close();
+
+Statement stmt2 = conn.createStatement();
+
+
+String sql2 = "INSERT IGNORE INTO OCCURENCES(subclass, superclass,ontologypath) VALUES('" 
++ subclass + "','" + superclass + "','" + ontologypath + "');";
+
+// System.out.println(sql2);
+
+stmt2.executeUpdate(sql2);
+
+stmt2.close();
+
+} catch (SQLException e) {
+// TODO Auto-generated catch block
+e.printStackTrace();
+}
+
+}
+	
 
 	
 	public String findOccurence(String sub, String sup){

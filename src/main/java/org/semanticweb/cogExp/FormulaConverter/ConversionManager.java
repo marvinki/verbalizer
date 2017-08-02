@@ -245,13 +245,13 @@ public enum ConversionManager {
 				break;
 			case ONEOF:
 				Set<OWLIndividual> individuallist = new HashSet<OWLIndividual>();
-				System.out.println("tail " + tail);
+				// System.out.println("tail " + tail);
 				for (OWLFormula form : tail){
 					OWLIndividual individ = (OWLIndividual) toOWLAPI(form);
 					individuallist.add(individ);
 				}
 				result = dataFactory.getOWLObjectOneOf(individuallist);
-				System.out.println("oneof conversion " + result);
+				// System.out.println("oneof conversion " + result);
 				break;
 			case OBJECTPROPERTYASSERTION:
 				OWLObjectPropertyExpression propExp = (OWLObjectPropertyExpression) toOWLAPI(tail.get(0));
