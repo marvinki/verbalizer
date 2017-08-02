@@ -100,7 +100,7 @@ public enum VerbalisationManager {
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator) {
 		textOWLObjectVisit.setObfuscator(obfuscator);
 		verbOWLObjectVisit.setObfuscator(obfuscator);
-		// System.out.println("dealing with owl object " + ob);
+//		 System.out.println("dealing with owl object " + ob);
 		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
 		return seq;
 	}
