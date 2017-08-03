@@ -1522,6 +1522,8 @@ public enum VerbaliseTreeManager {
 				// seq.add(new LogicElement("INDIVIDUAL"));
 				seq.add(new LogicElement(LogicLabels.getString("since")));
 				seq.concat(VerbalisationManager.textualise(prem1,obfuscator));
+//				seq.add(new LogicElement("was2"));
+
 				seq.add(new LogicElement(LogicLabels.getString("whichIs")));
 				seq.concat(VerbalisationManager.textualise(prem2.getSuperClass(),obfuscator));
 				seq.add(new LogicElement(","));
