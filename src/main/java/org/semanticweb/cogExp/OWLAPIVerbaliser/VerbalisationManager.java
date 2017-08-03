@@ -88,7 +88,8 @@ public enum VerbalisationManager {
 	private static boolean debug = VerbaliseTreeManager.debug;
 	
 	public static String verbalise(OWLObject ob) {
-		return ob.accept(verbOWLObjectVisit);
+		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
+		return seq.toString();
 	}
 
 	public static TextElementSequence textualise(OWLObject ob) {
