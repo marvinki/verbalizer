@@ -9,7 +9,11 @@ import java.util.ResourceBundle;
 /**
  * @author fpaffrath
  *
+ * This class should be used to handle sentences when verbalizing an explanation.
+ * Depending on the set language, German or English is generated.
+ * 
  */
+
 public class Sentence{
 
 	private TextElementSequence sentence = new TextElementSequence();
@@ -172,6 +176,9 @@ public class Sentence{
 	}
 	
 	
+	/**
+	 * @return the generated sentence as TextElementSequence
+	 */
 	public TextElementSequence getSentence() {
 		if(sentence == null){
 			sentence.add(new TextElement(""));
@@ -186,8 +193,9 @@ public class Sentence{
 		return sentence;
 	}
 
-	/*
-	 *  When recursion is used with sentences, this can be used to access the plain content independent of language
+	
+	/**
+	 * @return When recursion is used with sentences, this can be used to access the plain content independent of language
 	 */
 	public TextElementSequence toTextElementSequence(){
 		if (sentence==null || isEmpty(sentence) || sentence.size()<1){
@@ -200,6 +208,10 @@ public class Sentence{
 		return sentence;
 	}
 	
+	/**
+	 * This method can be used to set a sentence. (This should not be necessary)
+	 * @param sentence  
+	 */
 	public void setSentence(TextElementSequence sentence) {
 		this.sentence = sentence;
 	}
@@ -231,6 +243,10 @@ public class Sentence{
 		this.praedikat.add(praedikat);;
 	}
 
+	/**
+	 * Concatenates the clause to the existing sentence.
+	 * @param clause
+	 */
 	public void concat(TextElementSequence clause){
 		sentence.add(clause);
 		return;
@@ -262,10 +278,13 @@ public class Sentence{
 		objekt.concat(seq);
 	}
 	
-	/* 
-	 * For each sentence part, the method adds the corresponding parts of the argument
+	
+	/**
+	 * For each sentence part, the method adds the corresponding parts of the
+	 * argument
+	 * @param sentence
 	 */
-	public void concat(Sentence sentence){
+	public void concat(Sentence sentence) {
 		subjekt.concat(sentence.subjekt);
 		praedikat.concat(sentence.praedikat);
 		objekt.concat(sentence.objekt);
@@ -279,6 +298,9 @@ public class Sentence{
 //		this.sentenceType = sentenceTyoe;
 //	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString(){
 		String result = "";
 		result = "Sentence: " + sentence.toString() + "\n";

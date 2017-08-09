@@ -475,13 +475,24 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 			// VerbalisationManager.pseudoNLStringMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
 		}
 		leftstring.addAll(middlestring);
+		
+		
+		//if this is a special case 
+		
+		boolean iSaySo = true;
+		if(lang == Locale.GERMAN && iSaySo)
+			leftstring.add(isElement);
+
+		
 		// System.out.println("DEBUG -- in the default case!");
 		leftstring.addAll(arg0.getSuperClass().accept(this));  // <-- Default>
 		// System.out.println("DEBUG default case: " + leftstring);
 		// System.out.println("DEBUG default case: " + new TextElementSequence(leftstring));
 		
-		//TODO implement this better
-		if(lang == Locale.GERMAN)
+		
+		//TODO implement this better (isElement)
+
+		if(lang == Locale.GERMAN && !iSaySo)
 			leftstring.add(isElement);
 
 		return  leftstring; // + 
