@@ -79,6 +79,7 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLObjectVisitorEx;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLPropertyRange;
 import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
@@ -479,7 +480,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		
 		//if this is a special case 
 		
-		boolean iSaySo = true;
+		boolean iSaySo = false;
 		if(lang == Locale.GERMAN && iSaySo)
 			leftstring.add(isElement);
 
@@ -1087,13 +1088,23 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	}
 
 	public List<TextElement> visit(OWLClassAssertionAxiom arg0) {
+		boolean iSaySo2 = false;
+		
 		List<TextElement> result = new ArrayList<TextElement>();
 		result.addAll(arg0.getIndividual().accept(this));
-		result.add(new LogicElement(LogicLabels.getString("is")));
+		
+		if(!iSaySo2) result.add(new LogicElement(LogicLabels.getString("is")));
+			
 		result.addAll(arg0.getClassExpression().accept(this));
+		
+		if(iSaySo2)	result.add(new LogicElement(LogicLabels.getString("is")));
+		
 		return result;
 	} 
 
+	
+	
+	
 	public List<TextElement> visit(OWLDataPropertyAssertionAxiom arg0) {
 		List<TextElement> result = new ArrayList<TextElement>();
 		result.addAll(arg0.getSubject().accept(this));
