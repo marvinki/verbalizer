@@ -325,371 +325,6 @@ public enum VerbaliseTreeManager {
 	 * @param before_previousconclusion		(TODO: add description)
 	 * @return a Statement					(TODO: add description)
 	 */
-	public static String verbaliseStatementNL(GentzenTree tree, SequentInferenceRule rule, 
-			List<Object> premiseformulas, 
-			List<Object> additions_to_antecedent,
-			List<Object> additions_to_succedent,
-			Object previousconclusion,
-			Object before_previousconclusion
-			){
-			String resultstring = "";
-			// Catch particular rules and use schematic output for them
-			if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) && premiseformulas.contains(previousconclusion)){
-				OWLEquivalentClassesAxiom equivpremise;
-				OWLSubClassOfAxiom subclpremise;
-				if (premiseformulas.get(0) instanceof OWLEquivalentClassesAxiom){
-					equivpremise = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
-					subclpremise = (OWLSubClassOfAxiom) premiseformulas.get(1);
-				} else{
-					equivpremise = (OWLEquivalentClassesAxiom) premiseformulas.get(1);
-					subclpremise = (OWLSubClassOfAxiom) premiseformulas.get(0);
-				}
-				OWLClassExpression concept1 = equivpremise.getClassExpressionsAsList().get(0);
-				OWLClassExpression concept2 = equivpremise.getClassExpressionsAsList().get(1);
-				OWLClassExpression definedconcept;
-				if (concept2.isClassExpressionLiteral()){
-					definedconcept = concept2;
-				} else{
-					definedconcept = concept1;
-				}
-				OWLSubClassOfAxiom conclusion = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-				String definedconceptname = VerbalisationManager.verbalise(definedconcept); 
-				return  // "By definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
-						// + VerbalisationManager.verbalise(additions_to_antecedent.get(0));
-						// "Since " + VerbalisationManager.verbalise(subclpremise) + ", by definition it is " +  VerbalisationManager.verbalise(definedconcept); 
-						LogicLabels.getString("thus") + VerbalisationManager.verbalise(conclusion.getSubClass()) + LogicLabels.getString("isByDefinition")// " according to the definition of " 
-						+ definedconceptname;
-			}
-			if (rule.equals(AdditionalDLRules.ONLYSOME)){
-				String result = "";
-				result = result + "Thus, " + VerbalisationManager.verbalise((OWLSubClassOfAxiom) additions_to_antecedent.get(0));
-				return result;
-			}
-			if (rule.equals(AdditionalDLRules.RULE5MULTI)){
-				// case 1
-				if (!premiseformulas.contains(previousconclusion) 
-					&& 	!premiseformulas.contains(before_previousconclusion)){
-					return "Since, <TODO>";
-				}
-				else{
-					return "<TODO>";
-				}
-				
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE5)){
-				// System.out.println(previousconclusion);
-				// System.out.println(before_previousconclusion);
-				// System.out.println(premiseformulas);
-				if(premiseformulas.contains(previousconclusion)
-					&& 	premiseformulas.contains(before_previousconclusion) || premiseformulas.size()==2 // this is unlike in the paper!
-						){
-					OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
-					return  "Therefore, " + VerbalisationManager.verbalise(addition);
-							// makeUppercaseStart(VerbalisationManager.verbalise(addition));
-				} else {
-					
-					if (premiseformulas.contains(before_previousconclusion)){
-						Object prem1 = premiseformulas.get(0);
-						Object prem2 = premiseformulas.get(1);
-						OWLSubClassOfAxiom prem;
-						if (before_previousconclusion.equals(prem1))
-							prem = (OWLSubClassOfAxiom) prem2;
-						else 
-							prem = (OWLSubClassOfAxiom) prem1;
-						OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
-						return "Furthermore, since " + VerbalisationManager.verbalise(prem) + ", " + VerbalisationManager.verbalise(addition);
-					}
-					
-				// System.out.println(premiseformulas.toString());
-				String result = "Since ";
-				boolean needsep = false;
-				for (Object prem : premiseformulas){
-					if (needsep)
-						result += " and ";
-					needsep = true;
-					result += VerbalisationManager.verbalise((OWLObject) prem);
-				}
-				OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
-				return result + ", " + VerbalisationManager.verbalise(addition);
-				// return result + ", " + makeUppercaseStart(VerbalisationManager.verbalise(addition));
-				}
-			}
-			if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM)){
-				OWLEquivalentClassesAxiom equivpremise;
-				OWLSubClassOfAxiom subclpremise;
-				if (premiseformulas.get(0) instanceof OWLEquivalentClassesAxiom){
-					equivpremise = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
-					subclpremise = (OWLSubClassOfAxiom) premiseformulas.get(1);
-				} else{
-					equivpremise = (OWLEquivalentClassesAxiom) premiseformulas.get(1);
-					subclpremise = (OWLSubClassOfAxiom) premiseformulas.get(0);
-				}
-				OWLClassExpression concept1 = equivpremise.getClassExpressionsAsList().get(0);
-				OWLClassExpression concept2 = equivpremise.getClassExpressionsAsList().get(1);
-				OWLClassExpression definedconcept;
-				if (concept2.isClassExpressionLiteral()){
-					definedconcept = concept2;
-				} else{
-					definedconcept = concept1;
-				}
-				return  // "By definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
-						// + VerbalisationManager.verbalise(additions_to_antecedent.get(0));
-						LogicLabels.getString("since") + VerbalisationManager.verbalise(subclpremise) +LogicLabels.getString("byDefinitionItIs") +  VerbalisationManager.verbalise(definedconcept);
-//						"Weil " + VerbalisationManager.verbalise(subclpremise) + ", by definition it is " +  VerbalisationManager.verbalise(definedconcept);
-						// VerbalisationManager.verbalise(additions_to_antecedent.get(0)) + " according to the definition of ";
-			}
-			if (rule.equals(AdditionalDLRules.EQUIVEXTRACT)){
-				OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
-				String firstpart = VerbalisationManager.verbalise(premiseformula);
-				firstpart = makeUppercaseStart(firstpart);
-				return firstpart;
-				// return  firstpart + ". Thus, in particular, "
-				// 		+ VerbalisationManager.verbalise(additions_to_antecedent.get(0));
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE2)){
-				// System.out.println("DBG! " + premiseformulas.get(0));
-				OWLSubClassOfAxiom premiseformula = (OWLSubClassOfAxiom) premiseformulas.get(0);
-					return makeUppercaseStart(VerbalisationManager.verbalise(premiseformula));
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE1)){
-				OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
-				OWLClassExpression definedconcept = premiseformula.getClassExpressionsAsList().get(0);
-				if (((OWLSubClassOfAxiom) additions_to_antecedent.get(0)).getSubClass().equals(definedconcept)){
-					return LogicLabels.getString("AccordingToItsDefinition")
-							+ VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0));
-				}
-				return LogicLabels.getString("AccordingToTheDefinitionOf") + VerbalisationManager.verbalise(definedconcept) + ", "
-						+ VerbalisationManager.verbalise( (OWLObject) additions_to_antecedent.get(0));
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE23) && premiseformulas.contains(previousconclusion)){
-				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) premiseformulas.get(1);
-				OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(0);
-				return VerbalisationManager.verbalise( (OWLObject) additions_to_antecedent.get(0));
-				// return "Consequently, " + VerbalisationManager.verbalise( (OWLObject) additions_to_antecedent.get(0));
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE23) && !premiseformulas.contains(previousconclusion)){
-				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) premiseformulas.get(1);
-				OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(0);
-				return VerbalisationManager.verbalise(subcl1) + " and therefore " + VerbalisationManager.verbalise(subcl2.getSuperClass());
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE42) && 
-					(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
-				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premiseformulas.get(0);
-				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-				String str = VerbalisationManager.verbalise(subcl.getSubClass());
-				if (str.indexOf("a ")==0)
-					str = str.substring(2);
-				if (str.indexOf("an ")==0)
-					str = str.substring(3);
-				return ". Thus, nothing is " + VerbalisationManager.verbalise(subcl1.getSubClass());
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE42) && 
-					!(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
-				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premiseformulas.get(0);
-				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-				String str = VerbalisationManager.verbalise(subcl.getSubClass());
-				if (str.indexOf("a ")==0)
-					str = str.substring(2);
-				if (str.indexOf("an ")==0)
-					str = str.substring(3);
-				return "Since " + VerbalisationManager.verbalise(subcl) + ", which does not exist, nothing is " + VerbalisationManager.verbalise(subcl1.getSubClass());
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE34) && 
-					(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
-				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premiseformulas.get(0);
-				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-				String str = VerbalisationManager.verbalise(subcl.getSubClass());
-				if (str.indexOf("a ")==0)
-					str = str.substring(2);
-				if (str.indexOf("an ")==0)
-					str = str.substring(3);
-				return "However, no " + str 
-						+ " is " +  VerbalisationManager.verbalise(subcl.getSuperClass()) + 
-						". Thus, nothing is " + VerbalisationManager.verbalise(subcl.getSubClass());
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE6neo)){ // || premiseformulas.contains(before_previousconclusion))){
-				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-				return "Since everything is " + VerbalisationManager.verbalise(subcl1.getSuperClass()) 
-						+ ", " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); // + " Previousconclusion " + previousconclusion;
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE15) && 
-					(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
-				Object prem1 = premiseformulas.get(0);
-				Object prem2 = premiseformulas.get(1);
-				OWLSubClassOfAxiom subcl;
-				if (previousconclusion.equals(prem1))
-					subcl = (OWLSubClassOfAxiom) prem2;
-				else	
-					subcl = (OWLSubClassOfAxiom) prem1;
-				// System.out.println("RULE15 -- " + additions_to_antecedent.get(0));
-				return makeUppercaseStart(VerbalisationManager.verbalise(subcl)) 
-						+ ", thus " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); // + " Previousconclusion " + previousconclusion;
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE15)){ //  && !premiseformulas.contains(previousconclusion)){
-				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) premiseformulas.get(0);
-				OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(1);
-				OWLClassExpression superExpr = ((OWLSubClassOfAxiom) subcl2).getSuperClass();
-				String is = LogicLabels.getString("is");
-				if (superExpr instanceof OWLObjectSomeValuesFrom)
-					is = "";
-				return makeUppercaseStart(VerbalisationManager.verbalise(subcl1)) 
-						+ " which " + is +  VerbalisationManager.verbalise(((OWLSubClassOfAxiom) subcl2).getSuperClass()) // ; 
-						+ ". Therefore, " + VerbalisationManager.verbalise(((OWLSubClassOfAxiom) additions_to_antecedent.get(0)));  
-			}
-			if (rule.equals(AdditionalDLRules.FORALLUNION)){ 
-				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) premiseformulas.get(0);
-				OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(1);
-				OWLSubClassOfAxiom subcl3 = (OWLSubClassOfAxiom) premiseformulas.get(2);
-				String superclassstring = VerbalisationManager.verbalise(((OWLSubClassOfAxiom) subcl3).getSuperClass());
-				if (((OWLSubClassOfAxiom) subcl3).getSuperClass() instanceof OWLObjectSomeValuesFrom){
-					superclassstring = "something that " + superclassstring;
-				}
-				return "Since both " + VerbalisationManager.verbalise(((OWLSubClassOfAxiom) subcl1).getSubClass()) 
-				                     + " and " + VerbalisationManager.verbalise(((OWLSubClassOfAxiom) subcl3).getSubClass()) + 
-				                     " are " + superclassstring + 
-				                     ", " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0));
-				                     
-			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && premiseformulas.contains(previousconclusion)){
-				Object newformula = null;
-				for (Object formula : premiseformulas){
-					if (!formula.equals(previousconclusion)){
-						newformula = formula;
-					}
-				}
-				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) additions_to_antecedent.get(0); 
-				OWLClassExpression superclass = subcl.getSuperClass();
-				OWLSubClassOfAxiom premiseformula = (OWLSubClassOfAxiom) newformula;
-				if (!superclass.equals(premiseformula.getSuperClass())){
-				// we are in the case where the "target" concept inclusion has been presented previously, 
-				// and the source concept is new.
-				String result = makeUppercaseStart(VerbalisationManager.verbalise((OWLObject) newformula)); 
-				// System.out.println(" DEBUG left side " + result);
-				String intString = VerbalisationManager.verbalise(superclass);
-				if (intString.length()>14){
-					if (intString.substring(0,14).equals("something that")){
-						intString = intString.substring(15);
-					}
-				}
-				
-				// TODO noch logicLabels/Resource file ausnutzen
-				if (superclass instanceof OWLObjectSomeValuesFrom)
-					intString = "something that " + intString; 
-				result += ", therefore being " + intString; 
-				return result;
-				}
-				else{
-					// we are in the case where the source concept inclusion has been presented previously, 
-				    // and the target concept is new
-					String result = "Given that " + VerbalisationManager.verbalise((OWLObject) newformula) + ", "; 
-					result += VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); 
-					return result;
-					
-				}
-			}
-			
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && !premiseformulas.contains(previousconclusion) &&  premiseformulas.size()==2){
-				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) additions_to_antecedent.get(0); 
-				OWLClassExpression superclass = subcl.getSuperClass();
-				OWLClassExpression subclass = subcl.getSubClass();
-				OWLSubClassOfAxiom prem1 = null;
-				OWLSubClassOfAxiom prem2 = null;
-				for (Object formula : premiseformulas){
-					// System.out.println(formula);
-					// System.out.println(subcl);
-					OWLSubClassOfAxiom candidate = (OWLSubClassOfAxiom) formula;
-					if (candidate.getSubClass().equals(subclass)){
-						prem1 = candidate;
-					}
-						else prem2 = candidate;
-				}
-				String result = "";
-				result += LogicLabels.getString("Since") + VerbalisationManager.verbalise(prem1);
-				result += LogicLabels.getString("_which ");
-				if (!(superclass instanceof OWLObjectSomeValuesFrom))
-					result += LogicLabels.getString("is"); // TODO -- should only be there if needed!
-				result += VerbalisationManager.verbalise(prem2.getSuperClass());
-				result += ", "; 
-				result += VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); 
-				return result;
-				}
-			// Generic output
-			if (!(premiseformulas==null)){
-				if (premiseformulas.contains(previousconclusion) 
-						&& premiseformulas.size()==2 
-						&& premiseformulas.contains(before_previousconclusion)
-						&& !previousconclusion.equals(before_previousconclusion)
-						){
-					resultstring += rule + "Thus, we have established that ";
-				} else {
-					if (premiseformulas.contains(previousconclusion) && premiseformulas.size()>1){
-						resultstring += "Furthermore, since ";
-					} else{
-						if (premiseformulas.contains(previousconclusion)){
-							resultstring += "Therefore "; 
-						}else{
-							if (premiseformulas.size()==0){
-							resultstring += "";
-							}
-							else {
-								resultstring += "Since ";
-							};
-						}
-					}
-				}
-				boolean needsep = false;
-				for (Object formula : premiseformulas){
-					if (formula.equals(previousconclusion)){
-						continue;
-					}
-					if (formula.equals(before_previousconclusion)){
-						continue;
-					}
-					if (formula instanceof OWLSubClassOfAxiom 
-							&& ((OWLSubClassOfAxiom) formula).getSuperClass().equals(((OWLSubClassOfAxiom) formula).getSubClass())){
-						continue;
-					}
-					if (needsep){ resultstring += " and ";};
-					needsep = true;
-					resultstring += VerbalisationManager.verbalise( (OWLObject) formula);
-				}
-			}
-			
-			if (additions_to_antecedent.size() + additions_to_succedent.size()>1){
-				resultstring += " consider that ";
-			}
-			if (additions_to_antecedent.size() + additions_to_succedent.size()==1 
-					&& premiseformulas.size()>0
-					&& !(premiseformulas.contains(previousconclusion) 
-					     && premiseformulas.size()==2 
-					     && premiseformulas.contains(before_previousconclusion)
-					     && !previousconclusion.equals(before_previousconclusion)
-					)){
-				resultstring += ", it follows that ";
-			}
-			if (additions_to_antecedent.size() + additions_to_succedent.size()==0){
-				resultstring += "Done ";
-			}
-			
-			boolean needorsep= false;
-			for(Object ob : additions_to_antecedent){
-				   if (needorsep) resultstring += " and ";
-					resultstring += VerbalisationManager.verbalise((OWLObject) ob);
-					needorsep = true;
-			}
-			
-			if (additions_to_succedent.size()>0){
-				resultstring += "we need to show ";
-			}
-			needorsep= false;
-			for(Object ob : additions_to_succedent){
-				   if (needorsep) resultstring += " and ";
-					resultstring += VerbalisationManager.verbalise((OWLObject) ob);
-					needorsep = true;
-			}
-		
-			return resultstring;
-	}
 	
 	public static TextElementSequence textualiseStatementNL(GentzenTree tree, SequentInferenceRule rule, 
 			List<Object> premiseformulas, 
@@ -731,7 +366,7 @@ public enum VerbaliseTreeManager {
 						definition = concept2;
 					}
 					OWLSubClassOfAxiom conclusion = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-					String definedconceptname = VerbalisationManager.verbalise(definedconcept); 
+					String definedconceptname = VerbalisationManager.textualise(definedconcept).toString(); 
 					String tooltiptext = definedconcept.asOWLClass().getIRI().asLiteral().toString();
 					TextElementSequence defSeq = VerbalisationManager.textualise(definition);
 					TextElementSequence seq = new TextElementSequence();
@@ -1039,7 +674,7 @@ public enum VerbaliseTreeManager {
 						(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
 					OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premiseformulas.get(0);
 					OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-					String str = VerbalisationManager.verbalise(subcl.getSubClass());
+					String str = VerbalisationManager.textualise(subcl.getSubClass()).toString();
 					if (str.indexOf("a ")==0)
 						str = str.substring(2);
 					if (str.indexOf("an ")==0)
@@ -1054,7 +689,7 @@ public enum VerbaliseTreeManager {
 						!(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
 					OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premiseformulas.get(0);
 					OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-					String str = VerbalisationManager.verbalise(subcl.getSubClass());
+					String str = VerbalisationManager.textualise(subcl.getSubClass()).toString();
 					if (str.indexOf("a ")==0)
 						str = str.substring(2);
 					if (str.indexOf("an ")==0)
@@ -1072,7 +707,7 @@ public enum VerbaliseTreeManager {
 						(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
 					OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premiseformulas.get(0);
 					OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-					String str = VerbalisationManager.verbalise(subcl.getSubClass());
+					String str = VerbalisationManager.textualise(subcl.getSubClass()).toString();
 					if (str.indexOf("a ")==0)
 						str = str.substring(2);
 					if (str.indexOf("an ")==0)
@@ -1189,7 +824,7 @@ public enum VerbaliseTreeManager {
 					OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(1);
 					OWLSubClassOfAxiom subcl3 = (OWLSubClassOfAxiom) premiseformulas.get(2);
 					OWLClassExpression superclassexp = ((OWLSubClassOfAxiom) subcl3).getSuperClass();
-					String superclassstring = VerbalisationManager.verbalise(superclassexp);
+					String superclassstring = VerbalisationManager.textualise(superclassexp).toString();
 					if (((OWLSubClassOfAxiom) subcl3).getSuperClass() instanceof OWLObjectSomeValuesFrom){
 						superclassstring = LogicLabels.getString("somethingThat") + superclassstring;
 					}
@@ -1232,7 +867,7 @@ public enum VerbaliseTreeManager {
 					seq.makeUppercaseStart();
 					// String result = makeUppercaseStart(VerbalisationManager.verbalise((OWLObject) newformula)); 
 					// System.out.println(" DEBUG left side " + result);
-					String intString = VerbalisationManager.verbalise(superclass);
+					String intString = VerbalisationManager.textualise(superclass).toString();
 					if (intString.length()>14){
 						if (intString.substring(0,14).equals("something that")){
 							intString = intString.substring(15);
@@ -1465,7 +1100,7 @@ public enum VerbaliseTreeManager {
 					definition = concept2;
 				}
 				OWLSubClassOfAxiom conclusion = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-				String definedconceptname = VerbalisationManager.verbalise(definedconcept); 
+				String definedconceptname = VerbalisationManager.textualise(definedconcept).toString(); 
 				String tooltiptext = definedconcept.asOWLClass().getIRI().asLiteral().toString();
 				TextElementSequence defSeq = VerbalisationManager.textualise(definition);
 				TextElementSequence seq = new TextElementSequence();
@@ -1887,7 +1522,7 @@ public enum VerbaliseTreeManager {
 					(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
 				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premiseformulas.get(0);
 				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-				String str = VerbalisationManager.verbalise(subcl.getSubClass());
+				String str = VerbalisationManager.textualise(subcl.getSubClass()).toString();
 				if (str.indexOf("a ")==0)
 					str = str.substring(2);
 				if (str.indexOf("an ")==0)
@@ -1904,7 +1539,7 @@ public enum VerbaliseTreeManager {
 					!(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
 				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premiseformulas.get(0);
 				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-				String str = VerbalisationManager.verbalise(subcl.getSubClass());
+				String str = VerbalisationManager.textualise(subcl.getSubClass()).toString();
 				if (str.indexOf("a ")==0)
 					str = str.substring(2);
 				if (str.indexOf("an ")==0)
@@ -1924,7 +1559,7 @@ public enum VerbaliseTreeManager {
 					(premiseformulas.contains(previousconclusion))){ 
 				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) premiseformulas.get(0);
 				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-				String str = VerbalisationManager.verbalise(subcl.getSubClass());
+				String str = VerbalisationManager.textualise(subcl.getSubClass()).toString();
 			
 				if (str.indexOf("a ")==0)
 					str = str.substring(2);
@@ -2055,7 +1690,7 @@ public enum VerbaliseTreeManager {
 				OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(1);
 				OWLSubClassOfAxiom subcl3 = (OWLSubClassOfAxiom) premiseformulas.get(2);
 				OWLClassExpression superclassexp = ((OWLSubClassOfAxiom) subcl3).getSuperClass();
-				String superclassstring = VerbalisationManager.verbalise(superclassexp);
+				String superclassstring = VerbalisationManager.textualise(superclassexp).toString();
 				if (((OWLSubClassOfAxiom) subcl3).getSuperClass() instanceof OWLObjectSomeValuesFrom){
 					superclassstring = LogicLabels.getString("somethingThat") + superclassstring;
 				}
@@ -2096,11 +1731,13 @@ public enum VerbaliseTreeManager {
 					
 					
 				TextElementSequence seq = new TextElementSequence();
+				
+				
 				seq.concat(VerbalisationManager.textualise((OWLObject) newformula, obfuscator));
 				seq.makeUppercaseStart();
 				// String result = makeUppercaseStart(VerbalisationManager.verbalise((OWLObject) newformula)); 
 				// System.out.println(" DEBUG left side " + result);
-				String intString = VerbalisationManager.verbalise(superclass);
+				String intString = VerbalisationManager.textualise(superclass).toString();
 				if (intString.length()>14){
 					if (intString.substring(0,14).equals("something that")){
 						intString = intString.substring(15);
@@ -2292,6 +1929,7 @@ public enum VerbaliseTreeManager {
 			if(debug) seq.add(new LogicElement("-29-"));
 			aSeq = seq;
 		}
+		
 			return aSeq;
 	
 			

@@ -117,7 +117,8 @@ public class MindrillExample {
 					reasoner);
 			
 //			System.out.println("\n");
-			String result = VerbaliseTreeManager.verbaliseNL(tree, false, false, null);
+			boolean withRules = true;
+			String result = VerbaliseTreeManager.verbaliseNL(tree, withRules, false, null);
 			return (result);
 			
 		}

@@ -87,10 +87,7 @@ public enum VerbalisationManager {
 	
 	private static boolean debug = VerbaliseTreeManager.debug;
 	
-	public static String verbalise(OWLObject ob) {
-		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
-		return seq.toString();
-	}
+	
 
 	public static TextElementSequence textualise(OWLObject ob) {
 		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
@@ -1621,9 +1618,11 @@ public enum VerbalisationManager {
 			// TODO LogicLabels should be used here:
 			//example:	String result = LogicLabels.getString("thatsAlreadyStated");
 
+				
+			
 			String result = LogicLabels.getString("thatsAlreadyStated");
 				result += VerbaliseTreeManager.makeUppercaseStart(
-						VerbalisationManager.verbalise(ConversionManager.toOWLAPI(axiomFormula))) + ".";
+						VerbalisationManager.textualise(ConversionManager.toOWLAPI(axiomFormula)).toString()) + ".";
 				// for (OWLFormula just : justificationFormulas){
 				// result += just.toString() + "; ";
 				// }
@@ -1728,7 +1727,7 @@ public enum VerbalisationManager {
 				// }
 				System.out.println("NoRuleElement");
 				NoRulesElement element = new NoRulesElement(VerbaliseTreeManager
-						.makeUppercaseStart(VerbalisationManager.verbalise(ConversionManager.toOWLAPI(axiomFormula))));
+						.makeUppercaseStart(VerbalisationManager.textualise(ConversionManager.toOWLAPI(axiomFormula)).toString()));
 				resultSequence.add(element);
 				System.out.println(resultSequence.toString());
 				return resultSequence;
