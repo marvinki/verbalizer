@@ -3,6 +3,7 @@
  */
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -22,6 +23,7 @@ public class Sentence{
 	private TextElementSequence objekt = new TextElementSequence();
 	private TextElementSequence praedikat = new TextElementSequence();
 	
+	private SentenceOrder order = null;
 	
 //	private String sentenceType = "default";
 	
@@ -45,6 +47,23 @@ public class Sentence{
 		
 //		setSentenceType("default");
 	}
+	
+public Sentence(TextElement subjekt, TextElement objekt, TextElement praedikat, SentenceOrder order) {	
+		this.subjekt = (TextElementSequence) subjekt;
+		this.setObjekt(objekt);
+		this.setPraedikat(praedikat);	
+		this.setOrder(order);
+//		setSentenceType("default");
+	}
+
+
+public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, TextElementSequence objekt, SentenceOrder order){
+	this.subjekt = subjekt;
+	this.praedikat = praedikat;
+	this.objekt = objekt;
+	this.setOrder(order);
+}
+	
 
 	public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, TextElementSequence objekt){
 		this.subjekt = subjekt;
@@ -89,6 +108,26 @@ public class Sentence{
 			sentence.add(objekt);
 		}	
 	}
+	
+	public void makeABisSentence(){
+		setPraedikat(new LogicElement(LogicLabels.getString("is")));
+		//German Sentences
+		if(lang == Locale.GERMAN){				
+		 	sentence.add(subjekt);
+			sentence.add(objekt);
+			sentence.add(praedikat);
+			sentence.add(new TextElement("TEST"));
+			
+		}
+
+		//English Sentence
+		if(lang == Locale.ENGLISH){
+			sentence.add(subjekt);
+			sentence.add(praedikat);
+			sentence.add(objekt);
+		}	
+	}
+	
 	
 	public void makeAccordingToItsDefSentence(){
 		sentence.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
@@ -197,14 +236,38 @@ public class Sentence{
 	/**
 	 * @return When recursion is used with sentences, this can be used to access the plain content independent of language
 	 */
-	public TextElementSequence toTextElementSequence(){
-		if (sentence==null || isEmpty(sentence) || sentence.size()<1){
-			TextElementSequence seq = new TextElementSequence();
-			seq.concat(subjekt);
-			seq.concat(praedikat);
-			seq.concat(objekt);
-			return seq;
+	public TextElementSequence toTextElementSequence(){		
+		if(order!=null){
+			switch(getOrder()){
+			case A_B_is:
+				sentence.add(subjekt);
+				sentence.add(objekt);	
+				sentence.add(praedikat);
+				break;
+				
+			case A_is_B:
+				sentence.add(subjekt);
+				sentence.add(praedikat);
+				sentence.add(objekt);	
+				break;
+				
+			case is_A_B:
+				sentence.add(praedikat);
+				sentence.add(subjekt);
+				sentence.add(objekt);	
+				break;
+				
+			default:
+				sentence.add(subjekt);
+				sentence.add(praedikat);
+				sentence.add(objekt);		
+			}	
 		}
+		
+		if (sentence==null || isEmpty(sentence) || sentence.size()<1){
+			return null;
+		}
+		
 		return sentence;
 	}
 	
@@ -226,6 +289,11 @@ public class Sentence{
 		 this.subjekt.add(subject);
 	}
 
+	public void setSubjekt(List <TextElement> subjectList) {
+		
+		 this.subjekt.addAll(subjectList);
+	}
+	
 	public TextElement getObjekt() {
 		return objekt;
 	}
@@ -234,6 +302,11 @@ public class Sentence{
 		
 		this.objekt.add(objekt);;
 	}
+	
+   public void setObjekt(List <TextElement> objekt) {
+		
+		this.objekt.addAll(objekt);;
+	}
 
 	public TextElement getPraedikat() {
 		return praedikat;
@@ -241,6 +314,10 @@ public class Sentence{
 
 	public void setPraedikat(TextElement praedikat) {
 		this.praedikat.add(praedikat);;
+	}
+	
+	public void setPraedikat(List <TextElement> praedikat) {
+		this.praedikat.addAll(praedikat);;
 	}
 
 	/**
@@ -289,6 +366,8 @@ public class Sentence{
 		praedikat.concat(sentence.praedikat);
 		objekt.concat(sentence.objekt);
 	}
+	
+	
 		
 //	public String getSentenceType() {
 //		return sentenceType;
@@ -307,6 +386,14 @@ public class Sentence{
 		result = result + subjekt.toString() + " -- " + praedikat.toString() + " -- " + objekt.toString();
 		return result;
 	}	
-	
+
+
+	public SentenceOrder getOrder() {
+		return order;
+	}
+
+	public void setOrder(SentenceOrder order) {
+		this.order = order;
+	}
 	
 }

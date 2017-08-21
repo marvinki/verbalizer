@@ -128,6 +128,11 @@ public class TextElementSequence extends TextElement{
 		sequence.add(el);	
 	}
 	
+	public void addAll(List<TextElement> textList) {
+		// TODO Auto-generated method stub
+		sequence.addAll(textList);
+	}
+	
 	public void concat(TextElementSequence seq2){
 		sequence.addAll(seq2.sequence);	
 	}
@@ -192,5 +197,7 @@ public class TextElementSequence extends TextElement{
 			previous = current_element;
 		}
 	}
+
+	
 	
 }

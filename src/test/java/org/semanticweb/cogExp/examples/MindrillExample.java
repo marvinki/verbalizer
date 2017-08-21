@@ -52,10 +52,12 @@ public class MindrillExample {
 			
 			OWLOntology boschOntology = 
 					OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
-			OWLReasoner reasoner = reasonerFactory.createReasoner(boschOntology);
+//			OWLReasoner reasoner = reasonerFactory.createReasoner(boschOntology);
 			
 			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 			
+			OWLReasonerConfiguration config = new SimpleConfiguration(50000);
+			OWLReasoner jfact = reasonerFactory.createReasoner(boschOntology,config);
 
 			Locale locale = Locale.GERMAN;
 			VerbaliseTreeManager.setLocale(locale);
@@ -66,13 +68,17 @@ public class MindrillExample {
 			
 			String a = "Drill";
 			String b = "MaterialsAndTools";//"MaterialsAndTools";
-			String result = getResult(a, b, ontologyfile.getPath(), reasonerFactory, reasoner );
+			String result = getResult(a, b, ontologyfile.getPath(), reasonerFactory, jfact );
 			
 			System.out.println(result);
 			
+			System.out.println("\n");
+			 a = "ValidDrillingConfig";
+			 b = "ActivitiesUsingSoftwood";//"MaterialsAndTools";
+			 result = getResult(a, b, ontologyfile.getPath(), reasonerFactory, jfact );
 			
-			OWLReasonerConfiguration config = new SimpleConfiguration(50000);
-			OWLReasoner jfact = reasonerFactory.createReasoner(boschOntology,config);
+			System.out.println(result);
+			
 		
 			
 			OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
@@ -83,11 +89,11 @@ public class MindrillExample {
 		  	OWLNamedIndividual drillingEvent1 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drillingEvent1"));
 		  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(correctlyDrillingInWood, drillingEvent1);
 			*/
-			
+//			
 //			OWLClass drillingInWoodWithTooMuchSpeed = dataFactory.getOWLClass(IRI.create(ontologyuri + "DrillingInWoodWithRotationalSpeedAbove1000Umin"));
 //		  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drillingEvent2"));
 //		  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(drillingInWoodWithTooMuchSpeed, drillingEvent2);
-			
+//			
 			OWLClass drillingInWoodWithTooMuchSpeed = dataFactory.getOWLClass(IRI.create(ontologyuri + "ActivitiesUsingWoodDrillingBits"));
 		  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drilling-config-1"));
 		  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(drillingInWoodWithTooMuchSpeed, drillingEvent2);

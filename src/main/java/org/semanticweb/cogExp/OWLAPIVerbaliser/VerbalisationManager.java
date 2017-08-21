@@ -98,9 +98,29 @@ public enum VerbalisationManager {
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator) {
 		textOWLObjectVisit.setObfuscator(obfuscator);
 		verbOWLObjectVisit.setObfuscator(obfuscator);
-//		 System.out.println("dealing with owl object " + ob);
 		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
 		return seq;
+	}
+	
+	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator, SentenceOrder order) {
+		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
+		if(debug) seq.add(new LogicElement("--textualise(ob, order)--"));
+		switch(order){
+		case A_B_is:			
+		case is_A_B:	
+		case A_is_B:
+			textOWLObjectVisit.setSentenceOrder(order);
+			textOWLObjectVisit.setObfuscator(obfuscator);
+			verbOWLObjectVisit.setObfuscator(obfuscator);
+			return seq;	
+
+		default:
+			textOWLObjectVisit.setObfuscator(obfuscator);
+			verbOWLObjectVisit.setObfuscator(obfuscator);
+//			 System.out.println("dealing with owl object " + ob);
+			return seq;	
+		}
+				
 	}
 
 	/**
@@ -1182,13 +1202,13 @@ public enum VerbalisationManager {
 				OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) someobj;
 				String somefillertext = some.getFiller().accept(verbOWLObjectVisit);
 				if (some.getFiller() instanceof OWLObjectSomeValuesFrom) {
-					somefillertext = "something that " + somefillertext;
+					somefillertext = LogicLabels.getString("somethingThat ") + somefillertext;
 				}
 				substrings.add(somefillertext);
 			}
-			result = result + "that" + _space + verbaliseProperty(propexpr, substrings, "", obfuscator);
+			result = result + LogicLabels.getString("that") + _space + verbaliseProperty(propexpr, substrings, "", obfuscator);
 			if (i != buckets.size() - 1) {
-				result = result + _space + "and" + _space;
+				result = result + _space + LogicLabels.getString("and") + _space;
 			}
 		}
 		return result;

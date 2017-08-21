@@ -120,6 +120,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	
 	
 	private Obfuscator obfuscator;
+	private SentenceOrder sentenceOrder;
 	
 	public void setObfuscator(Obfuscator obfuscator){
 		this.obfuscator = obfuscator;
@@ -127,6 +128,14 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	
 	public Obfuscator getObfuscator(){
 		return obfuscator;
+	}
+
+	public SentenceOrder getSentenceOrder() {
+		return sentenceOrder;
+	}
+
+	public void setSentenceOrder(SentenceOrder sentenceOrder) {
+		this.sentenceOrder = sentenceOrder;
 	}
 
 	public static List<OWLClassExpression> collectAndExpressions(OWLObject ob){
@@ -319,9 +328,9 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		// System.out.println("-------");
 		// define some elements that will be used later
 		LogicElement somethingthatElement = new LogicElement(LogicLabels.getString("somethingThat"));
-		LogicElement thatElement =  new LogicElement(LogicLabels.getString("that"));
+    	LogicElement thatElement =  new LogicElement(LogicLabels.getString("that"));
 		LogicElement commaElement =  new LogicElement(",");
-		LogicElement isElement =  new LogicElement(LogicLabels.getString("is"));
+		LogicElement predicate =  new LogicElement(LogicLabels.getString("is"));
 		
 		// System.out.println("visit subclassof called with " + arg0);
 		// Left hand side
@@ -398,7 +407,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 			
 			//TODO implement this better
 			if(lang == Locale.ENGLISH)
-				leftstring.add(isElement);
+				leftstring.add(predicate);
 					
 		}
 		// this catches the simple case where the superclass is only a single existential
@@ -480,11 +489,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		
 		//if this is a special case 
 		
-		boolean iSaySo = false;
-		if(lang == Locale.GERMAN && iSaySo)
-			leftstring.add(isElement);
-
-		
+			
 		// System.out.println("DEBUG -- in the default case!");
 		leftstring.addAll(arg0.getSuperClass().accept(this));  // <-- Default>
 		// System.out.println("DEBUG default case: " + leftstring);
@@ -493,8 +498,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		
 		//TODO implement this better (isElement)
 
-		if(lang == Locale.GERMAN && !iSaySo)
-			leftstring.add(isElement);
+		leftstring.add(predicate);
 
 		return  leftstring; // + 
 				//middlestring
@@ -1309,7 +1313,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 
 	public List<TextElement> visit(OWLDataSomeValuesFrom arg0) {
 		List<TextElement> result = new ArrayList<TextElement>();
-		result.add(new LogicElement("something that"));
+		result.add(new LogicElement(LogicLabels.getString("somethingThat")));
 		result.addAll(arg0.getProperty().accept(this));
 		result.addAll(arg0.getFiller().accept(this));
 		return result;

@@ -1111,15 +1111,31 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement("."));
 				// Thus [SUBCLASS] is by definition [CONCEPTNAME]
 				seq.add(new LogicElement(LogicLabels.getString("thus")));
-				List<TextElement> conclusionSequence = new ArrayList<TextElement>();
-				conclusionSequence.addAll(VerbalisationManager.textualise(conclusion.getSubClass(),obfuscator).getTextElements());
-				conclusionSequence.add(new LogicElement(LogicLabels.getString("is")));
-				conclusionSequence.add(new ClassElement(definedconceptname,tooltiptext));
-				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(conclusionSequence);
-				seq.add(conclusionMarker);
+				
+				
+				Sentence sentence = new Sentence();			
+				
+				sentence.setSubjekt((VerbalisationManager.textualise(conclusion.getSubClass(),obfuscator).getTextElements()));
+				sentence.setPraedikat(new LogicElement(LogicLabels.getString("is")));
+				sentence.setObjekt(new ClassElement(definedconceptname,tooltiptext));
+				
+				sentence.setOrder(SentenceOrder.is_A_B);
+				
+//				conclusionSequence.add(new LogicElement(LogicLabels.getString("is")));
+//				conclusionSequence.add(new LogicElement("..."));
+//				
+//				conclusionSequence.addAll(VerbalisationManager.textualise(conclusion.getSubClass(),obfuscator, SentenceOrder.is_A_B).getTextElements());
+//				conclusionSequence.add(new LogicElement("..."));
+//				
+//				
+//				conclusionSequence.add(new ClassElement(definedconceptname,tooltiptext));
+//				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(conclusionSequence);
+//				seq.add(conclusionMarker);
 				// debug
 				if(debug) seq.add(new LogicElement("-1-"));
 
+				seq.add( sentence.toTextElementSequence());
+				
 				return seq;
 			}
 			
@@ -1461,10 +1477,11 @@ public enum VerbaliseTreeManager {
 				OWLClassExpression definedconcept = premiseformula.getClassExpressionsAsList().get(0);
 				if (((OWLSubClassOfAxiom) additions_to_antecedent.get(0)).getSubClass().equals(definedconcept)){
 					TextElementSequence seq = new TextElementSequence();
-					seq.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
-					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 					
-					if(debug) seq.add(new LogicElement("-14-"));
+					seq.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
+					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator, SentenceOrder.is_A_B));
+					
+					if(debug) seq.add(new LogicElement(additions_to_antecedent.get(0).toString()));
 					return seq;
 				}
 				TextElementSequence seq = new TextElementSequence();
@@ -1714,7 +1731,7 @@ public enum VerbaliseTreeManager {
 				//                     ", " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0));
 				                     
 			}
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && premiseformulas.contains(previousconclusion)){
+			if (rule.getName().equals(INLG2012NguyenEtAlRules.RULE12.getName()) && premiseformulas.contains(previousconclusion)){
 				Object newformula = null;
 				for (Object formula : premiseformulas){
 					if (!formula.equals(previousconclusion)){
@@ -1773,7 +1790,7 @@ public enum VerbaliseTreeManager {
 				}
 			}
 			
-			if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && !premiseformulas.contains(previousconclusion) &&  premiseformulas.size()==2){
+			if (rule.getName().equals(INLG2012NguyenEtAlRules.RULE12.getName()) && !premiseformulas.contains(previousconclusion) &&  premiseformulas.size()==2){
 				System.out.println("Case Rule 12 (3)");
 				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) additions_to_antecedent.get(0); 
 				OWLClassExpression superclass = subcl.getSuperClass();
