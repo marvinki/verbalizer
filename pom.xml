@@ -119,7 +119,13 @@
 			<artifactId>elk-owlapi</artifactId>
 			<version>${elk.version}</version>
 			<!--   <scope>test</scope> -->
-		</dependency>
+			<!-- https://mvnrepository.com/artifact/com.hermit-reasoner/org.semanticweb.hermit -->
+			</dependency>
+	<dependency>
+    	<groupId>com.hermit-reasoner</groupId>
+   	 <artifactId>org.semanticweb.hermit</artifactId>
+  	  <version>1.3.8.4</version>
+	</dependency>
 		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
 	<dependency>
     <groupId>ch.qos.logback</groupId>

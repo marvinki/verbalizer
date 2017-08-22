@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -27,7 +29,9 @@ public class BioportalConnector {
 	public static void main(String[] args) {
 		
 		// Connect to own mysql database
-		DatabaseManager.INSTANCE.connect();
+		// DatabaseManager.INSTANCE.connect();
+		
+		String storagelocation = args[0];
 		
 		// Get the available resources
 		String resourcesString = get(REST_URL + "/");
@@ -43,73 +47,30 @@ public class BioportalConnector {
 		// Get the name and ontology id from the returned list
 		List<String> ontNames = new ArrayList<String>();
 		for (JsonNode ontology : ontologies) {
-			// donies
-			if (ontology.get("acronym").asText().contains("ICO"))
-				continue;
-			if (ontology.get("acronym").asText().contains("TEO"))
-				continue;
-			if (ontology.get("acronym").asText().contains("TMO"))
-				continue;
-			if (ontology.get("acronym").asText().contains("HEIO"))
-				continue;
-			if (ontology.get("acronym").asText().contains("IDO"))
-				continue;
-			if (ontology.get("acronym").asText().contains("FB-CV"))
-				continue;
-			if (ontology.get("acronym").asText().contains("SIO"))
-				continue;
-			if (ontology.get("acronym").asText().contains("BIRNLEX"))
-				continue;
-			if (ontology.get("acronym").asText().contains("HIVO0004"))
-				continue;
-			if (ontology.get("acronym").asText().contains("RPO"))
-				continue;
-			if (ontology.get("acronym").asText().contains("CHEAR"))
-				continue;
-			if (ontology.get("acronym").asText().contains("NCRO"))
-				continue;
 			
-			
-			if (ontology.get("acronym").asText().contains("MATRCOMPOUND"))
-				continue;
-			if (ontology.get("acronym").asText().contains("EGO"))
-				continue;
-			if (ontology.get("acronym").asText().contains("NIFDYS"))
-				continue;
-			if (ontology.get("acronym").asText().contains("RCTV2"))
-				continue;
-			if (ontology.get("acronym").asText().contains("ONTOAD")) // <--- simply takes long, try this again with more time!
-				continue;
-			if (ontology.get("acronym").asText().contains("PSIMOD")) // <---  Ontology already exists. OntologyID(OntologyIRI(<http://purl.obolibrary.org/obo/TEMP>) VersionIRI(<null>))
-				continue;
-			if (ontology.get("acronym").asText().contains("PW")) // <---  Ontology already exists. OntologyID(OntologyIRI(<http://purl.obolibrary.org/obo/TEMP>) VersionIRI(<null>))
-				continue;
-			if (ontology.get("acronym").asText().contains("BIPON")) // <--- simply takes long, try this again with more time!
-				continue;
-			if (ontology.get("acronym").asText().contains("OGSF")) // <--- could not load imported ontology
-				continue;
-			if (ontology.get("acronym").asText().contains("OBOREL")) // <---  Ontology already exists. OntologyID(OntologyIRI(<http://purl.obolibrary.org/obo/TEMP>) VersionIRI(<null>))
-				continue;
-			if (ontology.get("acronym").asText().contains("MOOCCIADO")) // <---  tmp
-				continue;
-			if (ontology.get("acronym").asText().contains("AURA")) // <--- obtaining the ontology takes very long
-				continue;
+			// if (ontology.get("acronym").asText().contains("AURA")) // <--- obtaining the ontology takes very long
+			// 	continue;
 			
 			ontNames.add(ontology.get("name").asText() + "\n" + ontology.get("@id").asText() + "\n\n");
 
 			System.out.println(ontology.get("acronym").asText());
-			System.out.println("[getting ontology]");
-			String ontologyString = get(REST_URL + "/ontologies/" + ontology.get("acronym").asText() + "/download");
-			System.out.println("[gotten ontology]");
+			
 			// System.out.println(ontologyString.length());
 			
-			try{
-			Path ontologyOut = Paths.get("/Users/marvin/marvin_work_ulm/resources/ontologies/bio/" +ontology.get("acronym").asText() + ".owl");
+			try{  // "/Users/marvin/marvin_work_ulm/resources/ontologies/bio/"
+			Path ontologyOut = Paths.get(storagelocation + "/" +ontology.get("acronym").asText() + ".owl");
 			File ontologyOutFile = new File(ontologyOut.toString());
 			if(!ontologyOutFile.exists()){
+				
 				ontologyOutFile.createNewFile();
 				FileWriter ontologyOutWriter = new FileWriter(ontologyOutFile, true);
-				ontologyOutWriter.write(ontologyString);
+				// ontologyOutWriter.write(ontologyString);
+				
+				System.out.println("[getting ontology]");
+				String ontologyString = getWrite(REST_URL + "/ontologies/" + ontology.get("acronym").asText() + "/download?download_format=rdf" ,ontologyOutWriter);
+				System.out.println("[gotten ontology]");
+				
+				
 				ontologyOutWriter.close();
 				}
 			}catch(Exception e){
@@ -117,7 +78,7 @@ public class BioportalConnector {
 			}
 			
 			
-			CoverageStoreEvaluatorCompressionDB.runBioportalOntology(ontologyString);
+			// CoverageStoreEvaluatorCompressionDB.runBioportalOntology(ontologyString);
 		}
 
 		// Print the names and ids
@@ -144,15 +105,55 @@ public class BioportalConnector {
 		BufferedReader rd;
 		String line;
 		String result = "";
-		try {
+		try {	
+			
 			url = new URL(urlToGet);
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("Authorization", "apikey token=" + API_KEY);
 			conn.setRequestProperty("Accept", "application/json");
+			
+			int i = 0;
+			
 			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			while ((line = rd.readLine()) != null) {
 				result += line;
+				i++;
+				if (i%1000==0){
+					System.out.println(i);
+				}
+			}
+			rd.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	private static String getWrite(String urlToGet, FileWriter writer) {
+		URL url;
+		HttpURLConnection conn;
+		BufferedReader rd;
+		String line;
+		String result = "";
+		try {	
+			
+			url = new URL(urlToGet);
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Authorization", "apikey token=" + API_KEY);
+			conn.setRequestProperty("Accept", "application/json");
+			
+			int i = 0;
+			
+			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			while ((line = rd.readLine()) != null) {
+				writer.write(line);
+				// result += line;
+				i++;
+				if (i%1000==0){
+					System.out.println(i);
+				}
 			}
 			rd.close();
 		} catch (Exception e) {

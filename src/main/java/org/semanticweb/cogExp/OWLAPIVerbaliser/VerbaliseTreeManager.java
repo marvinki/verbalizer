@@ -30,8 +30,8 @@ public enum VerbaliseTreeManager {
 	INSTANCE;
 	
 	static boolean debug = false;
-	static Locale locale = Locale.ENGLISH;
-	// static Locale locale = Locale.GERMAN;
+	// static Locale locale = Locale.ENGLISH;
+	static Locale locale = Locale.GERMAN;
 	// static boolean debug = true;
 	
 	// static ResourceBundle VerbalisationManager.LogicLabels = ResourceBundle.getBundle(VerbalisationManager.VerbalisationManager.LogicLabelsPath, locale);

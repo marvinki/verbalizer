@@ -364,18 +364,25 @@ public class ClusterExplanationService {
 		System.out.println("list all numbers called");
 		String results = "";
 		Set<OWLAxiom>  axioms = ontology.getAxioms();
+		Set<Long> donies = new HashSet<Long>();
 		for (OWLAxiom ax : axioms){
 			if (ax instanceof OWLDataPropertyAssertionAxiom){
 				OWLDataPropertyAssertionAxiom datax =  (OWLDataPropertyAssertionAxiom) ax;
 				String lit = datax.getObject().getLiteral();
 				System.out.println("looking at " + lit);
-				if (NumberUtils.isNumber(lit)){
-					lit = "n" + lit; 
-					results = results + lit + " ";
+				System.out.println("is number " + NumberUtils.isNumber(lit));
+				System.out.println("contained " + donies.contains(NumberUtils.toLong(lit)));
+				if (NumberUtils.isDigits(lit) && !donies.contains(NumberUtils.toLong(lit))){
+					System.out.println("Dealing with number " + NumberUtils.toLong(lit));
+				    String nlit = "n" + lit; 
+					results = results + nlit + " ";
+					donies.add(NumberUtils.toLong(lit));
 				}
+				
 				
 			}
 		}
+		
 		System.out.println(results);
 		return results;
 	}
@@ -386,25 +393,32 @@ public class ClusterExplanationService {
 		Set<OWLAxiom>  axioms = ontology.getAxioms();
 		axioms.addAll(inferredAxioms);
 		boolean middle = false;
+		
+		Set<OWLIndividual> configs = new HashSet<OWLIndividual>();
 		for (OWLAxiom ax : axioms){
 			if (ax instanceof OWLClassAssertionAxiom){
 				OWLClassAssertionAxiom clax = (OWLClassAssertionAxiom) ax;
 				if (clax.getClassExpression().toString().contains("Config")){
-					String configString = clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
+					configs.add(clax.getIndividual().asOWLNamedIndividual());
+				}
+			}
+		}
+		for (OWLIndividual configIndiv : configs){
+
 					for (OWLAxiom innerax : axioms){
 						if (innerax instanceof OWLClassAssertionAxiom){
 						OWLClassAssertionAxiom clinnerax = (OWLClassAssertionAxiom) innerax;
-						if (clax.getIndividual().equals(clinnerax.getIndividual())){
+						if (configIndiv.equals(clinnerax.getIndividual())){
 							OWLClassExpression clinneraxclass = clinnerax.getClassExpression();
 							if (clinneraxclass instanceof  
 									OWLObjectSomeValuesFrom){
 								OWLObjectSomeValuesFrom someclax = (OWLObjectSomeValuesFrom) clinneraxclass;
 								String fillerString = someclax.getFiller().asOWLClass().getIRI().getShortForm();
 								String propString = someclax.getProperty().asOWLObjectProperty().getIRI().getShortForm();
-								System.out.println("(" + propString + " " + configString + " " + fillerString + ")");
+								System.out.println("(" + propString + " " + configIndiv.asOWLNamedIndividual().getIRI().getFragment() + " " + fillerString + ")");
 								JSONObject axJSON = new JSONObject();
 								axJSON.put("predicate", propString);
-								axJSON.put("arg1", configString);
+								axJSON.put("arg1", configIndiv.asOWLNamedIndividual().getIRI().getFragment());
 								axJSON.put("arg2", fillerString);
 								resultarray.put(axJSON);
 								// results += axJSON.toString();
@@ -414,7 +428,7 @@ public class ClusterExplanationService {
 						} // endif for class assertions
 						if (innerax instanceof OWLDataPropertyAssertionAxiom){
 							OWLDataPropertyAssertionAxiom datax =  (OWLDataPropertyAssertionAxiom) innerax;
-							if (datax.getSubject().equals(clax.getIndividual())){
+							if (datax.getSubject().equals(configIndiv)){
 								OWLIndividual subject = datax.getSubject();
 								String lit = datax.getObject().getLiteral();
 								if (NumberUtils.isNumber(lit)){
@@ -422,23 +436,23 @@ public class ClusterExplanationService {
 								}
 								OWLDataPropertyExpression datprop = datax.getProperty();
 								String propStr = datprop.asOWLDataProperty().getIRI().getShortForm();
-								System.out.println("(" + propStr + " " + configString + " " + lit + ")");
+								System.out.println("(" + propStr + " " + configIndiv.asOWLNamedIndividual().getIRI().getFragment() + " " + lit + ")");
 								JSONObject axJSON = new JSONObject();
 								axJSON.put("predicate", propStr);
-								axJSON.put("arg1", configString);
+								axJSON.put("arg1", configIndiv.asOWLNamedIndividual().getIRI().getFragment());
 								axJSON.put("arg2", lit);
 								resultarray.put(axJSON);
 							}
 							// System.out.println("dataprop " + innerax);
 						}
 					}
-					if (middle)
-						results += ",";
-					middle = true;
-					results += clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
+					// if (middle)
+					// 	results += ",";
+					// middle = true;
+					// results += clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
 				}
-			}
-		}
+			// }
+		// }
 		return resultarray.toString();
 		// return "[" + results + "]";
 	}
@@ -850,10 +864,17 @@ public class ClusterExplanationService {
 				// + " \"" + dAss.getObject().asLiteral().orNull().getLiteral() + "\""
 		 // +       //")\n";
 			else 
-			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("hasEnergy") && dAss.getObject().asLiteral().toString().contains("1"))
+			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("hasEnergy") && dAss.getObject().asLiteral().toString().contains("1")
+				|| 	dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("unusable") && dAss.getObject().asLiteral().toString().contains("1")
+					)
+				if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("unusable"))
 			result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
 						+ " " + dAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm()
 				+ ")\n"; 
+				else
+			result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
+					+ " " + dAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm()
+			+ ")\n"; 
 			else{
 				OWLIndividual subject = dAss.getSubject();
 				String lit = dAss.getObject().getLiteral();
@@ -984,6 +1005,15 @@ public class ClusterExplanationService {
 		return result;
 	}
 	
+	public String allExplanations(){
+		String result = "";
+		for (OWLAxiom infAx : inferredAxioms){
+			TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(infAx, reasoner, reasonerFactory, ontology,100, 10000, "OP",true,false);
+			System.out.println(sequence.toString() + "\n\n");	
+			result += sequence.toString();
+		}
+		return result;
+	}
 	
 	public static void handleDotRequest(String dotTree){
 		try{
@@ -1188,6 +1218,13 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  		printstream.println(result);
 	  		return result;
 	  	}
+	  	
+	  	if (inputObject.has("allExplanations")){
+	  		 String result = allExplanations();
+	  		printstream.println(result);
+	  		return result;
+	  	}
+	  	
 	  	 
 	  	 if (inputObject.has("query")){
 	  		 if (inputObject.getString("query").equals("getInstructionText")){

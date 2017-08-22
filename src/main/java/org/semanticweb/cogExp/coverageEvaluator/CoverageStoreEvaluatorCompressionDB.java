@@ -85,8 +85,8 @@ import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
+// import ch.qos.logback.classic.Level;
+// import ch.qos.logback.classic.Logger;
 import uk.ac.manchester.cs.jfact.JFactFactory;
 
 
@@ -2282,11 +2282,11 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 		OWLReasonerFactory reasonerFactory = new JFactFactory();
 		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		
-		// Logger.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
+		// // Logger.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
 		
-		 Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-	     rootlogger.setLevel(Level.OFF); 
-	    // Logger iogLogger = (Logger) LoggerFactory.getLogger(InferredOntologyGenerator.class.getName());
+		//  Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+	    //  rootlogger.setLevel(Level.OFF); 
+	    // // Logger iogLogger = (Logger) LoggerFactory.getLogger(InferredOntologyGenerator.class.getName());
 	    
 	     // LogManager.getLogger("org.semanticweb.elk").setLevel(Level.OFF);
 		// Classify the ontology.
