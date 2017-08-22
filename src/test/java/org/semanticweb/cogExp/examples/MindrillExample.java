@@ -88,8 +88,8 @@ public class MindrillExample {
 //		  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drillingEvent2"));
 //		  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(drillingInWoodWithTooMuchSpeed, drillingEvent2);
 			
-			OWLClass drillingInWoodWithTooMuchSpeed = dataFactory.getOWLClass(IRI.create(ontologyuri + "BatteryConfig"));
-		  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "battery-config-1"));
+			OWLClass drillingInWoodWithTooMuchSpeed = dataFactory.getOWLClass(IRI.create(ontologyuri + "ActivitiesUsingWoodDrillingBits"));
+		  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drilling-config-1"));
 		  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(drillingInWoodWithTooMuchSpeed, drillingEvent2);
 			
 		  	System.out.println("Individuals: ");
