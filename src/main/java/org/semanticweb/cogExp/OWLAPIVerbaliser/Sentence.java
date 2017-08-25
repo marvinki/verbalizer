@@ -93,40 +93,34 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	
 	public void makeAisBSentence(){
 		setPraedikat(new LogicElement(LogicLabels.getString("is")));
-		//German Sentences
-		if(lang == Locale.GERMAN){				
-		 	sentence.add(subjekt);
-			sentence.add(praedikat);
-			sentence.add(objekt);
-			
-		}
-
-		//English Sentence
-		if(lang == Locale.ENGLISH){
-			sentence.add(subjekt);
-			sentence.add(praedikat);
-			sentence.add(objekt);
-		}	
+	 	
+		sentence.add(subjekt);
+		sentence.add(praedikat);
+		sentence.add(objekt);
+		
+	
 	}
 	
 	public void makeABisSentence(){
 		setPraedikat(new LogicElement(LogicLabels.getString("is")));
-		//German Sentences
-		if(lang == Locale.GERMAN){				
-		 	sentence.add(subjekt);
-			sentence.add(objekt);
-			sentence.add(praedikat);
-			sentence.add(new TextElement("TEST"));
 			
-		}
-
-		//English Sentence
-		if(lang == Locale.ENGLISH){
-			sentence.add(subjekt);
-			sentence.add(praedikat);
-			sentence.add(objekt);
-		}	
+	 	sentence.add(subjekt);
+		sentence.add(objekt);
+		sentence.add(praedikat);
+	
 	}
+	
+	public void makeisABSentence() {
+		// TODO Auto-generated method stub
+		setPraedikat(new LogicElement(LogicLabels.getString("is")));			
+		 	
+		sentence.add(praedikat);
+		sentence.add(subjekt);
+		sentence.add(objekt);
+			
+			
+	}
+	
 	
 	
 	public void makeAccordingToItsDefSentence(){
@@ -395,5 +389,6 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	public void setOrder(SentenceOrder order) {
 		this.order = order;
 	}
+
 	
 }

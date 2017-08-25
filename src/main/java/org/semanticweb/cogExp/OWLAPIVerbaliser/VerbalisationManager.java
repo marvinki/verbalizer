@@ -59,7 +59,6 @@ import edu.smu.tspell.wordnet.SynsetType;
 public enum VerbalisationManager {
 	INSTANCE;
 
-	static final VerbaliseOWLObjectVisitor verbOWLObjectVisit = new VerbaliseOWLObjectVisitor();
 	static final TextElementOWLObjectVisitor textOWLObjectVisit = new TextElementOWLObjectVisitor();
 	static final PrettyPrintClassExpressionVisitor ppCEvisit = new PrettyPrintClassExpressionVisitor();
 	static final PrettyPrintOWLAxiomVisitor ppOAvisit = new PrettyPrintOWLAxiomVisitor();
@@ -97,7 +96,6 @@ public enum VerbalisationManager {
 
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator) {
 		textOWLObjectVisit.setObfuscator(obfuscator);
-		verbOWLObjectVisit.setObfuscator(obfuscator);
 		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
 		return seq;
 	}
@@ -111,12 +109,10 @@ public enum VerbalisationManager {
 		case A_is_B:
 			textOWLObjectVisit.setSentenceOrder(order);
 			textOWLObjectVisit.setObfuscator(obfuscator);
-			verbOWLObjectVisit.setObfuscator(obfuscator);
 			return seq;	
 
 		default:
 			textOWLObjectVisit.setObfuscator(obfuscator);
-			verbOWLObjectVisit.setObfuscator(obfuscator);
 //			 System.out.println("dealing with owl object " + ob);
 			return seq;	
 		}
@@ -205,7 +201,7 @@ public enum VerbalisationManager {
 	 * @return the original string with the first character in lowercase
 	 */
 	public static String lowerCaseFirstLetter(String s) {
-		if (s.length() > 0 && Character.isUpperCase(s.charAt(0)) && !VerbaliseOWLObjectVisitor.detectAcronym(s))
+		if (s.length() > 0 && Character.isUpperCase(s.charAt(0)))
 			return s.substring(0, 1).toLowerCase() + s.substring(1, s.length());
 		else
 			return s;
@@ -296,12 +292,12 @@ public enum VerbalisationManager {
 			str = textOWLObjectVisit.getObfuscator().obfuscateRole(str);
 		}
 		/*
-		 * if (VerbaliseOWLObjectVisitor.detectLowCamelCase(str)) str =
-		 * VerbaliseOWLObjectVisitor.removeCamelCase(str); // heuristic!
+		 * if (TextElementOWLObjectVisitor.detectLowCamelCase(str)) str =
+		 * TextElementOWLObjectVisitor.removeCamelCase(str); // heuristic!
 		 * if(str.indexOf("_of")>=0) str =
-		 * VerbaliseOWLObjectVisitor.removeUnderscores(str);
+		 * TextElementOWLObjectVisitor.removeUnderscores(str);
 		 * if(str.indexOf("_")>=0) str =
-		 * VerbaliseOWLObjectVisitor.removeUnderscores(str);
+		 * TextElementOWLObjectVisitor.removeUnderscores(str);
 		 */
 		str = treatCamelCaseAndUnderscores(str);
 		if (str.indexOf("^^xsd:string") >= 0)
@@ -611,12 +607,12 @@ public enum VerbalisationManager {
 	/*
 	 * OLD--- in case the new thing does not work as well public static String
 	 * treatCamelCaseAndUnderscores(String str){ if
-	 * (VerbaliseOWLObjectVisitor.detectUnderCamel(str)) return
-	 * VerbaliseOWLObjectVisitor.removeUnderCamel(str); if
-	 * (VerbaliseOWLObjectVisitor.detectLowCamelCase(str) ||
-	 * VerbaliseOWLObjectVisitor.detectCamelCase(str)){ return
-	 * VerbaliseOWLObjectVisitor.removeCamelCase(str); } return
-	 * VerbaliseOWLObjectVisitor.removeUnderscores(str); }
+	 * (TextElementOWLObjectVisitor.detectUnderCamel(str)) return
+	 * TextElementOWLObjectVisitor.removeUnderCamel(str); if
+	 * (TextElementOWLObjectVisitor.detectLowCamelCase(str) ||
+	 * TextElementOWLObjectVisitor.detectCamelCase(str)){ return
+	 * TextElementOWLObjectVisitor.removeCamelCase(str); } return
+	 * TextElementOWLObjectVisitor.removeUnderscores(str); }
 	 */
 	
 	public String getLabel(OWLEntity obj, String lang){
@@ -785,11 +781,7 @@ public enum VerbalisationManager {
 		}
 		if (str == "") {
 			str = ppCEvisit.visit(classname);
-			// System.out.println("DBG after pretty print visit --- " + str);
-			if (verbOWLObjectVisit.getObfuscator() != null) {
-				str = verbOWLObjectVisit.getObfuscator().obfuscateName(str);
-			}
-			// System.out.println("DEBUG after prettyprint " + str);
+	
 			// check if camelcasing was used
 			str = treatCamelCaseAndUnderscores(str);
 			boolean isUncountable = false;
@@ -810,11 +802,7 @@ public enum VerbalisationManager {
 		if (!str2.equals("")) {
 			str = str2;
 		}
-		if (verbOWLObjectVisit.getObfuscator() != null) {
-			str = verbOWLObjectVisit.getObfuscator().obfuscateName(str);
-		}
-		// System.out.println("ontologyLabelsIncludeDeterminers " +
-		// ontologyLabelsIncludeDeterminers);
+
 		if (!hasLabel || ontologyLabelsIncludeDeterminers == false)
 			str = aOrAnIfy(str);
 		return str;
@@ -855,36 +843,24 @@ public enum VerbalisationManager {
 				 */
 				annotations.addAll(EntitySearcher.getAnnotationObjects((OWLClass) classexp, this.ontology));
 			}
-			// annotations = ((OWLClass)
-			// classexp).getAnnotations(this.ontology);
-			// need to find the "right" annotation
-			OWLAnnotation labelAnnot = null;
-			OWLAnnotation defAnnot = null;
-			OWLAnnotation attrAnnot = null;
 			String labelAnnotString = null;
 			String defAnnotString = null;
 			String attrAnnotString = null;
-			String genericClassname = classexp.accept(verbOWLObjectVisit);
+			String genericClassname = classexp.accept(textOWLObjectVisit).toString();
 			if (genericClassname.length() > 2 && genericClassname.substring(0, 2).equals("a" + _space)) {
 				genericClassname = genericClassname.substring(2, genericClassname.length());
 			}
 			if (genericClassname.length() > 3 && genericClassname.substring(0, 3).equals("an" + _space)) {
 				genericClassname = genericClassname.substring(3, genericClassname.length());
 			}
-			boolean isWordnetNoun = false;
-			boolean isWordnetAttribute = false;
-			boolean isWordnetAdjectiveSattelite = false;
 			for (OWLAnnotation annotation : annotations) {
 				if (annotation.getProperty().getIRI().getFragment().equals("attributive")) {
-					attrAnnot = annotation;
 					attrAnnotString = removeStringSuffix(annotation.getValue().toString());
 				}
 				if (annotation.getProperty().getIRI().getFragment().equals("definitory")) {
-					defAnnot = annotation;
 					defAnnotString = removeStringSuffix(annotation.getValue().toString());
 				}
 				if (annotation.getProperty().getIRI().getFragment().equals("label")) {
-					labelAnnot = annotation;
 					labelAnnotString = removeStringSuffix(annotation.getValue().toString());
 				}
 			} // end loop for collecting annotations
@@ -957,7 +933,7 @@ public enum VerbalisationManager {
 		// if no proper noun, look for gerunds
 		if (noun_concepts_strings.size() == 0 && noun_or_attribute_concepts_strings.size() == 0) {
 			for (OWLClassExpression classexp : exprs) {
-				String genericClassname = classexp.accept(verbOWLObjectVisit);
+				String genericClassname = classexp.accept(textOWLObjectVisit).toString();
 				if (genericClassname.indexOf("ing") > 0) {
 					noun_concepts.add(classexp);
 					noun_concepts_strings.add(genericClassname.toLowerCase());
@@ -989,9 +965,7 @@ public enum VerbalisationManager {
 			// first case: more than one noun
 			// start with nouns, then use "that is"
 			for (String str : noun_concepts_strings) {
-				String conjoiner = _space + LogicLabels.getString("and") + _space;
 				if (firstToken == true) {
-					conjoiner = _space + LogicLabels.getString("that_is") + _space;
 					firstToken = false;
 					str = aOrAnIfy(str);
 					// System.out.println("A OR ANIFIED " + str);
@@ -1200,7 +1174,7 @@ public enum VerbalisationManager {
 			List<String> substrings = new ArrayList<String>();
 			for (Object someobj : buckets.get(i)) {
 				OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) someobj;
-				String somefillertext = some.getFiller().accept(verbOWLObjectVisit);
+				String somefillertext = some.getFiller().accept(textOWLObjectVisit).toString();
 				if (some.getFiller() instanceof OWLObjectSomeValuesFrom) {
 					somefillertext = LogicLabels.getString("somethingThat ") + somefillertext;
 				}
@@ -1247,7 +1221,7 @@ public enum VerbalisationManager {
 		for (OWLClassExpression expr : exprs) {
 			OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) expr;
 			OWLObjectPropertyExpression propexpr = someexpr.getProperty();
-			substrings.add(someexpr.getFiller().accept(verbOWLObjectVisit));
+			substrings.add(someexpr.getFiller().accept(textOWLObjectVisit).toString());
 			if (commonpropexpr == null) {
 				commonpropexpr = propexpr;
 			}
@@ -1282,7 +1256,7 @@ public enum VerbalisationManager {
 	public static String pseudoNLStringMultipleExistsAndForallPattern(OWLObjectIntersectionOf ints) {
 		// System.out.println("ints " + ints);
 		String result = "";
-		List<OWLClassExpression> exprs = VerbaliseOWLObjectVisitor.collectAndExpressions(ints);
+		List<OWLClassExpression> exprs = TextElementOWLObjectVisitor.collectAndExpressions(ints);
 		List<String> substrings = new ArrayList<String>();
 		OWLObjectPropertyExpression commonpropexpr = null;
 		// recursive call for subexpressions
@@ -1290,7 +1264,7 @@ public enum VerbalisationManager {
 			if (expr instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) expr;
 				OWLObjectPropertyExpression propexpr = someexpr.getProperty();
-				String str = someexpr.getFiller().accept(verbOWLObjectVisit);
+				String str = someexpr.getFiller().accept(textOWLObjectVisit).toString();
 				// System.out.println("str " + str);
 				if (someexpr.getFiller() instanceof OWLObjectSomeValuesFrom) {
 					String somethingstr = "something that ";
@@ -1298,7 +1272,7 @@ public enum VerbalisationManager {
 					// System.out.println("DEBUG (1) -- getting domain");
 					OWLClass cl = (OWLClass) VerbalisationManager.INSTANCE
 							.getDomain(some1.getProperty().getNamedProperty());
-					VerbaliseOWLObjectVisitor visitor = new VerbaliseOWLObjectVisitor();
+					TextElementOWLObjectVisitor visitor = new TextElementOWLObjectVisitor();
 					if (cl != null) {
 						somethingstr = cl.accept(visitor) + " that ";
 					}
@@ -1345,9 +1319,7 @@ public enum VerbalisationManager {
 	public static TextElementSequence textualiseMultipleExistsAndForallPattern(OWLObjectIntersectionOf ints) {
 		// System.out.println("ints " + ints);
 		TextElementSequence result = new TextElementSequence();
-		List<TextElement> l = new ArrayList<>();
-
-		List<OWLClassExpression> exprs = VerbaliseOWLObjectVisitor.collectAndExpressions(ints);
+		List<OWLClassExpression> exprs = TextElementOWLObjectVisitor.collectAndExpressions(ints);
 		List<List<TextElement>> substrings = new ArrayList<List<TextElement>>();
 		OWLObjectPropertyExpression commonpropexpr = null;
 		// recursive call for subexpressions
@@ -1388,23 +1360,13 @@ public enum VerbalisationManager {
 		 */
 
 		TextSequenceList middlepart = new TextSequenceList();
-		boolean needsep = false;
-		boolean innersep = false;
-		if (exprs.indexOf(exprs) < exprs.size() - 1)
-			innersep = true;
+		if (exprs.indexOf(exprs) < exprs.size() - 1) {
+		}
 		for (List<TextElement> str : substrings) {
 
 			TextElementSequence str_seq = new TextElementSequence(str);
 
 			middlepart.add(str_seq);
-			// if (needsep && !innersep){
-			// middlepart.add(new LogicElement("and"));
-			// }
-			// if (needsep && innersep){
-			// middlepart.add(new LogicElement(","));
-			// }
-			// middlepart.addAll(str);
-			needsep = true;
 
 		}
 
@@ -1514,16 +1476,6 @@ public enum VerbalisationManager {
 		// Now create the actual explanation generator for our ontology
 		ExplanationGenerator<OWLAxiom> gen = genFac.createExplanationGenerator(ontology);
 
-		/*
-		 * OLD STUFF BlackBoxExplanation bBexplanator=new
-		 * BlackBoxExplanation(ontology, factory,reasoner);
-		 * HSTExplanationGenerator explanationGenerator=new
-		 * HSTExplanationGenerator(bBexplanator);
-		 */
-		OWLDataFactory dataFactory = OWLAPIManagerManager.INSTANCE.getDataFactory();
-
-		long startJustfinding = System.currentTimeMillis();
-
 		Set<OWLAxiom> explanation = new HashSet<OWLAxiom>();
 		// System.out.println("checking axiom " + axiom);
 		// BRANCH FOR DIFFERENT TYPES OF AXIOMS
@@ -1543,7 +1495,7 @@ public enum VerbalisationManager {
 			return null;
 		}
 
-		long endJustfinding = System.currentTimeMillis();
+		
 
 		// System.out.println("Justification finding took: " + (endJustfinding -
 		// startJustfinding) + "ms");
@@ -1567,8 +1519,6 @@ public enum VerbalisationManager {
 		}
 
 		GentzenTree tree;
-
-		long startTreecompute = System.currentTimeMillis();
 
 		try { // Settings!
 			tree = InferenceApplicationService.computeProofTree(axiomFormula, justificationFormulas, maxsteps, maxtime,
