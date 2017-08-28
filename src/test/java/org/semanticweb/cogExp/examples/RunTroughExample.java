@@ -137,7 +137,7 @@ public class RunTroughExample {
 		try{
 		WordNetQuery.INSTANCE.disableDict();
 		String explanation = VerbalisationManager.computeVerbalization(tree, false, null);
-		System.out.println("Explanation for \"" + VerbalisationManager.verbalise(ax) + "\":\n");
+		System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax).toString() + "\":\n");
 		System.out.println(explanation);
 		} catch (Exception e){
 			continue;

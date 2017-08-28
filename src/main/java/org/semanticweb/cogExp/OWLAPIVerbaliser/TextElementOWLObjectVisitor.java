@@ -79,6 +79,7 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLObjectVisitorEx;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLPropertyRange;
 import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
@@ -119,6 +120,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	
 	
 	private Obfuscator obfuscator;
+	private SentenceOrder sentenceOrder;
 	
 	public void setObfuscator(Obfuscator obfuscator){
 		this.obfuscator = obfuscator;
@@ -126,6 +128,14 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	
 	public Obfuscator getObfuscator(){
 		return obfuscator;
+	}
+
+	public SentenceOrder getSentenceOrder() {
+		return sentenceOrder;
+	}
+
+	public void setSentenceOrder(SentenceOrder sentenceOrder) {
+		this.sentenceOrder = sentenceOrder;
 	}
 
 	public static List<OWLClassExpression> collectAndExpressions(OWLObject ob){
@@ -315,178 +325,251 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	
 	// VERBALIZE SUBCLASSOFAXIOM
 	public List<TextElement> visit(OWLSubClassOfAxiom arg0) {
-		// System.out.println("-------");
-		// define some elements that will be used later
-		LogicElement somethingthatElement = new LogicElement(LogicLabels.getString("somethingThat"));
-		LogicElement thatElement =  new LogicElement(LogicLabels.getString("that"));
-		LogicElement commaElement =  new LogicElement(",");
-		LogicElement isElement =  new LogicElement(LogicLabels.getString("is"));
-		
-		// System.out.println("visit subclassof called with " + arg0);
-		// Left hand side
-		List<TextElement> leftstring = new ArrayList<TextElement>();
-		leftstring = arg0.getSubClass().accept(this);
-		List<TextElement> somethingthat = new ArrayList<TextElement>();
-		somethingthat.add(somethingthatElement);
-		
-		if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
-			OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) arg0.getSubClass();
-			OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
-//		 System.out.println("SUBCLASS SOMEOF DEBUG " + some1 + " " + cl);
-			if (cl!=null){
-				//somethingthat = cl.toString() + " that ";
-				somethingthat =cl.accept(this); 
-				somethingthat.add(thatElement);
-			}
-		}
-		
-		if (arg0.getSubClass() instanceof OWLObjectIntersectionOf){
-			OWLObjectIntersectionOf intsect =  (OWLObjectIntersectionOf) arg0.getSubClass();
-			OWLClassExpression clexpr = intsect.getOperandsAsList().get(0);
-			List<OWLClassExpression> exprs = collectAndExpressions(clexpr);
-			for (OWLClassExpression expr : exprs){
-				if (expr instanceof OWLObjectSomeValuesFrom){
-					OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) expr;
-					OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
-					if (cl!=null){
-						somethingthat =cl.accept(this); 
-						somethingthat.add(thatElement);
-					}
-				}
-			}
-		}	
-		
-		if (arg0.getSubClass() instanceof OWLObjectIntersectionOf 
-				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())){
-			leftstring = new ArrayList<TextElement>();
-			leftstring.add(somethingthatElement); 
-			leftstring.addAll(VerbalisationManager.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())) ;
-		}
-		
-		if (arg0.getSubClass() instanceof OWLObjectIntersectionOf 
-				&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass())){
-			leftstring = new ArrayList<TextElement>();
-			leftstring.add(somethingthatElement);
-			TextElementSequence seq = VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass());
-			leftstring.addAll(seq.getTextElements()); 
-			leftstring.add(commaElement);
-		}
-		
-		if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
-			// leftstring = new ArrayList<TextElement>();
-			// System.out.println("leftstring " + leftstring);
-			leftstring.addAll(0,somethingthat);
-			// leftstring.add(0,somethingthatElement);
-		}
-		
-		List<TextElement> middlestring = new ArrayList<TextElement>();
-		
-		
-		if (!(arg0.getSuperClass() instanceof OWLObjectSomeValuesFrom) 
-				&& !(arg0.getSuperClass() instanceof OWLObjectAllValuesFrom)
-				&& !(arg0.getSuperClass() instanceof OWLObjectIntersectionOf
-						&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())
-						)
-				&& !(arg0.getSuperClass() instanceof OWLObjectIntersectionOf
-						&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())
-						)
-				&& !(arg0.getSuperClass() instanceof OWLObjectHasValue) 
-				&& !(arg0.getSuperClass() instanceof OWLDataHasValue) 
-				){
-//			System.out.println("DEBUG! " + arg0.getSuperClass());
+		if(true /*lang == Locale.ENGLISH*/){
+			// System.out.println("-------");
+			// define some elements that will be used later
+			LogicElement somethingthatElement = new LogicElement(LogicLabels.getString("somethingThat"));
+	    	LogicElement thatElement =  new LogicElement(LogicLabels.getString("that"));
+			LogicElement commaElement =  new LogicElement(",");
+			LogicElement predicate =  new LogicElement(LogicLabels.getString("is"));
 			
-			//TODO implement this better
-			if(lang == Locale.ENGLISH)
-				leftstring.add(isElement);
-					
-		}
-		// this catches the simple case where the superclass is only a single existential
-		// ... in this case, the "something that" is skipped.
-		if (arg0.getSuperClass() instanceof OWLObjectSomeValuesFrom){
-			OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) arg0.getSuperClass();
-			OWLClassExpression filler = some.getFiller();
-			OWLObjectPropertyExpression property = some.getProperty();
-			List<List<TextElement>> fillerstrs = new ArrayList<List<TextElement>>();
-			List<TextElement> middle = new ArrayList<TextElement>();
-			if (filler instanceof OWLObjectSomeValuesFrom){
-				OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) filler;
+			// System.out.println("visit subclassof called with " + arg0);
+			// Left hand side
+			List<TextElement> leftstring = new ArrayList<TextElement>();
+			leftstring = arg0.getSubClass().accept(this);
+			List<TextElement> somethingthat = new ArrayList<TextElement>();
+			somethingthat.add(somethingthatElement);
+			
+			if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
+				OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) arg0.getSubClass();
 				OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
+	//		 System.out.println("SUBCLASS SOMEOF DEBUG " + some1 + " " + cl);
 				if (cl!=null){
-					// middle = cl.toString() + " that ";
-					middle.addAll(cl.accept(this));
-					middle.add(thatElement);
+					//somethingthat = cl.toString() + " that ";
+					somethingthat =cl.accept(this); 
+					somethingthat.add(thatElement);
 				}
-				else
-				middle.add(somethingthatElement);
 			}
-			// Multiple Exists and Forall Pattern
-			if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
-					&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
-				// System.out.println("DEBUG: exists and forall case");
-				OWLObjectIntersectionOf intsect =  (OWLObjectIntersectionOf) arg0.getSuperClass();
+			
+			if (arg0.getSubClass() instanceof OWLObjectIntersectionOf){
+				OWLObjectIntersectionOf intsect =  (OWLObjectIntersectionOf) arg0.getSubClass();
 				OWLClassExpression clexpr = intsect.getOperandsAsList().get(0);
 				List<OWLClassExpression> exprs = collectAndExpressions(clexpr);
-				middle = new ArrayList<TextElement>();
-				middle.add(somethingthatElement);
 				for (OWLClassExpression expr : exprs){
 					if (expr instanceof OWLObjectSomeValuesFrom){
 						OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) expr;
 						OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 						if (cl!=null){
-							String tooltiptext = cl.asOWLClass().getIRI().toString();
-							ClassElement clElement = new ClassElement(cl.toString(),tooltiptext);
-							middle = new ArrayList<TextElement>();
-							middle.add(clElement);
-							middle.add(thatElement);
+							somethingthat =cl.accept(this); 
+							somethingthat.add(thatElement);
 						}
 					}
 				}
-				
-				
 			}	
-	
+			
+			if (arg0.getSubClass() instanceof OWLObjectIntersectionOf 
+					&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())){
+				leftstring = new ArrayList<TextElement>();
+				leftstring.add(somethingthatElement); 
+				leftstring.addAll(VerbalisationManager.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())) ;
+			}
+			
+			if (arg0.getSubClass() instanceof OWLObjectIntersectionOf 
+					&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass())){
+				leftstring = new ArrayList<TextElement>();
+				leftstring.add(somethingthatElement);
+				TextElementSequence seq = VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass());
+				leftstring.addAll(seq.getTextElements()); 
+				leftstring.add(commaElement);
+			}
+			
+			if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom){
+				// leftstring = new ArrayList<TextElement>();
+				// System.out.println("leftstring " + leftstring);
+				leftstring.addAll(0,somethingthat);
+				// leftstring.add(0,somethingthatElement);
+			}
+			
+			List<TextElement> middlestring = new ArrayList<TextElement>();
+			
+			
+			if (!(arg0.getSuperClass() instanceof OWLObjectSomeValuesFrom) 
+					&& !(arg0.getSuperClass() instanceof OWLObjectAllValuesFrom)
+					&& !(arg0.getSuperClass() instanceof OWLObjectIntersectionOf
+							&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())
+							)
+					&& !(arg0.getSuperClass() instanceof OWLObjectIntersectionOf
+							&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())
+							)
+					&& !(arg0.getSuperClass() instanceof OWLObjectHasValue) 
+					&& !(arg0.getSuperClass() instanceof OWLDataHasValue) 
+					){
+	//			System.out.println("DEBUG! " + arg0.getSuperClass());
+				
+				//TODO implement this better
+				if(lang == Locale.ENGLISH)
+					leftstring.add(predicate);
+						
+			}
+			// this catches the simple case where the superclass is only a single existential
+			// ... in this case, the "something that" is skipped.
+			if (arg0.getSuperClass() instanceof OWLObjectSomeValuesFrom){
+				OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) arg0.getSuperClass();
+				OWLClassExpression filler = some.getFiller();
+				OWLObjectPropertyExpression property = some.getProperty();
+				List<List<TextElement>> fillerstrs = new ArrayList<List<TextElement>>();
+				List<TextElement> middle = new ArrayList<TextElement>();
+				if (filler instanceof OWLObjectSomeValuesFrom){
+					OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) filler;
+					OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
+					if (cl!=null){
+						// middle = cl.toString() + " that ";
+						middle.addAll(cl.accept(this));
+						middle.add(thatElement);
+					}
+					else
+					middle.add(somethingthatElement);
+				}
+				// Multiple Exists and Forall Pattern
+				if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
+						&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
+					// System.out.println("DEBUG: exists and forall case");
+					OWLObjectIntersectionOf intsect =  (OWLObjectIntersectionOf) arg0.getSuperClass();
+					OWLClassExpression clexpr = intsect.getOperandsAsList().get(0);
+					List<OWLClassExpression> exprs = collectAndExpressions(clexpr);
+					middle = new ArrayList<TextElement>();
+					middle.add(somethingthatElement);
+					for (OWLClassExpression expr : exprs){
+						if (expr instanceof OWLObjectSomeValuesFrom){
+							OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) expr;
+							OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
+							if (cl!=null){
+								String tooltiptext = cl.asOWLClass().getIRI().toString();
+								ClassElement clElement = new ClassElement(cl.toString(),tooltiptext);
+								middle = new ArrayList<TextElement>();
+								middle.add(clElement);
+								middle.add(thatElement);
+							}
+						}
+					}
+					
+					
+				}	
+		
+				
+					
+				fillerstrs.add(filler.accept(this));
+				leftstring.addAll(VerbalisationManager.textualiseProperty(property, fillerstrs, middle));
+								
+				return leftstring;
+				// return // leftstring
+						// + " " 
+						// + VerbalisationManager.textualiseProperty(property, fillerstrs, middle);
+			}
+			// Multiple Exists Pattern
+			if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
+					&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
+				// System.out.println("DEBUG : case of multiple exists patterns");
+				leftstring.addAll(VerbalisationManager.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass()));
+							
+				return leftstring;
+				// 		+ " " +
+				// VerbalisationManager.pseudoNLStringMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
+			}
+			if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
+					&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
+				TextElementSequence seq = VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
+				leftstring.addAll(seq.getTextElements());
+							
+				return leftstring;
+				// 		leftstring + " " +
+				// VerbalisationManager.pseudoNLStringMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
+			}
+			leftstring.addAll(middlestring);
+			
+			
+			//if this is a special case 
 			
 				
-			fillerstrs.add(filler.accept(this));
-			leftstring.addAll(VerbalisationManager.textualiseProperty(property, fillerstrs, middle));
-							
-			return leftstring;
-			// return // leftstring
-					// + " " 
-					// + VerbalisationManager.textualiseProperty(property, fillerstrs, middle);
-		}
-		// Multiple Exists Pattern
-		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
-				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
-			// System.out.println("DEBUG : case of multiple exists patterns");
-			leftstring.addAll(VerbalisationManager.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass()));
-						
-			return leftstring;
-			// 		+ " " +
-			// VerbalisationManager.pseudoNLStringMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
-		}
-		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
-				&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
-			TextElementSequence seq = VerbalisationManager.textualiseMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
-			leftstring.addAll(seq.getTextElements());
-						
-			return leftstring;
-			// 		leftstring + " " +
-			// VerbalisationManager.pseudoNLStringMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
-		}
-		leftstring.addAll(middlestring);
-		// System.out.println("DEBUG -- in the default case!");
-		leftstring.addAll(arg0.getSuperClass().accept(this));  // <-- Default>
-		// System.out.println("DEBUG default case: " + leftstring);
-		// System.out.println("DEBUG default case: " + new TextElementSequence(leftstring));
-		
-		//TODO implement this better
-		if(lang == Locale.GERMAN)
-			leftstring.add(isElement);
+			// System.out.println("DEBUG -- in the default case!");
+			leftstring.addAll(arg0.getSuperClass().accept(this));  // <-- Default>
+			// System.out.println("DEBUG default case: " + leftstring);
+			// System.out.println("DEBUG default case: " + new TextElementSequence(leftstring));
+			
+			
+			//TODO implement this better (isElement)
+	
+			leftstring.add(predicate);
+	
+			return  leftstring; // + 
+					//middlestring
+					// + arg0.getSuperClass().accept(this);
+			}
+		if(false /*lang == Locale.GERMAN*/){
+			Sentence sentence = new Sentence();
+			
+			List<TextElement> subclass = arg0.getSubClass().accept(this);;
+			List<TextElement> superclass = arg0.getSuperClass().accept(this);;		
+			
+			List<TextElement> listTE = new ArrayList<TextElement>();
+			if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom)
+				listTE.add(new LogicElement("is Instance of OWLObjectSomeValuesFrom"));
+			
+			if (arg0.getSubClass() instanceof OWLObjectIntersectionOf)
+				listTE.add(new LogicElement("is Instance of OWLObjectIntersectionOf"));
+			
+			if (arg0.getSubClass() instanceof OWLObjectIntersectionOf 
+					&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass()))
+				listTE.add(new LogicElement("is Instance of OWLObjectIntersectionOf "+
+					"AND VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass()"));
 
-		return  leftstring; // + 
-				//middlestring
-				// + arg0.getSuperClass().accept(this);
+			if (arg0.getSubClass() instanceof OWLObjectIntersectionOf 
+					&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass()))
+				listTE.add(new LogicElement("OWLObjectIntersectionOf "+
+					"AND checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSubClass()"));
+
+			if (arg0.getSubClass() instanceof OWLObjectSomeValuesFrom)
+				listTE.add(new LogicElement("is Instance of OWLObjectSomeValuesFrom"));
+
+			if (!(arg0.getSuperClass() instanceof OWLObjectSomeValuesFrom) 
+					&& !(arg0.getSuperClass() instanceof OWLObjectAllValuesFrom)
+					&& !(arg0.getSuperClass() instanceof OWLObjectIntersectionOf
+							&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())
+							)
+					&& !(arg0.getSuperClass() instanceof OWLObjectIntersectionOf
+							&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())
+							)
+					&& !(arg0.getSuperClass() instanceof OWLObjectHasValue) 
+					&& !(arg0.getSuperClass() instanceof OWLDataHasValue) 
+					){
+//				listTE.add(new LogicElement("getSuperClass is Instance of OWLObjectSomeValuesFrom AND many more"));
+			
+//			System.out.println("super class: "+ superclass.toString());
+//			System.out.println("sub class: "+ subclass.toString());
+			
+			sentence.setSubjekt(subclass);
+			sentence.setObjekt(superclass);
+	
+			if(true) sentence.makeABisSentence();
+			if(false) sentence.makeisABSentence();
+			
+			listTE.add(sentence.toTextElementSequence());
+					
+			}
+			
+			if (arg0.getSuperClass() instanceof OWLObjectSomeValuesFrom)
+				listTE.add(new LogicElement("getSuperClass is Instance of OWLObjectSomeValuesFrom"));
+
+			if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
+					&& checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass()))
+				listTE.add(new LogicElement("getSuperClass() instanceof OWLObjectIntersectionOf "+
+					" AND checkMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass())"));
+			
+			return listTE;
+		}else{
+			
+			return null;
+		}
 	}
 	
 	// VERBALIZE OWLCLASS
@@ -1076,13 +1159,23 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 	}
 
 	public List<TextElement> visit(OWLClassAssertionAxiom arg0) {
+		boolean iSaySo2 = false;
+		
 		List<TextElement> result = new ArrayList<TextElement>();
 		result.addAll(arg0.getIndividual().accept(this));
-		result.add(new LogicElement(LogicLabels.getString("is")));
+		
+		if(!iSaySo2) result.add(new LogicElement(LogicLabels.getString("is")));
+			
 		result.addAll(arg0.getClassExpression().accept(this));
+		
+		if(iSaySo2)	result.add(new LogicElement(LogicLabels.getString("is")));
+		
 		return result;
 	} 
 
+	
+	
+	
 	public List<TextElement> visit(OWLDataPropertyAssertionAxiom arg0) {
 		List<TextElement> result = new ArrayList<TextElement>();
 		result.addAll(arg0.getSubject().accept(this));
@@ -1287,7 +1380,7 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 
 	public List<TextElement> visit(OWLDataSomeValuesFrom arg0) {
 		List<TextElement> result = new ArrayList<TextElement>();
-		result.add(new LogicElement("something that"));
+		result.add(new LogicElement(LogicLabels.getString("somethingThat")));
 		result.addAll(arg0.getProperty().accept(this));
 		result.addAll(arg0.getFiller().accept(this));
 		return result;
