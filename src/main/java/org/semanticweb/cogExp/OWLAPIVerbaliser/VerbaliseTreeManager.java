@@ -44,6 +44,12 @@ public enum VerbaliseTreeManager {
 	public static void setLogicLabels(ResourceBundle logicLabels) {
 		LogicLabels = logicLabels;
 	}
+	
+	private static boolean laconicDefs = false;
+	
+	public static void setLaconicDefs(){
+		laconicDefs = true;
+	}
 
 	public static String listOutput(GentzenTree tree){
 		String result = "";
@@ -957,9 +963,17 @@ public enum VerbaliseTreeManager {
 					seq.add(new LogicElement("opexists"));
 					return seq;
 				}
-				if (rule.equals(AdditionalDLRules.EQUIVEXTRACT)){
+				if (rule.equals(AdditionalDLRules.EQUIVEXTRACT) && !laconicDefs){
 					OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
 					TextElementSequence firstpart = VerbalisationManager.textualise(premiseformula,obfuscator);
+					firstpart.makeUppercaseStart();
+					return firstpart;
+					// return firstpart;
+					// return  firstpart + ". Thus, in particular, "
+					// 		+ VerbalisationManager.verbalise(additions_to_antecedent.get(0));
+				}
+				if (rule.equals(AdditionalDLRules.EQUIVEXTRACT) && laconicDefs){
+					TextElementSequence firstpart = VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator);
 					firstpart.makeUppercaseStart();
 					return firstpart;
 					// return firstpart;
