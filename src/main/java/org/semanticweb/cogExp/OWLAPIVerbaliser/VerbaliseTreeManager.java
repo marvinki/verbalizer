@@ -1,5 +1,8 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,8 +33,8 @@ public enum VerbaliseTreeManager {
 	INSTANCE;
 	
 	static boolean debug = false;
-	// static Locale locale = Locale.ENGLISH;
-	static Locale locale = Locale.GERMAN;
+	static Locale locale = Locale.ENGLISH;
+	// static Locale locale = Locale.GERMAN;
 	// static boolean debug = true;
 	
 	// static ResourceBundle VerbalisationManager.LogicLabels = ResourceBundle.getBundle(VerbalisationManager.VerbalisationManager.LogicLabelsPath, locale);
@@ -2402,6 +2405,7 @@ public enum VerbaliseTreeManager {
 	
 	public static void setLocale(Locale alocale) {
 		VerbaliseTreeManager.locale = alocale;
+		VerbalisationManager.LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale, VerbalisationManager.loader);
 	}
 
 

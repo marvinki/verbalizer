@@ -22,7 +22,7 @@ public enum DatabaseManager {
 	
 	private  Connection conn = null;
 	
-	public void connect(){
+	public void connect(String hostname){
 		try {
           Class.forName("com.mysql.jdbc.Driver").newInstance();
             System.out.println("Driver loaded!");
@@ -39,7 +39,7 @@ public enum DatabaseManager {
 	    	info.setProperty("useUnicode", "yes");
 	    	info.setProperty("characterEncoding", "utf8");
 	    	
-	          conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/verbalizer", info);
+	          conn = DriverManager.getConnection("jdbc:mysql://" + hostname + ":3306/verbalizer", info);
 	    
 	        } catch (SQLException ex) {
 	            System.out.println("SQLException: " + ex.getMessage());
@@ -450,6 +450,30 @@ e.printStackTrace();
 		try {
 			stmt2 = conn.createStatement();
 			String sql2 = "DELETE FROM EXPLANATIONS WHERE subclass = ' "
+					 + subclass + "' && superclass='" + superclass + "' && ontologypath='" + ontologypath + "';";
+				        
+		    System.out.println("Executing delete statement  " + sql2);
+				       
+		    stmt2.executeUpdate(sql2);
+		    stmt2.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("we have an exception!");
+			e.printStackTrace();
+		}
+		return;
+		
+	}
+	
+	public void deleteBioExplanation(
+			String subclass, 
+			  String superclass, 
+			  String ontologypath){
+		
+		Statement stmt2;
+		try {
+			stmt2 = conn.createStatement();
+			String sql2 = "DELETE FROM BIOEXPLANATIONS WHERE subclass = ' "
 					 + subclass + "' && superclass='" + superclass + "' && ontologypath='" + ontologypath + "';";
 				        
 		    System.out.println("Executing delete statement  " + sql2);

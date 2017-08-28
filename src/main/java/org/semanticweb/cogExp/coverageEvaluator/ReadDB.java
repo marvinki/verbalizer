@@ -24,7 +24,7 @@ public class ReadDB {
 		System.out.println(VerbalisationManager.INSTANCE.treatCamelCaseAndUnderscores("Snail-Trail"));
 		*/
 		
-		DatabaseManager.INSTANCE.connect();
+		DatabaseManager.INSTANCE.connect("localhost");
 		
 		/*
 		List<List<String>> results = 

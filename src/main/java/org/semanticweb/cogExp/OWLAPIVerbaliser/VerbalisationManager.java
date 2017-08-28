@@ -100,8 +100,9 @@ public enum VerbalisationManager {
 	
 	private static File file = new File("./resource");
 	private static URL[] urls = getUrls();
-	private static ClassLoader loader = new URLClassLoader(urls);
-	public final static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", Locale.getDefault(), loader);
+	public static ClassLoader loader = new URLClassLoader(urls);
+	// public final static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", Locale.getDefault(), loader)
+	public static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale, loader);
 	
 	// public final static String logiclabelsPath = "resource.LogicLabels";
 
@@ -846,7 +847,7 @@ public enum VerbalisationManager {
 			for (OWLAnnotation annotation : annotations) {
 				
 				if (VerbaliseTreeManager.locale==Locale.GERMAN) {
-					if(annotation.getValue().asLiteral().orNull().hasLang("de")){ //is locale german ?
+					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("de")){ //is locale german ?
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
 						labelFound = true;
 					}
@@ -860,7 +861,7 @@ public enum VerbalisationManager {
 				
 				
 				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
-					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("en")){
+					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("en")){
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
 						labelFound = true;
 					}if(!labelFound && annotation.getValue().asLiteral().isPresent()){
@@ -1677,14 +1678,15 @@ public enum VerbalisationManager {
 		 * HSTExplanationGenerator explanationGenerator=new
 		 * HSTExplanationGenerator(bBexplanator);
 		 */
-		OWLDataFactory dataFactory = OWLAPIManagerManager.INSTANCE.getDataFactory();
+		// OWLDataFactory dataFactory = OWLAPIManagerManager.INSTANCE.getDataFactory();
 
-		long startJustfinding = System.currentTimeMillis();
+		// long startJustfinding = System.currentTimeMillis();
 
 		Set<OWLAxiom> explanation = new HashSet<OWLAxiom>();
 		// System.out.println("checking axiom " + axiom);
 		// BRANCH FOR DIFFERENT TYPES OF AXIOMS
 
+		System.out.println("DBG: before generating explanation");
 		if (axiom instanceof OWLSubClassOfAxiom || axiom instanceof OWLObjectPropertyDomainAxiom
 				|| axiom instanceof OWLClassAssertionAxiom) {
 			Set<Explanation<OWLAxiom>> explanations = gen.getExplanations(axiom, 1);
@@ -1694,6 +1696,7 @@ public enum VerbalisationManager {
 				explanation = exp.getAxioms();
 			}
 		}
+		System.out.println("DBG: after generating explanation");
 
 		if (explanation.size() == 0) {
 			System.out.println("no justification found!");
@@ -1850,6 +1853,7 @@ public enum VerbalisationManager {
 	public static TextElementSequence verbalizeAxiomAsSequence(OWLAxiom axiom, OWLReasoner reasoner,
 			OWLReasonerFactory factory, OWLOntology ontology, int maxsteps, long maxtime, String ruleset,
 			boolean asHTML, boolean obf) {
+		System.out.println("Axiom: " + axiom);
 
 		TextElementSequence resultSequence = new TextElementSequence();
 
@@ -1869,8 +1873,18 @@ public enum VerbalisationManager {
 			return resultSequence;
 		}
 
+		//System.out.println(ontology.getAxioms().size());
+		for (OWLAxiom ax: ontology.getAxioms()){
+			if (ax.toString().equals(axiom.toString())){
+				System.out.println("DEBUG (3)");
+				resultSequence.concat(VerbalisationManager.textualise(axiom));
+				return resultSequence;
+			}
+				
+		}
+		
 		if (ontology.getAxioms().contains(axiom)) {
-			// System.out.println("DEBUG (3)");	
+			System.out.println("DEBUG (3)");	
 			// LogicElement element = new LogicElement("Axiom contained.");
 			// resultSequence.add(element);
 			// resultSequence.add(new LinebreakElement());

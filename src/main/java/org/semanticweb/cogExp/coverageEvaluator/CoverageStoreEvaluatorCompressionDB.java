@@ -28,6 +28,7 @@ import org.semanticweb.owlapi.functional.parser.OWLFunctionalSyntaxOWLParserFact
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.semanticweb.cogExp.core.IncrementalSequent;
 import org.semanticweb.cogExp.core.InferenceApplicationService;
+import org.semanticweb.cogExp.core.ProofNotFoundException;
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPIManagerManager;
@@ -1199,6 +1200,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		System.out.println("Reasoner " + args[2]);
 		System.out.println("Shortlog file " + args[3]);
 		System.out.println("Single file " + args[4]);
+		System.out.println("Hostname " + args[5]);
 		
 		
 		String storedfiles  = args[0];
@@ -1206,9 +1208,10 @@ public class CoverageStoreEvaluatorCompressionDB {
 		// String reasoner_select = args[2]; 
 		String shortlogFileName = args[3];
 		String singlefile = args[4];
+		String hostname = args[5];
 		
 		
-		DatabaseManager.INSTANCE.connect();
+		DatabaseManager.INSTANCE.connect(hostname);
 		
 		Path path = Paths.get(storedfiles);
 		
@@ -1249,7 +1252,8 @@ public class CoverageStoreEvaluatorCompressionDB {
 		
 			
 			// Statistic stats = runOntology("/Users/marvin/marvin_work_ulm/resources/ontologies/ore2015_pool_sample/el/pool/" + line);
-			Statistic stats = runOntology(storedfilesStem + line,10); // <---- time limit (in seconds)
+			// Statistic stats = runBioportalOntology(storedfilesStem + line,10); // <---- time limit (in seconds)
+			Statistic stats = runBioportalOntology(storedfilesStem + line,10); // <---- time limit (in seconds)
 			
 			
 			// create individual detailed log file	
@@ -1822,7 +1826,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 			
 		
 			// runOntology("/Users/marvin/marvin_work_ulm/notes/langgen-paper/ontologies/flu.owl");
-		} catch (OWLOntologyCreationException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -2379,7 +2383,8 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	}
 	
 	
-	public static void runBioportalOntology(String input){
+	public static Statistic runBioportalOntology(String filestring,int timelimit){
+		/*
 		OWLOntology ontology = null;
 		try {
 			OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
@@ -2396,23 +2401,34 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 		System.out.println("Axioms " + inferredAxioms);
 		runBioportalOntology(ontology,inferredAxioms,10);
 		
+		*/
 		
+		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
+		List<List<OWLAxiom>> justifications = new ArrayList<List<OWLAxiom>>();
+		
+		String ontologyfile = readJustifications(filestring,conclusions,justifications);
+		
+		
+		String corpus = "bio";
+		
+		return runBioportalOntology(conclusions,justifications,timelimit,ontologyfile);
 		
 	}
 	
-	public static Statistic runBioportalOntology(OWLOntology ontology, Set<OWLAxiom> axioms, int timelimit1){
+	public static Statistic runBioportalOntology(List<OWLAxiom> axioms, List<List<OWLAxiom>> justifications,int timelimit1,String ontologyid){
 		
 		
 		
-		System.out.println(" ONTOLOGY NOW CONTAINS " + ontology.getAxioms().size() + " AXIOMS ");
+		// System.out.println(" ONTOLOGY NOW CONTAINS " + ontology.getAxioms().size() + " AXIOMS ");
 		
 		// OWLReasonerFactory reasonerFactory = new ElkReasonerFactory();
 		// OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		
-		OWLReasonerFactory reasonerFactory = new JFactFactory();
-		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
+		// OWLReasonerFactory reasonerFactory = new JFactFactory();
+		//OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		
 		RuleSetManager.INSTANCE.addRule("EL", AdditionalDLRules.SUBCLCHAIN);
+		RuleSetManager.INSTANCE.removeRule("ELnonredundant", AdditionalDLRules.SUBCLCHAIN);
 		
 	
 		
@@ -2476,7 +2492,11 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 			
 			boolean identical = false;
 			
+			int counting = 0;
+			int counter;
 			for (OWLAxiom ax : axioms){
+				counter = counting;
+				counting++;
 				OWLSubClassOfAxiom subAx = (OWLSubClassOfAxiom ) ax;
 				
 				/* 
@@ -2504,7 +2524,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 				List<String> queryResult = DatabaseManager.INSTANCE.getExplanation(
     					subAx.getSubClass().toString(), 
     					subAx.getSuperClass().toString(), 
-    					ontology.getOntologyID().toString());
+    					ontologyid);
     			
     			boolean solved = DatabaseManager.INSTANCE.getSolved(queryResult);
     			// System.out.println("solved? " + solved);
@@ -2526,13 +2546,50 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     				}
     			}
 				
+    			System.out.println();
+    			OWLFormula axiomFormula;
+    			List<OWLFormula> justificationFormulas = new ArrayList<OWLFormula>();
+    			try {
+    				System.out.print("DEBUG --- to be proven " );
+    				axiomFormula = ConversionManager.fromOWLAPI(ax);
+    				System.out.println(axiomFormula .prettyPrint() );
+    				for (OWLAxiom ax2 : justifications.get(counter)) {
+    					// System.out.println("DEBUG --- Trying to add " + ax);
+    					justificationFormulas.add(ConversionManager.fromOWLAPI(ax2));
+    					System.out.println("Adding axiom: " +
+    					  ConversionManager.fromOWLAPI(ax2).prettyPrint());
+    				}
+    			} catch (Exception e) {
+    				return null;
+    			}
+    			System.out.println();
+    			
+    			
+    			GentzenTree tree = null;
     			long starttime = System.currentTimeMillis();
+				try {
+					
+					tree = InferenceApplicationService.computeProofTree(axiomFormula, justificationFormulas, 1000, timelimit1 * 1000,
+							"EL");
+					
+				} catch (ProofNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					long endtime = System.currentTimeMillis();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				long endtime = System.currentTimeMillis();
+    			/*
+    			 * 
 				GentzenTree tree = VerbalisationManager.computeGentzenTree(ax, reasoner, reasonerFactory,
 						ontology, 
 						100,      // <-- search depth 
 						timelimit1 * 1000,    // <-- time in ms
 						"EL");
-				long endtime = System.currentTimeMillis();
+						*/
+			
 				
 				if (tree==null || tree.getInfRules().size()==0){
 					System.out.println("OMG we have failed!");
@@ -2557,10 +2614,14 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    				System.out.println("Justifications " +  );
 	    				*/
 	    				
+	    				
+		    			
+		    			
+	    				
 	    				DatabaseManager.INSTANCE.insertBioExplanation(
 		    					subAx.getSubClass().toString(), 
 		    					subAx.getSuperClass().toString(), 
-		    					ontology.getOntologyID().getOntologyIRI().toString(),
+		    					ontologyid,
 		    					"bio", 
 		    					false, 
 		    					"", 
@@ -2583,11 +2644,19 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 					System.out.println(explanation);
 					String result = explanation;
 					
+					GentzenTree tree2 = InferenceApplicationService.computeProofTree(axiomFormula, justificationFormulas, 1000, timelimit1 * 1000,
+	    					"ELnonredundant");
+					
+					noSteps2 = tree2.computePresentationOrder().size();
+					
+					
+					/*
 					GentzenTree tree2 = VerbalisationManager.computeGentzenTree(ax, reasoner, reasonerFactory,
 							ontology, 
 							100,      // <-- search depth 
 							timelimit1 * 1000,    // <-- time in ms
 							"ELnonredundant");  
+							*/
 					
 					String explanation2 = VerbalisationManager.computeVerbalization(tree2, false, false,null);
 					String result3 = VerbaliseTreeManager.listOutput(tree);
@@ -2603,12 +2672,78 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    				usedrules.add(rule.getShortName());
 	    				
 	    			}
-	    			Long time = endtime-starttime;
-					
+	    			
+	    			// Stats
+    				Long time = endtime = starttime;
+    				
+    				sumVerbTimes = sumVerbTimes + time;
+	    			sumN = sumN + 1;
+	    			if (computationtimesN[noSteps]==0l){
+	    				computationtimesN[noSteps] = 1l;
+	    				computationtimes[noSteps] = time;
+	    			} else{
+	    				computationtimes[noSteps] = computationtimes[noSteps] + time;
+	    				computationtimesN[noSteps] = 1l + computationtimesN[noSteps];
+	    			}
+	    			noSteps =tree.computePresentationOrder().size();
+	    			noSteps2 = tree2.computePresentationOrder().size();
+	    			
+	    			System.out.println("No Steps " + noSteps);
+	    			System.out.println("No Steps2 " + noSteps2);
+	    			
+	    			noStepsList.add(noSteps);
+	    			
+	    			int noListing2 = tree2.computePresentationOrder().size();
+	    			String[] outLines2 = result4.split("\n", -1);
+	    			
+	    			int additional = 0;
+	    			// CALCULATE ADDITIONAL R5MULTI STEPS
+					if (result.contains("[args:")){
+						String rest = result;
+						while(rest.contains("[args:")){
+							int indx = rest.indexOf("[args: ");
+							rest = rest.substring(indx+7);
+							int indx2 = rest.indexOf("]");
+							String number = rest.substring(0, indx2);
+							System.out.println("NUMBER {" + number + "}");
+							int no = Integer.parseInt(number);
+							if (no==3){
+								additional = additional + 1;
+							}
+							if (no==4){
+								additional = additional + 2;
+							}
+							if (no==5){
+								additional = additional + 3;
+							}
+						}
+					}
+	    			noSteps2calculated = outLines2.length + additional;
+	    			/*
+	    			if (noSteps2calculated < noListing2 || noSteps2calculated < noSteps2){
+	    				noSteps2 = noSteps2calculated;
+	    				noListing2 = noSteps2calculated;
+	    			}
+	    			*/
+	    			noSteps2 = noSteps2calculated;
+	    			
+	    			noNoncompressedStepsList.add(noListing2);  // <--- 
+	    			noNoncompressedStepsCalculatedList.add(noSteps2calculated);
+	    			noVerbalizedStepsList.add(noVerbalizedSteps);
+	    			compressions.add(noSteps2 - noVerbalizedSteps);
+	    			
+	    			
+	    			
+	    			
+	    			
+	    			
+	    			DatabaseManager.INSTANCE.deleteBioExplanation(subAx.getSubClass().toString(), 
+	    					subAx.getSuperClass().toString(), ontologyid);
+	    			
 					DatabaseManager.INSTANCE.insertBioExplanation(
 	    					subAx.getSubClass().toString(), 
 	    					subAx.getSuperClass().toString(), 
-	    					ontology.getOntologyID().getOntologyIRI().toString(),
+	    					ontologyid,
 	    					"bio", 
 	    					true, 
 	    					result, 
@@ -2646,7 +2781,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    					countRules(infRules,"AdditionalDLRules-ApplicationOfRange"),
 	    					countRules(infRules,"AdditionalDLRules-PROPCHAIN"),
 	    					countRules(infRules,"Additional-Forall-Union"),
-	    					countRules(infRules,"SUBCLCHAIN")
+	    					countRules(infRules,"Subclass-chain")
 							);
 					
 					
@@ -2658,9 +2793,51 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 				
 				
 			}
+		   
+			Long avg = 0l;
+		    if (sumN> 0)
+		    	avg = sumVerbTimes / sumN;
+		    int intAvg = avg.intValue();
+		    int avgJustTime = 0; 
 		    
+		    Integer[] avgcomputationtime =new Integer[100];
+		    
+		    for(int m=0;m<100;m++){
+		    	if (computationtimesN[m]>0){
+		    		Long t = computationtimes[m]/computationtimesN[m];
+		    		avgcomputationtime[m] = t.intValue();
+		    	}
+		    }
+			
+			 Statistic resultStatistic = new Statistic(ontologyid, nontrivCounter, 
+			    		verbalizedSubsumptionCounter, timedoutCounter, intAvg, // intAvg, 
+			    		avgJustTime,
+			    		subPropOfProblems,
+			    		unionProblems,
+			    		disjProblems,
+			    		noStepsList, 
+			    		noNoncompressedStepsList,
+			    		noVerbalizedStepsList,
+			    		noNoncompressedStepsCalculatedList,
+			    		null,unprovenConclusions, 
+			    		justsForUnprovenConclusions, 
+			    		verbalizations, 
+			    		proofListings,
+			    		longVerbalizations,
+			    		longProofListings,
+			    		avgcomputationtime,
+			    		usedrules,
+			    		compressions,
+			    		featRAgg,
+			    		featClAgg,
+			    		featAtt,
+			    		infrulesUsedReport,
+			    		longInfrulesUsedReport
+			    		);
+			
+			
 		
-		return null;
+		return resultStatistic;
 	}
 	
 	

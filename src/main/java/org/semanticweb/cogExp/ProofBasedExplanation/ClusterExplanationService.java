@@ -1008,10 +1008,19 @@ public class ClusterExplanationService {
 	public String allExplanations(){
 		String result = "";
 		for (OWLAxiom infAx : inferredAxioms){
-			TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(infAx, reasoner, reasonerFactory, ontology,100, 10000, "OP",true,false);
-			System.out.println(sequence.toString() + "\n\n");	
-			result += sequence.toString();
+			if (infAx instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom) infAx).getSuperClass().isOWLThing())
+				continue;
+			if (infAx instanceof OWLClassAssertionAxiom && ((OWLClassAssertionAxiom) infAx).getClassExpression().isOWLThing())
+				continue;
+			if (infAx instanceof OWLClassAssertionAxiom && ((OWLClassAssertionAxiom) infAx).getIndividual().toString().contains("round-hole"))
+				continue;
+			if (!((infAx instanceof OWLSubClassOfAxiom) ||  (infAx instanceof OWLClassAssertionAxiom)))
+				continue;
+			TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(infAx, reasoner, reasonerFactory, ontology,100, 1000, "OP",true,false);
+			System.out.println(" Sequence " + sequence.toString() + "\n\n");	
+			result = result + sequence.toString();
 		}
+		System.out.println("result " + result);
 		return result;
 	}
 	
