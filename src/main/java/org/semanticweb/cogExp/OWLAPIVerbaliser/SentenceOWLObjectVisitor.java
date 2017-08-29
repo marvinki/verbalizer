@@ -797,6 +797,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 								
 					}
 				}
+				result.setOrder(SentenceOrder.A_is_B);;
 			}
 			else{}
 			

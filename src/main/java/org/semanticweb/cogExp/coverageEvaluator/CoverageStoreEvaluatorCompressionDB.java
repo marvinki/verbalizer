@@ -2639,7 +2639,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 				
 				try{
 					String explanation = VerbalisationManager.computeVerbalization(tree, false, false,null);
-					System.out.println("Explanation for \"" + VerbalisationManager.verbalise(ax) + "\":\n");
+					System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax) + "\":\n");
 					System.out.println(VerbaliseTreeManager.listOutput(tree));
 					System.out.println(explanation);
 					String result = explanation;
