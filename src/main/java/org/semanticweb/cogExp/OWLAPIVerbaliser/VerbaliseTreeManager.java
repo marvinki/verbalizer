@@ -1134,6 +1134,7 @@ public enum VerbaliseTreeManager {
 				sentence.setObjekt(new ClassElement(definedconceptname,tooltiptext));
 				
 				sentence.setOrder(SentenceOrder.is_A_B);
+				sentence.makeOrderedSentence();
 				
 //				conclusionSequence.add(new LogicElement(LogicLabels.getString("is")));
 //				conclusionSequence.add(new LogicElement("..."));

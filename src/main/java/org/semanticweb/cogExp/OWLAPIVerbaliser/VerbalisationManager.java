@@ -60,6 +60,8 @@ public enum VerbalisationManager {
 	INSTANCE;
 
 	static final TextElementOWLObjectVisitor textOWLObjectVisit = new TextElementOWLObjectVisitor();
+	static final SentenceOWLObjectVisitor sentenceOWLObjectVisit = new SentenceOWLObjectVisitor();
+	
 	static final PrettyPrintClassExpressionVisitor ppCEvisit = new PrettyPrintClassExpressionVisitor();
 	static final PrettyPrintOWLAxiomVisitor ppOAvisit = new PrettyPrintOWLAxiomVisitor();
 	static final PrettyPrintOWLObjectVisitor ppOOvisit = new PrettyPrintOWLObjectVisitor();
@@ -89,30 +91,30 @@ public enum VerbalisationManager {
 	
 
 	public static TextElementSequence textualise(OWLObject ob) {
-		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
+		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit));
 		if(debug) seq.add(new LogicElement("<--visitor--"));
 		return seq;
 	}
 
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator) {
-		textOWLObjectVisit.setObfuscator(obfuscator);
-		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
+		sentenceOWLObjectVisit.setObfuscator(obfuscator);
+		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit));
 		return seq;
 	}
 	
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator, SentenceOrder order) {
-		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
+		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit));
 		if(debug) seq.add(new LogicElement("--textualise(ob, order)--"));
 		switch(order){
 		case A_B_is:			
 		case is_A_B:	
 		case A_is_B:
-			textOWLObjectVisit.setSentenceOrder(order);
-			textOWLObjectVisit.setObfuscator(obfuscator);
+			sentenceOWLObjectVisit.setSentenceOrder(order);
+			sentenceOWLObjectVisit.setObfuscator(obfuscator);
 			return seq;	
 
 		default:
-			textOWLObjectVisit.setObfuscator(obfuscator);
+			sentenceOWLObjectVisit.setObfuscator(obfuscator);
 //			 System.out.println("dealing with owl object " + ob);
 			return seq;	
 		}
@@ -221,8 +223,8 @@ public enum VerbalisationManager {
 				// System.out.println("DEBUG + " +
 				// property.getNamedProperty().getIRI().getFragment());
 				String result = property.getNamedProperty().getIRI().getFragment();
-				if (textOWLObjectVisit.getObfuscator() != null) {
-					result = textOWLObjectVisit.getObfuscator().obfuscateRole(result);
+				if (sentenceOWLObjectVisit.getObfuscator() != null) {
+					result = sentenceOWLObjectVisit.getObfuscator().obfuscateRole(result);
 				}
 				return result;
 			}
@@ -271,8 +273,8 @@ public enum VerbalisationManager {
 
 		// shortcut for labels with [X]
 		if (str.indexOf("[X]") > -1) {
-			if (textOWLObjectVisit.getObfuscator() != null) {
-				str = textOWLObjectVisit.getObfuscator()
+			if (sentenceOWLObjectVisit.getObfuscator() != null) {
+				str = sentenceOWLObjectVisit.getObfuscator()
 						.obfuscateRole(property.getNamedProperty().getIRI().getFragment());
 			}
 			return str;
@@ -288,8 +290,8 @@ public enum VerbalisationManager {
 			// System.out.println("DEBUG " + str);
 		}
 		// Obfuscate!
-		if (textOWLObjectVisit.getObfuscator() != null) {
-			str = textOWLObjectVisit.getObfuscator().obfuscateRole(str);
+		if (sentenceOWLObjectVisit.getObfuscator() != null) {
+			str = sentenceOWLObjectVisit.getObfuscator().obfuscateRole(str);
 		}
 		/*
 		 * if (TextElementOWLObjectVisitor.detectLowCamelCase(str)) str =
@@ -469,7 +471,7 @@ public enum VerbalisationManager {
 		// result +=
 		// VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 
-		return result;
+		return result.getSentence();
 	}
 	
 
@@ -538,7 +540,13 @@ public enum VerbalisationManager {
 	}
 
 	public static String treatCamelCaseAndUnderscores(String str) {
+		
 		String resultstring = "";
+		
+		if(VerbaliseTreeManager.locale == Locale.GERMAN) return str;
+		
+		if(str.length() <= 0|str.isEmpty())return resultstring;
+			
 		List<String> tokens = new ArrayList<String>();
 		// detect tokens delineated by ' ', '_' and camelcasing "aA"
 		String currenttoken = "";
@@ -846,7 +854,7 @@ public enum VerbalisationManager {
 			String labelAnnotString = null;
 			String defAnnotString = null;
 			String attrAnnotString = null;
-			String genericClassname = classexp.accept(textOWLObjectVisit).toString();
+			String genericClassname = classexp.accept(sentenceOWLObjectVisit).toString();
 			if (genericClassname.length() > 2 && genericClassname.substring(0, 2).equals("a" + _space)) {
 				genericClassname = genericClassname.substring(2, genericClassname.length());
 			}
@@ -933,7 +941,7 @@ public enum VerbalisationManager {
 		// if no proper noun, look for gerunds
 		if (noun_concepts_strings.size() == 0 && noun_or_attribute_concepts_strings.size() == 0) {
 			for (OWLClassExpression classexp : exprs) {
-				String genericClassname = classexp.accept(textOWLObjectVisit).toString();
+				String genericClassname = classexp.accept(sentenceOWLObjectVisit).toString();
 				if (genericClassname.indexOf("ing") > 0) {
 					noun_concepts.add(classexp);
 					noun_concepts_strings.add(genericClassname.toLowerCase());
@@ -1174,7 +1182,7 @@ public enum VerbalisationManager {
 			List<String> substrings = new ArrayList<String>();
 			for (Object someobj : buckets.get(i)) {
 				OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) someobj;
-				String somefillertext = some.getFiller().accept(textOWLObjectVisit).toString();
+				String somefillertext = some.getFiller().accept(sentenceOWLObjectVisit).toString();
 				if (some.getFiller() instanceof OWLObjectSomeValuesFrom) {
 					somefillertext = LogicLabels.getString("somethingThat ") + somefillertext;
 				}
@@ -1221,7 +1229,7 @@ public enum VerbalisationManager {
 		for (OWLClassExpression expr : exprs) {
 			OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) expr;
 			OWLObjectPropertyExpression propexpr = someexpr.getProperty();
-			substrings.add(someexpr.getFiller().accept(textOWLObjectVisit).toString());
+			substrings.add(someexpr.getFiller().accept(sentenceOWLObjectVisit).toString());
 			if (commonpropexpr == null) {
 				commonpropexpr = propexpr;
 			}
@@ -1240,7 +1248,7 @@ public enum VerbalisationManager {
 		for (OWLClassExpression expr : exprs) {
 			OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) expr;
 			OWLObjectPropertyExpression propexpr = someexpr.getProperty();
-			substrings.add(someexpr.getFiller().accept(textOWLObjectVisit));
+			substrings.add(someexpr.getFiller().accept(sentenceOWLObjectVisit).toList());
 			if (commonpropexpr == null) {
 				commonpropexpr = propexpr;
 			}
@@ -1264,7 +1272,7 @@ public enum VerbalisationManager {
 			if (expr instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) expr;
 				OWLObjectPropertyExpression propexpr = someexpr.getProperty();
-				String str = someexpr.getFiller().accept(textOWLObjectVisit).toString();
+				String str = someexpr.getFiller().accept(sentenceOWLObjectVisit).toString();
 				// System.out.println("str " + str);
 				if (someexpr.getFiller() instanceof OWLObjectSomeValuesFrom) {
 					String somethingstr = "something that ";
@@ -1327,7 +1335,7 @@ public enum VerbalisationManager {
 			if (expr instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) expr;
 				OWLObjectPropertyExpression propexpr = someexpr.getProperty();
-				List<TextElement> str = someexpr.getFiller().accept(textOWLObjectVisit);
+				List<TextElement> str = someexpr.getFiller().accept(sentenceOWLObjectVisit).toList();
 				// System.out.println("str " + str);
 				if (someexpr.getFiller() instanceof OWLObjectSomeValuesFrom) {
 					LogicElement somethingst = new LogicElement("something that");
@@ -1339,7 +1347,7 @@ public enum VerbalisationManager {
 							.getDomain(some1.getProperty().getNamedProperty());
 					// System.out.println(cl);
 					if (cl != null) {
-						somethingstr.addAll(cl.accept(textOWLObjectVisit));
+						somethingstr.addAll(cl.accept(sentenceOWLObjectVisit).toList());
 						somethingstr.add(new LogicElement("that"));
 					} else
 						somethingstr.add(somethingst);

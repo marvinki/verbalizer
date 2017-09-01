@@ -134,7 +134,8 @@ public class TextElementSequence extends TextElement{
 	}
 	
 	public void concat(TextElementSequence seq2){
-		sequence.addAll(seq2.sequence);	
+	if(seq2!=null) 
+			sequence.addAll(seq2.sequence);	
 	}
 	
 	public void makeUppercaseStart(){
