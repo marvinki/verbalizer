@@ -23,6 +23,7 @@ public class Sentence extends TextElementSequence{
 	private TextElementSequence objekt = new TextElementSequence();
 	private TextElementSequence praedikat = new TextElementSequence();
 	
+	
 	private SentenceOrder order = null;
 	
 //	private String sentenceType = "default";
@@ -37,7 +38,7 @@ public class Sentence extends TextElementSequence{
 	public Sentence() {
 	}
 	
-	public Sentence(TextElementSequence seq){
+	public Sentence(TextElementSequence seq){	
 		this.add(seq);
 	}
 	
@@ -246,6 +247,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 				this.add(objekt);	
 				break;
 				
+			case noOrder:
+				break;
+				
 			default:
 				this.add(subjekt);
 				this.add(praedikat);
@@ -259,23 +263,48 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	 * @return the generated sentence as TextElementSequence
 	 */
 	public Sentence getSentence() {
-//		if(this == null){
-//			this.add(new TextElement(""));
-//			return this;
-//		}
-//		if(!isEmpty(this)){
-//			return this;
-//		}
-//		if(this.size() == 1){
-//			makeDefaultSentence();
-//		}
-		if(order !=null){
+		
+		
+		if(order !=null && order != SentenceOrder.noOrder){
 			makeOrderedSentence();
-		}else{
+		}else if(order == null){
 			makeDefaultSentence();
+		}else{
+			
 		}
 		
+//		cleanSentence();
+				
 		return this;
+	}
+	
+	private void cleanSentence(){
+		String newSen = "";
+		String oldSen = this.toString();
+		
+		for(int i = 0; i<=oldSen.length(); i++){
+			
+			if(i<oldSen.length()-1 && (oldSen.charAt(i) == ' ')){
+				if(oldSen.charAt(i+1)==' '){
+					i+=1;
+				}
+			}
+			
+			if(i<oldSen.length()){
+					newSen += oldSen.charAt(i);
+			}else{
+				break;
+			}
+			
+			
+		}
+		
+		
+		newSen.trim();
+//		this.deleteTextElement();
+		this.setSentence(new TextElementSequence(new TextElement(newSen)));
+		
+		
 	}
 
 	
@@ -372,6 +401,11 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	 */
 	public void concat(TextElementSequence clause){
 		this.add(clause);
+		return;
+	}
+	
+	public void concat(TextElement textElement){
+		this.add(textElement);
 		return;
 	}
 	

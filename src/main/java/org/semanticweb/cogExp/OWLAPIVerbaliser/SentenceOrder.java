@@ -11,7 +11,8 @@ public enum SentenceOrder {
 
 	is_A_B,
 	A_is_B,
-	A_B_is;
+	A_B_is, 
+	noOrder;
 	
 	
 	

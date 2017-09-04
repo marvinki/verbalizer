@@ -59,7 +59,7 @@ import edu.smu.tspell.wordnet.SynsetType;
 public enum VerbalisationManager {
 	INSTANCE;
 
-	static final TextElementOWLObjectVisitor textOWLObjectVisit = new TextElementOWLObjectVisitor();
+//	static final TextElementOWLObjectVisitor textOWLObjectVisit = new TextElementOWLObjectVisitor();
 	static final SentenceOWLObjectVisitor sentenceOWLObjectVisit = new SentenceOWLObjectVisitor();
 	
 	static final PrettyPrintClassExpressionVisitor ppCEvisit = new PrettyPrintClassExpressionVisitor();
@@ -1264,7 +1264,7 @@ public enum VerbalisationManager {
 	public static String pseudoNLStringMultipleExistsAndForallPattern(OWLObjectIntersectionOf ints) {
 		// System.out.println("ints " + ints);
 		String result = "";
-		List<OWLClassExpression> exprs = TextElementOWLObjectVisitor.collectAndExpressions(ints);
+		List<OWLClassExpression> exprs = SentenceOWLObjectVisitor.collectAndExpressions(ints);
 		List<String> substrings = new ArrayList<String>();
 		OWLObjectPropertyExpression commonpropexpr = null;
 		// recursive call for subexpressions
@@ -1280,7 +1280,7 @@ public enum VerbalisationManager {
 					// System.out.println("DEBUG (1) -- getting domain");
 					OWLClass cl = (OWLClass) VerbalisationManager.INSTANCE
 							.getDomain(some1.getProperty().getNamedProperty());
-					TextElementOWLObjectVisitor visitor = new TextElementOWLObjectVisitor();
+					SentenceOWLObjectVisitor visitor = new SentenceOWLObjectVisitor();
 					if (cl != null) {
 						somethingstr = cl.accept(visitor) + " that ";
 					}
@@ -1327,7 +1327,7 @@ public enum VerbalisationManager {
 	public static TextElementSequence textualiseMultipleExistsAndForallPattern(OWLObjectIntersectionOf ints) {
 		// System.out.println("ints " + ints);
 		TextElementSequence result = new TextElementSequence();
-		List<OWLClassExpression> exprs = TextElementOWLObjectVisitor.collectAndExpressions(ints);
+		List<OWLClassExpression> exprs = SentenceOWLObjectVisitor.collectAndExpressions(ints);
 		List<List<TextElement>> substrings = new ArrayList<List<TextElement>>();
 		OWLObjectPropertyExpression commonpropexpr = null;
 		// recursive call for subexpressions

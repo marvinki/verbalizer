@@ -30,6 +30,7 @@ public enum VerbaliseTreeManager {
 	INSTANCE;
 	
 	static boolean debug = false;
+	static boolean visitorDebug = false;
 	// static boolean debug = true;
 	
 	
