@@ -29,13 +29,13 @@ import com.clarkparsia.owlapi.modularity.locality.SemanticLocalityEvaluator;
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
-	static boolean debug = true;
+	static boolean debug = false;
 	static boolean visitorDebug = false;
 	static boolean verbalisationManagerdebug = false;
 	// static boolean debug = true;
 	
 	
-	static Locale locale = Locale.ENGLISH;
+	static Locale locale = Locale.GERMAN;
 	// static Locale locale = Locale.GERMAN;
 	
 	
@@ -636,7 +636,6 @@ public enum VerbaliseTreeManager {
 					if (((OWLSubClassOfAxiom) additions_to_antecedent.get(0)).getSubClass().equals(definedconcept)){
 						TextElementSequence seq = new TextElementSequence();
 						seq.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
-	//					seq.add(new LogicElement("Definfitionsgemäß ist "));
 	
 						seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 						return seq;

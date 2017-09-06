@@ -90,6 +90,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	
 	public void makeDefaultSentence(){
 		//German Sentences
+		setOrder(SentenceOrder.noOrder);
 		if(lang == Locale.GERMAN){	
 		
 				this.add(subjekt);
@@ -109,7 +110,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	}
 	
 	public void makeAisBSentence(){
-		setPraedikat(new LogicElement(LogicLabels.getString("is")));
+		
+		setOrder(SentenceOrder.A_is_B);
+//		setPraedikat(new LogicElement(LogicLabels.getString("is")));
 	 	
 		this.add(subjekt);
 		this.add(praedikat);
@@ -119,7 +122,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	}
 	
 	public void makeABisSentence(){
-		setPraedikat(new LogicElement(LogicLabels.getString("is")));
+		
+		setOrder(SentenceOrder.A_B_is);
+//		setPraedikat(new LogicElement(LogicLabels.getString("is")));
 			
 	 	this.add(subjekt);
 		this.add(objekt);
@@ -128,8 +133,11 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	}
 	
 	public void makeisABSentence() {
+		
+		
 		// TODO Auto-generated method stub
-		setPraedikat(new LogicElement(LogicLabels.getString("is")));			
+		setOrder(SentenceOrder.is_A_B);
+//		setPraedikat(new LogicElement(LogicLabels.getString("is")));			
 		 	
 		this.add(praedikat);
 		this.add(subjekt);
@@ -141,6 +149,8 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	
 	
 	public void makeAccordingToItsDefSentence(){
+		setOrder(SentenceOrder.noOrder);
+		
 		this.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
@@ -159,6 +169,8 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	}
 	
 	public void makeThusSentence(){
+		setOrder(SentenceOrder.noOrder);
+		
 		this.add(new LogicElement(LogicLabels.getString("thus")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
@@ -177,6 +189,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	}
 	
 	public void makeSideSentence(){
+		
+		setOrder(SentenceOrder.noOrder);
+		
 		//German Sentences
 		if(lang == Locale.GERMAN){
 			this.add(subjekt);
@@ -194,6 +209,8 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	}
 	
 	public void makeSinceSentence(){
+		setOrder(SentenceOrder.noOrder);
+		
 		this.add(new LogicElement(LogicLabels.getString("since")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
@@ -212,7 +229,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	}
 	
 	public void makebyDefinitionItIsSentence(){
+		setOrder(SentenceOrder.noOrder);	
 		this.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
+		
 		//German Sentences
 		if(lang == Locale.GERMAN){
 			this.add(new LogicElement(", "));
@@ -361,7 +380,8 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 
 
 	public void setSubjekt(TextElement subject) {
-		 this.subjekt.add(subject);
+		this.subjekt = new TextElementSequence(new TextElement());  
+		this.subjekt.add(subject);
 	}
 
 	public void setSubjekt(List <TextElement> subjectList) {

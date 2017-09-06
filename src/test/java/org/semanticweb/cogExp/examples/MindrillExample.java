@@ -83,17 +83,7 @@ public class MindrillExample {
 			
 			OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
 			String ontologyuri = "http://www.semanticweb.org/powertools#";
-		  	
-			/*
-			OWLClass correctlyDrillingInWood = dataFactory.getOWLClass(IRI.create(ontologyuri + "CorrectlyDrillingInWood"));
-		  	OWLNamedIndividual drillingEvent1 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drillingEvent1"));
-		  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(correctlyDrillingInWood, drillingEvent1);
-			*/
-//			
-//			OWLClass drillingInWoodWithTooMuchSpeed = dataFactory.getOWLClass(IRI.create(ontologyuri + "DrillingInWoodWithRotationalSpeedAbove1000Umin"));
-//		  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drillingEvent2"));
-//		  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(drillingInWoodWithTooMuchSpeed, drillingEvent2);
-//			
+		  
 			OWLClass drillingInWoodWithTooMuchSpeed = dataFactory.getOWLClass(IRI.create(ontologyuri + "ActivitiesUsingWoodDrillingBits"));
 		  	OWLNamedIndividual drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drilling-config-1"));
 		  	OWLClassAssertionAxiom classAxiom = dataFactory.getOWLClassAssertionAxiom(drillingInWoodWithTooMuchSpeed, drillingEvent2);
@@ -102,6 +92,45 @@ public class MindrillExample {
 			String resulttext = ProofBasedExplanationService.getExplanationResult(classAxiom, jfact, reasonerFactory,  boschOntology, false, 1000, 50000, "OP", false, false);
 			System.out.println(resulttext);
 	
+			
+			
+			// ENGLISH TEST 
+			
+			locale = Locale.ENGLISH;
+			VerbaliseTreeManager.setLocale(locale);
+			VerbaliseTreeManager.setLogicLabels(ResourceBundle.getBundle("LogicLabels", locale));
+			
+			System.out.println("Classes : ");
+			
+			
+			a = "Drill";
+			b = "MaterialsAndTools";//"MaterialsAndTools";
+			result = getResult(a, b, ontologyfile.getPath(), reasonerFactory, jfact );
+			
+			System.out.println(result);
+			
+			System.out.println("\n");
+			 a = "ValidDrillingConfig";
+			 b = "ActivitiesUsingSoftwood";//"MaterialsAndTools";
+			 result = getResult(a, b, ontologyfile.getPath(), reasonerFactory, jfact );
+			
+			System.out.println(result);
+			
+		
+			
+			dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
+			ontologyuri = "http://www.semanticweb.org/powertools#";
+		  
+			drillingInWoodWithTooMuchSpeed = dataFactory.getOWLClass(IRI.create(ontologyuri + "ActivitiesUsingWoodDrillingBits"));
+		  	drillingEvent2 = dataFactory.getOWLNamedIndividual(IRI.create(ontologyuri + "drilling-config-1"));
+		  	classAxiom = dataFactory.getOWLClassAssertionAxiom(drillingInWoodWithTooMuchSpeed, drillingEvent2);
+			
+		  	System.out.println("Individuals: ");
+			resulttext = ProofBasedExplanationService.getExplanationResult(classAxiom, jfact, reasonerFactory,  boschOntology, false, 1000, 50000, "OP", false, false);
+			System.out.println(resulttext);
+	
+			
+			
 			
 			
 		}

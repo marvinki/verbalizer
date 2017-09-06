@@ -546,7 +546,8 @@ public enum VerbalisationManager {
 		
 		if(VerbaliseTreeManager.locale == Locale.GERMAN) return str;
 		
-		if(str.length() <= 0|str.isEmpty())return resultstring;
+		if(str.length() <= 0 || str.isEmpty() || str.equals("")) return resultstring;
+
 			
 		List<String> tokens = new ArrayList<String>();
 		// detect tokens delineated by ' ', '_' and camelcasing "aA"
@@ -579,25 +580,34 @@ public enum VerbalisationManager {
 		}
 		// now postprocess all tokens
 		List<String> processedtokens = new ArrayList<String>();
+		boolean tokenEmpty = false;
 		for (String token : tokens) {
 			// if acronym (both first letters are capitals), do nothing
-			if (token.length() > 1 && Character.isUpperCase(str.charAt(0)) && Character.isUpperCase(str.charAt(1))) {
+			
+			if(token.length() <= 0 || token.isEmpty() || token.equals("")){
+				tokenEmpty =true;
+			}
+			
+			if (!tokenEmpty && token.length() > 1 && Character.isUpperCase(str.charAt(0)) && Character.isUpperCase(str.charAt(1))) {
 				processedtokens.add(token);
 				continue;
 			}
-			// now lowercase
-			token = token.substring(0, 1).toLowerCase() + token.substring(1, token.length());
-			// now find hypens and lowercase
-			int ind = 0;
-			while (ind < token.length()) {
-				int foundint = token.substring(ind).indexOf("-");
-				// System.out.println(token.charAt(foundint+1));
-				if (foundint < 0 || foundint + 1 > token.length())
-					break;
-				token = token.substring(0, foundint) + "-" + Character.toLowerCase(token.charAt(foundint + 1))
-						+ token.substring(foundint + 2);
-				ind = foundint + 1;
+			// now lowercase	
+			if(!tokenEmpty){
+				token = token.substring(0, 1).toLowerCase() + token.substring(1, token.length());
+				// now find hypens and lowercase
+				int ind = 0;
+				while (ind < token.length()) {
+					int foundint = token.substring(ind).indexOf("-");
+					// System.out.println(token.charAt(foundint+1));
+					if (foundint < 0 || foundint + 1 > token.length())
+						break;
+					token = token.substring(0, foundint) + "-" + Character.toLowerCase(token.charAt(foundint + 1))
+							+ token.substring(foundint + 2);
+					ind = foundint + 1;
+				}
 			}
+			
 			processedtokens.add(token);
 		}
 		// now join all tokens together
