@@ -10,7 +10,7 @@ import org.semanticweb.cogExp.core.Pair;
 import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.SentenceOWLObjectVisitor;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementOWLObjectVisitor;
+//import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementOWLObjectVisitor;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;

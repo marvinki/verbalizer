@@ -34,6 +34,7 @@ public class TextElementSequence extends TextElement{
 	public TextElementSequence(){
 	}
 	
+		
 	/* (non-Javadoc)
 	 * @see org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement#toString()
 	 */
@@ -107,23 +108,7 @@ public class TextElementSequence extends TextElement{
 		return labels;
 	}
 	
-	/*
-	public void addToDocument(JTextPane textPane){
-		boolean needsep = false;
-		for(TextElement elem : sequence){
-			if (elem.content.startsWith(","))
-				needsep = false;
-			if (needsep){
-				document.insertString(document.getLength(), " ", null);
-			}
-			elem.addToDocument();
-			result += elem.toHTML();
-			needsep = true;
-		}
-		return result;
-	}
-	*/
-	
+		
 	public void add(TextElement el){
 		sequence.add(el);	
 	}

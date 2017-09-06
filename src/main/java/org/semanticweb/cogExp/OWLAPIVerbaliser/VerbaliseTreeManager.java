@@ -29,8 +29,9 @@ import com.clarkparsia.owlapi.modularity.locality.SemanticLocalityEvaluator;
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
-	static boolean debug = false;
+	static boolean debug = true;
 	static boolean visitorDebug = false;
+	static boolean verbalisationManagerdebug = false;
 	// static boolean debug = true;
 	
 	
@@ -1119,6 +1120,7 @@ public enum VerbaliseTreeManager {
 				String tooltiptext = definedconcept.asOWLClass().getIRI().asLiteral().toString();
 				TextElementSequence defSeq = VerbalisationManager.textualise(definition);
 				TextElementSequence seq = new TextElementSequence();
+				
 				// [CONCEPTNAME] is defined as [DEFINITION]
 				seq.add(new ClassElement(definedconceptname,tooltiptext));
 				seq.add(new LogicElement(LogicLabels.getString("is")));
@@ -1137,20 +1139,9 @@ public enum VerbaliseTreeManager {
 				sentence.setOrder(SentenceOrder.is_A_B);
 				sentence.makeOrderedSentence();
 				
-//				conclusionSequence.add(new LogicElement(LogicLabels.getString("is")));
-//				conclusionSequence.add(new LogicElement("..."));
-//				
-//				conclusionSequence.addAll(VerbalisationManager.textualise(conclusion.getSubClass(),obfuscator, SentenceOrder.is_A_B).getTextElements());
-//				conclusionSequence.add(new LogicElement("..."));
-//				
-//				
-//				conclusionSequence.add(new ClassElement(definedconceptname,tooltiptext));
-//				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(conclusionSequence);
-//				seq.add(conclusionMarker);
-				// debug
 				if(debug) seq.add(new LogicElement("-1-"));
 
-				seq.add( sentence.toTextElementSequence());
+				seq.addAll(sentence.toList());
 				
 				return seq;
 			}
@@ -1807,7 +1798,7 @@ public enum VerbaliseTreeManager {
 			}
 			
 			if (rule.getName().equals(INLG2012NguyenEtAlRules.RULE12.getName()) && !premiseformulas.contains(previousconclusion) &&  premiseformulas.size()==2){
-				System.out.println("Case Rule 12 (3)");
+				if(debug) System.out.println("Case Rule 12 (3)");
 				OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) additions_to_antecedent.get(0); 
 				OWLClassExpression superclass = subcl.getSuperClass();
 				OWLClassExpression subclass = subcl.getSubClass();
@@ -1835,16 +1826,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(","));
 				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 				seq.add(conclusionMarker);
-			// String result = "";
-			//	result += "Since " + VerbalisationManager.verbalise(prem1);
-			//	result += ", which ";
-			//	if (!(superclass instanceof OWLObjectSomeValuesFrom))
-			//		result += "is "; // TODO -- should only be there if needed!
-			//	result += VerbalisationManager.verbalise(prem2.getSuperClass());
-			//	result += ", "; 
-			//	result += VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); 
-			//	return result;
-				
+	
 				if(debug) seq.add(new LogicElement("-28-"));
 				return seq;
 				}

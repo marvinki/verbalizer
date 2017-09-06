@@ -86,25 +86,28 @@ public enum VerbalisationManager {
 
 	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
 	
-	private static boolean debug = VerbaliseTreeManager.debug;
+	private static boolean verbalisationManagerdebug = VerbaliseTreeManager.verbalisationManagerdebug;
 	
 	
 
 	public static TextElementSequence textualise(OWLObject ob) {
-		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit));
-		if(debug) seq.add(new LogicElement("<--visitor--"));
+		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit).toList());
+		if(verbalisationManagerdebug) seq.add(new LogicElement("textualise(OWLObject ob)"));
 		return seq;
 	}
 
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator) {
 		sentenceOWLObjectVisit.setObfuscator(obfuscator);
-		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit));
+		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit).toList());
+//		System.out.println("<c"+ seq.toString() +"c>");
+		
+		if(verbalisationManagerdebug) seq.add(new LogicElement("textualise(OWLObject ob, Obfuscator obfuscator)"));
 		return seq;
 	}
 	
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator, SentenceOrder order) {
-		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit));
-		if(debug) seq.add(new LogicElement("--textualise(ob, order)--"));
+		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit).toList());
+		if(verbalisationManagerdebug) seq.add(new LogicElement("--textualise(ob, order)--"));
 		switch(order){
 		case A_B_is:			
 		case is_A_B:	

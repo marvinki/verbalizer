@@ -400,8 +400,16 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	 * @param clause
 	 */
 	public void concat(TextElementSequence clause){
-		this.add(clause);
+		
+		clause.content.trim();
+		
+		this.getSentence().add(clause.content);
 		return;
+	}
+	
+	public void add(String s){
+		s.trim();
+		this.add(new TextElement(s));
 	}
 	
 	public void concat(TextElement textElement){
@@ -467,7 +475,14 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	public List<TextElement> toList(){
 		List<TextElement> list = new ArrayList<TextElement>();
 //		list.add(new TextElement("example text"));
-		list.add(this);		
+		String s = this.toString();
+		String[] sArray = s.split(" ");
+		
+		for(String str : sArray){
+			str.trim();
+			list.add(new TextElement(str));
+		}
+		//		list.add(this);		
 		return list;
 		
 	}
@@ -478,5 +493,10 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 
 	public void setOrder(SentenceOrder order) {
 		this.order = order;
+	}
+
+	public List<TextElement> trim() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
