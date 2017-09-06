@@ -456,14 +456,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				}	
 			}	
 		
-			//System.out.println(" DEBUG (1) -- " +  filler.accept(this));
 			fillerstrs.add(filler.accept(this).toList());
 			Sentence propsentence = VerbalisationManager.textualisePropertyAsSentence(property, fillerstrs, middle);
-			
-			// System.out.println("leftstring " + leftstring);
-			// System.out.println("middlestring " + middlestring);
-			// System.out.println("rightstring " + rightstring);
-			
+						
 			Sentence sentence = new Sentence(new TextElementSequence(leftstring),
 					new TextElementSequence(),
 					new TextElementSequence());
@@ -471,9 +466,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			
 			if (visitorDebug) sentence.concat(new TextElement("visit:subclof"));
 			return sentence.getSentence();
-			// return // leftstring
-					// + " " 
-					// + VerbalisationManager.textualiseProperty(property, fillerstrs, middle);
+			
 		}
 		// Multiple Exists Pattern
 		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 

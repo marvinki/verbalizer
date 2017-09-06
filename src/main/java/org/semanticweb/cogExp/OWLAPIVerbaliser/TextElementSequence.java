@@ -51,6 +51,7 @@ public class TextElementSequence extends TextElement{
 			result += elem.toString();
 			needsep = true;
 		}
+		result.trim();
 		return result;
 	}
 	

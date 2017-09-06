@@ -359,7 +359,7 @@ public enum VerbalisationManager {
 		result = treatCamelCaseAndUnderscores(result);
 
 		// System.out.println("DEBUG PROPERTY |" + result + "|");
-
+		result.trim();
 		return result;
 	}
 
@@ -394,7 +394,6 @@ public enum VerbalisationManager {
 			}
 		} else {
 			result.add(new RoleElement(propstring));
-			// result += propstring + " ";
 		}
 
 		result.addAll(middle);
@@ -451,7 +450,6 @@ public enum VerbalisationManager {
 			}
 		} else {
 			result.setPraedikat(new RoleElement(propstring));
-			// result += propstring + " ";
 		}
 
 		result.addToObject(new TextElementSequence(middle));
@@ -1015,12 +1013,7 @@ public enum VerbalisationManager {
 				String current = "";
 				for (String str : noun_or_attribute_concepts_strings) {
 					if (!WordNetQuery.INSTANCE.isDisabled()) {
-						// result = result + str + " ";
-						// noun_concepts_strings.remove(str);
 						int[] types = WordNetQuery.INSTANCE.getTypes(str);
-						// System.out.println(Arrays.toString(types));
-						// float currentattr = ((float) types[2]+types[4])/
-						// ((float) types[0]+types[2]+types[4]);
 						float currentattr = types[2] + types[4];
 						// do not consider type 4
 						if (currentattr >= attributiveness) {
@@ -1030,7 +1023,7 @@ public enum VerbalisationManager {
 					}
 				}
 				noun_or_attribute_concepts_strings.remove(current);
-				result = result + current + _space; // + " ";
+				result = result + current + _space; 
 				noun_concepts_strings.remove(current);
 			}
 			for (String str : noun_concepts_strings) {
