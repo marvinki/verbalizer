@@ -890,7 +890,7 @@ public class ClusterExplanationService {
 			int counter = 1;
 			for (Object ob : params){
 				String obString = (String) ob;
-				System.out.println("obString" + obString);
+				// System.out.println("obString" + obString);
 				OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#instr_arg" + counter));
 				OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + obString));
 				OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(argProp,new_indiv, target_indiv);
@@ -898,7 +898,7 @@ public class ClusterExplanationService {
 				manager.applyChange(addAxiomAction2);
 				counter++;
 				memory.add(ax);
-				System.out.println(" assuming " + ax);;
+				// System.out.println(" assuming " + ax);;
 			}	
 		} // assumptions done, now comes the reasoning!
 		
