@@ -3,6 +3,7 @@
  */
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -15,13 +16,13 @@ import java.util.ResourceBundle;
  * 
  */
 
-public class Sentence{
+public class Sentence extends TextElementSequence{
 
-	private TextElementSequence sentence = new TextElementSequence();
-			
+				
 	private TextElementSequence subjekt = new TextElementSequence();
 	private TextElementSequence objekt = new TextElementSequence();
 	private TextElementSequence praedikat = new TextElementSequence();
+	
 	
 	private SentenceOrder order = null;
 	
@@ -37,24 +38,34 @@ public class Sentence{
 	public Sentence() {
 	}
 	
+	public Sentence(TextElementSequence seq){	
+		this.add(seq);
+	}
+	
+	public Sentence(TextElement el){
+		this.add(el);
+	}
+	
 	public Sentence(TextElement subjekt, TextElement objekt, TextElement praedikat) {
 		
-		this.subjekt = (TextElementSequence) subjekt;
+		this.setSubjekt(subjekt);
 		this.setObjekt(objekt);
 		this.setPraedikat(praedikat);
 		
-		
-		
-//		setSentenceType("default");
+		makeDefaultSentence();
 	}
 	
 public Sentence(TextElement subjekt, TextElement objekt, TextElement praedikat, SentenceOrder order) {	
-		this.subjekt = (TextElementSequence) subjekt;
+		this.setSubjekt(subjekt);
 		this.setObjekt(objekt);
 		this.setPraedikat(praedikat);	
 		this.setOrder(order);
+		
+		makeOrderedSentence();
+
 //		setSentenceType("default");
 	}
+
 
 
 public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, TextElementSequence objekt, SentenceOrder order){
@@ -62,6 +73,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	this.praedikat = praedikat;
 	this.objekt = objekt;
 	this.setOrder(order);
+	
+	makeOrderedSentence();
+
 }
 	
 
@@ -69,54 +83,65 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		this.subjekt = subjekt;
 		this.praedikat = praedikat;
 		this.objekt = objekt;
+		
+		makeDefaultSentence();
+
 	}
 	
 	public void makeDefaultSentence(){
 		//German Sentences
+		setOrder(SentenceOrder.noOrder);
 		if(lang == Locale.GERMAN){	
 		
-				sentence.add(subjekt);
-				sentence.add(praedikat);
-				sentence.add(objekt);
+				this.add(subjekt);
+				this.add(praedikat);
+				this.add(objekt);
 			
 		}
 
 		//English Sentence
 		if(lang == Locale.ENGLISH){
 	
-				sentence.add(subjekt);
-				sentence.add(praedikat);
-				sentence.add(objekt);
+				this.add(subjekt);
+				this.add(praedikat);
+				this.add(objekt);
 			}
 			
 	}
 	
 	public void makeAisBSentence(){
-		setPraedikat(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
+		
+		setOrder(SentenceOrder.A_is_B);
+//		setPraedikat(new LogicElement(LogicLabels.getString("is")));
 	 	
-		sentence.add(subjekt);
-		sentence.add(praedikat);
-		sentence.add(objekt);
+		this.add(subjekt);
+		this.add(praedikat);
+		this.add(objekt);
 		
 	
 	}
 	
 	public void makeABisSentence(){
-		setPraedikat(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
+		
+		setOrder(SentenceOrder.A_B_is);
+//		setPraedikat(new LogicElement(LogicLabels.getString("is")));
 			
-	 	sentence.add(subjekt);
-		sentence.add(objekt);
-		sentence.add(praedikat);
+	 	this.add(subjekt);
+		this.add(objekt);
+		this.add(praedikat);
 	
 	}
 	
 	public void makeisABSentence() {
+		
+		
 		// TODO Auto-generated method stub
-		setPraedikat(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));			
+		setOrder(SentenceOrder.is_A_B);
+//		setPraedikat(new LogicElement(LogicLabels.getString("is")));			
 		 	
-		sentence.add(praedikat);
-		sentence.add(subjekt);
-		sentence.add(objekt);
+		this.add(praedikat);
+		this.add(subjekt);
+		this.add(objekt);
 			
 			
 	}
@@ -124,109 +149,183 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	
 	
 	public void makeAccordingToItsDefSentence(){
-		sentence.add(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
+		setOrder(SentenceOrder.noOrder);
+		
+		this.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
-		 	sentence.add(praedikat);
-			sentence.add(subjekt);
-			sentence.add(objekt);
+		 	this.add(praedikat);
+			this.add(subjekt);
+			this.add(objekt);
 			
 		}
 
 		//English Sentence
 		if(lang == Locale.ENGLISH){
-			sentence.add(subjekt);
-			sentence.add(praedikat);
-			sentence.add(objekt);
+			this.add(subjekt);
+			this.add(praedikat);
+			this.add(objekt);
 		}	
 	}
 	
 	public void makeThusSentence(){
-		sentence.add(new LogicElement(VerbalisationManager.LogicLabels.getString("thus")));
+		setOrder(SentenceOrder.noOrder);
+		
+		this.add(new LogicElement(LogicLabels.getString("thus")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
-			sentence.add(praedikat);
-			sentence.add(subjekt);
-			sentence.add(objekt);
+			this.add(praedikat);
+			this.add(subjekt);
+			this.add(objekt);
 			
 		}
 
 		//English Sentence
 		if(lang == Locale.ENGLISH){
-			sentence.add(subjekt);
-			sentence.add(praedikat);
-			sentence.add(objekt);
+			this.add(subjekt);
+			this.add(praedikat);
+			this.add(objekt);
 		}	
 	}
 	
 	public void makeSideSentence(){
+		
+		setOrder(SentenceOrder.noOrder);
+		
 		//German Sentences
 		if(lang == Locale.GERMAN){
-			sentence.concat(subjekt); // <--- use "add" instead to achieve deep nesting
-			sentence.concat(objekt);
-			sentence.concat(praedikat);
+			this.add(subjekt);
+			this.add(objekt);
+			this.add(praedikat);
 			
 		}
 
 		//English Sentence
 		if(lang == Locale.ENGLISH){
-			sentence.concat(subjekt);
-			sentence.concat(praedikat);
-			sentence.concat(objekt);
+			this.add(subjekt);
+			this.add(praedikat);
+			this.add(objekt);
 		}	
 	}
 	
 	public void makeSinceSentence(){
-		sentence.add(new LogicElement(VerbalisationManager.LogicLabels.getString("since")));
+		setOrder(SentenceOrder.noOrder);
+		
+		this.add(new LogicElement(LogicLabels.getString("since")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
-			sentence.add(praedikat);
-			sentence.add(subjekt);
-			sentence.add(objekt);
+			this.add(praedikat);
+			this.add(subjekt);
+			this.add(objekt);
 			
 		}
 
 		//English Sentence
 		if(lang == Locale.ENGLISH){
-			sentence.add(subjekt);
-			sentence.add(praedikat);
-			sentence.add(objekt);
+			this.add(subjekt);
+			this.add(praedikat);
+			this.add(objekt);
 		}	
 	}
 	
 	public void makebyDefinitionItIsSentence(){
-		System.out.println("makebyDefinitionItIsSentence (1)");
-		sentence.add(new LogicElement(VerbalisationManager.LogicLabels.getString("byDefinitionItIs")));
+		setOrder(SentenceOrder.noOrder);	
+		this.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
+		
 		//German Sentences
 		System.out.println("makebyDefinitionItIsSentence (2)");
 		if(lang == Locale.GERMAN){
-			sentence.add(new LogicElement(", "));
-			sentence.add(subjekt);		
+			this.add(new LogicElement(", "));
+			this.add(subjekt);		
 		}
 
 		//English Sentence
 		if(lang == Locale.ENGLISH){
-			sentence.add(subjekt);
+			this.add(subjekt);
 		}	
 		System.out.println("makebyDefinitionItIsSentence (3)");
 	}
 	
+	protected void makeOrderedSentence() {
+		// TODO Auto-generated method stub
+		if(order!=null){
+			switch(getOrder()){
+			case A_B_is:
+				this.add(subjekt);
+				this.add(objekt);	
+				this.add(praedikat);
+				break;
+				
+			case A_is_B:
+				this.add(subjekt);
+				this.add(praedikat);
+				this.add(objekt);	
+				break;
+				
+			case is_A_B:
+				this.add(praedikat);
+				this.add(subjekt);
+				this.add(objekt);	
+				break;
+				
+			case noOrder:
+				break;
+				
+			default:
+				this.add(subjekt);
+				this.add(praedikat);
+				this.add(objekt);		
+			}	
+		}
+	}
+
 	
 	/**
 	 * @return the generated sentence as TextElementSequence
 	 */
-	public TextElementSequence getSentence() {
-		if(sentence == null){
-			sentence.add(new TextElement(""));
-			return sentence;
-		}
-		if(!isEmpty(sentence)){
-			return sentence;
-		}
-		if(sentence.size() == 1){
+	public Sentence getSentence() {
+		
+		
+		if(order !=null && order != SentenceOrder.noOrder){
+			makeOrderedSentence();
+		}else if(order == null){
 			makeDefaultSentence();
+		}else{
+			
 		}
-		return sentence;
+		
+//		cleanSentence();
+				
+		return this;
+	}
+	
+	private void cleanSentence(){
+		String newSen = "";
+		String oldSen = this.toString();
+		
+		for(int i = 0; i<=oldSen.length(); i++){
+			
+			if(i<oldSen.length()-1 && (oldSen.charAt(i) == ' ')){
+				if(oldSen.charAt(i+1)==' '){
+					i+=1;
+				}
+			}
+			
+			if(i<oldSen.length()){
+					newSen += oldSen.charAt(i);
+			}else{
+				break;
+			}
+			
+			
+		}
+		
+		
+		newSen.trim();
+//		this.deleteTextElement();
+		this.setSentence(new TextElementSequence(new TextElement(newSen)));
+		
+		
 	}
 
 	
@@ -237,28 +336,27 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		if(order!=null){
 			switch(getOrder()){
 			case A_B_is:
-				sentence.add(subjekt);
-				sentence.add(objekt);	
-				sentence.add(praedikat);
+				this.add(subjekt);
+				this.add(objekt);	
+				this.add(praedikat);
 				break;
 				
 			case A_is_B:
-				System.out.println("a is b case");
-				sentence.add(subjekt);
-				sentence.add(praedikat);
-				sentence.add(objekt);	
+				this.add(subjekt);
+				this.add(praedikat);
+				this.add(objekt);	
 				break;
 				
 			case is_A_B:
-				sentence.add(praedikat);
-				sentence.add(subjekt);
-				sentence.add(objekt);	
+				this.add(praedikat);
+				this.add(subjekt);
+				this.add(objekt);	
 				break;
 				
 			default:
-				sentence.add(subjekt);
-				sentence.add(praedikat);
-				sentence.add(objekt);		
+				this.add(subjekt);
+				this.add(praedikat);
+				this.add(objekt);		
 			}	
 		}
 		
@@ -268,15 +366,15 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			return null;
 		}
 		
-		return sentence;
+		return this;
 	}
 	
 	/**
-	 * This method can be used to set a sentence. (This should not be necessary)
-	 * @param sentence  
+	 * This method can be used to set a this. (This should not be necessary)
+	 * @param this  
 	 */
-	public void setSentence(TextElementSequence sentence) {
-		this.sentence = sentence;
+	public void setSentence(TextElementSequence s) {
+		this.add(s);
 	}
 
 
@@ -286,7 +384,8 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 
 
 	public void setSubjekt(TextElement subject) {
-		 this.subjekt.add(subject);
+		this.subjekt = new TextElementSequence(new TextElement());  
+		this.subjekt.add(subject);
 	}
 
 	public void setSubjekt(List <TextElement> subjectList) {
@@ -325,7 +424,20 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	 * @param clause
 	 */
 	public void concat(TextElementSequence clause){
-		sentence.add(clause);
+		
+		clause.content.trim();
+		
+		this.getSentence().add(clause.content);
+		return;
+	}
+	
+	public void add(String s){
+		s.trim();
+		this.add(new TextElement(s));
+	}
+	
+	public void concat(TextElement textElement){
+		this.add(textElement);
 		return;
 	}
 	
@@ -362,9 +474,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	 * @param sentence
 	 */
 	public void concat(Sentence sentence) {
-		subjekt.concat(sentence.subjekt);
-		praedikat.concat(sentence.praedikat);
-		objekt.concat(sentence.objekt);
+		this.add(sentence);
 	}
 	
 	
@@ -388,6 +498,20 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		return result;
 	}	
 
+	public List<TextElement> toList(){
+		List<TextElement> list = new ArrayList<TextElement>();
+//		list.add(new TextElement("example text"));
+		String s = this.toString();
+		String[] sArray = s.split(" ");
+		
+		for(String str : sArray){
+			str.trim();
+			list.add(new TextElement(str));
+		}
+		//		list.add(this);		
+		return list;
+		
+	}
 
 	public SentenceOrder getOrder() {
 		return order;
@@ -397,5 +521,8 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		this.order = order;
 	}
 
-	
+	public List<TextElement> trim() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

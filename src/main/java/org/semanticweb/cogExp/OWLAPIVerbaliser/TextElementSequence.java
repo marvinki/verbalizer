@@ -36,6 +36,7 @@ public class TextElementSequence extends TextElement{
 	public TextElementSequence(){
 	}
 	
+		
 	/* (non-Javadoc)
 	 * @see org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement#toString()
 	 */
@@ -52,6 +53,7 @@ public class TextElementSequence extends TextElement{
 			result += elem.toString();
 			needsep = true;
 		}
+		result.trim();
 		return result;
 	}
 	
@@ -118,82 +120,7 @@ public class TextElementSequence extends TextElement{
 		return labels;
 	}
 	
-	public JSONArray toJSON(){
-		JSONArray result = new JSONArray();
-		// JSONObject result = new JSONObject();
-		int itemcounter = 0;
-		for (TextElement element : sequence){
-			
-			System.out.println("dealing with " + element + " " + element.getClass());
-			
-			if (element instanceof ClassElement){
-				ClassElement classElement = (ClassElement) element;
-				String classDescription = classElement.toString();
-				String tooltip = classElement.getToolTipText();
-				JSONObject innerobject = new JSONObject();
-				innerobject.put("text", classDescription);
-				innerobject.put("classTooltip", tooltip);
-				innerobject.put("type", "class-description");
-				result.put(innerobject);
-				itemcounter++;
-			}
-			if (element instanceof LogicElement){
-				LogicElement logicElement = (LogicElement) element;
-				String logicDescription = logicElement.toString();
-				JSONObject innerobject = new JSONObject();
-				innerobject.put("text", logicDescription);
-				innerobject.put("type", "text");
-				result.put(innerobject);
-				itemcounter++;
-			}
-			if (element instanceof RoleElement){
-				RoleElement roleElement = (RoleElement) element;
-				String roleDescription = roleElement.toString();
-				JSONObject innerobject = new JSONObject();
-				innerobject.put("text", roleDescription);
-				innerobject.put("type", "roleDescription");
-				result.put(innerobject);
-				itemcounter++;
-			}
-			if (element instanceof ConclusionMarkerElement){
-				ConclusionMarkerElement cme = (ConclusionMarkerElement) element;
-				JSONArray recursiveResult = cme.toJSON();
-				for (Object io : recursiveResult){
-					result.put(io);
-				}
-				itemcounter++;
-			}
-			
-			if (element instanceof TextElementSequence){
-				TextElementSequence innersequence = (TextElementSequence) element;
-				JSONArray innerarray = innersequence.toJSON();
-				for (Object ob : innerarray){
-					JSONObject oj = (JSONObject) ob;
-					result.put(oj);
-				}
-			}
 		
-		}
-		return result;
-	}
-	
-	/*
-	public void addToDocument(JTextPane textPane){
-		boolean needsep = false;
-		for(TextElement elem : sequence){
-			if (elem.content.startsWith(","))
-				needsep = false;
-			if (needsep){
-				document.insertString(document.getLength(), " ", null);
-			}
-			elem.addToDocument();
-			result += elem.toHTML();
-			needsep = true;
-		}
-		return result;
-	}
-	*/
-	
 	public void add(TextElement el){
 		sequence.add(el);	
 	}
@@ -204,7 +131,7 @@ public class TextElementSequence extends TextElement{
 	}
 	
 	public void concat(TextElementSequence seq2){
-		if (seq2!=null)
+	if(seq2!=null) 
 			sequence.addAll(seq2.sequence);	
 	}
 	

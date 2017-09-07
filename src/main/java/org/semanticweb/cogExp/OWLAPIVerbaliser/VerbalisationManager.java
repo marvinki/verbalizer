@@ -64,8 +64,9 @@ import edu.smu.tspell.wordnet.SynsetType;
 public enum VerbalisationManager {
 	INSTANCE;
 
-	static final TextElementOWLObjectVisitor textOWLObjectVisit = new TextElementOWLObjectVisitor();
+//	static final TextElementOWLObjectVisitor textOWLObjectVisit = new TextElementOWLObjectVisitor();
 	static final SentenceOWLObjectVisitor sentenceOWLObjectVisit = new SentenceOWLObjectVisitor();
+	
 	static final PrettyPrintClassExpressionVisitor ppCEvisit = new PrettyPrintClassExpressionVisitor();
 	static final PrettyPrintOWLAxiomVisitor ppOAvisit = new PrettyPrintOWLAxiomVisitor();
 	static final PrettyPrintOWLObjectVisitor ppOOvisit = new PrettyPrintOWLObjectVisitor();
@@ -107,40 +108,38 @@ public enum VerbalisationManager {
 
 	// private static ResourceBundle LogicLabels = ResourceBundle.getBundle(logiclabelsPath, VerbaliseTreeManager.locale);
 	
-	private static boolean debug = VerbaliseTreeManager.debug;
+	private static boolean verbalisationManagerdebug = VerbaliseTreeManager.verbalisationManagerdebug;
 	
 	
 
 	public static TextElementSequence textualise(OWLObject ob) {
-		Sentence sentence = ob.accept(sentenceOWLObjectVisit);
-		System.out.println("Sentence: " + sentence);
-		sentence.makeDefaultSentence();
-		TextElementSequence seq = sentence.getSentence();
-		// TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
-		if(debug) seq.add(new LogicElement("<--visitor--"));
+		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit).toList());
+		if(verbalisationManagerdebug) seq.add(new LogicElement("textualise(OWLObject ob)"));
 		return seq;
 	}
 
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator) {
-		textOWLObjectVisit.setObfuscator(obfuscator);
-		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
-		System.out.println("done with owl object " + ob);
+		sentenceOWLObjectVisit.setObfuscator(obfuscator);
+		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit).toList());
+//		System.out.println("<c"+ seq.toString() +"c>");
+		
+		if(verbalisationManagerdebug) seq.add(new LogicElement("textualise(OWLObject ob, Obfuscator obfuscator)"));
 		return seq;
 	}
 	
 	public static TextElementSequence textualise(OWLObject ob, Obfuscator obfuscator, SentenceOrder order) {
-		TextElementSequence seq = new TextElementSequence(ob.accept(textOWLObjectVisit));
-		if(debug) seq.add(new LogicElement("--textualise(ob, order)--"));
+		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit).toList());
+		if(verbalisationManagerdebug) seq.add(new LogicElement("--textualise(ob, order)--"));
 		switch(order){
 		case A_B_is:			
 		case is_A_B:	
 		case A_is_B:
-			textOWLObjectVisit.setSentenceOrder(order);
-			textOWLObjectVisit.setObfuscator(obfuscator);
+			sentenceOWLObjectVisit.setSentenceOrder(order);
+			sentenceOWLObjectVisit.setObfuscator(obfuscator);
 			return seq;	
 
 		default:
-			textOWLObjectVisit.setObfuscator(obfuscator);
+			sentenceOWLObjectVisit.setObfuscator(obfuscator);
 //			 System.out.println("dealing with owl object " + ob);
 			return seq;	
 		}
@@ -249,8 +248,8 @@ public enum VerbalisationManager {
 				// System.out.println("DEBUG + " +
 				// property.getNamedProperty().getIRI().getFragment());
 				String result = property.getNamedProperty().getIRI().getFragment();
-				if (textOWLObjectVisit.getObfuscator() != null) {
-					result = textOWLObjectVisit.getObfuscator().obfuscateRole(result);
+				if (sentenceOWLObjectVisit.getObfuscator() != null) {
+					result = sentenceOWLObjectVisit.getObfuscator().obfuscateRole(result);
 				}
 				return result;
 			}
@@ -299,8 +298,8 @@ public enum VerbalisationManager {
 
 		// shortcut for labels with [X]
 		if (str.indexOf("[X]") > -1) {
-			if (textOWLObjectVisit.getObfuscator() != null) {
-				str = textOWLObjectVisit.getObfuscator()
+			if (sentenceOWLObjectVisit.getObfuscator() != null) {
+				str = sentenceOWLObjectVisit.getObfuscator()
 						.obfuscateRole(property.getNamedProperty().getIRI().getFragment());
 			}
 			return str;
@@ -316,8 +315,8 @@ public enum VerbalisationManager {
 			// System.out.println("DEBUG " + str);
 		}
 		// Obfuscate!
-		if (textOWLObjectVisit.getObfuscator() != null) {
-			str = textOWLObjectVisit.getObfuscator().obfuscateRole(str);
+		if (sentenceOWLObjectVisit.getObfuscator() != null) {
+			str = sentenceOWLObjectVisit.getObfuscator().obfuscateRole(str);
 		}
 		/*
 		 * if (TextElementOWLObjectVisitor.detectLowCamelCase(str)) str =
@@ -484,7 +483,7 @@ public enum VerbalisationManager {
 		result = treatCamelCaseAndUnderscores(result);
 
 		// System.out.println("DEBUG PROPERTY |" + result + "|");
-
+		result.trim();
 		return result;
 	}
 
@@ -519,7 +518,6 @@ public enum VerbalisationManager {
 			}
 		} else {
 			result.add(new RoleElement(propstring));
-			// result += propstring + " ";
 		}
 
 		result.addAll(middle);
@@ -576,7 +574,6 @@ public enum VerbalisationManager {
 			}
 		} else {
 			result.setPraedikat(new RoleElement(propstring));
-			// result += propstring + " ";
 		}
 
 		result.addToObject(new TextElementSequence(middle));
@@ -599,7 +596,7 @@ public enum VerbalisationManager {
 		// result +=
 		// VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 
-		return result;
+		return result.getSentence();
 	}
 	
 
@@ -668,7 +665,14 @@ public enum VerbalisationManager {
 	}
 
 	public static String treatCamelCaseAndUnderscores(String str) {
+		
 		String resultstring = "";
+		
+		if(VerbaliseTreeManager.locale == Locale.GERMAN) return str;
+		
+		if(str.length() <= 0 || str.isEmpty() || str.equals("")) return resultstring;
+
+			
 		List<String> tokens = new ArrayList<String>();
 		// detect tokens delineated by ' ', '_' and camelcasing "aA"
 		String currenttoken = "";
@@ -704,15 +708,21 @@ public enum VerbalisationManager {
 		// System.out.println("postprocessing");
 		// now postprocess all tokens
 		List<String> processedtokens = new ArrayList<String>();
+		boolean tokenEmpty = false;
 		for (String token : tokens) {
 			// System.out.println(">" + token + "<");
 			// if acronym (both first letters are capitals), do nothing
-			if (token.length() > 1 && Character.isUpperCase(str.charAt(0)) && Character.isUpperCase(str.charAt(1))) {
+			
+			if(token.length() <= 0 || token.isEmpty() || token.equals("")){
+				tokenEmpty =true;
+			}
+			
+			if (!tokenEmpty && token.length() > 1 && Character.isUpperCase(str.charAt(0)) && Character.isUpperCase(str.charAt(1))) {
 				processedtokens.add(token);
 				continue;
 			}
 			// now lowercase
-			if (token.length()>0)
+			if (!tokenEmpty) // token.length()>0)
 				token = token.substring(0, 1).toLowerCase() + token.substring(1, token.length());
 			// now find hypens and lowercase
 			int ind = 0;
@@ -728,6 +738,7 @@ public enum VerbalisationManager {
 				// System.out.println("token " + token);
 				ind = foundint + 1;
 			}
+			
 			processedtokens.add(token);
 		}
 		// System.out.println("joining");
@@ -998,7 +1009,7 @@ public enum VerbalisationManager {
 			String labelAnnotString = null;
 			String defAnnotString = null;
 			String attrAnnotString = null;
-			String genericClassname = classexp.accept(textOWLObjectVisit).toString();
+			String genericClassname = classexp.accept(sentenceOWLObjectVisit).toString();
 			if (genericClassname.length() > 2 && genericClassname.substring(0, 2).equals("a" + _space)) {
 				genericClassname = genericClassname.substring(2, genericClassname.length());
 			}
@@ -1085,7 +1096,7 @@ public enum VerbalisationManager {
 		// if no proper noun, look for gerunds
 		if (noun_concepts_strings.size() == 0 && noun_or_attribute_concepts_strings.size() == 0) {
 			for (OWLClassExpression classexp : exprs) {
-				String genericClassname = classexp.accept(textOWLObjectVisit).toString();
+				String genericClassname = classexp.accept(sentenceOWLObjectVisit).toString();
 				if (genericClassname.indexOf("ing") > 0) {
 					noun_concepts.add(classexp);
 					noun_concepts_strings.add(genericClassname.toLowerCase());
@@ -1156,12 +1167,7 @@ public enum VerbalisationManager {
 				String current = "";
 				for (String str : noun_or_attribute_concepts_strings) {
 					if (!WordNetQuery.INSTANCE.isDisabled()) {
-						// result = result + str + " ";
-						// noun_concepts_strings.remove(str);
 						int[] types = WordNetQuery.INSTANCE.getTypes(str);
-						// System.out.println(Arrays.toString(types));
-						// float currentattr = ((float) types[2]+types[4])/
-						// ((float) types[0]+types[2]+types[4]);
 						float currentattr = types[2] + types[4];
 						// do not consider type 4
 						if (currentattr >= attributiveness) {
@@ -1171,7 +1177,7 @@ public enum VerbalisationManager {
 					}
 				}
 				noun_or_attribute_concepts_strings.remove(current);
-				result = result + current + _space; // + " ";
+				result = result + current + _space; 
 				noun_concepts_strings.remove(current);
 			}
 			for (String str : noun_concepts_strings) {
@@ -1354,7 +1360,7 @@ public enum VerbalisationManager {
 			List<String> substrings = new ArrayList<String>();
 			for (Object someobj : buckets.get(i)) {
 				OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) someobj;
-				String somefillertext = some.getFiller().accept(textOWLObjectVisit).toString();
+				String somefillertext = some.getFiller().accept(sentenceOWLObjectVisit).toString();
 				if (some.getFiller() instanceof OWLObjectSomeValuesFrom) {
 					somefillertext = LogicLabels.getString("somethingThat ") + somefillertext;
 				}
@@ -1401,7 +1407,7 @@ public enum VerbalisationManager {
 		for (OWLClassExpression expr : exprs) {
 			OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) expr;
 			OWLObjectPropertyExpression propexpr = someexpr.getProperty();
-			substrings.add(someexpr.getFiller().accept(textOWLObjectVisit).toString());
+			substrings.add(someexpr.getFiller().accept(sentenceOWLObjectVisit).toString());
 			if (commonpropexpr == null) {
 				commonpropexpr = propexpr;
 			}
@@ -1420,7 +1426,7 @@ public enum VerbalisationManager {
 		for (OWLClassExpression expr : exprs) {
 			OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) expr;
 			OWLObjectPropertyExpression propexpr = someexpr.getProperty();
-			substrings.add(someexpr.getFiller().accept(textOWLObjectVisit));
+			substrings.add(someexpr.getFiller().accept(sentenceOWLObjectVisit).toList());
 			if (commonpropexpr == null) {
 				commonpropexpr = propexpr;
 			}
@@ -1436,7 +1442,7 @@ public enum VerbalisationManager {
 	public static String pseudoNLStringMultipleExistsAndForallPattern(OWLObjectIntersectionOf ints) {
 		// System.out.println("ints " + ints);
 		String result = "";
-		List<OWLClassExpression> exprs = TextElementOWLObjectVisitor.collectAndExpressions(ints);
+		List<OWLClassExpression> exprs = SentenceOWLObjectVisitor.collectAndExpressions(ints);
 		List<String> substrings = new ArrayList<String>();
 		OWLObjectPropertyExpression commonpropexpr = null;
 		// recursive call for subexpressions
@@ -1444,7 +1450,7 @@ public enum VerbalisationManager {
 			if (expr instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) expr;
 				OWLObjectPropertyExpression propexpr = someexpr.getProperty();
-				String str = someexpr.getFiller().accept(textOWLObjectVisit).toString();
+				String str = someexpr.getFiller().accept(sentenceOWLObjectVisit).toString();
 				// System.out.println("str " + str);
 				if (someexpr.getFiller() instanceof OWLObjectSomeValuesFrom) {
 					String somethingstr = "something that ";
@@ -1452,7 +1458,7 @@ public enum VerbalisationManager {
 					// System.out.println("DEBUG (1) -- getting domain");
 					OWLClass cl = (OWLClass) VerbalisationManager.INSTANCE
 							.getDomain(some1.getProperty().getNamedProperty());
-					TextElementOWLObjectVisitor visitor = new TextElementOWLObjectVisitor();
+					SentenceOWLObjectVisitor visitor = new SentenceOWLObjectVisitor();
 					if (cl != null) {
 						somethingstr = cl.accept(visitor) + " that ";
 					}
@@ -1499,7 +1505,7 @@ public enum VerbalisationManager {
 	public static TextElementSequence textualiseMultipleExistsAndForallPattern(OWLObjectIntersectionOf ints) {
 		// System.out.println("ints " + ints);
 		TextElementSequence result = new TextElementSequence();
-		List<OWLClassExpression> exprs = TextElementOWLObjectVisitor.collectAndExpressions(ints);
+		List<OWLClassExpression> exprs = SentenceOWLObjectVisitor.collectAndExpressions(ints);
 		List<List<TextElement>> substrings = new ArrayList<List<TextElement>>();
 		OWLObjectPropertyExpression commonpropexpr = null;
 		// recursive call for subexpressions
@@ -1507,7 +1513,7 @@ public enum VerbalisationManager {
 			if (expr instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) expr;
 				OWLObjectPropertyExpression propexpr = someexpr.getProperty();
-				List<TextElement> str = someexpr.getFiller().accept(textOWLObjectVisit);
+				List<TextElement> str = someexpr.getFiller().accept(sentenceOWLObjectVisit).toList();
 				// System.out.println("str " + str);
 				if (someexpr.getFiller() instanceof OWLObjectSomeValuesFrom) {
 					LogicElement somethingst = new LogicElement("something that");
@@ -1519,7 +1525,7 @@ public enum VerbalisationManager {
 							.getDomain(some1.getProperty().getNamedProperty());
 					// System.out.println(cl);
 					if (cl != null) {
-						somethingstr.addAll(cl.accept(textOWLObjectVisit));
+						somethingstr.addAll(cl.accept(sentenceOWLObjectVisit).toList());
 						somethingstr.add(new LogicElement("that"));
 					} else
 						somethingstr.add(somethingst);
