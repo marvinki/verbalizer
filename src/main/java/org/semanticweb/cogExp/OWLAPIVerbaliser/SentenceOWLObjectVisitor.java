@@ -325,7 +325,12 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		// System.out.println("visit subclassof called with " + arg0);
 		// Left hand side
 		Sentence leftstringSentence = arg0.getSubClass().accept(this);
-		List<TextElement> leftstring = leftstringSentence.toTextElementSequence().getTextElements();
+		System.out.println("DEBUG 1 " +  leftstringSentence);
+		leftstringSentence.setOrder(SentenceOrder.A_is_B);
+		System.out.println("DEBUG 2 " + leftstringSentence.toTextElementSequence());
+		List<TextElement> leftstring =  new ArrayList<TextElement>();
+		if (leftstringSentence.toTextElementSequence()!=null)
+			leftstring = leftstringSentence.toTextElementSequence().getTextElements();
 		List<TextElement> somethingthat = new ArrayList<TextElement>();
 		somethingthat.add(somethingthatElement);
 		
@@ -336,7 +341,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 //		 System.out.println("SUBCLASS SOMEOF DEBUG " + some1 + " " + cl);
 			if (cl!=null){
 				//somethingthat = cl.toString() + " that ";
-				somethingthat =cl.accept(this).toTextElementSequence().getTextElements(); 
+				Sentence domainSentence = cl.accept(this);
+				domainSentence.setOrder(SentenceOrder.A_is_B);
+				somethingthat =domainSentence.toTextElementSequence().getTextElements(); 
 				somethingthat.add(thatElement);
 			}
 		}
@@ -447,7 +454,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			}	
 		
 			//System.out.println(" DEBUG (1) -- " +  filler.accept(this));
-			fillerstrs.add(filler.accept(this).toTextElementSequence().getTextElements());
+			Sentence fillerSentence = filler.accept(this); 
+			fillerSentence.setOrder(SentenceOrder.A_is_B);
+			fillerstrs.add(fillerSentence.toTextElementSequence().getTextElements());
 			Sentence propsentence = VerbalisationManager.textualisePropertyAsSentence(property, fillerstrs, middle);
 			
 			// System.out.println("leftstring " + leftstring);
@@ -502,7 +511,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 
 		middlestring.add(isElement);
 		
-		rightstring.addAll(arg0.getSuperClass().accept(this).toTextElementSequence().getTextElements());
+		Sentence anotherSentence = arg0.getSuperClass().accept(this);
+		anotherSentence.setOrder(SentenceOrder.A_is_B);
+		if (anotherSentence.toTextElementSequence()!=null)
+			rightstring.addAll(anotherSentence.toTextElementSequence().getTextElements());
 		
 		// System.out.println("leftstring (3) " + leftstring);
 		// System.out.println("middlestring (3) " + middlestring);
@@ -679,7 +691,8 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		boolean firstp = true;
 		for (OWLClassExpression exp: ((OWLObjectUnionOf) arg0).getOperandsAsList()){
 			if (!firstp){
-				LogicElement orElement = new LogicElement(VerbalisationManager.LogicLabels.getString("or"));
+				LogicElement orElement = new LogicElement("or");
+				// LogicElement orElement = new LogicElement(VerbalisationManager.LogicLabels.getString("or"));
 				resultList.add(orElement);}
 			firstp = false;
 			result.addToSubject(exp.accept(this).toTextElementSequence());
@@ -739,7 +752,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			middle.add(new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat")));
 			}
 		}
-		fillerstrs.add(filler.accept(this).toTextElementSequence().getTextElements());
+		Sentence fillerSentence = filler.accept(this);
+		fillerSentence.setOrder(SentenceOrder.A_is_B);
+		fillerstrs.add(fillerSentence.toTextElementSequence().getTextElements());
 		List<TextElement> resultseq = VerbalisationManager.textualiseProperty(property,fillerstrs,middle);
 		// String str = VerbalisationManager.verbaliseProperty(property,fillerstrs,middle);
 		// System.out.println("DEBUG visit " + str);

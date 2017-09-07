@@ -712,7 +712,8 @@ public enum VerbalisationManager {
 				continue;
 			}
 			// now lowercase
-			token = token.substring(0, 1).toLowerCase() + token.substring(1, token.length());
+			if (token.length()>0)
+				token = token.substring(0, 1).toLowerCase() + token.substring(1, token.length());
 			// now find hypens and lowercase
 			int ind = 0;
 			// System.out.println("working on token" + token);

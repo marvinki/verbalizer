@@ -243,6 +243,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 				break;
 				
 			case A_is_B:
+				System.out.println("a is b case");
 				sentence.add(subjekt);
 				sentence.add(praedikat);
 				sentence.add(objekt);	
@@ -261,7 +262,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			}	
 		}
 		
-		if (sentence==null || isEmpty(sentence) || sentence.size()<1){
+		// if (sentence==null || isEmpty(sentence) || sentence.size()<1){
+		if (sentence==null || sentence.size()<1){
+			System.out.println("null case");
 			return null;
 		}
 		

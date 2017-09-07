@@ -43,7 +43,7 @@ public class ReadDB {
 		// System.out.println(resultline);
 		
 		
-		
+		/*
 		List<String> ontologies = Arrays.asList(
 				"Ontology-1.2.owl",
 				"Ontology-adolena.owl",
@@ -138,10 +138,27 @@ public class ReadDB {
 				"Ontology-worm_phenotype_xp.obo.owl",
 				"Ontology-yowl-complex.owl" 
 				);
+				*/
+		
+		List<String> ontologies = Arrays.asList(
+				"ACGT-MO.owl",
+				"ADALAB-META.owl",
+				"ADALAB.owl",
+				"ADAR.owl",
+				"ADO.owl",
+				"AERO.owl",
+				"APOLLO-SV.owl",
+				"AURA.owl",
+				"BAO.owl",
+				"BHO.owl"
+				// "BIOMO.owl"
+				);
 		
 		for (String ontology : ontologies){
 			String resline = DatabaseManager.INSTANCE.constructStatisticLineFromDB(
-					"/Users/marvin/work/workspace/justifications/originaltones-ontologies/" + ontology);
+					 // "/Users/marvin/marvin_work_ulm/resources/ontologies/bio/" + ontology, "bioexplanations");
+					 "/gdisk/ki/home/mschiller/data/bioportal/" + ontology, "bioexplanations");
+					// "/Users/marvin/work/workspace/justifications/originaltones-ontologies/" + ontology);
 			System.out.println(ontology + "," + resline);
 		}
 		

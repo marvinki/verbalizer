@@ -395,17 +395,17 @@ e.printStackTrace();
 		return result;	
 	}
 	
-	public List<List<String>> getExplanationsExclusive(String ontology){
+	public List<List<String>> getExplanationsExclusive(String ontology, String table){
 		List<List<String>> result = new ArrayList<List<String>>();
 		// String query = "select * from explanations;";
 		
-		String query = "select * from explanations where " 
+		String query = "select * from " + table + " where " 
 				      + " ontologypath = '" 
 				       + ontology  
 				       + "';";
 		
 		
-		// System.out.println("query string: "+ query);
+		System.out.println("query string: "+ query);
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
@@ -418,7 +418,7 @@ e.printStackTrace();
 					"subclandequivelim", "r0", "r1", "r1neo", "r2", "r3", "r5", "r5new", 
 					"r5multi", "r6", "r6neo", "r12", "r12new", "r15", "r23", "r23repeat",
 					 "r34", "r35", "r37", "r42", "botintro", "topintro", "defdomain", 
-					 "elexistsminus", "applrange", "propchain", "forallunion");
+					 "elexistsminus", "applrange", "propchain", "forallunion", "subclchain");
 			
 			
 			while (rs.next()){
@@ -594,13 +594,15 @@ e.printStackTrace();
 			 strings.add("propchain");
 		 if (!results.get(35).equals("0"))	
 			 strings.add("forallunion");
+		 if (!results.get(36).equals("0"))	
+			 strings.add("subclchain");
 		 // System.out.println("returning " + strings);
 		 return strings;	
 	}
 	
 	
-	public String constructStatisticLineFromDB(String ontology){
-		List<List<String>> result = getExplanationsExclusive(ontology);
+	public String constructStatisticLineFromDB(String ontology, String table){
+		List<List<String>> result = getExplanationsExclusive(ontology,table);
 		int solved = 0;
 		int unsolved = 0;
 		int total = 0;

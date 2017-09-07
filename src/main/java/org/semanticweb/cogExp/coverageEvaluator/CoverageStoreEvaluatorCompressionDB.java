@@ -1201,6 +1201,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		System.out.println("Shortlog file " + args[3]);
 		System.out.println("Single file " + args[4]);
 		System.out.println("Hostname " + args[5]);
+		System.out.println("Timeout " + args[6]);
 		
 		
 		String storedfiles  = args[0];
@@ -1209,6 +1210,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		String shortlogFileName = args[3];
 		String singlefile = args[4];
 		String hostname = args[5];
+		int time = Integer.parseInt(args[6]);
 		
 		
 		DatabaseManager.INSTANCE.connect(hostname);
@@ -1253,11 +1255,12 @@ public class CoverageStoreEvaluatorCompressionDB {
 			
 			// Statistic stats = runOntology("/Users/marvin/marvin_work_ulm/resources/ontologies/ore2015_pool_sample/el/pool/" + line);
 			// Statistic stats = runBioportalOntology(storedfilesStem + line,10); // <---- time limit (in seconds)
-			Statistic stats = runBioportalOntology(storedfilesStem + line,10); // <---- time limit (in seconds)
+			Statistic stats = runBioportalOntology(storedfilesStem + line,time); // <---- time limit (in seconds)
 			
 			
 			// create individual detailed log file	
 			
+			/*
 			Path dumppath = Paths.get(stats.getOntologyname());
 			String dumpname = dumppath.getFileName().toString();
 			dumpname = dumpname.substring(0, dumpname.indexOf(".owl"));
@@ -1323,8 +1326,9 @@ public class CoverageStoreEvaluatorCompressionDB {
 					longlogWriter.write("Steps " + l + ": " + times[l] + "\n");
 				}
 			}
+			*/
 			
-			/*
+			/*****
 			longlogWriter.write("n");
 			List<String> verbs = stats.getVerbalizations(); 
 			 int j = 0;
@@ -1336,11 +1340,12 @@ public class CoverageStoreEvaluatorCompressionDB {
 				 // longlogWriter.write("% " + "Steps: " + noSteps.get(j) + " \n");
 				 j++;
 			    }
-			    */
-			
+			    ******/
+			/*
 			 longlogWriter.write("\n");
 				List<String> verbs = stats.getVerbalizations(); 
 				 int j = 0;
+				 */
 				 List<Integer> noSteps = stats.getNoSteps();
 				 List<Integer> noStepsVerb = stats.getNoVerbalizedSteps();
 				 List<Integer> noNoncompressedSteps = stats.getNoNoncompressedSteps();
@@ -1348,6 +1353,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 				 List<Integer> compressions = stats.getCompressions();
 				 List<String> listings = stats.getProofListings();
 				 List<String> longListings = stats.getLongProofListings();
+				 /*
 				 for (int indx = 0; indx < verbs.size();indx++){
 				 // for (String st : verbs){
 					 longlogWriter.write("--> Verbalisation:\n");
@@ -1368,6 +1374,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 					 // longlogWriter.write("% " + "Steps: " + noSteps.get(j) + " \n");
 					 j++;
 				    }
+				    */
 				
 				/* 	        */
 				/* SHORTLOG */
@@ -1822,13 +1829,20 @@ public class CoverageStoreEvaluatorCompressionDB {
 			
 			shortlogWriter.flush();
 			
-			 longlogWriter.close();
+			// longlogWriter.close();
 			
 		
 			// runOntology("/Users/marvin/marvin_work_ulm/notes/langgen-paper/ontologies/flu.owl");
 		} catch (Exception e) {
+			if (e instanceof ProofNotFoundException)
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+				e.printStackTrace();
+			else {
+				e.printStackTrace();
+				shortlogWriter.close();
+				throw new RuntimeException();
+				
+			}
 		}
 		
 		 } //for
@@ -2495,6 +2509,10 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 			int counting = 0;
 			int counter;
 			for (OWLAxiom ax : axioms){
+				long starttime_proofsearch = System.currentTimeMillis();
+    			long endtime_proofsearch = System.currentTimeMillis();
+    			long starttime_verb = System.currentTimeMillis();
+    			long endtime_verb = System.currentTimeMillis();
 				counter = counting;
 				counting++;
 				OWLSubClassOfAxiom subAx = (OWLSubClassOfAxiom ) ax;
@@ -2566,21 +2584,23 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     			
     			
     			GentzenTree tree = null;
-    			long starttime = System.currentTimeMillis();
+    			
 				try {
 					
+					starttime_proofsearch = System.currentTimeMillis();
 					tree = InferenceApplicationService.computeProofTree(axiomFormula, justificationFormulas, 1000, timelimit1 * 1000,
 							"EL");
+					endtime_proofsearch = System.currentTimeMillis();
 					
 				} catch (ProofNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-					long endtime = System.currentTimeMillis();
+					// endtime = System.currentTimeMillis();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				long endtime = System.currentTimeMillis();
+				// endtime = System.currentTimeMillis();
     			/*
     			 * 
 				GentzenTree tree = VerbalisationManager.computeGentzenTree(ax, reasoner, reasonerFactory,
@@ -2638,7 +2658,9 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 				}
 				
 				try{
+					starttime_verb = System.currentTimeMillis();
 					String explanation = VerbalisationManager.computeVerbalization(tree, false, false,null);
+					endtime_verb = System.currentTimeMillis();
 					System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax) + "\":\n");
 					System.out.println(VerbaliseTreeManager.listOutput(tree));
 					System.out.println(explanation);
@@ -2674,17 +2696,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    			}
 	    			
 	    			// Stats
-    				Long time = endtime = starttime;
     				
-    				sumVerbTimes = sumVerbTimes + time;
-	    			sumN = sumN + 1;
-	    			if (computationtimesN[noSteps]==0l){
-	    				computationtimesN[noSteps] = 1l;
-	    				computationtimes[noSteps] = time;
-	    			} else{
-	    				computationtimes[noSteps] = computationtimes[noSteps] + time;
-	    				computationtimesN[noSteps] = 1l + computationtimesN[noSteps];
-	    			}
 	    			noSteps =tree.computePresentationOrder().size();
 	    			noSteps2 = tree2.computePresentationOrder().size();
 	    			
@@ -2734,7 +2746,23 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    			
 	    			
 	    			
+	    			Long searchtime = endtime_proofsearch - starttime_proofsearch;
+	    			Long verbtime = endtime_verb - starttime_verb;
+	    			System.out.println("searchtime " + searchtime);
+	    			System.out.println("verbtime " + verbtime);
+	    			Long time = searchtime + verbtime;
 	    			
+	    			System.out.println("@@ TIME " + time);
+    				
+    				sumVerbTimes = sumVerbTimes + time;
+	    			sumN = sumN + 1;
+	    			if (computationtimesN[noSteps]==0l){
+	    				computationtimesN[noSteps] = 1l;
+	    				computationtimes[noSteps] = time;
+	    			} else{
+	    				computationtimes[noSteps] = computationtimes[noSteps] + time;
+	    				computationtimesN[noSteps] = 1l + computationtimesN[noSteps];
+	    			}
 	    			
 	    			
 	    			DatabaseManager.INSTANCE.deleteBioExplanation(subAx.getSubClass().toString(), 

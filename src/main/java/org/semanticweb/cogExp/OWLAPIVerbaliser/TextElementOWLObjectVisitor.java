@@ -731,7 +731,9 @@ public class TextElementOWLObjectVisitor implements OWLObjectVisitorEx<List<Text
 		boolean firstp = true;
 		for (OWLClassExpression exp: ((OWLObjectUnionOf) arg0).getOperandsAsList()){
 			if (!firstp){
-				LogicElement orElement = new LogicElement(VerbalisationManager.LogicLabels.getString("or"));
+				LogicElement orElement = new LogicElement("or");
+				//  ****TODO**** for some reason the logic label is not found!
+				// LogicElement orElement = new LogicElement(VerbalisationManager.LogicLabels.getString("or_"));
 				resultList.add(orElement);}
 			firstp = false;
 			resultList.addAll(exp.accept(this));

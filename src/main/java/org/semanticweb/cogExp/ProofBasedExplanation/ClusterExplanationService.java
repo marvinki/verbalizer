@@ -44,6 +44,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
@@ -60,6 +61,8 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
+import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
 import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
@@ -107,6 +110,29 @@ import uk.ac.manchester.cs.jfact.JFactFactory;
  * {"command" : "explainSubclass", "subclass": "Spruce", "superclass": "Material", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
  */
 
+/*
+[ {
+	  "query" : ["getInstructionText",  "getVideo", "getImage"],
+	  "task" : {
+	    "name" : "Saw",
+	    "text" : null,
+	    "pictureURL" : null,
+	    "videoURL" : null,
+	    "actionParameter" : [ "saw-1", "raw", "back", "tray" ]
+	  }
+	},
+	 {
+	  "query" :  ["getInstructionText",  "getVideo", "getImage"],
+	  "task" : {
+	    "name" : "Drill_Screw",
+	    "text" : null,
+	    "pictureURL" : null,
+	    "videoURL" : null,
+	    "actionParameter" : [ "drill-1", "hanger-2", "a1", "back", "a4", "screw-4", "right" ]
+	  }
+	}
+	]
+*/
 
 public class ClusterExplanationService {
 	
@@ -703,9 +729,272 @@ public class ClusterExplanationService {
 		return result ;
 	}
 	
+	/*
 	public String getInstructionText(String query){
 		return getDataPropertyText(query, "hasInstructionText");
 	}
+	*/
+	
+	public String getInstructionText(JSONObject obj){
+		return getMostSpecificDataValue(obj, "hasInstructionText");
+	}
+	
+	public String getVideoPath(JSONObject obj){
+		return getMostSpecificDataValue(obj, "hasVideoPath");
+	}
+	
+	public String getImagePath(JSONObject obj){
+		return getMostSpecificDataValue(obj, "hasImagePath");
+	}
+	
+	public String getMostSpecificDataValue(JSONObject obj, String property){
+		List<OWLAxiom> memory = new ArrayList<OWLAxiom>();
+		String actionName = obj.getString("name");
+		System.out.println(actionName);
+		JSONArray params = (JSONArray) obj.get("actionParameter");
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
+		
+		OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#action1"));
+		OWLObjectProperty performsActivityProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#instr_name"));
+		OWLIndividual name_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + actionName));
+		OWLObjectPropertyAssertionAxiom name_ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(performsActivityProp,new_indiv, name_indiv);
+		
+		System.out.println(" assuming " + name_ax);;
+		
+		AddAxiom addAxiomAction= new AddAxiom(ontology,name_ax);
+		manager.applyChange(addAxiomAction);
+		memory.add(name_ax);
+		
+		int counter = 1;
+		for (Object ob : params){
+			String obString = (String) ob;
+			// System.out.println("obString " + obString);
+			OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#instr_arg" + counter));
+			OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + obString));
+			OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(argProp,new_indiv, target_indiv);
+			AddAxiom addAxiomAction2= new AddAxiom(ontology,ax);
+			manager.applyChange(addAxiomAction2);
+			counter++;
+			memory.add(ax);
+			
+			// System.out.println(" assuming " + ax);;
+			
+		}
+		
+		
+		try {
+			System.out.println("create empty ontology");
+			OWLOntology infOnt = manager.createOntology();
+		
+		Set<OWLAxiom> previousaxioms = ontology.getAxioms();
+		previousaxioms.addAll(inferredAxioms);
+		System.out.println("Previous axioms " + previousaxioms.size());
+		
+		/*
+		ConsoleProgressMonitor progressMonitor = new ConsoleProgressMonitor();
+	    OWLReasonerConfiguration config = new SimpleConfiguration(progressMonitor);
+	    reasoner = reasonerFactory.createReasoner(ontology, config);
+	     */
+	     
+		SimpleConfiguration config = new SimpleConfiguration(50000);
+		
+		reasoner = reasonerFactory.createReasoner(ontology, config);
+		
+		System.out.println("create generator");
+		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+		System.out.println("fill");
+		iog.fillOntology(dataFactory2, infOnt);
+		System.out.println("done filling");
+		// iog.fillOntology(outputOntologyManager, infOnt);
+		Set<OWLAxiom> newaxioms = infOnt.getAxioms();
+		
+		newaxioms.removeAll(previousaxioms);
+		
+		System.out.println(newaxioms);
+		
+		System.out.println("ontology contains " + ontology.getAxioms().size() + "axioms");
+		
+		for (OWLAxiom delax : memory){
+			RemoveAxiom removeAxiomAction= new RemoveAxiom(ontology,delax);
+			manager.applyChange(removeAxiomAction);
+		}
+		
+		/*
+		for (OWLAxiom testaxiom : ontology.getAxioms()){
+			System.out.println(testaxiom);
+		}
+		*/
+		
+		for (OWLAxiom axes : newaxioms){
+			if (axes instanceof OWLClassAssertionAxiom){
+				OWLClassAssertionAxiom cax = (OWLClassAssertionAxiom) axes;
+				if (cax.getClassExpression().isOWLThing())
+					continue;
+				//  System.out.println(reasoner.getSubClasses(cax.getClassExpression(),true));
+				if (reasoner.getSubClasses(cax.getClassExpression(),true).isBottomSingleton()){
+					System.out.println("Now need to get stuff for " + cax.getClassExpression());
+					
+					System.out.println("ontology contains " + ontology.getAxioms().size() + "axioms");
+					for (OWLAxiom axprobe : ontology.getAxioms()){
+						System.out.println("examining " + axprobe);
+						if (axprobe instanceof OWLSubClassOfAxiom && (((OWLSubClassOfAxiom) axprobe).getSubClass().equals(cax.getClassExpression()))){
+							OWLSubClassOfAxiom subclAx = (OWLSubClassOfAxiom) axprobe;
+							System.out.println(" interested in " + subclAx);
+							if (subclAx.getSuperClass() instanceof OWLDataHasValue){
+								OWLDataHasValue datahasvalue = (OWLDataHasValue) subclAx.getSuperClass();
+								if (datahasvalue.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
+									return datahasvalue.getFiller().getLiteral();
+								}
+							}
+						}
+					}
+					// break;
+				}
+			}
+		}
+		
+		
+		} catch (Exception e){
+			System.out.println("ops, exception");
+		}
+		
+		return "";
+		
+	}
+	
+	public List<String> getMostSpecificDataValue(List<JSONObject> objects, List<List<String>> properties){
+		List<String> results = new ArrayList<String>();
+		List<OWLAxiom> memory = new ArrayList<OWLAxiom>();
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
+		
+		// big loop for actions
+		for (int index = 0; index<objects.size(); index++){
+			JSONObject obj = objects.get(index); 
+			String actionName = obj.getString("name");
+			JSONArray params = (JSONArray) obj.get("actionParameter");
+		
+			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#action" + index));
+			OWLObjectProperty performsActivityProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#instr_name"));
+			OWLIndividual name_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + actionName));
+			OWLObjectPropertyAssertionAxiom name_ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(performsActivityProp,new_indiv, name_indiv);
+			System.out.println(" assuming " + name_ax);;
+		
+			AddAxiom addAxiomAction= new AddAxiom(ontology,name_ax);
+			manager.applyChange(addAxiomAction);
+			memory.add(name_ax);
+		
+			// loop for individual arguments
+			int counter = 1;
+			for (Object ob : params){
+				String obString = (String) ob;
+				System.out.println("obString" + obString);
+				OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#instr_arg" + counter));
+				OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + obString));
+				OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(argProp,new_indiv, target_indiv);
+				AddAxiom addAxiomAction2= new AddAxiom(ontology,ax);
+				manager.applyChange(addAxiomAction2);
+				counter++;
+				memory.add(ax);
+				System.out.println(" assuming " + ax);;
+			}	
+		} // assumptions done, now comes the reasoning!
+		
+		
+		try {
+			System.out.println("create empty ontology");
+			OWLOntology infOnt = manager.createOntology();
+		
+		Set<OWLAxiom> previousaxioms = ontology.getAxioms();
+		previousaxioms.addAll(inferredAxioms);
+		// System.out.println("Previous axioms " + previousaxioms.size());
+		
+		// ConsoleProgressMonitor progressMonitor = new ConsoleProgressMonitor();
+	    //  OWLReasonerConfiguration config = new SimpleConfiguration(progressMonitor);
+		SimpleConfiguration config = new SimpleConfiguration(50000);
+		
+	     reasoner = reasonerFactory.createReasoner(ontology, config);
+		
+		System.out.println("create generator");
+		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+		System.out.println("fill");
+		iog.fillOntology(dataFactory2, infOnt);
+		System.out.println("done filling");
+		// iog.fillOntology(outputOntologyManager, infOnt);
+		Set<OWLAxiom> newaxioms = infOnt.getAxioms();
+		
+		newaxioms.removeAll(previousaxioms);
+		
+		System.out.println(newaxioms);
+		
+		System.out.println("ontology contains " + ontology.getAxioms().size() + "axioms");
+		
+		for (OWLAxiom delax : memory){
+			RemoveAxiom removeAxiomAction= new RemoveAxiom(ontology,delax);
+			manager.applyChange(removeAxiomAction);
+		}
+		
+		/*
+		for (OWLAxiom testaxiom : ontology.getAxioms()){
+			System.out.println(testaxiom);
+		}
+		*/
+		
+		// big loop for actions
+		for (int index = 0; index<objects.size(); index++){
+			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#action" + index));
+			for (OWLAxiom axes : newaxioms){
+				if (axes instanceof OWLClassAssertionAxiom){
+					OWLClassAssertionAxiom cax = (OWLClassAssertionAxiom) axes;
+					if (cax.getClassExpression().isOWLThing())
+						continue;
+					if (!cax.getIndividual().equals(new_indiv))
+						continue;
+					//  System.out.println(reasoner.getSubClasses(cax.getClassExpression(),true));
+					if (reasoner.getSubClasses(cax.getClassExpression(),true).isBottomSingleton()){
+						// System.out.println("Now need to get stuff for " + cax.getClassExpression());
+					
+						// System.out.println("ontology contains " + ontology.getAxioms().size() + "axioms");
+						
+						//loop for properties
+						for (String property : properties.get(index)){
+							for (OWLAxiom axprobe : ontology.getAxioms()){
+								// System.out.println("examining " + axprobe);
+								if (axprobe instanceof OWLSubClassOfAxiom && (((OWLSubClassOfAxiom) axprobe).getSubClass().equals(cax.getClassExpression()))){
+									OWLSubClassOfAxiom subclAx = (OWLSubClassOfAxiom) axprobe;
+									// System.out.println(" interested in " + subclAx);
+									if (subclAx.getSuperClass() instanceof OWLDataHasValue){
+										OWLDataHasValue datahasvalue = (OWLDataHasValue) subclAx.getSuperClass();
+										if (property.equals("getInstructionText")) property= "hasInstructionText";
+										if (property.equals("getImage")) property= "hasImagePath";
+										if (property.equals("getVideo")) property= "hasVideoPath";
+										if (datahasvalue.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
+											results.add(datahasvalue.getFiller().getLiteral());
+										}
+									}
+								}
+							}
+						}
+						// break;
+					}
+			}
+			}
+		}
+		
+		
+		
+		} catch (Exception e){
+			System.out.println("ops, exception");
+		}
+		
+		return results;
+		
+	}
+	
+	
+	
 	
 	public String getIllustrationURL(String query){
 		return getDataPropertyText(query, "hasIllustrationURL");
@@ -1077,7 +1366,7 @@ public class ClusterExplanationService {
 		
 	}
 	
-	
+/* 	
 public String handleBoschBatchRequest(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException{
 	String result = "";
 	boolean middle = false;
@@ -1096,6 +1385,70 @@ public String handleBoschBatchRequest(String input, PrintStream printstream) thr
 	printstream.print("]");
 	return "[" + result + "]";
 }
+*/
+	
+	public String handleBoschBatchRequest(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException{
+		JSONArray jsonArray = new JSONArray(input); 
+		String result = "";
+		boolean middle = false;
+		printstream.print("[");
+		
+		List<JSONObject> inputs = new ArrayList<JSONObject>();
+		List<List<String>> properties = new ArrayList<List<String>>();
+		
+		for (int i = 0; i < jsonArray.length();i++){
+			JSONObject part = (JSONObject) jsonArray.get(i);
+			inputs.add(part.getJSONObject("task"));
+			JSONArray queryArray = part.getJSONArray("query");
+			List<String> queryItems = new ArrayList<String>();
+		  	for (int j = 0; j<queryArray.length();j++){
+		  		queryItems.add(queryArray.getString(j));
+		  	}
+		  	properties.add(queryItems);
+		}
+		
+		List<String> results = getMostSpecificDataValue(inputs,properties);
+		
+		int resind = 0;
+		for (int y=0; y<inputs.size();y++){
+			String name = inputs.get(y).getString("name");
+			for (List<String> prop : properties){
+				String text = results.get(resind);
+				resind++;
+				JSONObject newobject = new JSONObject();
+				newobject.put("action",name);
+				newobject.put("text",text);
+				String res = newobject.toString();
+				if (middle){
+					result += ",";
+					printstream.print(",");
+					}
+				printstream.print(res);
+				middle = true;
+				result += res;
+			}
+		}
+		
+		
+		
+		printstream.print("]");
+		return "[" + result + "]";
+	}
+	
+
+public String handleBoschInstructionRequest(String jsonstring, PrintStream printstream){
+	JSONObject jobject =  new JSONObject(jsonstring);
+    JSONArray queryArray = jobject.getJSONArray("query");
+  	List<String> queryItems = new ArrayList<String>();
+  	for (int i = 0; i<queryArray.length();i++){
+  		queryItems.add(queryArray.getString(i));
+  	}
+  	System.out.println(queryItems.toString());
+  	
+	return "foo";
+}
+	
+	
 
 public String elaborate(JSONObject input){
 	// String activity = input.getString("elaborate");
@@ -1237,9 +1590,27 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	 
 	  	 if (inputObject.has("query")){
 	  		 if (inputObject.getString("query").equals("getInstructionText")){
-	  			 String result = getInstructionText(inputObject.getString("task"));
+	  			 String result = getInstructionText((JSONObject) inputObject.get("task"));
 	  			 JSONObject resultJSON = new JSONObject();
-	  			 resultJSON.put("action", inputObject.getString("task"));
+	  			 resultJSON.put("action", ((JSONObject) inputObject.get("task")).getString("name"));
+	  			 resultJSON.put("text", result);
+	  			 System.out.println("resultJSON " + resultJSON);;
+	  			printstream.println(resultJSON.toString());
+	  			 return resultJSON.toString();
+	  		 }
+	  		if (inputObject.getString("query").equals("getVideo")){
+	  			 String result = getVideoPath((JSONObject) inputObject.get("task"));
+	  			 JSONObject resultJSON = new JSONObject();
+	  			 resultJSON.put("action", ((JSONObject) inputObject.get("task")).getString("name"));
+	  			 resultJSON.put("text", result);
+	  			 System.out.println("resultJSON " + resultJSON);;
+	  			printstream.println(resultJSON.toString());
+	  			 return resultJSON.toString();
+	  		 }
+	  		if (inputObject.getString("query").equals("getImage")){
+	  			 String result = getImagePath((JSONObject) inputObject.get("task"));
+	  			 JSONObject resultJSON = new JSONObject();
+	  			 resultJSON.put("action", ((JSONObject) inputObject.get("task")).getString("name"));
 	  			 resultJSON.put("text", result);
 	  			 System.out.println("resultJSON " + resultJSON);;
 	  			printstream.println(resultJSON.toString());
