@@ -151,7 +151,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	public void makeAccordingToItsDefSentence(){
 		setOrder(SentenceOrder.noOrder);
 		
-		this.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
+		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
 		 	this.add(praedikat);
@@ -171,7 +171,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	public void makeThusSentence(){
 		setOrder(SentenceOrder.noOrder);
 		
-		this.add(new LogicElement(LogicLabels.getString("thus")));
+		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("thus")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
 			this.add(praedikat);
@@ -211,7 +211,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	public void makeSinceSentence(){
 		setOrder(SentenceOrder.noOrder);
 		
-		this.add(new LogicElement(LogicLabels.getString("since")));
+		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("since")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
 			this.add(praedikat);
@@ -230,7 +230,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	
 	public void makebyDefinitionItIsSentence(){
 		setOrder(SentenceOrder.noOrder);	
-		this.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
+		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("byDefinitionItIs")));
 		
 		//German Sentences
 		System.out.println("makebyDefinitionItIsSentence (2)");
@@ -361,7 +361,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		}
 		
 		// if (sentence==null || isEmpty(sentence) || sentence.size()<1){
-		if (sentence==null || sentence.size()<1){
+		if (this==null || this.size()<1){
 			System.out.println("null case");
 			return null;
 		}
@@ -490,13 +490,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString(){
-		String result = "";
-		result = "Sentence: " + sentence.toString() + "\n";
-		result = result + subjekt.toString() + " -- " + praedikat.toString() + " -- " + objekt.toString() 
-		+ "\n inspect: " + sentence.inspect();
-		return result;
-	}	
+	
 
 	public List<TextElement> toList(){
 		List<TextElement> list = new ArrayList<TextElement>();

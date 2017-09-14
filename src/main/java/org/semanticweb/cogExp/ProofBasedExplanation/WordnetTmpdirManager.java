@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLDecoder;
 
 public enum WordnetTmpdirManager {
@@ -63,6 +64,17 @@ public enum WordnetTmpdirManager {
 	
 	private static void createTmps(File newTempdir, String input, String output) throws IOException{
 		InputStream input1 = WordnetTmpdirManager.INSTANCE.getClass().getClassLoader().getResourceAsStream(input);
+		
+		ClassLoader cl = WordnetTmpdirManager.INSTANCE.getClass().getClassLoader().getSystemClassLoader();
+		URLClassLoader ucl = (URLClassLoader) cl;
+		URL[] urls = ucl.getURLs();
+		for (URL url: urls){
+			System.out.println(url.getFile());
+		}
+		
+		ucl.close();
+		System.out.println("input " + input);
+		
 		if (input1==null){
 			// System.out.println("NULL!!!!");
 			/*

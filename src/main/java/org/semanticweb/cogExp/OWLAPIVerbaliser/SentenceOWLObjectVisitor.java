@@ -1200,7 +1200,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLClassAssertionAxiom arg0) {
 		Sentence result = new Sentence();
 		result.add(arg0.getIndividual().accept(this));
-		result.setPraedikat(new LogicElement(LogicLabels.getString("is")));
+		result.setPraedikat(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
 		result.add(arg0.getClassExpression().accept(this));
         
 		result.makeAisBSentence();

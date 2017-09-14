@@ -349,9 +349,11 @@ public enum VerbalisationManager {
 				// System.out.println("DEBUG + " +
 				// property.getNamedProperty().getIRI().getFragment());
 				String result = property.asOWLDataProperty().getIRI().getFragment();
+				/*
 				if (textOWLObjectVisit.getObfuscator() != null) {
 					result = textOWLObjectVisit.getObfuscator().obfuscateRole(result);
 				}
+				*/
 				return result;
 			}
 			// collect annotation axioms
@@ -399,10 +401,12 @@ public enum VerbalisationManager {
 
 		// shortcut for labels with [X]
 		if (str.indexOf("[X]") > -1) {
+			/*
 			if (textOWLObjectVisit.getObfuscator() != null) {
 				str = textOWLObjectVisit.getObfuscator()
 						.obfuscateRole(property.asOWLDataProperty().getIRI().getFragment());
 			}
+			*/
 			return str;
 		}
 		// remove language tags
@@ -416,9 +420,11 @@ public enum VerbalisationManager {
 			// System.out.println("DEBUG " + str);
 		}
 		// Obfuscate!
+		/*
 		if (textOWLObjectVisit.getObfuscator() != null) {
 			str = textOWLObjectVisit.getObfuscator().obfuscateRole(str);
 		}
+		*/
 		/*
 		 * if (VerbaliseOWLObjectVisitor.detectLowCamelCase(str)) str =
 		 * VerbaliseOWLObjectVisitor.removeCamelCase(str); // heuristic!

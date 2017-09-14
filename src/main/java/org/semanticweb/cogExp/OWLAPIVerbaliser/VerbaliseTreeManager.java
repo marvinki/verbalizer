@@ -697,7 +697,7 @@ public enum VerbaliseTreeManager {
 					OWLClassExpression definedconcept = premiseformula.getClassExpressionsAsList().get(0);
 					if (((OWLSubClassOfAxiom) additions_to_antecedent.get(0)).getSubClass().equals(definedconcept)){
 						TextElementSequence seq = new TextElementSequence();
-						seq.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
+						seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
 	
 						seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 						return seq;

@@ -196,6 +196,63 @@ public class TextElementSequence extends TextElement{
 		}
 	}
 
-	
+	public JSONArray toJSON(){
+		JSONArray result = new JSONArray();
+		// JSONObject result = new JSONObject();
+		int itemcounter = 0;
+		for (TextElement element : sequence){
+			
+			System.out.println("dealing with " + element + " " + element.getClass());
+			
+			if (element instanceof ClassElement){
+				ClassElement classElement = (ClassElement) element;
+				String classDescription = classElement.toString();
+				String tooltip = classElement.getToolTipText();
+				JSONObject innerobject = new JSONObject();
+				innerobject.put("text", classDescription);
+				innerobject.put("classTooltip", tooltip);
+				innerobject.put("type", "class-description");
+				result.put(innerobject);
+				itemcounter++;
+			}
+			if (element instanceof LogicElement){
+				LogicElement logicElement = (LogicElement) element;
+				String logicDescription = logicElement.toString();
+				JSONObject innerobject = new JSONObject();
+				innerobject.put("text", logicDescription);
+				innerobject.put("type", "text");
+				result.put(innerobject);
+				itemcounter++;
+			}
+			if (element instanceof RoleElement){
+				RoleElement roleElement = (RoleElement) element;
+				String roleDescription = roleElement.toString();
+				JSONObject innerobject = new JSONObject();
+				innerobject.put("text", roleDescription);
+				innerobject.put("type", "roleDescription");
+				result.put(innerobject);
+				itemcounter++;
+			}
+			if (element instanceof ConclusionMarkerElement){
+				ConclusionMarkerElement cme = (ConclusionMarkerElement) element;
+				JSONArray recursiveResult = cme.toJSON();
+				for (Object io : recursiveResult){
+					result.put(io);
+				}
+				itemcounter++;
+			}
+			
+			if (element instanceof TextElementSequence){
+				TextElementSequence innersequence = (TextElementSequence) element;
+				JSONArray innerarray = innersequence.toJSON();
+				for (Object ob : innerarray){
+					JSONObject oj = (JSONObject) ob;
+					result.put(oj);
+				}
+			}
+		
+		}
+		return result;
+}
 	
 }
