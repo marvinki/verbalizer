@@ -180,6 +180,9 @@
 											</includes>
 											<filtering>true</filtering>
 										</resource>
+										<resource>
+											<directory>resource</directory>
+										</resource>resource>
 									</resources>
 								</configuration>
 							</execution>

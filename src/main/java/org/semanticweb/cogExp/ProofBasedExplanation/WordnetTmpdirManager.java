@@ -62,6 +62,12 @@ public enum WordnetTmpdirManager {
 	
 	
 	private static void createTmps(File newTempdir, String input, String output) throws IOException{
+		
+		// System.out.println("classpath=" + System.getProperty("java.class.path")); 
+		
+		// InputStream input2 = WordnetTmpdirManager.INSTANCE.getClass().getClassLoader().getResourceAsStream("adj.exc");
+		// System.out.println(input2);
+		
 		InputStream input1 = WordnetTmpdirManager.INSTANCE.getClass().getClassLoader().getResourceAsStream(input);
 		if (input1==null){
 			/*
@@ -75,14 +81,17 @@ public enum WordnetTmpdirManager {
 		File target1 = new File(output);
 		target1.createNewFile();
 		System.out.println("input " + input);
-		System.out.println("copying files " + input1 + " TO " + target1);
+		System.out.println("copying file " + input1 + " to " + target1);
 		copyFileUsingStream(input1,target1);
+		input1.close();
 	}
 		
 	public static void createTmps(File newTempdir, List<String> names) throws IOException{
 		for (String str : names){
-			createTmps(newTempdir,"resource"  + File.separator + str,
-			        		newTempdir.getAbsolutePath().toString() + File.separator + str);
+			 createTmps(newTempdir, str,
+						        		newTempdir.getAbsolutePath().toString() + File.separator + str);
+			// createTmps(newTempdir,"resource"  + File.separator + str,
+			//         		newTempdir.getAbsolutePath().toString() + File.separator + str);
 			}
 	}
 		
