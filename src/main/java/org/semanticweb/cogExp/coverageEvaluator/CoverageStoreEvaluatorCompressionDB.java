@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ import org.semanticweb.cogExp.core.IncrementalSequent;
 import org.semanticweb.cogExp.core.InferenceApplicationService;
 import org.semanticweb.cogExp.core.ProofNotFoundException;
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
+import org.semanticweb.cogExp.FormulaConverter.JustificationComparator;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPIManagerManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
@@ -55,12 +57,14 @@ import org.semanticweb.owlapi.io.StringDocumentSource;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLDocumentFormat;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
@@ -2506,6 +2510,9 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 			
 			boolean identical = false;
 			
+			int skippedSinceTreated = 0;
+			Set<Set<OWLAxiom>> alreadyTreatedJustifications = new HashSet<Set<OWLAxiom>>();
+			
 			int counting = 0;
 			int counter;
 			for (OWLAxiom ax : axioms){
@@ -2564,6 +2571,62 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     				}
     			}
 				
+    			List<OWLAxiom> justs = justifications.get(counter);
+    			
+    			Set<OWLObject> justs2 = new HashSet<OWLObject>();
+    			for (OWLAxiom axi : justs){
+    				justs2.add(axi);
+    			}
+    			
+    			if (alreadyTreatedJustifications.size()==0)
+    				alreadyTreatedJustifications.add(new HashSet<OWLAxiom>(justs));
+    			else{
+    			
+    			boolean replacementEqual = false;
+    			for (Set<OWLAxiom> candidate : alreadyTreatedJustifications){
+    				Set<OWLObject> justs3 = new HashSet<OWLObject>();
+        			for (OWLAxiom axi : candidate){
+        				justs3.add(axi);
+        			}
+    				
+    				HashMap<OWLClass,OWLClass> mapping = JustificationComparator.setsReplacementEqual(justs2,justs3);
+    				// System.out.println("mapping " + mapping);
+    				if (mapping !=null){
+    					replacementEqual = true;
+    					System.out.println("WHOOOHOWW");
+    					skippedSinceTreated++;
+    					System.out.println(skippedSinceTreated);
+    					// Apply mapping to conclusion formula
+    					OWLAxiom original_axiom = JustificationComparator.replaceClassnamesInAxioms(ax, mapping);
+    					System.out.println("Requested axiom: " + ax);
+    					for (Object o1 : justs2){
+    						System.out.println(o1);
+    					}
+    					
+    					
+    					System.out.println("Original axiom: " + original_axiom);
+    					for (Object o1 : justs3){
+    						System.out.println(o1);
+    					}
+    					
+    					try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+    					
+    					 // throw new RuntimeException();
+    					// continue;
+    				}
+    				
+    			}
+    			
+    			if (!replacementEqual)
+    				alreadyTreatedJustifications.add(new HashSet<OWLAxiom>(justs));
+    				System.out.println("different justifications " + alreadyTreatedJustifications.size());
+    			}
+    			
     			System.out.println();
     			OWLFormula axiomFormula;
     			List<OWLFormula> justificationFormulas = new ArrayList<OWLFormula>();
