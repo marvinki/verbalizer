@@ -866,6 +866,7 @@ public enum VerbalisationManager {
 			String defAnnotString = null;
 			String attrAnnotString = null;
 			String genericClassname = classexp.accept(sentenceOWLObjectVisit).toString();
+			// System.out.println("generic---" + genericClassname + "--");
 			if (genericClassname.length() > 2 && genericClassname.substring(0, 2).equals("a" + _space)) {
 				genericClassname = genericClassname.substring(2, genericClassname.length());
 			}
@@ -984,6 +985,7 @@ public enum VerbalisationManager {
 			// first case: more than one noun
 			// start with nouns, then use "that is"
 			for (String str : noun_concepts_strings) {
+				System.out.println("}" + str + "{");
 				if (firstToken == true) {
 					firstToken = false;
 					str = aOrAnIfy(str);
@@ -1014,6 +1016,7 @@ public enum VerbalisationManager {
 			// attributes first
 			for (String str : attribute_concepts_strings) {
 				result = result + str + _space;
+				System.out.println("result-}" + result + "{");
 				noun_or_attribute_concepts_strings.remove(str);
 			}
 			// if several items can be used either way, order them
@@ -1033,7 +1036,8 @@ public enum VerbalisationManager {
 					}
 				}
 				noun_or_attribute_concepts_strings.remove(current);
-				result = result + current + _space; 
+				result = result + current + _space;
+				System.out.println("result-}" + result + "{");
 				noun_concepts_strings.remove(current);
 			}
 			for (String str : noun_concepts_strings) {
@@ -1053,7 +1057,9 @@ public enum VerbalisationManager {
 
 		if (result.length() > 0)
 			result = result.substring(0, result.length() - 1); // need to remove
-																// last spacer
+			// last spacer
+		
+		// System.out.println("last step: +" + result + "+++");
 		return aOrAnIfy(result);
 	}
 

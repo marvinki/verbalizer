@@ -465,7 +465,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			sentence.concat(propsentence);
 			
 			if (visitorDebug) sentence.concat(new TextElement("visit:subclof"));
-			return sentence.getSentence();
+			sentence.setOrder(SentenceOrder.A_is_B);
+			sentence.makeABisSentence();
+			return sentence;
+			// return sentence.getSentence();
 			
 		}
 		// Multiple Exists Pattern
@@ -480,7 +483,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			
 			
 			if (visitorDebug) sentence.concat(new TextElement("visit:subclof"));
-			return sentence.getSentence();
+			// return sentence.getSentence();
+			sentence.setOrder(SentenceOrder.A_is_B);
+			sentence.makeABisSentence();
+			return sentence;
 			// 		+ " " +
 			// VerbalisationManager.pseudoNLStringMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
 		}
@@ -499,7 +505,8 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			
 			
 			if (visitorDebug) sentence.concat(new TextElement("visit:subclof"));
-			return sentence.getSentence();
+			return sentence;
+			// return sentence.getSentence();
 			// 		leftstring + " " +
 			// VerbalisationManager.pseudoNLStringMultipleExistsAndForallPattern((OWLObjectIntersectionOf) arg0.getSuperClass());
 		}
@@ -533,13 +540,19 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLClass ce) {
 		// System.out.println("visiting OWL Class "  + ce);
 		String clstr = VerbalisationManager.INSTANCE.getClassNLString(ce);
+		// System.out.println("clstr:  >" + clstr + "<");
 		String tooltiptext = ce.getIRI().toString();
 		ClassElement clelem = new ClassElement(clstr,tooltiptext);
 		
 		Sentence sentence = new Sentence(clelem);
+		// System.out.println( "------" + sentence.inspect());
+		
 //		sentence.setSubjekt(clelem);		
 		if (visitorDebug) sentence.concat(new TextElement("visit:"+ce.getClassExpressionType().getName()));
-		return sentence.getSentence();
+		sentence.setOrder(SentenceOrder.A_is_B);
+		sentence.makeABisSentence();
+		return sentence;
+		// return sentence.getSentence();
    }
 	
 	public Sentence verbaliseComplexIntersection(OWLObjectIntersectionOf arg0, Obfuscator obfuscator){
@@ -569,20 +582,27 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		// verbalise the "head" with the simple aggregator
 		TextElementSequence seq = new TextElementSequence();
 		String head = VerbalisationManager.INSTANCE.getSimpleIntersectionNLString(classExps);
+		// System.out.println("head===" + head + "===");
 		String tooltiptext = multipleTooltip(classExps);
 		ClassElement headElement = new ClassElement(head,tooltiptext);
 		seq.add(headElement);
 		// is there more?
-		if (someExps.size()>0 || allExps.size()>0 || allelseExps.size()>0 || someDataExps.size()>0 || dataHasValueExps.size()>0){
+		if (someExps.size()>0 || allExps.size()>0 || allelseExps.size()>0 || someDataExps.size()>0|| dataHasValueExps.size()>0){
 			seq.add(new LogicElement(LogicLabels.getString("that")));
 			// head += " that ";
 		}
+		
+		// System.out.println(" current seq ---- : " + seq.inspect());
+		
 		if (dataHasValueExps.size()==1){
 			head += dataHasValueExps.get(0).accept(this);
 			ClassElement headElement2 = new ClassElement(head);
 			Sentence sentence = new Sentence();
 			sentence.setSubjekt(headElement2);
-			return sentence.getSentence();
+			sentence.setOrder(SentenceOrder.A_is_B);
+			sentence.makeABisSentence();
+			return sentence;
+			// return sentence.getSentence();
 		}
 		if (someExps.size()>0 && allExps.size()==0){
 			head = VerbalisationManager.INSTANCE.verbaliseComplexIntersection(arg0,obfuscator);
@@ -590,7 +610,12 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			Sentence sentence = new Sentence();
 			sentence.setSubjekt(headElement3);
 			
-			return sentence.getSentence();
+			// System.out.println("returning ::: " + sentence.inspect());
+			
+			sentence.setOrder(SentenceOrder.A_is_B);
+			sentence.makeABisSentence();
+			return sentence;
+			// return sentence.getSentence();
 			/*
 			// TODO -this is not aggregating in case there is a multiple exists pattern
 			boolean isFirst = true;
@@ -640,7 +665,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		sentence.addToSubject(seq4);
 		
 		if (visitorDebug) sentence.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
-		return sentence.getSentence();
+		sentence.setOrder(SentenceOrder.A_is_B);
+		sentence.makeABisSentence();
+		return sentence;
+		// return sentence.getSentence();
 	}
 	
 
@@ -654,7 +682,8 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			// System.out.println("visit intersect (1): " + new TextElementSequence(resultList).toString());
 
 			if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
-			return result.getSentence();
+			return result;
+			// return result.getSentence();
 		} else{
 			if (checkMultipleExistsAndForallPattern(arg0)){
 				result.setSubjekt(somethingthatElement);
@@ -663,7 +692,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				// System.out.println("visit intersect (2): " + new TextElementSequence(resultList).toString());
 				
 				if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
-				return result.getSentence();
+				result.setOrder(SentenceOrder.A_is_B);
+				result.makeABisSentence();
+				return result;
+				// return result.getSentence();
 			} else{
 					boolean onlysimpleclasses = true;
 					for (OWLClassExpression exp: ((OWLObjectIntersectionOf) arg0).getOperandsAsList()){
@@ -676,7 +708,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 						// System.out.println("visit intersect (3): " + new TextElementSequence(resultList).toString());
 		
 						if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
-						return result.getSentence();
+						result.setOrder(SentenceOrder.A_is_B);
+						result.makeABisSentence();
+						return result;
+						// return result.getSentence();
 						}
 					result.concat(verbaliseComplexIntersection(arg0,obfuscator));
 				}
@@ -684,7 +719,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		// System.out.println("visit intersect (4): " + new TextElementSequence(resultList).toString());
 
 		if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
-		return result.getSentence();
+		result.setOrder(SentenceOrder.A_is_B);
+		result.makeABisSentence();
+		return result;
+		// return result.getSentence();
 	}
 
 	public Sentence visit(OWLObjectUnionOf arg0) {
@@ -708,7 +746,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		}
 		
 		if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
-		return result.getSentence();
+		result.setOrder(SentenceOrder.A_is_B);
+		result.makeABisSentence();
+		return result;
+		// return result.getSentence();
 	}
 
 	
@@ -719,7 +760,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		result.addToSubject(arg0.getOperand().accept(this).toTextElementSequence());
 		
 		if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
-		return result.getSentence();
+		result.setOrder(SentenceOrder.A_is_B);
+		result.makeABisSentence();
+		return result;
+		// return result.getSentence();
 	}
 
 	public Sentence visit(OWLObjectAllValuesFrom existsexpr) {
@@ -738,7 +782,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		result.addToSubject(new TextElementSequence(resultseq));
 		
 		if (visitorDebug) result.concat(new TextElement("visit:objctAVF1"));
-		return result.getSentence();
+		result.setOrder(SentenceOrder.A_is_B);
+		result.makeABisSentence();
+		return result;
+		// return result.getSentence();
 	}
 	
 	
@@ -768,10 +815,15 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		result.addToSubject(new TextElementSequence(resultseq));
 		
 		if (visitorDebug) result.concat(new TextElement("visit:objctSVF"+"!"+result.getSentence().toString()+"!"));
-		return result.getSentence();
+		
+		result.setOrder(SentenceOrder.A_is_B);
+		result.makeABisSentence();
+		return result;
+		// return result.getSentence();
 	}
 	
 	public Sentence visit(OWLEquivalentClassesAxiom arg0) {
+		System.out.println("sentence visitor for equiv called");
 		Sentence result = new Sentence();
 		// List<TextElement> result = new ArrayList<TextElement>();
 		OWLClass classexp = null;
@@ -784,9 +836,19 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		}
 		if (classexp!=null){
 			if(lang == Locale.ENGLISH){
+				// System.out.println("classexp not null, language english");
 				result.setSubjekt(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
-				result.addToSubject(classexp.accept(this).toTextElementSequence());
+				// System.out.println("classexp: " + classexp);
+				Sentence recSentence = classexp.accept(this);
+				// System.out.println("recSentence: " + recSentence);
+				// recSentence.setOrder(SentenceOrder.is_A_B);
+				// recSentence.makeOrderedSentence();
+				// System.out.println(" sentence | " +  recSentence.toTextElementSequence().toString() + "|");
+				// result.addToSubject(recSentence.toTextElementSequence());
+				result.addToSubject(recSentence);
+				// System.out.println("result:  " + result.inspect());
 				result.setPraedikat(new LogicElement("is"));
+				// System.out.println("result:  " + result.inspect());
 				boolean firstp = true;
 				for (OWLClassExpression ex:exprs){
 					if (!ex.equals(classexp)){
@@ -794,10 +856,15 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 								result.setObjekt(new LogicElement(LogicLabels.getString("and")));
 								firstp = false;
 							}
-							if (ex instanceof OWLObjectSomeValuesFrom)
+							if (ex instanceof OWLObjectSomeValuesFrom){
 								result.setObjekt(new LogicElement("something that"));
-								result.addToObject(ex.accept(this).toTextElementSequence());
+							}
+							
+							// in all cases
+							Sentence recSentence2 = ex.accept(this);
+							result.setObjekt(recSentence2);
 								
+							System.out.println("result:  " + result.inspect());
 					}
 				}
 			}
@@ -839,12 +906,16 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 							}
 						if (ex instanceof OWLObjectSomeValuesFrom)
 							result.setObjekt(new LogicElement("something that"));
-							result.addToObject(ex.accept(this).toTextElementSequence());
+							result.setObjekt(ex.accept(this).toTextElementSequence());
 				}	
 			}	
 		}
 		if (visitorDebug) result.concat(new TextElement("visit:owlobcteqvclas"));
-		return result.getSentence();
+		result.setOrder(SentenceOrder.A_is_B);
+		result.makeAisBSentence();
+		// System.out.println(" before returning " + result.inspect() );
+		return result;
+		// return result.getSentence();
 	}
 
 	public Sentence visit(OWLNegativeObjectPropertyAssertionAxiom arg0) {

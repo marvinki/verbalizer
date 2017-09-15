@@ -35,7 +35,7 @@ public enum VerbaliseTreeManager {
 	// static boolean debug = true;
 	
 	
-	static Locale locale = Locale.GERMAN;
+	static Locale locale = Locale.ENGLISH;
 	// static Locale locale = Locale.GERMAN;
 	
 	
@@ -601,6 +601,7 @@ public enum VerbaliseTreeManager {
 					return seq;
 				}
 				if (rule.equals(AdditionalDLRules.EQUIVEXTRACT) && !laconicDefs){
+					System.out.println("EQUIVEXTRACT APPLICATION");
 					OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
 					TextElementSequence firstpart = VerbalisationManager.textualise(premiseformula,obfuscator);
 					firstpart.makeUppercaseStart();
