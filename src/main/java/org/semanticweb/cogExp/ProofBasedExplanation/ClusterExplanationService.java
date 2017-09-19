@@ -964,7 +964,7 @@ public class ClusterExplanationService {
 								// System.out.println("examining " + axprobe);
 								if (axprobe instanceof OWLSubClassOfAxiom && (((OWLSubClassOfAxiom) axprobe).getSubClass().equals(cax.getClassExpression()))){
 									OWLSubClassOfAxiom subclAx = (OWLSubClassOfAxiom) axprobe;
-									// System.out.println(" interested in " + subclAx);
+									   System.out.println(" interested in " + subclAx);
 									if (subclAx.getSuperClass() instanceof OWLDataHasValue){
 										OWLDataHasValue datahasvalue = (OWLDataHasValue) subclAx.getSuperClass();
 										if (property.equals("getInstructionText")) property= "hasInstructionText";
@@ -988,6 +988,8 @@ public class ClusterExplanationService {
 		} catch (Exception e){
 			System.out.println("ops, exception");
 		}
+		
+		System.out.println(" results " + results);
 		
 		return results;
 		
@@ -1412,21 +1414,37 @@ public String handleBoschBatchRequest(String input, PrintStream printstream) thr
 		int resind = 0;
 		for (int y=0; y<inputs.size();y++){
 			String name = inputs.get(y).getString("name");
-			for (List<String> prop : properties){
+			
+			JSONObject newobject = new JSONObject();
+			newobject.put("action",name);
+			
+			
+			for (String prop : properties.get(y)){
+				
+				System.out.println("obtaining result for property " + prop);
+				
+				String propertylabel = prop;
+				if (propertylabel.equals("getVideo"))
+					propertylabel = "videoURL";
+				if (propertylabel.equals("getImage"))
+					propertylabel = "imageURL";
+				if (propertylabel.equals("getInstructionText"))
+					propertylabel = "text";
+				// obtaining value
 				String text = results.get(resind);
 				resind++;
-				JSONObject newobject = new JSONObject();
-				newobject.put("action",name);
-				newobject.put("text",text);
-				String res = newobject.toString();
-				if (middle){
-					result += ",";
-					printstream.print(",");
-					}
-				printstream.print(res);
-				middle = true;
-				result += res;
+				newobject.put(propertylabel,text);
+				
 			}
+			String res = newobject.toString();
+			if (middle){
+				result += ",";
+				printstream.print(",");
+				}
+			printstream.print(res);
+			middle = true;
+			result += res;
+			
 		}
 		
 		
@@ -1602,7 +1620,7 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  			 String result = getVideoPath((JSONObject) inputObject.get("task"));
 	  			 JSONObject resultJSON = new JSONObject();
 	  			 resultJSON.put("action", ((JSONObject) inputObject.get("task")).getString("name"));
-	  			 resultJSON.put("text", result);
+	  			 resultJSON.put("videoURL", result);
 	  			 System.out.println("resultJSON " + resultJSON);;
 	  			printstream.println(resultJSON.toString());
 	  			 return resultJSON.toString();
@@ -1611,7 +1629,7 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  			 String result = getImagePath((JSONObject) inputObject.get("task"));
 	  			 JSONObject resultJSON = new JSONObject();
 	  			 resultJSON.put("action", ((JSONObject) inputObject.get("task")).getString("name"));
-	  			 resultJSON.put("text", result);
+	  			 resultJSON.put("imageURL", result);
 	  			 System.out.println("resultJSON " + resultJSON);;
 	  			printstream.println(resultJSON.toString());
 	  			 return resultJSON.toString();

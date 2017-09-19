@@ -37,6 +37,9 @@ public class StringServer {
 	private ClusterExplanationService service = null;
 
 	public StringServer(int port, ClusterExplanationService service) throws IOException {
+		
+		/*
+		
 		String tmpdir = "";
 		try {
 			tmpdir = WordnetTmpdirManager.makeTmpdir();
@@ -45,6 +48,12 @@ public class StringServer {
 			e.printStackTrace();
 		}
 		WordNetQuery.INSTANCE.setDict(tmpdir);
+		
+		*/
+		
+		////// WE ARE NOT USING WORDNET!
+		WordNetQuery.INSTANCE.disableDict();
+		
 		server = new ServerSocket(port);
 		this.service = service;
 		while (true) {
