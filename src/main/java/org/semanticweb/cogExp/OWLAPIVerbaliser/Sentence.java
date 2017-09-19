@@ -235,7 +235,8 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		//German Sentences
 		System.out.println("makebyDefinitionItIsSentence (2)");
 		if(lang == Locale.GERMAN){
-			this.add(new LogicElement(", "));
+			// this.add(new LogicElement(", "));
+			this.add(new LogicElement(","));  // <-- spaces are added after all sentences automatically, no matter what language
 			this.add(subjekt);		
 		}
 
@@ -490,6 +491,31 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+//	public String toString(){
+////		result = "Sentence: " + this.toString() + "\n";
+////		result = result + subjekt.toString() + " -- " + praedikat.toString() + " -- " + objekt.toString();
+//		return this.toString();
+//	}	
+	
+	/*
+	public String toString(){
+		if (sequence.size)
+		
+		String result = "";
+		if (subjekt.size()>0)
+			result += subjekt.toString();
+		if (praedikat.size()>0 && objekt.size()>0)
+			result += praedikat.toString() + " " + objekt.toString();
+		return result;
+	}
+	*/
+	
+	public String inspect(){
+		String result = "";
+		result = "Sentence: " + this.toString() + "\n";
+		result = result + subjekt.toString() + " -- " + praedikat.toString() + " -- " + objekt.toString();
+	return result;
+}	
 	
 
 	public List<TextElement> toList(){

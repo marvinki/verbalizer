@@ -37,6 +37,15 @@ public class TextElementSequence extends TextElement{
 	}
 	
 		
+	public String inspect(){
+		String result = ">";
+		for(TextElement elem : sequence){
+			result += elem.toString();
+			result +="|";
+		}
+		return result;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement#toString()
 	 */
@@ -48,6 +57,8 @@ public class TextElementSequence extends TextElement{
 				needsep = false;
 			if (elem.content.startsWith("."))
 				needsep = false;
+			if (elem.toString().equals(""))
+				needsep = false; /// <--- avoid creating spaces with "sentences" that are not fully instantiated
 			if (needsep)
 				result += " ";
 			result += elem.toString();
