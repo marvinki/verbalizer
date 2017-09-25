@@ -5,7 +5,7 @@ package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 /**
  * @author fpaffrath
- *
+ * self explanatory
  */
 public enum SentenceOrder {
 
@@ -15,6 +15,9 @@ public enum SentenceOrder {
 	noOrder;
 	
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Enum#toString()
+	 */
 	public String toString(){
 		switch (this) {
 		case is_A_B:

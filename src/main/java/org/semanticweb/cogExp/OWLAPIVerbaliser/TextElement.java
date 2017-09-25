@@ -20,7 +20,7 @@ public class TextElement {
 	protected String content;
 	/**
 	 * 
-	 * @param content name
+	 * @param content the content of the TextElement
 	 */
 	public TextElement(String content){
 		this.content = content;
@@ -37,6 +37,10 @@ public class TextElement {
 		return content;
 	}
 
+	/**
+	 * @return the content of the TextElement as String. You could add 
+	 * some HTML-tags here for formatting. 
+	 */
 	public String toHTML(){
 		return content;
 	}
@@ -73,10 +77,16 @@ public class TextElement {
 		return result;
 	}
 	
+	/**
+	 * @return TODO add description
+	 */
 	public boolean isLinebreak(){
 		return false;
 	}
 	
+	/**
+	 * @return TODO add description
+	 */
 	public boolean isConclusionMarker(){
 		return false;
 	}

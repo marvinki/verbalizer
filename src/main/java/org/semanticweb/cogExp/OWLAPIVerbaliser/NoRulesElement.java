@@ -27,8 +27,6 @@ public class NoRulesElement extends TextElement{
 	/**
 	 * This constructor loads the TextElement with the string
 	 * "That's already stated in the ontology. " and adds an explanation at the end. 
-	 */
-	/**
 	 * @param explanation is added at the end
 	 */
 	public NoRulesElement(String explanation) {

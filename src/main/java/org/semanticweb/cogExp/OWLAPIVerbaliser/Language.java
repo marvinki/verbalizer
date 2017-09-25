@@ -5,7 +5,7 @@ package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 /**
  * @author fpaffrath
- *
+ * self explanatory
  */
 public enum Language {
 	ENGLISH("english", "en"),

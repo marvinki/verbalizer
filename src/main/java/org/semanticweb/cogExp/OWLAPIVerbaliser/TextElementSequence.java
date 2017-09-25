@@ -121,20 +121,33 @@ public class TextElementSequence extends TextElement{
 	}
 	
 		
+	/**
+	 * @param el self explanatory
+	 */
 	public void add(TextElement el){
 		sequence.add(el);	
 	}
 	
+	/**
+	 * @param textList self explanatory
+	 */
 	public void addAll(List<TextElement> textList) {
 		// TODO Auto-generated method stub
 		sequence.addAll(textList);
 	}
 	
+	/**
+	 * @param seq2 self explanatory
+	 */
 	public void concat(TextElementSequence seq2){
 	if(seq2!=null) 
 			sequence.addAll(seq2.sequence);	
 	}
 	
+	/**
+	 * Makes the first letter of the contained String capital.
+	 * If the string is empty, it does nothing.
+	 */
 	public void makeUppercaseStart(){
 		TextElement start;
 		if (sequence.get(0)==null)
@@ -145,6 +158,9 @@ public class TextElementSequence extends TextElement{
 		start.content = str;
 	}
 	
+	/**
+	 * @return self explanatory
+	 */
 	public List<TextElement> getTextElements(){
 		return sequence;
 	}
@@ -162,6 +178,10 @@ public class TextElementSequence extends TextElement{
 		
 	}
 	
+	
+	/**
+	 * TODO add description 
+	 */
 	public void pluralise(){
 		TextElement previous = null;
 		boolean somethingthat = false;

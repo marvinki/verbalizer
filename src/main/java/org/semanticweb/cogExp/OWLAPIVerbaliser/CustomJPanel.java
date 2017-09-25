@@ -13,7 +13,8 @@ import javax.swing.JPanel;
 
 /**
  * a CustomJPanels are properly sized JPanels for the
- * TextExplanationResult ...
+ * TextExplanationResult. There is only use for it
+ * in the GUI for the Protege plugin.
  * @author fpaffrath
  *
  */
@@ -81,6 +82,10 @@ public class CustomJPanel extends JPanel {
 	}
 
 	
+	/**
+	 * inherited @see JLabel.add()
+	 * @param label the JLabel that is to be added.
+	 */
 	public void add(JLabel label) {
 		// TODO Auto-generated method stub
 		super.add(label);

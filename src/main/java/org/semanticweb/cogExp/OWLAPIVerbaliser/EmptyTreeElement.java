@@ -12,6 +12,7 @@ import org.protege.editor.owl.OWLEditorKit;
  * Represents a special TextElement that indicates that the Gentzen tree is empty. 
  * It comes in action if e.g. the proof can't be found within the limit.
  * It is supposed to facilitate coloring and such like.
+ * There is no language support yet. (and there may be no need for that)
  * @author fpaffrath
  *
  */

@@ -20,13 +20,12 @@ public class RoleElement extends TextElement{
 		super(content);
 	}
 
+	@Override
 	public String toHTML(){
 		return "<font color=Maroon>" + content + "</font>"; 
 	}
 	
-	/**
-	 * @return returns the content as plain string 
-	 */
+	@Override
 	public String toString(){
 		return content;
 	}
