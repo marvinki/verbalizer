@@ -29,12 +29,19 @@ public class SentenceTest {
 		p = new TextElement("frisst");
 		
 		sen = new Sentence(s, o, p);
+		
+		System.out.println(sen.inspect());
+		
 		sen.makeDefaultSentence();
+		
+		System.out.println(sen.inspect());
 		
 		array = sen.getSentence();
 		
 	
 			System.out.print(array.toString());
+		
+		
 		
 		
 	}

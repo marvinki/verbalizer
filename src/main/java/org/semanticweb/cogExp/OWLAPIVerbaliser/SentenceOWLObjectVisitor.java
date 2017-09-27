@@ -853,7 +853,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		if (classexp!=null){
 			if(lang == Locale.ENGLISH){
 				// System.out.println("classexp not null, language english");
-				result.setSubjekt(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
+				result.setSubjekt(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
 				// System.out.println("classexp: " + classexp);
 				Sentence recSentence = classexp.accept(this);
 				// System.out.println("recSentence: " + recSentence);

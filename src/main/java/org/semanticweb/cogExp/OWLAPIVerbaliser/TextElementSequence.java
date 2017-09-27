@@ -68,7 +68,7 @@ public class TextElementSequence extends TextElement{
 		return result;
 	}
 	
-	public String inspect(){
+	public String inspect2(){
 		String result = "";
 		for(TextElement elem : sequence){
 			result += "Element " + elem.getClass() + " : " + elem.content + "\n";
@@ -260,6 +260,17 @@ public class TextElementSequence extends TextElement{
 					JSONObject oj = (JSONObject) ob;
 					result.put(oj);
 				}
+			}
+			
+			if (element instanceof TextElement){
+				TextElement textElement = (TextElement) element;
+				String textDescription = textElement.toString();
+				JSONObject innerobject = new JSONObject();
+				innerobject.put("text", textDescription);
+				// innerobject.put("classTooltip", tooltip);
+				innerobject.put("type", "text");
+				result.put(innerobject);
+				itemcounter++;
 			}
 		
 		}
