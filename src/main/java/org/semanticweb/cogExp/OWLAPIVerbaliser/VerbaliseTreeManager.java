@@ -41,8 +41,8 @@ public enum VerbaliseTreeManager {
 	 * switch between languages (German, English) with setting locale.
 	 * Also check out /src/main/resources/LogicLabels_de.properties or /src/main/resources/LogicLabels_en.properties (take care of spelling)
 	 */
-	static Locale locale = Locale.ENGLISH;
-	// static Locale locale = Locale.GERMAN;
+//	static Locale locale = Locale.ENGLISH;
+	 static Locale locale = Locale.GERMAN;
 		
 	/**
 	 * 

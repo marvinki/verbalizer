@@ -34,16 +34,19 @@ public class Sentence extends TextElementSequence{
 	/**
 	 * 
 	 */
+	private boolean sentenceMade = false;
 	
 	public Sentence() {
 	}
 	
 	public Sentence(TextElementSequence seq){	
 		this.add(seq);
+		sentenceMade = true;
 	}
 	
 	public Sentence(TextElement el){
 		this.add(el);
+		sentenceMade = true;
 	}
 	
 	public Sentence(TextElement subjekt, TextElement objekt, TextElement praedikat) {
@@ -51,8 +54,7 @@ public class Sentence extends TextElementSequence{
 		this.setSubjekt(subjekt);
 		this.setObjekt(objekt);
 		this.setPraedikat(praedikat);
-		
-		makeDefaultSentence();
+				
 	}
 	
 public Sentence(TextElement subjekt, TextElement objekt, TextElement praedikat, SentenceOrder order) {	
@@ -92,6 +94,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	 * Generates a default sentence depending on the set language. (actually in both German and English , it is "Subject predicate object")
 	 */
 	public void makeDefaultSentence(){
+		if(sentenceMade) return;
 		//German Sentences
 		setOrder(SentenceOrder.noOrder);
 		if(lang == Locale.GERMAN){	
@@ -108,7 +111,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 				this.add(subjekt);
 				this.add(praedikat);
 				this.add(objekt);
-			}
+		}
+		
+		sentenceMade = true;
 			
 	}
 	
@@ -118,6 +123,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	 * The SentencesOrder is set respectively
 	 */
 	public void makeAisBSentence(){
+		if(sentenceMade) return;
 		
 		setOrder(SentenceOrder.A_is_B);
 //		setPraedikat(new LogicElement(LogicLabels.getString("is")));
@@ -126,13 +132,15 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		this.add(praedikat);
 		this.add(objekt);
 		
-	
+		sentenceMade = true;
+
 	}
 	
 	/**
 	 * see makeAisBSentence()
 	 */
 	public void makeABisSentence(){
+		if(sentenceMade) return;
 		
 		setOrder(SentenceOrder.A_B_is);
 //		setPraedikat(new LogicElement(LogicLabels.getString("is")));
@@ -141,13 +149,15 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		this.add(objekt);
 		this.add(praedikat);
 	
+		sentenceMade = true;
+
 	}
 	
 	/**
 	 * see makeAisBSentence()
 	 */
 	public void makeisABSentence() {
-		
+		if(sentenceMade) return;
 		
 		// TODO Auto-generated method stub
 		setOrder(SentenceOrder.is_A_B);
@@ -157,6 +167,8 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		this.add(subjekt);
 		this.add(objekt);
 			
+		sentenceMade = true;
+
 			
 	}
 	
@@ -166,6 +178,8 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	 * "According to it's definition..." (and German translation) is used
 	 */
 	public void makeAccordingToItsDefSentence(){
+		if(sentenceMade) return;
+		
 		setOrder(SentenceOrder.noOrder);
 		
 		this.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
@@ -183,12 +197,17 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			this.add(praedikat);
 			this.add(objekt);
 		}	
+		
+		sentenceMade = true;
+
 	}
 	
 	/**
 	 * see makeAccordingToItsDefSentence()
 	 */
 	public void makeThusSentence(){
+		if(sentenceMade) return;
+		
 		setOrder(SentenceOrder.noOrder);
 		
 		this.add(new LogicElement(LogicLabels.getString("thus")));
@@ -206,12 +225,16 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			this.add(praedikat);
 			this.add(objekt);
 		}	
+		
+		sentenceMade = true;
+
 	}
 	
 	/**
 	 * see makeAisBSentence()
 	 */
 	public void makeSideSentence(){
+		if(sentenceMade) return;
 		
 		setOrder(SentenceOrder.noOrder);
 		
@@ -229,20 +252,25 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			this.add(praedikat);
 			this.add(objekt);
 		}	
+		
+		sentenceMade = true;
+
 	}
 	
 	/**
 	 * see makeAccordingToItsDefSentence()
 	 */
 	public void makeSinceSentence(){
+		if(sentenceMade) return;
+		
 		setOrder(SentenceOrder.noOrder);
 		
 		this.add(new LogicElement(LogicLabels.getString("since")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
-			this.add(praedikat);
 			this.add(subjekt);
 			this.add(objekt);
+			this.add(praedikat);
 			
 		}
 
@@ -252,12 +280,17 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			this.add(praedikat);
 			this.add(objekt);
 		}	
+		
+		sentenceMade = true;
+
 	}
 	
 	/**
 	 * see makeAccordingToItsDefSentence()
 	 */
 	public void makebyDefinitionItIsSentence(){
+		if(sentenceMade) return;
+		
 		setOrder(SentenceOrder.noOrder);	
 		this.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
 		
@@ -272,14 +305,18 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		if(lang == Locale.ENGLISH){
 			this.add(subjekt);
 		}	
+		
+		sentenceMade = true;
+
 	}
 	
 	/**
 	 * generates Sentences depending on the set SentenceOrder.
 	 * if there's no Order set, makeDefaultSentence() is called.
 	 */
-	protected void makeOrderedSentence() {
-		// TODO Auto-generated method stub
+	public void makeOrderedSentence() {
+		if(sentenceMade) return;
+		
 		if(order!=null){
 			switch(getOrder()){
 			case A_B_is:
@@ -311,6 +348,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		}else{
 			makeDefaultSentence();
 		}
+		
+		sentenceMade = true;
+
 	}
 
 	
@@ -320,13 +360,12 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	 */
 	public Sentence getSentence() {
 		
-		
-		if(order !=null && order != SentenceOrder.noOrder){
-			makeOrderedSentence();
-		}else if(order == null){
-			makeDefaultSentence();
-		}else{
-			
+		if(!sentenceMade){
+			if(order !=null && order != SentenceOrder.noOrder){
+				makeOrderedSentence();
+			}else if(order == null){
+				makeDefaultSentence();
+			}
 		}
 		
 //		cleanSentence();
@@ -335,7 +374,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	}
 	
 	/**
-	 * cleans up the {@link Sentence} to get rid of unnecessary white spaces.
+	 * cleans up the {@link Sentence} to get rid of unnecessary white spaces. -Obsolete-
 	 */
 	private void cleanSentence(){
 		String newSen = "";
@@ -411,6 +450,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	 */
 	public void setSentence(TextElementSequence s) {
 		this.add(s);
+		sentenceMade=true;
 	}
 
 
