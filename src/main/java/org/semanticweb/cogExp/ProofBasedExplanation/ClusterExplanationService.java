@@ -1157,8 +1157,11 @@ public class ClusterExplanationService {
 			else 
 			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("hasEnergy") && dAss.getObject().asLiteral().toString().contains("1")
 				|| 	dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("unusable") && dAss.getObject().asLiteral().toString().contains("1")
+				|| dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("usable") && dAss.getObject().asLiteral().toString().contains("1")
 					)
-				if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("unusable"))
+				if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("unusable")
+						|| dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("usable")
+						)
 			result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
 						+ " " + dAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm()
 				+ ")\n"; 
