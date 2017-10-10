@@ -48,7 +48,8 @@ public class MindrillExample {
 			
 			OWLReasonerFactory reasonerFactory = new JFactFactory();
 
-			File ontologyfile = new java.io.File("/home/fpaffrath/svn/Bosch-intern/ontologies/mindrill04.owl");
+			// File ontologyfile = new java.io.File("/home/fpaffrath/svn/Bosch-intern/ontologies/mindrill04.owl");
+			File ontologyfile = new java.io.File("/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/mindrill04.owl");
 			
 			OWLOntology boschOntology = 
 					OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
