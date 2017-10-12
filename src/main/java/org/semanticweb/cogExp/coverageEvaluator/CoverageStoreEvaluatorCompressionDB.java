@@ -987,7 +987,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		    			
 		    		
 		    			
-		    			List<String> queryResult2 = DatabaseManager.INSTANCE.getExplanation(
+		    			List<String> queryResult2 = DatabaseManager.INSTANCE.getBioExplanation(
 		    					subAx.getSubClass().toString(), 
 		    					subAx.getSuperClass().toString(), 
 		    					ontologyfile);
@@ -2546,7 +2546,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 					*/
 				
 				// check database before starting
-				List<String> queryResult = DatabaseManager.INSTANCE.getExplanation(
+				List<String> queryResult = DatabaseManager.INSTANCE.getRestrictedBioExplanation(
     					subAx.getSubClass().toString(), 
     					subAx.getSuperClass().toString(), 
     					ontologyid);
@@ -2609,8 +2609,59 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     						System.out.println(o1);
     					}
     					
+    					// retrieve previous result and insert it again with a pointer
+    					List<String> previousResult = DatabaseManager.INSTANCE.getBioExplanation(
+    	    					((OWLSubClassOfAxiom) original_axiom).getSubClass().toString(), 
+    	    					((OWLSubClassOfAxiom) original_axiom).getSuperClass().toString(), 
+    	    					ontologyid);
+    					
+    					DatabaseManager.INSTANCE.insertBioExplanation(
+		    					subAx.getSubClass().toString(), 
+		    					subAx.getSuperClass().toString(), 
+		    					ontologyid,
+		    					"bio", 
+		    					true, 
+		    					"identical to: " + original_axiom, 
+		    					"", 
+		    					"", 
+		    					Integer.parseInt(previousResult.get(9)), 
+		    					Integer.parseInt(previousResult.get(10)), 
+		    					Integer.parseInt(previousResult.get(11)),
+		    					Integer.parseInt(previousResult.get(12)), 
+		    					Integer.parseInt(previousResult.get(13)), 
+		    					Integer.parseInt(previousResult.get(14)), 
+		    					Integer.parseInt(previousResult.get(15)),
+		    					Integer.parseInt(previousResult.get(16)), 
+		    					Integer.parseInt(previousResult.get(17)), 
+		    					Integer.parseInt(previousResult.get(18)), 
+		    					Integer.parseInt(previousResult.get(19)),
+		    					Integer.parseInt(previousResult.get(20)), 
+		    					Integer.parseInt(previousResult.get(21)), 
+		    					Integer.parseInt(previousResult.get(22)), 
+		    					Integer.parseInt(previousResult.get(23)),
+		    					Integer.parseInt(previousResult.get(24)), 
+		    					Integer.parseInt(previousResult.get(25)), 
+		    					Integer.parseInt(previousResult.get(26)), 
+		    					Integer.parseInt(previousResult.get(27)),
+		    					Integer.parseInt(previousResult.get(28)), 
+		    					Integer.parseInt(previousResult.get(29)),
+		    					Integer.parseInt(previousResult.get(30)), 
+		    					Integer.parseInt(previousResult.get(31)), 
+		    					Integer.parseInt(previousResult.get(32)), 
+		    					Integer.parseInt(previousResult.get(33)),
+		    					Integer.parseInt(previousResult.get(34)), 
+		    					Integer.parseInt(previousResult.get(35)), 
+		    					Integer.parseInt(previousResult.get(36)), 
+		    					Integer.parseInt(previousResult.get(37)),
+		    					Integer.parseInt(previousResult.get(38)), 
+		    					Integer.parseInt(previousResult.get(39)), 
+		    					Integer.parseInt(previousResult.get(40)),
+		    					Integer.parseInt(previousResult.get(41)) 
+		    					);
+    					
+    					
     					try {
-							Thread.sleep(1000);
+							Thread.sleep(1);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

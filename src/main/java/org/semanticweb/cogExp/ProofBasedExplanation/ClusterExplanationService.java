@@ -42,6 +42,7 @@ import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
@@ -1469,7 +1470,33 @@ public String handleBoschInstructionRequest(String jsonstring, PrintStream print
 	return "foo";
 }
 	
+public String describe(JSONObject input){
+	String toBeDescribed = input.getString("describe");
+	String result = "";
 	
+	Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature();
+	
+	OWLNamedIndividual targetIndividual = null;
+	for (OWLNamedIndividual indiv: individuals){
+		if (indiv.getIRI().getShortForm().equals(toBeDescribed)){
+			targetIndividual = indiv;
+		}
+	}
+	if (targetIndividual !=null){
+		Set<OWLClassAssertionAxiom> classAssertionAxioms = ontology.getClassAssertionAxioms(targetIndividual);
+		for (OWLClassAssertionAxiom cas : classAssertionAxioms){
+			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
+			Set<OWLClassAxiom> axioms = ontology.getAxioms(classToBeDescribed);
+			for (OWLClassAxiom ax : axioms){
+				result += VerbalisationManager.textualise(ax).toString() + ".";
+			}
+		}
+	}
+	
+	
+	
+	return result;
+}
 
 public String elaborate(JSONObject input){
 	// String activity = input.getString("elaborate");
@@ -1598,6 +1625,12 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	 
 	  	if (inputObject.has("elaborate")){
 	  		 String result = elaborate(inputObject);
+	  		printstream.println(result);
+	  		return result;
+	  	}
+	  	
+	  	if (inputObject.has("describe")){
+	  		 String result = describe(inputObject);
 	  		printstream.println(result);
 	  		return result;
 	  	}

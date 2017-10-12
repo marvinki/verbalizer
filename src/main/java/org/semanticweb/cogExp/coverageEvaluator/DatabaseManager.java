@@ -3,11 +3,13 @@ package org.semanticweb.cogExp.coverageEvaluator;
 import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 
+
 import com.mysql.jdbc.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -155,21 +157,22 @@ public enum DatabaseManager {
 		
 	}
 	
-	public void insertBioExplanation(String subclass, 
-			  String superclass, 
-			  String ontologypath, 
-			  String corpus,
-			  boolean solved, 
-			  String explanation,
-			  String listing,
-			  String longlisting,
-			  int explanationsteps,
-			  int listingsteps,
-			  int longlistingsteps,
-			  int time,
-			  int EQUIVEXTRACT,
-			  int SUBCLANDEQUIVELIM,
-			  int R0,
+	public void insertBioExplanation(
+			  String subclass,      // 0
+			  String superclass,    // 1
+			  String ontologypath,  // 2
+			  String corpus,        // 3
+			  boolean solved,       // 4
+			  String explanation,   // 5
+			  String listing,       // 6 
+			  String longlisting,   // 7
+			  int explanationsteps,   //8
+			  int listingsteps,       //9 
+			  int longlistingsteps,   // 10
+			  int time,              // 11
+			  int EQUIVEXTRACT,       // 12
+			  int SUBCLANDEQUIVELIM,   //13
+			  int R0,  // 14
 			  int RULE1,
   		  int RULE1neo,
   		  int RULE2,
@@ -305,6 +308,34 @@ e.printStackTrace();
 		
 	}
 	
+	
+	public List<String> getBioExplanation(String sub, String sup, String ontology){
+		List<String> result = new ArrayList<String>();
+		String query = "select * from bioexplanations where subclass='" + sub +
+				"' && superclass='"+  sup + "' && ontologypath = '" +ontology +"';";
+		// System.out.println("query string: "+ query);
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int columnsNumber = rsmd.getColumnCount();
+			
+			while (rs.next()){
+				 for(int i = 1; i < columnsNumber+1; i++)
+					 result.add(rs.getString(i));
+					
+				}
+			}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		System.out.println("returning row : "+ result.toString());
+		
+		return result;
+	}
+	
 	public List<String> getExplanation(String sub, String sup, String ontology){
 		List<String> result = new ArrayList<String>();
 		String query = "select * from explanations where subclass='" + sub +
@@ -346,6 +377,49 @@ e.printStackTrace();
 		}
 		return result;	
 	}
+	
+	public List<String> getRestrictedBioExplanation(String sub, String sup, String ontology){
+		List<String> result = new ArrayList<String>();
+		String query = "select * from bioexplanations where subclass='" + sub +
+				"' && superclass='"+  sup + "' && ontologypath = '" +ontology +"';";
+		// System.out.println("query string: "+ query);
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()){
+				String solved = rs.getString("solved");
+				String explanation = rs.getString("explanation");
+				String listing = rs.getString("listing");
+				String longlisting = rs.getString("longlisting");
+				String verbsteps = rs.getString("verbsteps");
+				String listingsteps = rs.getString("listingsteps");
+				String longlistingsteps = rs.getString("longlistingsteps");
+				String time = rs.getString("time");
+				String equivextract = rs.getString("equivextract");
+				result.add(solved);
+				result.add(explanation);
+				result.add(listing);
+				result.add(longlisting);
+				result.add(verbsteps);
+				result.add(listingsteps);
+				result.add(longlistingsteps);
+				result.add(time);
+				result.add(equivextract);
+				
+				// close resource to avoid memory leak
+				stmt.close();
+				rs.close();
+				break;
+			}
+			rs.close();
+			stmt.close();
+		} catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		return result;	
+	}
+	
 	
 	public List<List<String>> getExplanationsInclusive(String ontology){
 		List<List<String>> result = new ArrayList<List<String>>();
