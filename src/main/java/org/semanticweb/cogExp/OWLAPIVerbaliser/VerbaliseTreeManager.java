@@ -32,18 +32,25 @@ import com.clarkparsia.owlapi.modularity.locality.SemanticLocalityEvaluator;
 public enum VerbaliseTreeManager {
 	INSTANCE;
 	
-	static boolean debug = false;
-	static boolean visitorDebug = false;
-	static boolean verbalisationManagerdebug = false;
+	/**
+	 * use to (un)suppress debug output in different locations in the programm
+	 */
+	static boolean debug = false;  //output is generated in VerbaliseTreeManager (here) 
+	static boolean visitorDebug = false; //output is generated (mostly) in SentenceOWLObjectVisitor
+	static boolean verbalisationManagerdebug = false; //output is generated in verbalisationManager
 	// static boolean debug = true;
 	
-	
-	static Locale locale = Locale.ENGLISH;
-	// static Locale locale = Locale.GERMAN;
-	// static boolean debug = true;
-	
-	// static ResourceBundle VerbalisationManager.LogicLabels = ResourceBundle.getBundle(VerbalisationManager.VerbalisationManager.LogicLabelsPath, locale);
-	// static ResourceBundle VerbalisationManager.LogicLabels = VerbalisationManager.VerbalisationManager.LogicLabels;
+	/**
+	 * switch between languages (German, English) with setting locale.
+	 * Also check out /src/main/resources/LogicLabels_de.properties or /src/main/resources/LogicLabels_en.properties (take care of spelling)
+	 */
+//	static Locale locale = Locale.ENGLISH;
+	 static Locale locale = Locale.GERMAN;
+		
+	/**
+	 * 
+	 */
+	static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", locale);
 	
 	
 	public static void setLogicLabels(ResourceBundle LogicLabels) {
@@ -384,6 +391,7 @@ public enum VerbaliseTreeManager {
 	 * @param additions_to_succedent		list of formulas added to succedent in current step
 	 * @param previousconclusion			(TODO: add description)
 	 * @param before_previousconclusion		(TODO: add description)
+	 * @param obfuscator					(TODO: add description)
 	 * @return a Statement					(TODO: add description)
 	 */
 	

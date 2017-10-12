@@ -25,13 +25,17 @@ import javax.swing.text.StyleConstants;
 import org.protege.editor.owl.OWLEditorKit;
 
 /**
- * represents any class
+ * represents any class. Use click-ability by utilizing toJLabel().
  * @author marvinki (doc by fp)
+ *
+ */
+/**
+ * @author fpaffrath
  *
  */
 public class ClassElement extends TextElement{
 	
-	private String tooltiptext = "footext";
+	private String tooltiptext = null;
 	
 	/**
 	 * @param content name
@@ -57,14 +61,20 @@ public class ClassElement extends TextElement{
 		return content;
 	}
 	
+	
+	/**
+	 * @return the tooltip as plain string. Returns null if there is no tooltip.
+	 */
 	public String getToolTipText(){
 		return tooltiptext;
 	}
 		
+	/**
+	 * @return a list of (click-able) JLabels.
+	 */
 	@Override
 	public List<JLabel> toJLabel(OWLEditorKit ek){
 		List<JLabel> labellist = new ArrayList<JLabel>();
-		
 		String article = "";
 		String name = "";
 		if (content.startsWith("a ")){
@@ -133,6 +143,8 @@ public class ClassElement extends TextElement{
 		return labellist;
 	}
 	
+
+	@Override
 	public String toHTML(){
 		// do not mark the article, therefore separate it
 		String article = "";

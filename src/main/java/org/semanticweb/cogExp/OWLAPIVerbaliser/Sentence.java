@@ -34,16 +34,19 @@ public class Sentence extends TextElementSequence{
 	/**
 	 * 
 	 */
+	private boolean sentenceMade = false;
 	
 	public Sentence() {
 	}
 	
 	public Sentence(TextElementSequence seq){	
 		this.add(seq);
+		sentenceMade = true;
 	}
 	
 	public Sentence(TextElement el){
 		this.add(el);
+		sentenceMade = true;
 	}
 	
 	public Sentence(TextElement subjekt, TextElement objekt, TextElement praedikat) {
@@ -51,8 +54,7 @@ public class Sentence extends TextElementSequence{
 		this.setSubjekt(subjekt);
 		this.setObjekt(objekt);
 		this.setPraedikat(praedikat);
-		
-		makeDefaultSentence();
+				
 	}
 	
 public Sentence(TextElement subjekt, TextElement objekt, TextElement praedikat, SentenceOrder order) {	
@@ -88,7 +90,11 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 
 	}
 	
+	/**
+	 * Generates a default sentence depending on the set language. (actually in both German and English , it is "Subject predicate object")
+	 */
 	public void makeDefaultSentence(){
+		if(sentenceMade) return;
 		//German Sentences
 		setOrder(SentenceOrder.noOrder);
 		if(lang == Locale.GERMAN){	
@@ -105,11 +111,19 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 				this.add(subjekt);
 				this.add(praedikat);
 				this.add(objekt);
-			}
+		}
+		
+		sentenceMade = true;
 			
 	}
 	
+	
+	/**
+	 * Generates a "A is B" sentence depending on the set language, different words for "is" is used.
+	 * The SentencesOrder is set respectively
+	 */
 	public void makeAisBSentence(){
+		if(sentenceMade) return;
 		
 		setOrder(SentenceOrder.A_is_B);
 //		setPraedikat(new LogicElement(LogicLabels.getString("is")));
@@ -118,10 +132,15 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		this.add(praedikat);
 		this.add(objekt);
 		
-	
+		sentenceMade = true;
+
 	}
 	
+	/**
+	 * see makeAisBSentence()
+	 */
 	public void makeABisSentence(){
+		if(sentenceMade) return;
 		
 		setOrder(SentenceOrder.A_B_is);
 //		setPraedikat(new LogicElement(LogicLabels.getString("is")));
@@ -130,10 +149,15 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		this.add(objekt);
 		this.add(praedikat);
 	
+		sentenceMade = true;
+
 	}
 	
+	/**
+	 * see makeAisBSentence()
+	 */
 	public void makeisABSentence() {
-		
+		if(sentenceMade) return;
 		
 		// TODO Auto-generated method stub
 		setOrder(SentenceOrder.is_A_B);
@@ -143,12 +167,19 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		this.add(subjekt);
 		this.add(objekt);
 			
+		sentenceMade = true;
+
 			
 	}
 	
 	
-	
+	/**
+	 * see makeAisBSentence()
+	 * "According to it's definition..." (and German translation) is used
+	 */
 	public void makeAccordingToItsDefSentence(){
+		if(sentenceMade) return;
+		
 		setOrder(SentenceOrder.noOrder);
 		
 		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
@@ -166,9 +197,17 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			this.add(praedikat);
 			this.add(objekt);
 		}	
+		
+		sentenceMade = true;
+
 	}
 	
+	/**
+	 * see makeAccordingToItsDefSentence()
+	 */
 	public void makeThusSentence(){
+		if(sentenceMade) return;
+		
 		setOrder(SentenceOrder.noOrder);
 		
 		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("thus")));
@@ -186,9 +225,16 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			this.add(praedikat);
 			this.add(objekt);
 		}	
+		
+		sentenceMade = true;
+
 	}
 	
+	/**
+	 * see makeAisBSentence()
+	 */
 	public void makeSideSentence(){
+		if(sentenceMade) return;
 		
 		setOrder(SentenceOrder.noOrder);
 		
@@ -206,17 +252,25 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			this.add(praedikat);
 			this.add(objekt);
 		}	
+		
+		sentenceMade = true;
+
 	}
 	
+	/**
+	 * see makeAccordingToItsDefSentence()
+	 */
 	public void makeSinceSentence(){
+		if(sentenceMade) return;
+		
 		setOrder(SentenceOrder.noOrder);
 		
 		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("since")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
-			this.add(praedikat);
 			this.add(subjekt);
 			this.add(objekt);
+			this.add(praedikat);
 			
 		}
 
@@ -226,9 +280,17 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			this.add(praedikat);
 			this.add(objekt);
 		}	
+		
+		sentenceMade = true;
+
 	}
 	
+	/**
+	 * see makeAccordingToItsDefSentence()
+	 */
 	public void makebyDefinitionItIsSentence(){
+		if(sentenceMade) return;
+		
 		setOrder(SentenceOrder.noOrder);	
 		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("byDefinitionItIs")));
 		
@@ -244,11 +306,18 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		if(lang == Locale.ENGLISH){
 			this.add(subjekt);
 		}	
-		System.out.println("makebyDefinitionItIsSentence (3)");
+		
+		sentenceMade = true;
+
 	}
 	
-	protected void makeOrderedSentence() {
-		// TODO Auto-generated method stub
+	/**
+	 * generates Sentences depending on the set SentenceOrder.
+	 * if there's no Order set, makeDefaultSentence() is called.
+	 */
+	public void makeOrderedSentence() {
+		if(sentenceMade) return;
+		
 		if(order!=null){
 			switch(getOrder()){
 			case A_B_is:
@@ -277,22 +346,27 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 				this.add(praedikat);
 				this.add(objekt);		
 			}	
+		}else{
+			makeDefaultSentence();
 		}
+		
+		sentenceMade = true;
+
 	}
 
 	
 	/**
-	 * @return the generated sentence as TextElementSequence
+	 * @return the generated sentence as TextElementSequence. This is supposed to be the best way
+	 * to get the Sentence
 	 */
 	public Sentence getSentence() {
 		
-		
-		if(order !=null && order != SentenceOrder.noOrder){
-			makeOrderedSentence();
-		}else if(order == null){
-			makeDefaultSentence();
-		}else{
-			
+		if(!sentenceMade){
+			if(order !=null && order != SentenceOrder.noOrder){
+				makeOrderedSentence();
+			}else if(order == null){
+				makeDefaultSentence();
+			}
 		}
 		
 //		cleanSentence();
@@ -300,6 +374,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		return this;
 	}
 	
+	/**
+	 * cleans up the {@link Sentence} to get rid of unnecessary white spaces. -Obsolete-
+	 */
 	private void cleanSentence(){
 		String newSen = "";
 		String oldSen = this.toString();
@@ -371,11 +448,12 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	}
 	
 	/**
-	 * This method can be used to set a this. (This should not be necessary)
-	 * @param this  
+	 * This method can be used to set a Sentence. (This should not be necessary)
+	 * @param s  TODO
 	 */
 	public void setSentence(TextElementSequence s) {
 		this.add(s);
+		sentenceMade=true;
 	}
 
 
@@ -422,7 +500,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 
 	/**
 	 * Concatenates the clause to the existing sentence.
-	 * @param clause
+	 * @param clause add description
 	 */
 	public void concat(TextElementSequence clause){
 		
@@ -472,44 +550,16 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	/**
 	 * For each sentence part, the method adds the corresponding parts of the
 	 * argument
-	 * @param sentence
+	 * @param sentence that is to be concatenated
 	 */
 	public void concat(Sentence sentence) {
 		this.add(sentence);
 	}
 	
-	
-		
-//	public String getSentenceType() {
-//		return sentenceType;
-//	}
-//
-//	public void setSentenceType(String sentenceTyoe) {
-//		this.sentenceType = sentenceTyoe;
-//	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/**
+	 * TODO add description
+	 * @return result
 	 */
-//	public String toString(){
-////		result = "Sentence: " + this.toString() + "\n";
-////		result = result + subjekt.toString() + " -- " + praedikat.toString() + " -- " + objekt.toString();
-//		return this.toString();
-//	}	
-	
-	/*
-	public String toString(){
-		if (sequence.size)
-		
-		String result = "";
-		if (subjekt.size()>0)
-			result += subjekt.toString();
-		if (praedikat.size()>0 && objekt.size()>0)
-			result += praedikat.toString() + " " + objekt.toString();
-		return result;
-	}
-	*/
-	
 	public String inspect(){
 		String result = "";
 		result = "Sentence: " + this.toString() + "\n";
@@ -518,6 +568,10 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 }	
 	
 
+
+	/**
+	 * @return the sentence as List of TextElements
+	 */
 	public List<TextElement> toList(){
 		List<TextElement> list = new ArrayList<TextElement>();
 //		list.add(new TextElement("example text"));
