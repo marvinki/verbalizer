@@ -878,6 +878,7 @@ public enum VerbalisationManager {
 			for (OWLAnnotation annotation : annotations) {
 				
 				if (VerbaliseTreeManager.locale==Locale.GERMAN) {
+					// System.out.println("GERMAN LOCALE");
 					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("de")){ //is locale german ?
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
 						labelFound = true;
@@ -892,6 +893,7 @@ public enum VerbalisationManager {
 				
 				
 				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
+					// System.out.println("ENGLISH LOCALE");
 					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("en")){
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
 						labelFound = true;
@@ -2027,6 +2029,13 @@ public enum VerbalisationManager {
 		// WordNetQuery.INSTANCE.disableDict();
 		String result = VerbaliseTreeManager.verbaliseNL(tree, true, asHTML, longtext, obfuscator);
 		return result;
+	}
+	
+	public static String germanGrammarify(String input){
+		System.out.println("grammarify called with " + input);
+		input = input.replaceAll("mit die übliche", "mit der üblichen");
+		input = input.replaceAll("mit die", "mit der");
+		return input;
 	}
 
 }

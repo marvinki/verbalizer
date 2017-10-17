@@ -2066,6 +2066,7 @@ public enum VerbaliseTreeManager {
 	}
 	
 	public static void setLocale(Locale alocale) {
+		System.out.println("Setting locale " + locale);
 		VerbaliseTreeManager.locale = alocale;
 		VerbalisationManager.LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale, VerbalisationManager.loader);
 	}

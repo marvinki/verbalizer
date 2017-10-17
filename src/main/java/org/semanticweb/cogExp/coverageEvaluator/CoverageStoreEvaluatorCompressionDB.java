@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 // https://sourceforge.net/p/owlapi/mailman/message/24109072/
@@ -212,8 +213,12 @@ public class CoverageStoreEvaluatorCompressionDB {
 	}
 	
 	public static Statistic runOntology(String filestring, int timelimit1) throws OWLOntologyCreationException{
+		
+		VerbaliseTreeManager.setLocale(Locale.ENGLISH);
+		
 		// Read file
 		
+	
 		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
 		List<List<OWLAxiom>> justifications = new ArrayList<List<OWLAxiom>>();
 		
@@ -2402,6 +2407,9 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	
 	
 	public static Statistic runBioportalOntology(String filestring,int timelimit){
+		
+		VerbaliseTreeManager.setLocale(Locale.ENGLISH);
+		
 		/*
 		OWLOntology ontology = null;
 		try {

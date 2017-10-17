@@ -172,7 +172,7 @@ public enum DatabaseManager {
 			  int time,              // 11
 			  int EQUIVEXTRACT,       // 12
 			  int SUBCLANDEQUIVELIM,   //13
-			  int R0,  // 14
+			  int R0,                 // 14
 			  int RULE1,
   		  int RULE1neo,
   		  int RULE2,
@@ -319,8 +319,58 @@ e.printStackTrace();
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			
-			ResultSetMetaData rsmd = rs.getMetaData();
-			int columnsNumber = rsmd.getColumnCount();
+			// ResultSetMetaData rsmd = rs.getMetaData();
+			// int columnsNumber = rsmd.getColumnCount();
+			
+			
+			while (rs.next()){
+				System.out.print("solved " + rs.getString("solved"));
+			result.add(rs.getString("solved"));
+			result.add(rs.getString("subclass"));  
+			result.add(rs.getString("superclass"));   
+		    result.add(rs.getString("ontologypath"));  
+		    result.add(rs.getString("corpus"));
+		    result.add(rs.getString("solved"));
+		    result.add(rs.getString("explanation"));
+		    result.add(rs.getString("listing"));
+		    result.add(rs.getString("longlisting"));
+		    result.add(rs.getString("verbsteps"));
+		    result.add(rs.getString("listingsteps"));
+		    result.add(rs.getString("longlistingsteps"));
+		    result.add(rs.getString("time"));
+		    result.add(rs.getString("equivextract"));
+		    result.add(rs.getString("subclandequivelim"));
+		    result.add(rs.getString("r0"));
+		    result.add(rs.getString("r1"));
+		    result.add(rs.getString("r1neo"));
+		    result.add(rs.getString("r2"));
+		    result.add(rs.getString("r3"));
+		    result.add(rs.getString("r5"));
+	        result.add(rs.getString("r5new"));
+		    result.add(rs.getString("r5multi"));
+		    result.add(rs.getString("r6"));
+		    result.add(rs.getString("r6neo"));
+		    result.add(rs.getString("r12"));
+		    result.add(rs.getString("r12new"));
+		    result.add(rs.getString("r15"));
+		    result.add(rs.getString("r23"));
+	        result.add(rs.getString("r23repeat"));
+	        result.add(rs.getString("r34"));
+	        result.add(rs.getString("r35"));
+		    result.add(rs.getString("r37"));
+		    result.add(rs.getString("r42"));
+		    result.add(rs.getString("botintro")); 
+		    result.add(rs.getString("topintro"));
+		    result.add(rs.getString("defdomain"));
+		    result.add(rs.getString("elexistsminus"));
+		    result.add(rs.getString("applrange"));
+		    result.add(rs.getString("propchain"));
+		    result.add(rs.getString("forallunion"));
+		    result.add(rs.getString("subclchain"));
+			}
+			stmt.close();
+			rs.close();
+			/*
 			
 			while (rs.next()){
 				 for(int i = 1; i < columnsNumber+1; i++)
@@ -328,7 +378,9 @@ e.printStackTrace();
 					
 				}
 			}
-		catch (Exception e){
+			*/
+		}catch (Exception e){
+			System.out.println("ERROR WHILE ACCESSING DB");
 			e.printStackTrace();
 		}
 		System.out.println("returning row : "+ result.toString());

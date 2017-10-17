@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -203,6 +204,9 @@ public class StringServer {
 			String result = "";
 			try {
 				ontology = manager.loadOntologyFromOntologyDocument(source, loaderconfig);
+				
+				VerbalisationManager.INSTANCE.setOntology(ontology);
+				
 				// manager.loadOntologyFromOntologyDocument(file);
 				System.out.println("Done loading ontology " + ontology.getOntologyID() + ". Now loading reasoner.");
 				reasonerFactory = new JFactFactory();

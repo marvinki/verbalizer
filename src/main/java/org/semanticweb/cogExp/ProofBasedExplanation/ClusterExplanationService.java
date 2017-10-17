@@ -151,6 +151,7 @@ public class ClusterExplanationService {
 	private OWLReasonerFactory reasonerFactory = null;
 	private Set<OWLAxiom> inferredAxioms = new HashSet<OWLAxiom>();
 	private OWLOntology ontology = null;
+	private OWLOntology inferredOntology = null;
 	private static String ontologyfile = "";
 	
 	public static void setOntologyfile(String ontfile){
@@ -264,6 +265,7 @@ public class ClusterExplanationService {
 	iog.fillOntology(dataFactory2, infOnt);
 	// iog.fillOntology(outputOntologyManager, infOnt);
 	newaxioms = infOnt.getAxioms();
+	inferredOntology = infOnt;
 	} catch (OWLOntologyCreationException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -1488,7 +1490,9 @@ public String describe(JSONObject input){
 			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
 			Set<OWLClassAxiom> axioms = ontology.getAxioms(classToBeDescribed);
 			for (OWLClassAxiom ax : axioms){
-				result += VerbalisationManager.textualise(ax).toString() + ".";
+				result += VerbalisationManager.germanGrammarify(
+						VerbaliseTreeManager.makeUppercaseStart(VerbalisationManager.textualise(ax).toJSON().toString())) 
+						+ ". ";
 			}
 		}
 	}
