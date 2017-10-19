@@ -441,8 +441,11 @@ public class ClusterExplanationService {
 						if (configIndiv.equals(clinnerax.getIndividual())){
 							OWLClassExpression clinneraxclass = clinnerax.getClassExpression();
 							if (clinneraxclass instanceof  
-									OWLObjectSomeValuesFrom){
+									OWLObjectSomeValuesFrom
+									){
 								OWLObjectSomeValuesFrom someclax = (OWLObjectSomeValuesFrom) clinneraxclass;
+								if (someclax.getFiller().isAnonymous())
+									continue;
 								String fillerString = someclax.getFiller().asOWLClass().getIRI().getShortForm();
 								String propString = someclax.getProperty().asOWLObjectProperty().getIRI().getShortForm();
 								System.out.println("(" + propString + " " + configIndiv.asOWLNamedIndividual().getIRI().getFragment() + " " + fillerString + ")");
@@ -1148,7 +1151,7 @@ public class ClusterExplanationService {
 	}
 	
 	/*
-	 * Wird von Gregor genutzt
+	 * Wird von Gregor genutzt (STIMMT!)
 	 */
 	public String listInferredAssertions(String ontologyname){
 		String result = "";
@@ -1196,6 +1199,10 @@ public class ClusterExplanationService {
 		
 		for (OWLAxiom ax: filteredDataPropertyAssertionAxioms){
 			OWLDataPropertyAssertionAxiom dAss = (OWLDataPropertyAssertionAxiom) ax;
+			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("hasImagePath")
+					|| dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("hasVideoPath")
+					|| dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("hasVoltage"))
+			continue;
 			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("Instruction"))
 				continue;
 				// result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
@@ -1236,6 +1243,85 @@ public class ClusterExplanationService {
 	
 		
 		return result;
+	}
+	
+	
+	public String getImageIndividual(JSONObject ob){
+		String individualString = ob.getString("getImageIndividual");
+		return getPropertyIndividual(ob,"hasImagePath", individualString);
+	}
+	
+	public String getVideoIndividual(JSONObject ob){
+		String individualString = ob.getString("getVideoIndividual");
+		return getPropertyIndividual(ob,"hasVideoPath", individualString);
+	}
+	
+	public String getPropertyIndividual(JSONObject ob, String property, String individualString){
+		System.out.println("prop: " + property + " indiv: " + individualString);
+		
+		Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature();
+		
+		OWLNamedIndividual targetIndividual = null;
+		for (OWLNamedIndividual indiv: individuals){
+			if (indiv.getIRI().getShortForm().equals(individualString)){
+				targetIndividual = indiv;
+			}
+		}
+		if (targetIndividual==null)
+			return "{\"error\" : \"individual not found\"}";
+		else 
+			System.out.println("target individual:" +targetIndividual);
+		Set<OWLClassAssertionAxiom> classAssertionAxioms = new HashSet<OWLClassAssertionAxiom>();
+		Set<OWLDataPropertyAssertionAxiom> datapropertyAssertionAxioms = new HashSet<OWLDataPropertyAssertionAxiom>();
+		classAssertionAxioms.addAll(ontology.getClassAssertionAxioms(targetIndividual));
+		datapropertyAssertionAxioms.addAll(ontology.getDataPropertyAssertionAxioms(targetIndividual));
+		
+		OWLAxiom targetAxiom = null;
+		
+		for (OWLDataPropertyAssertionAxiom datax: datapropertyAssertionAxioms){
+			System.out.println("assessing: " + datax);
+			if (datax.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
+				JSONObject obj = new JSONObject();
+				obj.put("individual", individualString);
+				if (property.equals("hasVideoPath"))
+					obj.put("videoURL", datax.getObject().getLiteral());
+				else
+					obj.put("imageURL", datax.getObject().getLiteral());
+				return obj.toString();
+			}
+		}
+		
+		// if we get here, there is no image associated with an individual. Now we need to look at the class of the individual
+		for (OWLClassAssertionAxiom  cla : classAssertionAxioms){
+			OWLClass centralClass = cla.getClassExpression().asOWLClass();
+			System.out.println("considering central class: " + centralClass);
+			Set<OWLAxiom> axioms = ontology.getAxioms();
+			for (OWLAxiom ax : axioms){
+				if (ax instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom) ax).getSubClass().equals(centralClass)){
+					OWLSubClassOfAxiom subclax = (OWLSubClassOfAxiom) ax;
+					System.out.println(subclax.getSuperClass());
+					if (subclax.getSuperClass() instanceof OWLDataHasValue){
+						OWLDataHasValue dhv = (OWLDataHasValue) subclax.getSuperClass();
+						if (dhv.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
+							JSONObject obj = new JSONObject();
+							obj.put("individual", individualString);
+							if (property.equals("hasVideoPath"))
+								obj.put("videoURL", dhv.getFiller().getLiteral());
+							else
+								obj.put("imageURL", dhv.getFiller().getLiteral());
+							return obj.toString();
+						}
+					}
+					// 	OWLDataPropertyAssertionAxiom){
+					// OWLDataPropertyAssertionAxiom dax = (OWLDataPropertyAssertionAxiom) ax;
+					// if (dax.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
+					// 	return dax.getObject().getLiteral();
+				// 	}
+				}
+			}
+		}
+		
+		return "{\"error\" : \"no media\"}";
 	}
 	
 	
@@ -1858,6 +1944,18 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	
 	  	if (inputObject.has("describeVisual")){
 	  		 String result = describeVisual(inputObject);
+	  		printstream.println(result);
+	  		return result;
+	  	}
+	  	
+	  	if (inputObject.has("getVideoIndividual")){
+	  		 String result = getVideoIndividual(inputObject);
+	  		printstream.println(result);
+	  		return result;
+	  	}
+	  	
+	  	if (inputObject.has("getImageIndividual")){
+	  		 String result = getImageIndividual(inputObject);
 	  		printstream.println(result);
 	  		return result;
 	  	}
