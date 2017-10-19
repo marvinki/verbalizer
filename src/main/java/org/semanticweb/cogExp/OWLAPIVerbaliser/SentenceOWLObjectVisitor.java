@@ -378,7 +378,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())){
 			leftstring = new ArrayList<TextElement>();
 			leftstring.add(somethingthatElement); 
-			leftstring.addAll(VerbalisationManager.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())) ;
+			leftstring.addAll(VerbalisationManager.INSTANCE.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())) ;
 		}
 		
 		if (arg0.getSubClass() instanceof OWLObjectIntersectionOf 
@@ -485,7 +485,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
 				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
 			// System.out.println("DEBUG : case of multiple exists patterns");
-			middlestring.addAll(VerbalisationManager.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass()));
+			middlestring.addAll(VerbalisationManager.INSTANCE.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass()));
 			
 			Sentence sentence = new Sentence(new TextElementSequence(leftstring),
 					new TextElementSequence(middlestring),
@@ -691,7 +691,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		LogicElement somethingthatElement = new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat"));
 		if (VerbalisationManager.checkMultipleExistsPattern(arg0)){
 			result.setSubjekt(somethingthatElement);
-			result.addToSubject(new TextElementSequence(VerbalisationManager.textualiseMultipleExistsPattern(arg0)));
+			result.addToSubject(new TextElementSequence(VerbalisationManager.INSTANCE.textualiseMultipleExistsPattern(arg0)));
 			// System.out.println("visit intersect (1): " + new TextElementSequence(resultList).toString());
 
 			if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
@@ -792,7 +792,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		fillerstrs.add(filler.accept(this).toTextElementSequence().getTextElements());
 		
 		
-		List<TextElement> resultseq = VerbalisationManager.textualiseProperty(property, fillerstrs, middlestring);
+		List<TextElement> resultseq = VerbalisationManager.INSTANCE.textualiseProperty(property, fillerstrs, middlestring);
 		result.addToSubject(new TextElementSequence(resultseq));
 		
 		if (visitorDebug) result.concat(new TextElement("visit:objctAVF1"));
@@ -823,7 +823,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		Sentence fillerSentence = filler.accept(this);
 		fillerSentence.setOrder(SentenceOrder.A_is_B);
 		fillerstrs.add(fillerSentence.toTextElementSequence().getTextElements());
-		List<TextElement> resultseq = VerbalisationManager.textualiseProperty(property,fillerstrs,middle);
+		List<TextElement> resultseq = VerbalisationManager.INSTANCE.textualiseProperty(property,fillerstrs,middle);
 		// String str = VerbalisationManager.verbaliseProperty(property,fillerstrs,middle);
 		// System.out.println("DEBUG visit " + str);
 //		result.add(new LogicElement("_blabla_"));

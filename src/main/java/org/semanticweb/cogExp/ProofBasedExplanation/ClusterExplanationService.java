@@ -60,6 +60,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.RemoveAxiom;
@@ -506,6 +507,50 @@ public class ClusterExplanationService {
 			}
 		}
 		return "[" + results + "]";
+	}
+	
+	public String getAllMaterialsAndTools(){
+		String results = "";
+		JSONArray resultsArray = new JSONArray();
+		Set<OWLAxiom>  axioms = ontology.getAxioms();
+		axioms.addAll(inferredAxioms);
+		
+		boolean middle = false;
+		
+		Set<OWLIndividual> individuals = new HashSet<OWLIndividual>();
+		
+		// finding all individuals that represent materials and tools
+		for (OWLAxiom ax : axioms){
+			if (ax instanceof OWLClassAssertionAxiom){
+				OWLClassAssertionAxiom clax = (OWLClassAssertionAxiom) ax;
+				if (clax.getClassExpression().toString().contains("MaterialsAndTools")){
+					individuals.add(clax.getIndividual().asOWLNamedIndividual());
+					// if (middle)
+					// 	results += ",";
+					// middle = true;
+					// results += clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
+				}
+			}
+		}
+		
+		// finding all class assertions for each individual
+		Set<OWLClassAssertionAxiom> claxioms = new HashSet<OWLClassAssertionAxiom>();
+		for (OWLIndividual indiv : individuals){
+			claxioms.addAll(ontology.getClassAssertionAxioms(indiv));
+			claxioms.addAll(inferredOntology.getClassAssertionAxioms(indiv));
+		}
+		
+		// now produce JSON from that
+		for (OWLClassAssertionAxiom cla : claxioms){
+			if (cla.getClassExpression().isOWLThing())
+				continue;
+			JSONObject ob = new JSONObject();
+			ob.put("individual", cla.getIndividual().asOWLNamedIndividual().getIRI().getShortForm());
+			ob.put("class", cla.getClassExpression().asOWLClass().getIRI().getShortForm());
+			resultsArray.put(ob);
+		}
+		results = resultsArray.toString();
+		return results;
 	}
 	
 	
@@ -1471,10 +1516,11 @@ public String handleBoschInstructionRequest(String jsonstring, PrintStream print
   	
 	return "foo";
 }
-	
-public String describe(JSONObject input){
-	String toBeDescribed = input.getString("describe");
+
+public String describeVisual(JSONObject input){
+	String toBeDescribed = input.getString("describeVisual");
 	String result = "";
+	JSONArray resultArray = new JSONArray();
 	
 	Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature();
 	
@@ -1484,22 +1530,199 @@ public String describe(JSONObject input){
 			targetIndividual = indiv;
 		}
 	}
-	if (targetIndividual !=null){
-		Set<OWLClassAssertionAxiom> classAssertionAxioms = ontology.getClassAssertionAxioms(targetIndividual);
-		for (OWLClassAssertionAxiom cas : classAssertionAxioms){
-			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
-			Set<OWLClassAxiom> axioms = ontology.getAxioms(classToBeDescribed);
-			for (OWLClassAxiom ax : axioms){
-				result += VerbalisationManager.germanGrammarify(
-						VerbaliseTreeManager.makeUppercaseStart(VerbalisationManager.textualise(ax).toJSON().toString())) 
-						+ ". ";
-			}
+	
+	Set<OWLClass> classes  = ontology.getClassesInSignature();
+	OWLClass targetClass = null;
+	for (OWLClass cls: classes){
+		if (cls.getIRI().getShortForm().equals(toBeDescribed)){
+			targetClass = cls;
 		}
 	}
 	
+	if (targetIndividual !=null || targetClass !=null){
+		
+		Set<OWLClassAxiom> axioms = new HashSet<OWLClassAxiom>();
+		
+		if (targetIndividual!=null){
+		Set<OWLClassAssertionAxiom> classAssertionAxioms = ontology.getClassAssertionAxioms(targetIndividual);
+		classAssertionAxioms.addAll(inferredOntology.getClassAssertionAxioms(targetIndividual));
+		for (OWLClassAssertionAxiom cas : classAssertionAxioms){
+			System.out.println("class assertion examined: " + cas);
+			
+			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
+			axioms.addAll(ontology.getAxioms(classToBeDescribed));
+			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed));
+		}
+		} else { // we are talking about a class
+			axioms.addAll(ontology.getAxioms(targetClass));
+			axioms.addAll(inferredOntology.getAxioms(targetClass));
+		}
+	
+		// System.out.println("REACHED CODE");
+		for (OWLClassAxiom ax : axioms){
+			System.out.println("got : " + ax);
+		}
+		
+		// Set<OWLAxiom> potentiallyDescriptiveAxioms = new HashSet<OWLAxiom>();
+		// for (OWLClassAxiom ax : axioms){
+		// 	potentiallyDescriptiveAxioms.addAll(ontology.getAxioms(ax.get));
+		// }
+		
+	
+	for (OWLClassAxiom ax : axioms){
+		if (ax instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom) ax).getSuperClass() instanceof OWLObjectSomeValuesFrom){
+			OWLSubClassOfAxiom subclax = (OWLSubClassOfAxiom) ax;
+			OWLObjectSomeValuesFrom someax = (OWLObjectSomeValuesFrom) subclax.getSuperClass();
+			OWLPropertyExpression property = someax.getProperty();
+			System.out.println("testing: " + VerbalisationManager.textualise(someax).toJSON().toString());
+			if (VerbalisationManager.textualise(someax).toJSON().toString().contains("hat")){
+				TextElementSequence seq = VerbalisationManager.textualise(ax);
+				seq.makeUppercaseStart();
+				
+				seq.makeUppercaseStart();
+				JSONArray arr1 = seq.toJSON();
+				resultArray = concatenate(resultArray,arr1);
+				resultArray.put(makeFullstop());
+				
+			}
+			}
+		}
+	}
+	result = resultArray.toString();
+	
+	System.out.println("describeVisual returns: " + result);
+	return result;
+}
+	
+	
+	
+	
+public String describe(JSONObject input){
+	String toBeDescribed = input.getString("describe");
+	String result = "";
+	JSONArray resultArray = new JSONArray();
+	
+	Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature();
+	
+	OWLNamedIndividual targetIndividual = null;
+	for (OWLNamedIndividual indiv: individuals){
+		if (indiv.getIRI().getShortForm().equals(toBeDescribed)){
+			targetIndividual = indiv;
+		}
+	}
+	
+	Set<OWLClass> classes  = ontology.getClassesInSignature();
+	OWLClass targetClass = null;
+	for (OWLClass cls: classes){
+		if (cls.getIRI().getShortForm().equals(toBeDescribed)){
+			targetClass = cls;
+		}
+	}
+	
+	if (targetIndividual !=null || targetClass !=null){
+		
+		Set<OWLClassAxiom> axioms = null;
+		
+		if (targetIndividual!=null){
+		Set<OWLClassAssertionAxiom> classAssertionAxioms = ontology.getClassAssertionAxioms(targetIndividual);
+		// classAssertionAxioms.addAll(inferredOntology.getClassAssertionAxioms(targetIndividual));
+		for (OWLClassAssertionAxiom cas : classAssertionAxioms){
+			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
+			axioms = ontology.getAxioms(classToBeDescribed);
+			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed));
+		}
+		} else {
+			axioms = ontology.getAxioms(targetClass);
+			axioms.addAll(inferredOntology.getAxioms(targetClass));
+		}
+			
+		Set<OWLClassAxiom> simpleSubsumptions = new HashSet<OWLClassAxiom>();
+		Set<OWLClassAxiom> usageSubsumptions = new HashSet<OWLClassAxiom>();
+		Set<OWLClassAxiom> otherSubsumptions = new HashSet<OWLClassAxiom>();
+		
+		
+			
+			for (OWLClassAxiom ax : axioms){
+				if (ax instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom) ax).getSuperClass().isClassExpressionLiteral())
+				{
+					// System.out.println("Simple: " + ax);
+					simpleSubsumptions.add(ax);
+				}
+				else {
+					if (ax instanceof OWLSubClassOfAxiom 
+							// && ((OWLSubClassOfAxiom) ax).getSuperClass() instanceof OWLObjectSomeValuesFrom 
+							&& VerbalisationManager.textualise(ax).toJSON().toString().contains("eignet")
+							// &&  ((OWLObjectSomeValuesFrom) ((OWLSubClassOfAxiom) ax).getSuperClass()).getProperty().toString().contains("isSuitedFor")
+							){
+						// System.out.println("Useage: " + ax);
+						usageSubsumptions.add(ax);
+					}
+					else {
+						// System.out.println("Other: " + ax);
+						// System.out.println(VerbalisationManager.textualise(ax).toJSON().toString());
+						otherSubsumptions.add(ax);
+					}
+				}
+			}
+			
+			for (OWLClassAxiom ax : simpleSubsumptions){
+				TextElementSequence seq1 = VerbalisationManager.textualise(ax);
+				seq1.makeUppercaseStart();
+				JSONArray arr1 = seq1.toJSON();
+				resultArray = concatenate(resultArray,arr1);
+				resultArray.put(makeFullstop());
+				
+				// result += VerbalisationManager.germanGrammarify(seq1.toJSON().toString())
+				// 		+ ". ";
+			}
+			
+			for (OWLClassAxiom ax : usageSubsumptions){
+				TextElementSequence seq1 = VerbalisationManager.textualise(ax);
+				seq1.makeUppercaseStart();
+				JSONArray arr1 = seq1.toJSON();
+				resultArray = concatenate(resultArray,arr1);
+				resultArray.put(makeFullstop());
+				
+				// result += VerbalisationManager.germanGrammarify(seq1.toJSON().toString())
+				// 		+ ". ";
+			}
+			
+			for (OWLClassAxiom ax : otherSubsumptions){
+				TextElementSequence seq1 = VerbalisationManager.textualise(ax);
+				seq1.makeUppercaseStart();
+				JSONArray arr1 = seq1.toJSON();
+				resultArray = concatenate(resultArray,arr1);
+				resultArray.put(makeFullstop());
+				
+				// result += VerbalisationManager.germanGrammarify(seq1.toJSON().toString())
+				// 		+ ". ";
+			}
+			
+			
+		}
+	
+	result = resultArray.toString();
 	
 	
 	return result;
+}
+
+public static JSONArray concatenate(JSONArray arr1, JSONArray arr2){
+	JSONArray arr3 = new JSONArray();
+	for (Object ob1 : arr1){
+		arr3.put(ob1);
+	}
+	for (Object ob1 : arr2){
+		arr3.put(ob1);
+	}
+	return arr3;
+}
+
+public static JSONObject makeFullstop(){
+	JSONObject fullstop = new JSONObject();	
+	fullstop.put("text", ". ");	
+	fullstop.put("type", "text");	
+	return fullstop;
 }
 
 public String elaborate(JSONObject input){
@@ -1633,6 +1856,12 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  		return result;
 	  	}
 	  	
+	  	if (inputObject.has("describeVisual")){
+	  		 String result = describeVisual(inputObject);
+	  		printstream.println(result);
+	  		return result;
+	  	}
+	  	
 	  	if (inputObject.has("describe")){
 	  		 String result = describe(inputObject);
 	  		printstream.println(result);
@@ -1746,6 +1975,11 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	}
    		if (command.contains("listAllMaterials")){
 			output = listAllMaterials();	
+			printstream.println(output);
+			return output;
+	}
+   		if (command.contains("getAllMaterialsAndTools")){
+			output = getAllMaterialsAndTools();	
 			printstream.println(output);
 			return output;
 	}

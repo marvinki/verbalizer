@@ -297,4 +297,5 @@ public class TextElementSequence extends TextElement{
 		return result;
 }
 	
+	
 }

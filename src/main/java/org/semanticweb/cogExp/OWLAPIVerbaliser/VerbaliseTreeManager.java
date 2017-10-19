@@ -38,7 +38,11 @@ public enum VerbaliseTreeManager {
 	static boolean debug = false;  //output is generated in VerbaliseTreeManager (here) 
 	static boolean visitorDebug = false; //output is generated (mostly) in SentenceOWLObjectVisitor
 	static boolean verbalisationManagerdebug = false; //output is generated in verbalisationManager
-	// static boolean debug = true;
+	// // static boolean debug = true;
+	
+	// static boolean debug = true;  //output is generated in VerbaliseTreeManager (here) 
+	// static boolean visitorDebug = true; //output is generated (mostly) in SentenceOWLObjectVisitor
+	// static boolean verbalisationManagerdebug = true; //output is generated in verbalisationManager
 	
 	/**
 	 * switch between languages (German, English) with setting locale.

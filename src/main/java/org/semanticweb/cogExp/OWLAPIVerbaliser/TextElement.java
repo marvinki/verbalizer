@@ -91,4 +91,9 @@ public class TextElement {
 		return false;
 	}
 	
+	public void makeUppercase(){
+		content = VerbaliseTreeManager.makeUppercaseStart(content);
+		return;
+	}
+	
 }

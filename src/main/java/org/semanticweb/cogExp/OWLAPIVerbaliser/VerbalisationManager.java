@@ -493,7 +493,7 @@ public enum VerbalisationManager {
 		return result;
 	}
 
-	public static List<TextElement> textualiseProperty(OWLObjectPropertyExpression property,
+	public List<TextElement> textualiseProperty(OWLObjectPropertyExpression property,
 			List<List<TextElement>> fillerelements, List<TextElement> middle) {
 		// String result = "";
 		List<TextElement> result = new ArrayList<TextElement>();
@@ -530,7 +530,10 @@ public enum VerbalisationManager {
 		boolean needsep = false;
 		for (List<TextElement> str : fillerelements) {
 			if (needsep) {
-				result.add(new LogicElement("and"));
+				if (lang.equals(Locale.ENGLISH))
+					result.add(new LogicElement("and"));
+				else
+					result.add(new LogicElement("und"));
 				// result += _space + "and" + _space;
 			}
 			result.addAll(str);
@@ -994,6 +997,7 @@ public enum VerbalisationManager {
 	}
 
 	public String getSimpleIntersectionNLString(List<OWLClassExpression> exprs) {
+		System.out.println("<><> getSimpleIntersectionNLString called");
 		String result = "";
 		List<OWLObject> noun_concepts = new ArrayList<OWLObject>();
 		List<OWLObject> attribute_concepts = new ArrayList<OWLObject>();
@@ -1211,7 +1215,7 @@ public enum VerbalisationManager {
 			result = result.substring(0, result.length() - 1); // need to remove
 			// last spacer
 		
-		// System.out.println("last step: +" + result + "+++");
+		System.out.println("last step: +" + result + "+++");
 		return aOrAnIfy(result);
 	}
 
@@ -1346,7 +1350,7 @@ public enum VerbalisationManager {
 	}
 
 	public String verbaliseComplexIntersection(OWLObjectIntersectionOf inter, Obfuscator obfuscator) {
-		// System.out.println("complex intersection called with " + inter);
+		System.out.println(" <><> complex intersection called with " + inter);
 		String result = "";
 		List<OWLClassExpression> simpleExpressions = new ArrayList<OWLClassExpression>();
 		List<OWLClassExpression> existsExpressions = new ArrayList<OWLClassExpression>();
@@ -1376,6 +1380,7 @@ public enum VerbalisationManager {
 				OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) someobj;
 				String somefillertext = some.getFiller().accept(sentenceOWLObjectVisit).toString();
 				if (some.getFiller() instanceof OWLObjectSomeValuesFrom) {
+					System.out.println("<><> inserting 'something that' ");
 					somefillertext = LogicLabels.getString("somethingThat ") + somefillertext;
 				}
 				substrings.add(somefillertext);
@@ -1414,6 +1419,7 @@ public enum VerbalisationManager {
 
 	public static String pseudoNLStringMultipleExistsPattern(OWLObjectIntersectionOf ints,
 			Obfuscator obfuscator) {
+		System.out.println("<><> multiple exists called (1)");
 		String result = "";
 		List<OWLClassExpression> exprs = ints.getOperandsAsList();
 		List<String> substrings = new ArrayList<String>();
@@ -1432,7 +1438,8 @@ public enum VerbalisationManager {
 		return result;
 	}
 
-	public static List<TextElement> textualiseMultipleExistsPattern(OWLObjectIntersectionOf ints) {
+	public List<TextElement> textualiseMultipleExistsPattern(OWLObjectIntersectionOf ints) {
+		System.out.println("<><> multiple exists called (2)");
 		List<TextElement> result;
 		List<OWLClassExpression> exprs = ints.getOperandsAsList();
 		List<List<TextElement>> substrings = new ArrayList<List<TextElement>>();
@@ -1448,7 +1455,8 @@ public enum VerbalisationManager {
 		// result = "something that " + verbaliseProperty(commonpropexpr,
 		// substrings,"");
 		List<TextElement> st = new ArrayList<TextElement>();
-		st.add(new LogicElement("something that"));
+		// if (!commonpropexpr.toString().contains("[X]"))
+		// 	st.add(new LogicElement("something that"));
 		result = textualiseProperty(commonpropexpr, substrings, st);
 		return result;
 	}
