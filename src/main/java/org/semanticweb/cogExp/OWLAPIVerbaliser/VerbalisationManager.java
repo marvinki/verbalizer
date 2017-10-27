@@ -50,7 +50,7 @@ import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
-
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 // import org.apache.log4j.Level;
 // import org.apache.log4j.Logger;
@@ -608,6 +608,62 @@ public enum VerbalisationManager {
 		return result.getSentence();
 	}
 	
+	public static Sentence textualiseDataPropertyAsSentence(OWLDataPropertyExpression property,
+			List<List<TextElement>> fillerelements, List<TextElement> middle) {
+		Sentence result = new Sentence();
+		
+		//
+		if (fillerelements.size() > 1) {
+			// hey, we certainly got a feature!
+			VerbalisationManager.INSTANCE.featureRoleAgg = true;
+		}
+
+		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(property);
+		// check case where string contains a pattern.
+		if (propstring.indexOf("[X]") >= 0) {
+			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
+			String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+			if (part1.endsWith(" ")) {
+				part1 = part1.substring(0, part1.length() - 1);
+			}
+			if (part2.startsWith(" ")) {
+				part2 = part2.substring(1, part2.length());
+			}
+			result.setPraedikat(new RoleElement(part1)); // += part1;
+			if (part2.equals("") && part1.equals("") || part1 == null && part2 == null) {
+				result.setPraedikat(new RoleElement(
+						"has as" + _space + property.asOWLDataProperty().getIRI().getFragment() + "-successor "));
+				// result += "has as" + _space +
+				// property.getNamedProperty().getIRI().getFragment() +
+				// "-successor ";;
+			}
+		} else {
+			result.setPraedikat(new RoleElement(propstring));
+		}
+
+		result.addToObject(new TextElementSequence(middle));
+		boolean needsep = false;
+		for (List<TextElement> str : fillerelements) {
+			if (needsep) {
+				result.setSubjekt(new LogicElement("and"));
+				// result += _space + "and" + _space;
+			}
+			result.addToObject(new TextElementSequence(str));
+			needsep = true;
+		}
+		if (VerbalisationManager.INSTANCE.getPropertyNLString(property).indexOf("[X]") >= 0) {
+			String p2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+			if (p2.startsWith(" ")) {
+				p2 = p2.substring(1, p2.length());
+			}
+			result.setObjekt(new RoleElement(p2));
+		}
+		// result +=
+		// VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
+
+		return result; // .getSentence();
+	}
+	
 
 	public static String aOrAnIfy(String str) {
 		// System.out.println("a or an |" + str);
@@ -674,6 +730,9 @@ public enum VerbalisationManager {
 	}
 
 	public static String treatCamelCaseAndUnderscores(String str) {
+		System.out.println("dealing with: |" + str + "|");
+		if (str.contains("-"))
+			return str;
 		
 		String resultstring = "";
 		
@@ -873,17 +932,26 @@ public enum VerbalisationManager {
 		String str2 = "";
 		boolean hasLabel = false;
 		boolean labelFound = false;
+		boolean labelLabelFound = false;
+		String labelStr = "";
 		
 		if (this.ontology != null) {
 			// System.out.println("before collecting annotations");
 			Set<OWLAnnotation> annotations = collectAnnotations(classname);
 			// System.out.println("after collecting annotations " + annotations.size());
+			
+			Set<String> stringsFound = new HashSet<String>();
 			for (OWLAnnotation annotation : annotations) {
 				
 				if (VerbaliseTreeManager.locale==Locale.GERMAN) {
 					// System.out.println("GERMAN LOCALE");
 					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("de")){ //is locale german ?
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
+						System.out.println("prop " + annotation.getProperty());
+						if (annotation.getProperty().isLabel())
+							labelStr = str;
+						if (!labelStr.equals(""))
+							str = labelStr; // always override str with labels we have found
 						labelFound = true;
 					}
 					if(!labelFound){
@@ -899,10 +967,22 @@ public enum VerbalisationManager {
 					// System.out.println("ENGLISH LOCALE");
 					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("en")){
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
+						System.out.println(" prop (1): " + annotation.getProperty());
+						System.out.println(" prop (1): " + annotation.getProperty().getIRI());
+						System.out.println(" prop (1): " + annotation.getProperty().getIRI().equals(OWLRDFVocabulary.RDFS_LABEL.getIRI()));
 						labelFound = true;
-					}if(!labelFound && annotation.getValue().asLiteral().isPresent()){
+					}if(annotation.getValue().asLiteral().isPresent()){
 						// Marvin: using quotes makes Mrs Koelle's structural cueing module crash.
 						str = annotation.getValue().asLiteral().orNull().getLiteral();
+						System.out.println("prop " + annotation.getProperty().getEntityType());
+						System.out.println(" prop (2): " + annotation.getProperty().getIRI());
+						System.out.println(" prop (2): " + annotation.getProperty().getIRI().equals(OWLRDFVocabulary.RDFS_LABEL.getIRI()));
+						if (annotation.getProperty().asOWLAnnotationProperty().getIRI().toString().equals("http://www.w3.org/2000/01/rdf-schema#label"))
+						// if (annotation.getProperty().isLabel())
+							labelStr = str;
+						if (!labelStr.equals(""))
+							str = labelStr; // always override str with labels we have found
+						stringsFound.add(str);
 						// str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"" ;
 						labelFound = true;// annotation.getValue().toString()
 					}
@@ -919,6 +999,11 @@ public enum VerbalisationManager {
 //				} 
 				
 			}  // end for annotations 
+			
+			// if we have many strings, choose one.
+			// TODO
+			
+			
 			// remove unnecessary stuff
 			if (str.indexOf("@e") > 0)
 				str = str.substring(0, str.length() - 3);
@@ -2043,6 +2128,24 @@ public enum VerbalisationManager {
 		System.out.println("grammarify called with " + input);
 		input = input.replaceAll("mit die übliche", "mit der üblichen");
 		input = input.replaceAll("mit die", "mit der");
+		return input;
+	}
+	
+	public static TextElementSequence germanGrammarify(TextElementSequence input){
+		System.out.println("grammarify called with " + input);
+		List<TextElement> seq = input.getTextElements();
+		for (int i = 0; i+1<input.size();i++){
+			TextElement e1 = seq.get(i);
+			TextElement e2 = seq.get(i+1);
+			if (e1.toString().equals("mit") && e2.toString().equals("die")){
+				e2.setContent("der");
+				if (i+2<input.size() && seq.get(i+2).toString().equals("übliche")){
+					seq.get(i+2).setContent("üblichen");
+				}
+			}
+			// System.out.println("reading element (1): " + e1);
+			// System.out.println("reading element (2): " + e2);
+		}
 		return input;
 	}
 

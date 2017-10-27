@@ -8,7 +8,7 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
-import org.protege.editor.owl.OWLEditorKit;
+// import org.protege.editor.owl.OWLEditorKit;
 /**
  * Represents any textual element of verbalizer.
  * 
@@ -64,6 +64,7 @@ public class TextElement {
 	 * @return returns the content of the TextElement as list of JLabels,
 	 * the elements have no white spaces at their ending or beginning
 	 */
+	/*
 	public List<JLabel> toJLabel(OWLEditorKit ek){
 		List<JLabel> result = new ArrayList<JLabel>();
 		String name = content;
@@ -76,6 +77,7 @@ public class TextElement {
 		result.add(label);
 		return result;
 	}
+	*/
 	
 	/**
 	 * @return TODO add description

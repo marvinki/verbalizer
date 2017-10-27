@@ -22,7 +22,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
-import org.protege.editor.owl.OWLEditorKit;
+// import org.protege.editor.owl.OWLEditorKit;
 
 /**
  * represents any class. Use click-ability by utilizing toJLabel().
@@ -69,80 +69,7 @@ public class ClassElement extends TextElement{
 		return tooltiptext;
 	}
 		
-	/**
-	 * @return a list of (click-able) JLabels.
-	 */
-	@Override
-	public List<JLabel> toJLabel(OWLEditorKit ek){
-		List<JLabel> labellist = new ArrayList<JLabel>();
-		String article = "";
-		String name = "";
-		if (content.startsWith("a ")){
-			article = "a ";
-			name = content.substring(2);
-		} else if (content.startsWith("an ")){
-			article = "an ";
-			name = content.substring(3);
-		} else if (content.startsWith("the ")){
-			article = "the ";
-			name = content.substring(4);
-		} else {
-			name = content;
-		}
-		
-		if (name.endsWith(" "))
-			name = name.substring(0,name.length()-1);
-		if (article.endsWith(" "))
-			article = article.substring(0,article.length()-1);
-		
-		
-		JLabel articlelabel = new JLabel(article);
-		LinkedJLabel contentlabel = new LinkedJLabel(ek);
-		contentlabel.setText(name);
-		JLabel spacelabel = new JLabel(" ");
-		articlelabel.setBorder(new EmptyBorder(0,0,0,0));
-		contentlabel.setBorder(new EmptyBorder(0,0,0,0));
-		contentlabel.setForeground(Color.BLUE);
-		contentlabel.setToolTipText(tooltiptext);
-		labellist.add(articlelabel);
-		labellist.add(spacelabel);
-		labellist.add(contentlabel);
-		
-	/*	This code could be utilized if a class element is clicked
-	 * 
-		contentlabel.addMouseListener(new MouseAdapter()  
-		{  
-		    public void mouseClicked(MouseEvent e)  
-		    {  
-		       //run this code when mouse is clicked
-		        
-		    	System.out.println("mouse clicked on class label\n");
-		    		       
-		       JFrame frame = new JFrame("Class Frame");
-		       JPanel panel = new JPanel();
-		       
-		       panel.add(articlelabel);		      
-		       panel.add(spacelabel);
-		       panel.add(contentlabel);
-		       
-		       frame.add(panel);
-		       
-		       frame.setSize(500, 50);
-			       
-		       Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		       int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		       int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		       frame.setLocation(x, y);
-		       
-		       frame.setVisible(true);
-		       
-		    }  
-		    
-		}); 
-		*/
-		return labellist;
-	}
-	
+
 
 	@Override
 	public String toHTML(){

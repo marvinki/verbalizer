@@ -82,6 +82,7 @@
 	
 	<description>Serves to verbalise derivations</description>
 	<dependencies>
+	<!--  PROTEGE DEPENDENCY
 		   <dependency>
 			<groupId>edu.stanford.protege</groupId>
 			<artifactId>protege-common</artifactId>
@@ -100,6 +101,7 @@
 			<version>${protege.version}</version>
 			<scope>provided</scope>
 		</dependency> 
+		--> 
 	<dependency>
     <groupId>net.sourceforge.owlapi</groupId>
     <artifactId>owlapi-distribution</artifactId>

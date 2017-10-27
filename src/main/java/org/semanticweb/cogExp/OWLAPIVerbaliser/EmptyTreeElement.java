@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
-import org.protege.editor.owl.OWLEditorKit;
+// import org.protege.editor.owl.OWLEditorKit;
 
 /**
  * Represents a special TextElement that indicates that the Gentzen tree is empty. 
@@ -59,14 +59,5 @@ public class EmptyTreeElement extends TextElement{
 		super.addToDocument(textPane);
 	}
 
-	@Override
-	public List<JLabel> toJLabel(OWLEditorKit ek) {
-		// TODO Auto-generated method stub
-		List<JLabel> labelList = new ArrayList<JLabel>();
-		labelList.addAll(super.toJLabel(ek));
-		labelList.add(new JLabel("\n"));
-		
-		return labelList;
-	}
 
 }

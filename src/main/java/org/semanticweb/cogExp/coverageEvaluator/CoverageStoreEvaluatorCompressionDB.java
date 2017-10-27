@@ -2520,6 +2520,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 			
 			int skippedSinceTreated = 0;
 			Set<Set<OWLAxiom>> alreadyTreatedJustifications = new HashSet<Set<OWLAxiom>>();
+			Set<OWLAxiom> alreadyTreatedConclusions = new HashSet<OWLAxiom>();
 			
 			int counting = 0;
 			int counter;
@@ -2586,16 +2587,18 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     				justs2.add(axi);
     			}
     			
-    			if (alreadyTreatedJustifications.size()==0)
+    			if (alreadyTreatedJustifications.size()==0){
     				alreadyTreatedJustifications.add(new HashSet<OWLAxiom>(justs));
+    				alreadyTreatedConclusions.add(ax);
+    			}
     			else{
     			
     			boolean replacementEqual = false;
     			for (Set<OWLAxiom> candidate : alreadyTreatedJustifications){
     				Set<OWLObject> justs3 = new HashSet<OWLObject>();
-        			for (OWLAxiom axi : candidate){
-        				justs3.add(axi);
-        			}
+        				for (OWLAxiom axi : candidate){
+        					justs3.add(axi);
+        				}
     				
     				HashMap<OWLClass,OWLClass> mapping = JustificationComparator.setsReplacementEqual(justs2,justs3);
     				// System.out.println("mapping " + mapping);
@@ -2615,6 +2618,12 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     					System.out.println("Original axiom: " + original_axiom);
     					for (Object o1 : justs3){
     						System.out.println(o1);
+    					}
+    					
+    					// there could be identical justifications for different conclusions. 
+    					if (!alreadyTreatedConclusions.contains(ax)){
+    						System.out.println("skipping, since this particular conclusion has not been observed yet");
+    						continue;
     					}
     					
     					// retrieve previous result and insert it again with a pointer
@@ -2683,6 +2692,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     			
     			if (!replacementEqual)
     				alreadyTreatedJustifications.add(new HashSet<OWLAxiom>(justs));
+    				alreadyTreatedConclusions.add(ax);
     				System.out.println("different justifications " + alreadyTreatedJustifications.size());
     			}
     			

@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
-import org.protege.editor.owl.OWLEditorKit;
+// import org.protege.editor.owl.OWLEditorKit;
 
 /**
  * Special TextElement that indicates that there's nothing to explain. 
@@ -75,17 +75,6 @@ public class NoRulesElement extends TextElement{
 	}
 	
 
-	/* (non-Javadoc)
-	 * @see org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement#toJLabel()
-	 */
-	@Override
-	public List<JLabel> toJLabel(OWLEditorKit ek) {
-		// TODO Auto-generated method stub
-		List<JLabel> labelList = new ArrayList<JLabel>();
-		labelList.addAll(super.toJLabel(ek));
-		labelList.add(new JLabel("\n"));
-		
-		return labelList;
-	}
+	
 
 }

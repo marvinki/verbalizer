@@ -547,6 +547,8 @@ public class ClusterExplanationService {
 		for (OWLClassAssertionAxiom cla : claxioms){
 			if (cla.getClassExpression().isOWLThing())
 				continue;
+			if (cla.getClassExpression().isAnonymous())
+				continue;
 			JSONObject ob = new JSONObject();
 			ob.put("individual", cla.getIndividual().asOWLNamedIndividual().getIRI().getShortForm());
 			ob.put("class", cla.getClassExpression().asOWLClass().getIRI().getShortForm());
@@ -1713,6 +1715,8 @@ public String describe(JSONObject input){
 		Set<OWLClassAssertionAxiom> classAssertionAxioms = ontology.getClassAssertionAxioms(targetIndividual);
 		// classAssertionAxioms.addAll(inferredOntology.getClassAssertionAxioms(targetIndividual));
 		for (OWLClassAssertionAxiom cas : classAssertionAxioms){
+			if (cas.getClassExpression().isAnonymous())
+				continue;
 			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
 			axioms = ontology.getAxioms(classToBeDescribed);
 			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed));
@@ -1774,8 +1778,13 @@ public String describe(JSONObject input){
 			}
 			
 			for (OWLClassAxiom ax : otherSubsumptions){
+				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
+					continue;
+				// if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
+				// 	continue;
 				TextElementSequence seq1 = VerbalisationManager.textualise(ax);
 				seq1.makeUppercaseStart();
+				seq1 = VerbalisationManager.germanGrammarify(seq1);
 				JSONArray arr1 = seq1.toJSON();
 				resultArray = concatenate(resultArray,arr1);
 				resultArray.put(makeFullstop());

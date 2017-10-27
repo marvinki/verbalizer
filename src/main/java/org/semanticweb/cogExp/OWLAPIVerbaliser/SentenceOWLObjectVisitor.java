@@ -461,7 +461,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 						}
 					}
 				}	
-			}	
+			}
 		
 			//System.out.println(" DEBUG (1) -- " +  filler.accept(this));
 			Sentence fillerSentence = filler.accept(this); 
@@ -481,6 +481,14 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			// return sentence.getSentence();
 			
 		}
+		// 
+		if (arg0.getSuperClass() instanceof OWLDataHasValue){
+			System.out.println("<><><><> DATAHASVALUE");
+			Sentence recSentence = arg0.getSuperClass().accept(this);
+			recSentence.setSubjekt(leftstring);
+			return recSentence;
+		}
+		
 		// Multiple Exists Pattern
 		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
 				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
@@ -1526,9 +1534,17 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	}
 
 	public Sentence visit(OWLDataHasValue arg0) {
+		System.out.println("<> <> <> OWLLDataHasValue visitor called ");
 		Sentence result = new Sentence();
-		result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
-		result.setSubjekt(new LogicElement(arg0.getValue().getLiteral()));
+		List<List<TextElement>> fillerelements = new ArrayList<List<TextElement>>();
+		List<TextElement> middle = new ArrayList<TextElement>();
+		middle.add(new LogicElement(arg0.getValue().getLiteral()));
+		result = VerbalisationManager.textualiseDataPropertyAsSentence(arg0.getProperty(),fillerelements,middle);
+		// result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
+		// System.out.println(result.inspect());
+		// System.out.println(arg0.getProperty());
+		// result.setSubjekt(new LogicElement(arg0.getValue().getLiteral()));
+		System.out.println(result.inspect());
 
 		if (visitorDebug) result.concat(new TextElement("visit:ToBeDone"));
 		return result.getSentence();

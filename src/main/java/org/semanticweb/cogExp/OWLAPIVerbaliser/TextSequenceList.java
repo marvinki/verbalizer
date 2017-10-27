@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
-import org.protege.editor.owl.OWLEditorKit;
+// import org.protege.editor.owl.OWLEditorKit;
 
 /**
  * Contains zero or more TextElementSequences. All you can do is create a list,
@@ -150,6 +150,7 @@ public class TextSequenceList extends TextElement {
 	 * All JLabels concatenated make the sentence: 
 	 * " Text_1, Text_2, ..., Text_n-1 and Text_n, "
 	 */
+	/*
 	@Override
 	public List<JLabel> toJLabel(OWLEditorKit ek){
 		List<JLabel> result = new ArrayList<JLabel>();
@@ -168,4 +169,5 @@ public class TextSequenceList extends TextElement {
 		return result;
 	
 	}
+	*/
 }

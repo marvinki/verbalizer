@@ -599,7 +599,7 @@ e.printStackTrace();
 		Statement stmt2;
 		try {
 			stmt2 = conn.createStatement();
-			String sql2 = "DELETE FROM BIOEXPLANATIONS WHERE subclass = ' "
+			String sql2 = "DELETE FROM BIOEXPLANATIONS WHERE subclass = '"
 					 + subclass + "' && superclass='" + superclass + "' && ontologypath='" + ontologypath + "';";
 				        
 		    System.out.println("Executing delete statement  " + sql2);

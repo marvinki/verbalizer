@@ -7,7 +7,7 @@ import javax.swing.JLabel;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.protege.editor.owl.OWLEditorKit;
+// import org.protege.editor.owl.OWLEditorKit;
 
 /**
  * All textual generated Explanations are passed as Sequences of text elements
@@ -100,6 +100,7 @@ public class TextElementSequence extends TextElement{
 	 * @param ek OWLEditorKit needed for LinkedJLabel
 	 * @return returns a list of JLabels of the TextElementSequence (without empty JLabels or spaces)
 	 */
+	/*
 	public List<JLabel> generateLabels(OWLEditorKit ek){
 		// add each element in the sequence as JLabel to the List
 		ArrayList<JLabel> labels = new ArrayList<JLabel>();
@@ -130,7 +131,7 @@ public class TextElementSequence extends TextElement{
 		
 		return labels;
 	}
-	
+	*/
 		
 	/**
 	 * @param el self explanatory

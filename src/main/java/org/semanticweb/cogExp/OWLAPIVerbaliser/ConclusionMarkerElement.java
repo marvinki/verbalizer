@@ -3,11 +3,9 @@ package org.semanticweb.cogExp.OWLAPIVerbaliser;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
 import org.json.JSONArray;
-import org.protege.editor.owl.OWLEditorKit;
 
 public class ConclusionMarkerElement extends TextElement{
 	
@@ -29,13 +27,7 @@ public class ConclusionMarkerElement extends TextElement{
 	
 	
 	
-	public List<JLabel> toJLabel(OWLEditorKit ek){
-		List<JLabel> result = new ArrayList<JLabel>();
-		for (TextElement element : content){
-			result.addAll(element.toJLabel(ek));
-		}
-		return result;
-	}
+	
 	
 	public String toHTML(){
 		TextElementSequence seq = new TextElementSequence(content);
