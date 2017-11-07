@@ -2061,7 +2061,7 @@ public enum VerbaliseTreeManager {
 			// TextElementSequence seq = new TextElementSequence();
 			// seq.add(new LogicElement(resultstring));
 			if(debug) seq.add(new LogicElement("-29-"));
-			aSeq = seq;˙
+			aSeq = seq;
 		}
 		
 			return aSeq;
