@@ -48,6 +48,7 @@ public enum DatabaseManager {
 	            System.out.println("SQLState: " + ex.getSQLState());
 	            System.out.println("VendorError: " + ex.getErrorCode());
 	        }
+	    System.out.println("connection: " + conn.toString());
 	}
 	
 	public void insertExplanation(String subclass, 
@@ -596,7 +597,7 @@ e.printStackTrace();
 			  String superclass, 
 			  String ontologypath){
 		
-		Statement stmt2;
+		Statement stmt2 = null;
 		try {
 			stmt2 = conn.createStatement();
 			String sql2 = "DELETE FROM BIOEXPLANATIONS WHERE subclass = ' "
@@ -610,6 +611,8 @@ e.printStackTrace();
 			// TODO Auto-generated catch block
 			System.out.println("we have an exception!");
 			e.printStackTrace();
+			try {stmt2.close();}
+			catch (Exception ee){}
 		}
 		return;
 		

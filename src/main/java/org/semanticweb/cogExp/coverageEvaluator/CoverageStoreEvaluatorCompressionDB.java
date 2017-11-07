@@ -2520,6 +2520,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 			
 			int skippedSinceTreated = 0;
 			Set<Set<OWLAxiom>> alreadyTreatedJustifications = new HashSet<Set<OWLAxiom>>();
+			Set<OWLAxiom> alreadyTreatedConclusions = new HashSet<OWLAxiom>();
 			
 			int counting = 0;
 			int counter;
@@ -2565,6 +2566,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     			// if this has been done before
     			if (solved){
     				System.out.println("Found as solved in database: " + subAx);
+    				alreadyTreatedConclusions.add(subAx);
     				// System.out.println("already in database: " + subAx.toString());
     				// System.out.println(queryResult);
     				continue;
@@ -2580,14 +2582,20 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     			}
 				
     			List<OWLAxiom> justs = justifications.get(counter);
+    			System.out.println("dealing with justification set of size " + justs.size());
     			
     			Set<OWLObject> justs2 = new HashSet<OWLObject>();
     			for (OWLAxiom axi : justs){
     				justs2.add(axi);
     			}
     			
-    			if (alreadyTreatedJustifications.size()==0)
+    			// 
+    			int replacementEqualCheckSize = 4;
+    			
+    			if (alreadyTreatedJustifications.size()==0 || justs.size()>replacementEqualCheckSize){
+    				if (alreadyTreatedJustifications.size()==0)
     				alreadyTreatedJustifications.add(new HashSet<OWLAxiom>(justs));
+    				}
     			else{
     			
     			boolean replacementEqual = false;
@@ -2596,10 +2604,36 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
         			for (OWLAxiom axi : candidate){
         				justs3.add(axi);
         			}
+        			
+        			// simple checks whether the justifications can be replacement equal at all.
+        			int subclAxNo2 = 0;
+        			int subclAxNo3 = 0;
+        			int eqAxNo2 = 0;
+        			int eqAxNo3 = 0;
+        			for (OWLObject ax2: justs2){
+        				if (ax2 instanceof OWLSubClassOfAxiom)
+        					subclAxNo2++;
+        				if (ax2 instanceof OWLEquivalentClassesAxiom)
+        					eqAxNo2++;
+        			}
+        			for (OWLObject ax3: justs3){
+        				if (ax3 instanceof OWLSubClassOfAxiom)
+        					subclAxNo3++;
+        				if (ax3 instanceof OWLEquivalentClassesAxiom)
+        					eqAxNo3++;
+        			}
     				
-    				HashMap<OWLClass,OWLClass> mapping = JustificationComparator.setsReplacementEqual(justs2,justs3);
-    				// System.out.println("mapping " + mapping);
-    				if (mapping !=null){
+        			HashMap<OWLClass,OWLClass> mapping = null;
+        			if (subclAxNo2 == subclAxNo3 && eqAxNo2== eqAxNo3){
+        				mapping = JustificationComparator.setsReplacementEqual(justs2,justs3);
+        			}else{
+        			}
+        			
+    				
+        			// System.out.println("mapping " + mapping);
+    				if (mapping !=null
+    						&& alreadyTreatedConclusions.contains(JustificationComparator.replaceClassnamesInAxioms(ax, mapping))
+    						){ 
     					replacementEqual = true;
     					System.out.println("WHOOOHOWW");
     					skippedSinceTreated++;
@@ -2681,7 +2715,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     				
     			}
     			
-    			if (!replacementEqual)
+    			if (!replacementEqual && justs.size()>replacementEqualCheckSize)
     				alreadyTreatedJustifications.add(new HashSet<OWLAxiom>(justs));
     				System.out.println("different justifications " + alreadyTreatedJustifications.size());
     			}
@@ -2934,7 +2968,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    					countRules(infRules,"Subclass-chain")
 							);
 					
-					
+					alreadyTreatedConclusions.add(subAx);
 					
 					} catch (Exception e){
 						e.printStackTrace();

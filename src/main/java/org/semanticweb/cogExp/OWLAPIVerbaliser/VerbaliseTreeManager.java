@@ -755,7 +755,7 @@ public enum VerbaliseTreeManager {
 						RoleElement sr = new RoleElement("are" + supStr.substring(2));
 						superseq.getTextElements().add(0,sr);
 					}
-					seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("andTherefore)")));
+					seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("andTherefore")));
 					seq.concat(superseq);
 					return seq;
 					// return VerbalisationManager.verbalise(subcl1) + " and therefore " + VerbalisationManager.verbalise(subcl2.getSuperClass());
@@ -1653,7 +1653,7 @@ public enum VerbaliseTreeManager {
 					RoleElement sr = new RoleElement("are" + supStr.substring(2));
 					superseq.getTextElements().add(0,sr);
 				}
-				seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("andTherefore)")));
+				seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("andTherefore")));
 				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(superseq);
 				seq.add(conclusionMarker);
 				if(debug) seq.add(new LogicElement("-17-"));
