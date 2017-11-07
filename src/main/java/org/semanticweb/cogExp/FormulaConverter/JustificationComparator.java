@@ -124,6 +124,7 @@ public class JustificationComparator {
 			return null;
 		Set<HashMap<OWLObjectProperty,OWLObjectProperty>> generatedMappingsProperties = generatePropertyMappings(set1,set2);
 		HashMap winnerMapping = null;
+		boolean futile = false;
 		for (HashMap mapping1 : generatedMappingsClasses){
 			for (HashMap mapping2 : generatedMappingsProperties){
 				boolean allFound = true;
@@ -138,10 +139,12 @@ public class JustificationComparator {
 							break;
 						}
 					}
-					if (!found)
+					if (!found){
 						allFound = false;
+						futile = true;
+					}
 				}
-			
+				if (!futile){
 				for (OWLObject target: set2){
 					boolean found = false;
 					for (OWLObject ax : set1){
@@ -152,10 +155,13 @@ public class JustificationComparator {
 					}
 					if (!found)
 						allFound = false;
-				}	
+				}
+				}
 				
-				if (allFound)
+				if (allFound){
 				winnerMapping = mapping1;
+				return winnerMapping;
+				}
 			}
 		}
 		return winnerMapping;
@@ -284,6 +290,7 @@ public class JustificationComparator {
 	} 
 	
 	public static List<List<Object>> generatePermutations(List<Object> remaining){
+		// System.out.println("Generate Permutations started.");
 		List<List<Object>> result = new ArrayList<List<Object>>();
 		
 		if (remaining.size()<2 ){

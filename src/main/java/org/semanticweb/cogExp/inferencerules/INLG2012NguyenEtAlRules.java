@@ -5105,6 +5105,108 @@ RULE34{ // SubCla(X,Y) and disjoint(X,Y) --> SubCla(X,\bot)
 		
 	}, // END RULE34
 
+RULE34nary{ // SubCla(X,Y) and disjoint(X,Y) --> SubCla(X,\bot)
+		
+		@Override
+		public java.lang.String getName(){return "INLG2012NguyenEtAlRule34n";};
+		@Override
+		public java.lang.String getShortName(){return "R34n";};
+		
+		// OWLFormula.createFormulaTop()
+		
+		/*
+		private final OWLFormula prem1 = OWLFormula.createFormula(OWLSymb.DISJ, 
+				OWLFormula.createFormulaVar("v1"),
+				OWLFormula.createFormulaVar("v2")
+				);
+		
+		private final OWLFormula prem2 = OWLFormula.createFormula(OWLSymb.SUBCL, 
+				OWLFormula.createFormulaVar("v3"),
+				OWLFormula.createFormulaVar("v4")
+				);
+				*/
+		
+		
+		
+		@Override
+		public List<RuleBinding> findRuleBindings(Sequent s){
+			// System.out.println("find rule bindings for rule 34n called");
+			// look up disjointness axiom first. Reason: more specific (efficiency). Important (!): want to handle case where class is disjoint with \top without using an exiom saying that \top subclassof \top
+			ArrayList<RuleBinding> results = new ArrayList<RuleBinding>();
+			HashSet<OWLFormula> antecedentFormulas = s.getAllAntecedentOWLFormulas();
+			for (OWLFormula ant1 : antecedentFormulas){
+				if (ant1.getHead().equals(OWLSymb.DISJ)){
+					List<OWLFormula> disjuncts = ant1.getArgs();
+					// System.out.println("disjuncts " + disjuncts);
+					// now find subclass axioms where both elements are in the disjunction
+					for (OWLFormula subclCand : antecedentFormulas){
+						if (!subclCand.getHead().equals(OWLSymb.SUBCL))
+							continue;
+						if (subclCand.getArgs().get(0).equals(subclCand.getArgs().get(1))){
+							continue; // <--- tautologies lead to incorrect results!
+						}
+						// System.out.println("dealing with subcl axiom: " + subclCand.getArgs().get(0) + " "+ subclCand.getArgs().get(1));
+						if (disjuncts.contains(subclCand.getArgs().get(0)) 
+								&& disjuncts.contains(subclCand.getArgs().get(1)) 
+								){
+							OWLFormula conclusion = OWLFormula.createFormula(OWLSymb.SUBCL, subclCand.getArgs().get(0),OWLFormula.createFormulaBot());
+						    // System.out.println("building conclusion R34 " + conclusion);
+								if (!s.alreadyContainedInAntecedent(conclusion)){
+									RuleBinding binding = new RuleBinding(conclusion,null);
+									SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(subclCand));
+									binding.insertPosition("A1", position1);
+									SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(ant1));
+									binding.insertPosition("A2", position2);
+									results.add(binding);
+								}
+						}	
+						
+					}
+				}
+			}
+			
+			
+			// System.out.println("Rule 34n results " + results);
+			return results;
+		}
+			
+		
+		
+			
+		@Override
+		public SequentList computePremises(Sequent sequent, RuleBinding binding) throws Exception{
+			
+			List<RuleApplicationResults> results = computeRuleApplicationResults(sequent, binding);
+			List<Sequent> sequents =  ruleApplicationResultsAsSequent(results);
+			// System.out.println("Rule 6 neo DEBUG sequents " + sequents);
+			return SequentList.makeANDSequentList(sequents);
+		}
+		
+		
+		@Override
+		public List<RuleApplicationResults> computeRuleApplicationResults(Sequent sequent, RuleBinding binding) throws Exception{
+			List<RuleApplicationResults> results = new ArrayList<RuleApplicationResults>();
+			// OWLSubClassOfAxiom axiom3;
+			OWLFormula conclusionformula = null;
+			// System.out.println("DEBUG -- newantecedent " + binding.getNewAntecedent());
+			if (binding.getNewAntecedent()!=null){ // fast track
+				// axiom3 = (OWLSubClassOfAxiom) binding.getNewAntecedent().toOWLAPI();
+				conclusionformula = binding.getNewAntecedent();
+			} 
+			RuleApplicationResults result = new RuleApplicationResults();
+			result.setOriginalFormula(sequent);
+			result.addAddition("A1",conclusionformula);
+			// System.out.println("CONCL R34 : " + conclusionformula);
+			results.add(result);
+			result.setMaxFormulaDepth(InferenceApplicationService.computeRuleBindingMaxDepth(sequent, binding));
+			return results;
+			
+		}
+		
+		
+	}, // END RULE34
+
+
 RULE34semiold{ // SubCla(X,Y) and disjoint(X,Y) --> SubCla(X,\bot)
 		
 		@Override
@@ -5354,6 +5456,153 @@ RULE35{ // SubCla(X,Y) and SubCla(X,Z) and disjoint(Y,Z) --> SubCla(X,\bot)
 		
 		
 	}, // END RULE35
+
+RULE35nary{ // SubCla(X,Y) and SubCla(X,Z) and disjoint(Y,Z) --> SubCla(X,\bot)
+		
+		@Override
+		public java.lang.String getName(){return "INLG2012NguyenEtAlRule35";};
+		@Override
+		public java.lang.String getShortName(){return "R35";};
+		
+		// OWLFormula.createFormulaTop()
+		
+		/*
+		private final OWLFormula prem1 = OWLFormula.createFormula(OWLSymb.DISJ, 
+				OWLFormula.createFormulaVar("v1"),
+				OWLFormula.createFormulaVar("v2")
+				);
+		*/
+		
+		private final OWLFormula prem2 = OWLFormula.createFormula(OWLSymb.SUBCL, 
+				OWLFormula.createFormulaVar("v3"),
+				OWLFormula.createFormulaVar("v4")
+				);
+		
+		
+		
+		@Override
+		public List<RuleBinding> findRuleBindings(Sequent s){
+			// System.out.println("find rule bindings for rule 35 called");
+			// look up disjointness axiom first. Reason: more specific (efficiency). Important (!): want to handle case where class is disjoint with \top without using an exiom saying that \top subclassof \top
+			ArrayList<RuleBinding> results = new ArrayList<RuleBinding>();
+			// Set<OWLFormula> disjCandidates = new HashSet<OWLFormula>(s.findMatchingFormulasInAntecedent(prem1));
+			Set<OWLFormula> allFormulasCandidates = s.getAllAntecedentOWLFormulas();
+			Set<OWLFormula> disjCandidates = new HashSet<OWLFormula>();
+			for (OWLFormula dform : allFormulasCandidates){
+				if (dform.getHead().equals(OWLSymb.DISJ))
+					disjCandidates.add(dform);
+			}
+			
+			// make sure we save time if there are no disjointness axioms
+						if (disjCandidates.size()==0){
+							return results;
+						}
+			
+			Set<OWLFormula> subclCandidates = new HashSet<OWLFormula>(s.findMatchingFormulasInAntecedent(prem2));
+			// System.out.println(" rule 35 debug: " + candidates);
+			
+			
+			// create buckets with the same heads...
+			
+			HashMap<OWLFormula,Set<OWLFormula>> buckets = new HashMap<OWLFormula,Set<OWLFormula>>();
+			for (OWLFormula subclCand : subclCandidates){
+				if (subclCand.getHead().isSymb() && subclCand.getHead().equals(OWLSymb.BOT))
+					continue; // <-- this would lead to wrong results!
+				if (buckets.get(subclCand.getArgs().get(0))!=null){
+					Set<OWLFormula> set = buckets.get(subclCand.getArgs().get(0));
+					set.add(subclCand);
+					// buckets.put(subclCand.getArgs().get(0),subclCand);
+				} else {
+					Set<OWLFormula> newset = new HashSet<OWLFormula>();
+					newset.add(subclCand);
+					buckets.put(subclCand.getArgs().get(0),newset);
+				}
+			}
+			
+			Set<OWLFormula> keys = buckets.keySet();
+			
+			for (OWLFormula cand :keys){
+				for (OWLFormula disjCand : disjCandidates){
+					// System.out.println("rule 35 checking disjointness axiom " + disjCand.prettyPrint());
+					List<OWLFormula> disjmembers = disjCand.getArgs();
+					
+					// check
+					int i = disjmembers.size();
+					List<OWLFormula> foundforms = new ArrayList<OWLFormula>();
+					for (OWLFormula disjmemb : disjmembers){
+						
+						for (OWLFormula inspectform : buckets.get(cand)){
+							// System.out.println("rule 35 checking inspectform " + inspectform.prettyPrint());
+							if (inspectform.getArgs().get(1).equals(disjmemb)){
+								i--;
+								foundforms.add(inspectform);
+							}
+						}
+						} // end loop for disj members
+					
+						if (i==disjmembers.size()-2){
+							// System.out.println("foundforms " + foundforms.toString());
+							OWLFormula conclusion = OWLFormula.createFormula(OWLSymb.SUBCL, foundforms.get(0).getArgs().get(0),OWLFormula.createFormulaBot());
+							
+							if (!s.alreadyContainedInAntecedent(conclusion)){
+								RuleBinding binding = new RuleBinding(conclusion,null);
+								SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(disjCand)); // <-- disjointness axiom
+								binding.insertPosition("A1", position1);
+								for (int j = 0; j < foundforms.size();j++){
+									SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(foundforms.get(j)));
+									binding.insertPosition("A" + (j + 2), position2);
+								}
+								results.add(binding);
+							}	
+							
+						}
+					
+					}
+			} // <--- keyset loop
+					
+					
+			// System.out.println("Rule 34 results " + results);
+			return results;
+		}
+			
+		
+		
+			
+		@Override
+		public SequentList computePremises(Sequent sequent, RuleBinding binding) throws Exception{
+			
+			List<RuleApplicationResults> results = computeRuleApplicationResults(sequent, binding);
+			List<Sequent> sequents =  ruleApplicationResultsAsSequent(results);
+			// System.out.println("Rule 6 neo DEBUG sequents " + sequents);
+			return SequentList.makeANDSequentList(sequents);
+		}
+		
+		
+		@Override
+		public List<RuleApplicationResults> computeRuleApplicationResults(Sequent sequent, RuleBinding binding) throws Exception{
+			List<RuleApplicationResults> results = new ArrayList<RuleApplicationResults>();
+			// OWLSubClassOfAxiom axiom3;
+			OWLFormula conclusionformula = null;
+			// System.out.println("DEBUG -- newantecedent " + binding.getNewAntecedent());
+			if (binding.getNewAntecedent()!=null){ // fast track
+				// axiom3 = (OWLSubClassOfAxiom) binding.getNewAntecedent().toOWLAPI();
+				conclusionformula = binding.getNewAntecedent();
+			} 
+			RuleApplicationResults result = new RuleApplicationResults();
+			result.setOriginalFormula(sequent);
+			result.addAddition("A1",conclusionformula);
+			// System.out.println("CONCL R34 : " + conclusionformula);
+			results.add(result);
+			result.setMaxFormulaDepth(InferenceApplicationService.computeRuleBindingMaxDepth(sequent, binding));
+			return results;
+			
+		}
+		
+		
+	}, // END RULE35nary
+
+
+
 
 /*	
 RULE35{ // SubCla(X,Y) and SubCla(X,Z) and Disj(Y,Z) -> SubCla(X,\bot)

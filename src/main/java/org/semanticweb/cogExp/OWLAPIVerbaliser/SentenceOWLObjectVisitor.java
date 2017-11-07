@@ -335,9 +335,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		// System.out.println("visit subclassof called with " + arg0);
 		// Left hand side
 		Sentence leftstringSentence = arg0.getSubClass().accept(this);
-		System.out.println("DEBUG 1 " +  leftstringSentence);
+		// System.out.println("DEBUG 1 " +  leftstringSentence);
 		leftstringSentence.setOrder(SentenceOrder.A_is_B);
-		System.out.println("DEBUG 2 " + leftstringSentence.toTextElementSequence());
+		// System.out.println("DEBUG 2 " + leftstringSentence.toTextElementSequence());
 		List<TextElement> leftstring =  new ArrayList<TextElement>();
 		if (leftstringSentence.toTextElementSequence()!=null)
 			leftstring = leftstringSentence.toTextElementSequence().getTextElements();

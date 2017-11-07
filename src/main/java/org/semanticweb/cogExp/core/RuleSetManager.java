@@ -85,6 +85,8 @@ public enum RuleSetManager {
 	    		INLG2012NguyenEtAlRules.RULE33,
 	    		*/
 	    		INLG2012NguyenEtAlRules.RULE34,
+	    		INLG2012NguyenEtAlRules.RULE34nary,
+	    		INLG2012NguyenEtAlRules.RULE35nary,
 	    		// INLG2012NguyenEtAlRules.RULE35,
 	    		// INLG2012NguyenEtAlRules.RULE36,
 	    		INLG2012NguyenEtAlRules.RULE37,
@@ -162,6 +164,7 @@ public enum RuleSetManager {
 	    rulesets.put("ELRules",elRules);
 	    
 	    SequentInferenceRule[] ELInit = {
+	    		AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
 	    		AdditionalDLRules.SIMPLETERMINATION,
 	    		SequentTerminationAxiom.INSTANCE,
     			AdditionalDLRules.EQUIVEXTRACT,
@@ -180,9 +183,10 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE6neo,
     			AdditionalDLRules.ELEXISTSMINUS,
     			INLG2012NguyenEtAlRules.RULE34, // handle disjointness
+    			INLG2012NguyenEtAlRules.RULE34nary,
     			INLG2012NguyenEtAlRules.RULE35, // handle disjointness
+    			INLG2012NguyenEtAlRules.RULE35nary,
     			AdditionalDLRules.APPLRANGE,
-    			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
     			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
     			// AdditionalDLRules.R0, // introduce trivial subsumptions
     			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
@@ -255,6 +259,7 @@ public enum RuleSetManager {
 	    
 	    
 	    SequentInferenceRule[] ELInitNonredundant = {
+	    		AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
 	    		AdditionalDLRules.SIMPLETERMINATION,
 	    		SequentTerminationAxiom.INSTANCE,
     			// AdditionalDLRules.EQUIVEXTRACT,   // <--- should be off
@@ -271,8 +276,9 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE6neo,
     			AdditionalDLRules.ELEXISTSMINUS,
     			INLG2012NguyenEtAlRules.RULE34, // handle disjointness
+    			INLG2012NguyenEtAlRules.RULE34nary,
     			INLG2012NguyenEtAlRules.RULE35, // handle disjointness
-    			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
+    			INLG2012NguyenEtAlRules.RULE35nary,
     			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
     			// AdditionalDLRules.R0, // introduce trivial subsumptions  // <--- off?
     		    AdditionalDLRules.DEFDOMAIN, // translate domain definition 
@@ -314,6 +320,8 @@ public enum RuleSetManager {
 			INLG2012NguyenEtAlRules.RULE6neo,
 			AdditionalDLRules.ELEXISTSMINUS,
 			INLG2012NguyenEtAlRules.RULE34, // handle disjointness
+			INLG2012NguyenEtAlRules.RULE34nary,
+			INLG2012NguyenEtAlRules.RULE35nary,
 			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
 			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
 			AdditionalDLRules.R0, // introduce trivial subsumptions
@@ -355,7 +363,9 @@ public enum RuleSetManager {
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE15) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE6neo) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE34) || // handle disjointness
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE34nary) || // handle disjointness
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE35) || // handle disjointness
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE35nary) || // handle disjointness
 			// AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
 			// AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
 			// AdditionalDLRules.R0, // introduce trivial subsumptions

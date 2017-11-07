@@ -730,15 +730,14 @@ public enum VerbalisationManager {
 	}
 
 	public static String treatCamelCaseAndUnderscores(String str) {
-		System.out.println("dealing with: |" + str + "|");
-		if (str.contains("-"))
+		if (str.contains("+") || str.contains("-"))
 			return str;
 		
 		String resultstring = "";
 		
 		if(VerbaliseTreeManager.locale == Locale.GERMAN) return str;
 		
-		if(str.length() <= 0 || str.isEmpty() || str.equals("")) return resultstring;
+		if(str.length() <= 0 || str.isEmpty() || str.equals("") ) return resultstring;
 
 			
 		List<String> tokens = new ArrayList<String>();
@@ -1466,7 +1465,7 @@ public enum VerbalisationManager {
 				String somefillertext = some.getFiller().accept(sentenceOWLObjectVisit).toString();
 				if (some.getFiller() instanceof OWLObjectSomeValuesFrom) {
 					System.out.println("<><> inserting 'something that' ");
-					somefillertext = LogicLabels.getString("somethingThat ") + somefillertext;
+					somefillertext = LogicLabels.getString("somethingThat") + somefillertext;
 				}
 				substrings.add(somefillertext);
 			}
