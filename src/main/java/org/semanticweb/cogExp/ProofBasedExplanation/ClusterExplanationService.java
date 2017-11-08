@@ -76,6 +76,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
@@ -976,8 +977,18 @@ public class ClusterExplanationService {
 		
 	     reasoner = reasonerFactory.createReasoner(origin, config);
 		
+	     
 		System.out.println("create generator");
-		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+		
+		List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+        // gens.add(new InferredSubClassAxiomGenerator());
+        // gens.add(new InferredEquivalentClassAxiomGenerator());
+		gens.add(new InferredClassAssertionAxiomGenerator());
+		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner,
+                  gens);
+		
+		// InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+		
 		System.out.println("fill");
 		iog.fillOntology(dataFactory2, infOnt);
 		System.out.println("done filling");
@@ -985,8 +996,9 @@ public class ClusterExplanationService {
 		Set<OWLAxiom> newaxioms = infOnt.getAxioms();
 		
 		newaxioms.removeAll(previousaxioms);
-		
-		System.out.println(newaxioms);
+		for (OWLAxiom ax : newaxioms){
+		System.out.println(ax);
+		}
 		
 		System.out.println("ontology contains " + ontology.getAxioms().size() + "axioms");
 		
