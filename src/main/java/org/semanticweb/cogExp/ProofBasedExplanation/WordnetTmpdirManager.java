@@ -3,9 +3,6 @@ package org.semanticweb.cogExp.ProofBasedExplanation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-
 /*
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;

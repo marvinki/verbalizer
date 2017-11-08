@@ -18,6 +18,7 @@ import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +39,7 @@ import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
+import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -66,11 +68,13 @@ import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
 import org.semanticweb.owlapi.reasoner.InferenceType;
+import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
@@ -114,7 +118,7 @@ import uk.ac.manchester.cs.jfact.JFactFactory;
 
 /*
 [ {
-	  "query" : ["getInstructionText",  "getVideo", "getImage"],
+	  "query" : ["getInstructionText",  "getVideo", "getImage", "getHeading"],
 	  "task" : {
 	    "name" : "Saw",
 	    "text" : null,
@@ -124,7 +128,7 @@ import uk.ac.manchester.cs.jfact.JFactFactory;
 	  }
 	},
 	 {
-	  "query" :  ["getInstructionText",  "getVideo", "getImage"],
+	  "query" :  ["getInstructionText",  "getVideo", "getImage", "getHeading"],
 	  "task" : {
 	    "name" : "Drill_Screw",
 	    "text" : null,
@@ -923,6 +927,8 @@ public class ClusterExplanationService {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
 		
+		OWLOntology origin = ontology;
+		
 		// big loop for actions
 		for (int index = 0; index<objects.size(); index++){
 			JSONObject obj = objects.get(index); 
@@ -935,7 +941,7 @@ public class ClusterExplanationService {
 			OWLObjectPropertyAssertionAxiom name_ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(performsActivityProp,new_indiv, name_indiv);
 			System.out.println(" assuming " + name_ax);;
 		
-			AddAxiom addAxiomAction= new AddAxiom(ontology,name_ax);
+			AddAxiom addAxiomAction= new AddAxiom(origin,name_ax);
 			manager.applyChange(addAxiomAction);
 			memory.add(name_ax);
 		
@@ -947,7 +953,7 @@ public class ClusterExplanationService {
 				OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#instr_arg" + counter));
 				OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + obString));
 				OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(argProp,new_indiv, target_indiv);
-				AddAxiom addAxiomAction2= new AddAxiom(ontology,ax);
+				AddAxiom addAxiomAction2= new AddAxiom(origin,ax);
 				manager.applyChange(addAxiomAction2);
 				counter++;
 				memory.add(ax);
@@ -964,11 +970,11 @@ public class ClusterExplanationService {
 		previousaxioms.addAll(inferredAxioms);
 		// System.out.println("Previous axioms " + previousaxioms.size());
 		
-		// ConsoleProgressMonitor progressMonitor = new ConsoleProgressMonitor();
-	    //  OWLReasonerConfiguration config = new SimpleConfiguration(progressMonitor);
-		SimpleConfiguration config = new SimpleConfiguration(50000);
+		ConsoleProgressMonitor progressMonitor = new ConsoleProgressMonitor();
+	    OWLReasonerConfiguration config = new SimpleConfiguration(progressMonitor);
+		// SimpleConfiguration config = new SimpleConfiguration(50000);
 		
-	     reasoner = reasonerFactory.createReasoner(ontology, config);
+	     reasoner = reasonerFactory.createReasoner(origin, config);
 		
 		System.out.println("create generator");
 		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
@@ -985,7 +991,7 @@ public class ClusterExplanationService {
 		System.out.println("ontology contains " + ontology.getAxioms().size() + "axioms");
 		
 		for (OWLAxiom delax : memory){
-			RemoveAxiom removeAxiomAction= new RemoveAxiom(ontology,delax);
+			RemoveAxiom removeAxiomAction= new RemoveAxiom(origin,delax);
 			manager.applyChange(removeAxiomAction);
 		}
 		
@@ -994,6 +1000,8 @@ public class ClusterExplanationService {
 			System.out.println(testaxiom);
 		}
 		*/
+		
+		// Set<OWLAnnotation> annotations = ontology.getAnnotations();
 		
 		// big loop for actions
 		for (int index = 0; index<objects.size(); index++){
@@ -1013,21 +1021,42 @@ public class ClusterExplanationService {
 						
 						//loop for properties
 						for (String property : properties.get(index)){
+							if (property.equals("getHeading")){
+								boolean headingFound = false;
+								Collection<OWLAnnotationAssertionAxiom> annots = EntitySearcher.getAnnotationAssertionAxioms(cax.getClassExpression().asOWLClass(), this.ontology);
+								for (OWLAnnotationAssertionAxiom annot : annots){
+									results.add(annot.getValue().asLiteral().orNull().getLiteral());
+									headingFound = true;
+									break;
+								}
+								if (!headingFound)
+									System.out.println("Searching for heading for instruction " + cax.getClassExpression().asOWLClass() + ", but none found!");
+							}
+							boolean propFound = false;
 							for (OWLAxiom axprobe : ontology.getAxioms()){
 								// System.out.println("examining " + axprobe);
 								if (axprobe instanceof OWLSubClassOfAxiom && (((OWLSubClassOfAxiom) axprobe).getSubClass().equals(cax.getClassExpression()))){
 									OWLSubClassOfAxiom subclAx = (OWLSubClassOfAxiom) axprobe;
-									   System.out.println(" interested in " + subclAx);
+									   // System.out.println(" interested in " + subclAx);
 									if (subclAx.getSuperClass() instanceof OWLDataHasValue){
 										OWLDataHasValue datahasvalue = (OWLDataHasValue) subclAx.getSuperClass();
 										if (property.equals("getInstructionText")) property= "hasInstructionText";
 										if (property.equals("getImage")) property= "hasImagePath";
 										if (property.equals("getVideo")) property= "hasVideoPath";
 										if (datahasvalue.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
-											results.add(datahasvalue.getFiller().getLiteral());
+											String propstr = datahasvalue.getFiller().getLiteral();
+											if (property.equals("hasInstructionText"))
+												propstr = propstr.replaceAll("\\\\", "");
+											results.add(propstr);
+											// System.out.println("Propstr " + propstr);
+											propFound = true;
+												
 										}
 									}
 								}
+							}
+							if (propFound == false && !property.equals("getHeading")){
+								System.out.println("Can't find property " + property + " for class " +cax.getClassExpression());
 							}
 						}
 						// break;
@@ -1108,30 +1137,7 @@ public class ClusterExplanationService {
 			}
 		}
 		
-		/*
-		for (OWLAxiom ax: filteredInferredAxioms){
-			// Class Assertions
-			if (ax instanceof OWLClassAssertionAxiom){
-				OWLClassAssertionAxiom classAssertionAxiom = (OWLClassAssertionAxiom) ax;
-				if  (classAssertionAxiom.getClassExpression().isAnonymous())
-					continue;
-				result += classAssertionAxiom.getIndividual().asOWLNamedIndividual().getIRI().getShortForm() 
-						+ " - "
-						+ classAssertionAxiom.getClassExpression().asOWLClass().getIRI().getShortForm() + "\n";
-			}
-			if (ax instanceof OWLObjectPropertyAssertionAxiom){
-				OWLObjectPropertyAssertionAxiom propAss = (OWLObjectPropertyAssertionAxiom) ax;
-				result += "(" + propAss.getProperty().asOWLObjectProperty().getIRI().getFragment()
-						+ " " + propAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm()
-						+ " " + propAss.getObject().asOWLNamedIndividual().getIRI().getShortForm() + ")" + "\n";
-			}
-			
-			
-			//else 
-			// 	result += "UNACCOUNTED : " + ax + "\n";
-			
-			
-		} */
+		
 		
 		for (OWLAxiom ax: filteredDataPropertyAssertionAxioms){
 			OWLDataPropertyAssertionAxiom dAss = (OWLDataPropertyAssertionAxiom) ax;
@@ -1454,79 +1460,7 @@ public class ClusterExplanationService {
 		return result;
 	}
 	
-	public static void handleDotRequest(String dotTree){
-		try{
-		// Temporary file for graphics
-			String property = "java.io.tmpdir";
-		    String tempDir = System.getProperty(property);
-		    File newTempfile = new File(tempDir + File.separator + "graph.png");
-		    
-		    Path dotpath = Paths.get(tempDir + File.separator + "graph.dot");
-		    File dotfile = new File(dotpath.toString());
-		    System.out.println("Dotfile generated in: " + dotfile);
-		    if(!dotfile.exists()){
-				dotfile.createNewFile();
-			}
-		    Writer dotWriter = new PrintWriter(new OutputStreamWriter(
-		    	    new FileOutputStream(dotfile.toString()), "UTF-8"));
-		    
-		    // PrintWriter dotWriter = new PrintWriter(dotfile.toString());
-		    dotWriter.write(dotTree);
-		    dotWriter.close();
-		    
-		    // Temporary file for png
-		    Path pngpath = Paths.get(tempDir + File.separator + "graph.png");
-		    File pngfile = new File(pngpath.toString());
-		    if(!pngfile.exists()){
-				pngfile.createNewFile();
-			}
-		    
-		    // make the external call
-		    createGraph(dotfile,pngfile);
-		      
-		   // System.out.println("pngfile: " + pngpath.toString());
-		    
-		    // Image_Panel panel = new Image_Panel(pngfile.toString());
-		    System.out.println("Trying to access png image at path: " + pngfile.getPath());
-		    Image_Panel panel = new Image_Panel(pngfile.getPath());
-	        ImageZoom zoom = new ImageZoom(panel,panel.getScale());
-	        JFrame f = new JFrame();
-	        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	        f.getContentPane().add(zoom.getUIPanel(), "North");
-	        f.getContentPane().add(new JScrollPane(panel));
-	        int initHeight = (int) (panel.getPreferredSize().getHeight() * 1.2);
-	        int initWidth = (int) (panel.getPreferredSize().getWidth() * 1.2);
-	        // System.out.println(panel.getPreferredSize().getHeight());
-	        f.setSize(initWidth,initHeight);
-	        f.setLocation(200,200);
-	        f.setVisible(true);
-		} catch (Exception e){
-			e.printStackTrace();
-		}
-		return;
-		
-	}
 	
-/* 	
-public String handleBoschBatchRequest(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException{
-	String result = "";
-	boolean middle = false;
-	JSONArray jsonArray = new JSONArray(input); 
-	printstream.print("[");
-	for (int i = 0; i < jsonArray.length();i++){
-		JSONObject part = (JSONObject) jsonArray.get(i);
-		if (middle){
-			result += ",";
-			printstream.print(",");
-			}
-		String res = handleBoschRequest(part.toString(), printstream);
-		middle = true;
-		result += res;
-	}
-	printstream.print("]");
-	return "[" + result + "]";
-}
-*/
 	
 	public String handleBoschBatchRequest(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException{
 		JSONArray jsonArray = new JSONArray(input); 
@@ -1590,6 +1524,22 @@ public String handleBoschBatchRequest(String input, PrintStream printstream) thr
 		
 		printstream.print("]");
 		return "[" + result + "]";
+	}
+	
+	public String getDescribableObjects(){
+		JSONArray results = new JSONArray();
+		Set<OWLClass> concepts = ontology.getClassesInSignature();
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory dataFactory=manager.getOWLDataFactory();
+		OWLClass materialsAndTools = dataFactory.getOWLClass(IRI.create("http://www.semanticweb.org/powertools#MaterialsAndTools"));
+		System.out.println(materialsAndTools);
+		NodeSet<OWLClass> subclasses= reasoner.getSubClasses(materialsAndTools,false);
+		Set<OWLClass> allSubClasses = subclasses.getFlattened();
+		for (OWLClass cl : allSubClasses){
+			results.put(cl.getIRI().getShortForm());
+		}
+		return results.toString();
+		
 	}
 	
 
@@ -1927,9 +1877,7 @@ public String elaborate(JSONObject input){
 	
 	
 public String handleBoschRequest(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException {
-			
 		
-	
 		String output = "";
 		// Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 	    // rootlogger.setLevel(Level.OFF);
@@ -1940,11 +1888,8 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  		return handleBoschBatchRequest(input, printstream);
 	  	}
 	  	
-	  	 JSONObject inputObject = new JSONObject(input);
-	  	 	
-	  	 
-	  
-	  	 
+	  	JSONObject inputObject = new JSONObject(input);
+	  	 	 
 	  	if (inputObject.has("elaborate")){
 	  		 String result = elaborate(inputObject);
 	  		printstream.println(result);
@@ -1981,8 +1926,15 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  		return result;
 	  	}
 	  	
+	  	
 	  	 
 	  	 if (inputObject.has("query")){
+	  		 if (inputObject.getString("query").equals("getDescribableObjects")){
+	  			String result = getDescribableObjects();
+	  			 printstream.println(result);
+	  			 return result;
+	  		 }
+	  		 
 	  		 if (inputObject.getString("query").equals("getInstructionText")){
 	  			 String result = getInstructionText((JSONObject) inputObject.get("task"));
 	  			 JSONObject resultJSON = new JSONObject();
@@ -2288,23 +2240,8 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    	   				}
    				
    			 
-   			 /*
-   				GentzenTree tree = VerbalisationManager.computeGentzenTree(axiom, 
-   						reasoner, 
-   						reasonerFactory, 
-   						ont, 
-   						500000,
-   						600000,
-   						"OP");	
-   				
-   				
-   				if (tree==null){
-   					System.out.println("ERROR. Axiom could not be proven.");
-   					printstream.println("ERROR. Axiom could not be proven.");
-   					return "ERROR";
-   				}
-   				*/
-   				
+   			
+   	
    				
    				
    				
@@ -2326,145 +2263,5 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    }
 	
 	
-	public String handleCluster1Request(String input, PrintStream printstream) throws IOException, OWLOntologyCreationException {
-		
-		// System.out.println("[Handle Request called.]");
-		
-		String output = "";
-		
-		 // Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-	     // rootlogger.setLevel(Level.OFF);
-		//  OWLReasonerFactory reasonerFactory = new JFactFactory();
-	  	 OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
-	  	
-	  	 JSONObject inputObject = new JSONObject(input);
-	  	 String command = inputObject.getString("command");
-	
-   			// String[] inputs = temp.split(" ");
-   		if (command.contains("precompute")){
-				precomputeAxioms();
-				return output;
-		}
-   		
-   		List<String> list = new ArrayList<String>();
-   		Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(input);
-   		while (m.find())
-   			   list.add(m.group(1));
-   		if (list.size()==1 && list.get(0).contains("precompute")){
-				precomputeAxioms();
-				return output;
-		}
-   		
-   		if (list.size()==3 && list.get(0).contains("list")){
-   				output = listInferredAxioms(list);	
-   				printstream.println(output);
-   				return output;
-   		}
-   		    String ontologyname = list.get(2).replaceAll("\"", "");
-   		    OWLOntology ont;
-   		    if (ontology!=null)
-   		    	ont = ontology;
-   		    else{
-   		    	OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-   				java.io.File file = new java.io.File(ontologyname);
-   				FileDocumentSource source = new FileDocumentSource(file);
-   				OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
-   				loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
-   				loaderconfig = loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
-   						
-   				try {
-   					ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
-   				} catch (Exception e){
-   					System.out.println("error loading ontology");
-   				}
-   				ont = ontology;
-   		    }
-   		
-   		 System.out.println("[Start proof search.]");
-   			if (list.size()>3){
-   				/*
-   				GentzenTree tree = ProofBasedExplanationService.computeTree(list.get(0), 
-   																			list.get(1),
-   																			ont);
-   				
-   																			*
-   																			*/
-   				
-   				String subclass = list.get(0);
-   				String superclass = list.get(1);
-   				
-   			 OWLClass subcl = null;
-   			 OWLClass supercl = null;
-   			 
-   			 Set<OWLClass> classes = ontology.getClassesInSignature();
-   			 for (OWLClass cl : classes){
-   				 // System.out.println(cl.toString());
-   				 if (cl.getIRI().getFragment().equals(subclass)){
-   					 subcl = cl;
-   				 }
-   				 if (cl.getIRI().getFragment().equals(superclass)){
-   					 supercl = cl;
-   				 }
-   			 }
-   			 
-   			 if (subcl==null)
-   				 System.out.println("Class not found in ontology: " + subclass);
-   			 
-   			 if (supercl==null)
-   				 System.out.println("Class not found in ontology: " + superclass);
- 
-   			 if (subcl==null || supercl==null){
-   				 return null;
-   			 }
-   			 
-   			 
-   			 
-   			 OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(subcl, supercl);
-   				GentzenTree tree = VerbalisationManager.computeGentzenTree(axiom, 
-   						reasoner, 
-   						reasonerFactory, 
-   						ont, 
-   						50000,
-   						60000,
-   						"OP");	
-   				
-   				
-   				if (tree==null){
-   					System.out.println("ERROR. Subsumption could not be proven.");
-   					printstream.println("ERROR. Subsumption could not be proven.");
-   					return "ERROR";
-   				}
-   				// System.out.println(tree);
-   				// System.out.println(VerbaliseTreeManager.listOutput(tree));
-   				// System.out.println(tree.getStepsInOrder());
-   				// System.out.println(tree.computePresentationOrder());
-   				long startVerbalising = System.currentTimeMillis();
-   				String result = VerbaliseTreeManager.verbaliseNL(tree, false, true,false, null); // <-- 2nd arg labels, 3rd arg html
-   				printstream.println(result);
-   				String resultPlain = VerbaliseTreeManager.verbaliseNL(tree, false, false,false, null); // <-- 2nd arg labels, 3rd arg html
-   				long endVerbalising = System.currentTimeMillis();
-   				System.out.println("Verbalisation took: " + (endVerbalising - startVerbalising) + "ms");
-   				String dotTree = tree.toDOT();
-   				
-   				handleDotRequest(dotTree);
-   					
-   				PrintWriter htmlwriter = new PrintWriter(list.get(3) + "/text.html", "UTF-8");
-   				htmlwriter.write(result);
-   				htmlwriter.close();
-   				
-   				PrintWriter plainwriter = new PrintWriter(list.get(3) + "/plaintext.txt", "UTF-8");
-   				plainwriter.write(resultPlain);
-   				plainwriter.close();
-   				output = result;
-   				
-   				System.out.println(result);
-   			} else {
-   				System.out.println("Please enter two class expressions, the path to the ontology, and a path for the output");
-   			}	
-   	return output;
-   	
-   }
-	
-	
-	
+
 }
