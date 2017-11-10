@@ -392,6 +392,8 @@ public class CoverageStoreEvaluatorCompressionDB {
 	    		// long justendtime = System.currentTimeMillis();
 	    		// justTimes.add(justendtime-juststarttime);
 	    		// List<Set<OWLAxiom>> explanationsList = new ArrayList<Set<OWLAxiom>>(explanations);	
+	    		
+	    		
 	    		if (explanation!=null && explanation.size()>0){	
 	    			
 	    			boolean subpropofcontained = false;
@@ -2583,6 +2585,18 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 				
     			List<OWLAxiom> justs = justifications.get(counter);
     			System.out.println("dealing with justification set of size " + justs.size());
+    			
+	    		if (justs.size()==1){
+	    			OWLAxiom singleJust = justs.get(0);
+	    			System.out.println("singlejust : " + singleJust);
+	    			if (singleJust instanceof OWLSubClassOfAxiom 
+	    					&& ((OWLSubClassOfAxiom) singleJust).getSubClass().equals(subAx.getSubClass())
+	    					&& ((OWLSubClassOfAxiom) singleJust).getSuperClass().equals(subAx.getSuperClass())
+	    					)
+	    			{	System.out.println("IGNORING SELF-JUSTIFICATION WITH ANNOTATION");
+	    				continue;
+	    				}
+	    		}
     			
     			Set<OWLObject> justs2 = new HashSet<OWLObject>();
     			for (OWLAxiom axi : justs){
