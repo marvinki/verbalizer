@@ -1565,6 +1565,10 @@ public class ClusterExplanationService {
 		
 		List<String> results = getMostSpecificDataValue(inputs,properties);
 		
+		for (String s : results){
+			System.out.println("result string: " + s);
+		}
+		
 		int resind = 0;
 		for (int y=0; y<inputs.size();y++){
 			String name = inputs.get(y).getString("name");
@@ -1585,9 +1589,18 @@ public class ClusterExplanationService {
 				if (propertylabel.equals("getInstructionText"))
 					propertylabel = "text";
 				// obtaining value
-				String text = results.get(resind);
+				String text = "";
+				if (propertylabel.equals("text")){
+					text = results.get(resind);
+					System.out.println("to be parsed: " + text);
+					JSONArray arr = new JSONArray(text);
+					newobject.put(propertylabel,arr);
+				}else{
+					text = results.get(resind);
+					newobject.put(propertylabel,text);
+				}
 				resind++;
-				newobject.put(propertylabel,text);
+				
 				
 			}
 			String res = newobject.toString();
@@ -1670,7 +1683,8 @@ public String describeVisual(JSONObject input){
 		classAssertionAxioms.addAll(inferredOntology.getClassAssertionAxioms(targetIndividual));
 		for (OWLClassAssertionAxiom cas : classAssertionAxioms){
 			System.out.println("class assertion examined: " + cas);
-			
+			if (cas.getClassExpression().isAnonymous())
+				continue;
 			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
 			axioms.addAll(ontology.getAxioms(classToBeDescribed));
 			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed));

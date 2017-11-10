@@ -80,7 +80,7 @@ public class TextSequenceListTEST {
 		
 		System.out.println("\\\"");
 		System.out.println("\\\"".replaceAll("\\\\\"", "\""));
-		
+		System.out.println("{a}".replaceAll("{", " "));
 	}
 
 }
