@@ -78,6 +78,9 @@ public class TextSequenceListTEST {
 		System.out.println("\n...testing TextSequenceList toString():\n");
 		System.out.println(testList.toString());
 		
+		System.out.println("\\\"");
+		System.out.println("\\\"".replaceAll("\\\\\"", "\""));
+		
 	}
 
 }

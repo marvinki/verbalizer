@@ -1083,6 +1083,7 @@ public class ClusterExplanationService {
 			System.out.println("ops, exception");
 		}
 		
+		
 		System.out.println(" results " + results);
 		
 		return results;
@@ -1276,6 +1277,12 @@ public class ClusterExplanationService {
 		return getPropertyIndividual(ob,"hasVideoPath", individualString);
 	}
 	
+	public String getImageClass(JSONObject ob){
+		String individualString = ob.getString("getImageClass");
+		return getPropertyClass(ob,"hasImagePath", individualString);
+	}
+	
+	
 	public String getPropertyIndividual(JSONObject ob, String property, String individualString){
 		System.out.println("prop: " + property + " indiv: " + individualString);
 		
@@ -1313,6 +1320,8 @@ public class ClusterExplanationService {
 		
 		// if we get here, there is no image associated with an individual. Now we need to look at the class of the individual
 		for (OWLClassAssertionAxiom  cla : classAssertionAxioms){
+			if (cla.getClassExpression().isAnonymous())
+				continue;
 			OWLClass centralClass = cla.getClassExpression().asOWLClass();
 			System.out.println("considering central class: " + centralClass);
 			Set<OWLAxiom> axioms = ontology.getAxioms();
@@ -1340,6 +1349,66 @@ public class ClusterExplanationService {
 				}
 			}
 		}
+		
+		return "{\"error\" : \"no media\"}";
+	}
+	
+	public String getPropertyClass(JSONObject ob, String property, String classString){
+		System.out.println("prop: " + property + " class: " + classString);
+		
+		
+		OWLClass centralClass = null;
+		Set<OWLClass> classes = ontology.getClassesInSignature();
+		for (OWLClass cl : classes){
+			if (cl.getIRI().getFragment().equals(classString)){
+				centralClass = cl;
+				break;
+			}
+		}
+		// now try to use synonyms
+		if (centralClass == null){
+		for (OWLClass cl : classes){
+			Collection<OWLAnnotationAssertionAxiom> annots = EntitySearcher.getAnnotationAssertionAxioms(cl, this.ontology);
+			for (OWLAnnotationAssertionAxiom annot : annots){
+				System.out.println("comapring : " + classString + " and " + annot.getValue().asLiteral().orNull().getLiteral());
+				if (annot.getValue().asLiteral().orNull().getLiteral().contains(classString)){
+					centralClass = cl;
+					break;
+				}
+				
+			}
+			
+		}
+		}
+		if (centralClass==null)
+			return "{\"error\" : \"class not found\"}";
+		
+			System.out.println("considering central class: " + centralClass);
+			Set<OWLAxiom> axioms = ontology.getAxioms();
+			for (OWLAxiom ax : axioms){
+				if (ax instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom) ax).getSubClass().equals(centralClass)){
+					OWLSubClassOfAxiom subclax = (OWLSubClassOfAxiom) ax;
+					System.out.println(subclax.getSuperClass());
+					if (subclax.getSuperClass() instanceof OWLDataHasValue){
+						OWLDataHasValue dhv = (OWLDataHasValue) subclax.getSuperClass();
+						if (dhv.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
+							JSONObject obj = new JSONObject();
+							obj.put("class", centralClass.getIRI().getFragment());
+							if (property.equals("hasVideoPath"))
+								obj.put("videoURL", dhv.getFiller().getLiteral());
+							else
+								obj.put("imageURL", dhv.getFiller().getLiteral());
+							return obj.toString();
+						}
+					}
+					// 	OWLDataPropertyAssertionAxiom){
+					// OWLDataPropertyAssertionAxiom dax = (OWLDataPropertyAssertionAxiom) ax;
+					// if (dax.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
+					// 	return dax.getObject().getLiteral();
+				// 	}
+				}
+			}
+		
 		
 		return "{\"error\" : \"no media\"}";
 	}
@@ -1522,6 +1591,7 @@ public class ClusterExplanationService {
 				
 			}
 			String res = newobject.toString();
+			res=res.replaceAll("\\\\\"", "\"");
 			if (middle){
 				result += ",";
 				printstream.print(",");
@@ -1532,7 +1602,9 @@ public class ClusterExplanationService {
 			
 		}
 		
-		
+		System.out.println("before replace: " + result);
+		result=result.replaceAll("\\\\\"", "\"");
+		System.out.println("after replace: " + result);
 		
 		printstream.print("]");
 		return "[" + result + "]";
@@ -1922,6 +1994,12 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	
 	  	if (inputObject.has("getImageIndividual")){
 	  		 String result = getImageIndividual(inputObject);
+	  		printstream.println(result);
+	  		return result;
+	  	}
+	  	
+	  	if (inputObject.has("getImageClass")){
+	  		 String result = getImageClass(inputObject);
 	  		printstream.println(result);
 	  		return result;
 	  	}
