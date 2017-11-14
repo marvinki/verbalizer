@@ -999,7 +999,7 @@ public enum VerbalisationManager {
 	}
 
 	public String getSimpleIntersectionNLString(List<OWLClassExpression> exprs) {
-		System.out.println("<><> getSimpleIntersectionNLString called");
+		// System.out.println("<><> getSimpleIntersectionNLString called");
 		String result = "";
 		List<OWLObject> noun_concepts = new ArrayList<OWLObject>();
 		List<OWLObject> attribute_concepts = new ArrayList<OWLObject>();
@@ -1174,7 +1174,7 @@ public enum VerbalisationManager {
 			// attributes first
 			for (String str : attribute_concepts_strings) {
 				result = result + str + _space;
-				System.out.println("result-}" + result + "{");
+				// System.out.println("result-}" + result + "{");
 				noun_or_attribute_concepts_strings.remove(str);
 			}
 			// if several items can be used either way, order them
@@ -1195,7 +1195,7 @@ public enum VerbalisationManager {
 				}
 				noun_or_attribute_concepts_strings.remove(current);
 				result = result + current + _space;
-				System.out.println("result-}" + result + "{");
+				// System.out.println("result-}" + result + "{");
 				noun_concepts_strings.remove(current);
 			}
 			for (String str : noun_concepts_strings) {
@@ -1217,7 +1217,7 @@ public enum VerbalisationManager {
 			result = result.substring(0, result.length() - 1); // need to remove
 			// last spacer
 		
-		System.out.println("last step: +" + result + "+++");
+		// System.out.println("last step: +" + result + "+++");
 		return aOrAnIfy(result);
 	}
 
@@ -1352,7 +1352,7 @@ public enum VerbalisationManager {
 	}
 
 	public String verbaliseComplexIntersection(OWLObjectIntersectionOf inter, Obfuscator obfuscator) {
-		System.out.println(" <><> complex intersection called with " + inter);
+		// System.out.println(" <><> complex intersection called with " + inter);
 		String result = "";
 		List<OWLClassExpression> simpleExpressions = new ArrayList<OWLClassExpression>();
 		List<OWLClassExpression> existsExpressions = new ArrayList<OWLClassExpression>();
@@ -1382,7 +1382,7 @@ public enum VerbalisationManager {
 				OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) someobj;
 				String somefillertext = some.getFiller().accept(sentenceOWLObjectVisit).toString();
 				if (some.getFiller() instanceof OWLObjectSomeValuesFrom) {
-					System.out.println("<><> inserting 'something that' ");
+					// System.out.println("<><> inserting 'something that' ");
 					somefillertext = LogicLabels.getString("somethingThat") + somefillertext;
 				}
 				substrings.add(somefillertext);
@@ -1421,7 +1421,7 @@ public enum VerbalisationManager {
 
 	public static String pseudoNLStringMultipleExistsPattern(OWLObjectIntersectionOf ints,
 			Obfuscator obfuscator) {
-		System.out.println("<><> multiple exists called (1)");
+		// System.out.println("<><> multiple exists called (1)");
 		String result = "";
 		List<OWLClassExpression> exprs = ints.getOperandsAsList();
 		List<String> substrings = new ArrayList<String>();
@@ -1441,7 +1441,7 @@ public enum VerbalisationManager {
 	}
 
 	public List<TextElement> textualiseMultipleExistsPattern(OWLObjectIntersectionOf ints) {
-		System.out.println("<><> multiple exists called (2)");
+		// System.out.println("<><> multiple exists called (2)");
 		List<TextElement> result;
 		List<OWLClassExpression> exprs = ints.getOperandsAsList();
 		List<List<TextElement>> substrings = new ArrayList<List<TextElement>>();
@@ -1880,7 +1880,7 @@ public enum VerbalisationManager {
 		//System.out.println(ontology.getAxioms().size());
 		for (OWLAxiom ax: ontology.getAxioms()){
 			if (ax.toString().equals(axiom.toString())){
-				System.out.println("DEBUG (3)");
+				// System.out.println("DEBUG (3)");
 				resultSequence.concat(VerbalisationManager.textualise(axiom));
 				return resultSequence;
 			}
@@ -1888,7 +1888,7 @@ public enum VerbalisationManager {
 		}
 		
 		if (ontology.getAxioms().contains(axiom)) {
-			System.out.println("DEBUG (3)");	
+			// System.out.println("DEBUG (3)");	
 			// LogicElement element = new LogicElement("Axiom contained.");
 			// resultSequence.add(element);
 			// resultSequence.add(new LinebreakElement());
@@ -1896,11 +1896,11 @@ public enum VerbalisationManager {
 			return resultSequence;
 		}
 
-		System.out.println("DEBUG (4)");
+		// System.out.println("DEBUG (4)");
 		GentzenTree tree = computeGentzenTree(axiom, reasoner, factory, ontology, maxsteps, maxtime, ruleset);
-		System.out.println("DEBUG (5)");
+		// System.out.println("DEBUG (5)");
 		if (tree == null) {
-			System.out.println("DEBUG (6)");
+			// System.out.println("DEBUG (6)");
 			// resultSequence.add(new LogicElement("fooooo"));
 			resultSequence.add(new EmptyTreeElement());
 			return resultSequence;

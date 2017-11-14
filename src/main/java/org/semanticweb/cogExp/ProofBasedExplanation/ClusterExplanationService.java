@@ -549,7 +549,8 @@ public class ClusterExplanationService {
 				continue;
 			JSONObject ob = new JSONObject();
 			ob.put("individual", cla.getIndividual().asOWLNamedIndividual().getIRI().getShortForm());
-			ob.put("class", cla.getClassExpression().asOWLClass().getIRI().getShortForm());
+			if (!cla.getClassExpression().isAnonymous())
+				ob.put("class", cla.getClassExpression().asOWLClass().getIRI().getShortForm());
 			resultsArray.put(ob);
 		}
 		results = resultsArray.toString();
@@ -601,6 +602,7 @@ public class ClusterExplanationService {
 			    			OWLSubClassOfAxiom subclax = (OWLSubClassOfAxiom) ax;
 			    			if (subclax.getSubClass().toString().contains(classnameString) && !superclasses.contains(subclax.getSuperClass())){
 			    				//  System.out.println(subclax.getSuperClass());
+			    				if (!subclax.getSuperClass().isAnonymous())
 			    				result += subclax.getSuperClass().asOWLClass().getIRI().getFragment().toString() + " ";
 			    				superclasses.add(subclax.getSuperClass());
 			    			}
@@ -1293,6 +1295,8 @@ public class ClusterExplanationService {
 		
 		// if we get here, there is no image associated with an individual. Now we need to look at the class of the individual
 		for (OWLClassAssertionAxiom  cla : classAssertionAxioms){
+			if (cla.getClassExpression().isAnonymous())
+				continue;
 			OWLClass centralClass = cla.getClassExpression().asOWLClass();
 			System.out.println("considering central class: " + centralClass);
 			Set<OWLAxiom> axioms = ontology.getAxioms();
@@ -1426,6 +1430,8 @@ public class ClusterExplanationService {
 	
 	public static JSONObject toJSON(OWLSubClassOfAxiom subclax){
 		JSONObject result = new JSONObject();
+		if (subclax.getSubClass().isAnonymous() || subclax.getSuperClass().isAnonymous())
+			return result;
 		String sub = subclax.getSubClass().asOWLClass().getIRI().getFragment().toString();
 		String sup = subclax.getSuperClass().asOWLClass().getIRI().getFragment().toString();
 		result.put("subclass", sub);
@@ -1634,7 +1640,8 @@ public String describeVisual(JSONObject input){
 		classAssertionAxioms.addAll(inferredOntology.getClassAssertionAxioms(targetIndividual));
 		for (OWLClassAssertionAxiom cas : classAssertionAxioms){
 			System.out.println("class assertion examined: " + cas);
-			
+			if (cas.getClassExpression().isAnonymous())
+				continue;
 			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
 			axioms.addAll(ontology.getAxioms(classToBeDescribed));
 			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed));
@@ -1713,6 +1720,8 @@ public String describe(JSONObject input){
 		Set<OWLClassAssertionAxiom> classAssertionAxioms = ontology.getClassAssertionAxioms(targetIndividual);
 		// classAssertionAxioms.addAll(inferredOntology.getClassAssertionAxioms(targetIndividual));
 		for (OWLClassAssertionAxiom cas : classAssertionAxioms){
+			if (cas.getClassExpression().isAnonymous())
+				continue;
 			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
 			axioms = ontology.getAxioms(classToBeDescribed);
 			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed));
@@ -1895,6 +1904,8 @@ public String elaborate(JSONObject input){
 		if (ax instanceof OWLClassAssertionAxiom){
 			OWLClassAssertionAxiom axio = (OWLClassAssertionAxiom) ax;
 			if (axio.getClassExpression().isOWLThing())
+				continue;
+			if (axio.getClassExpression().isAnonymous())
 				continue;
 			JSONObject jo = new JSONObject();
 			jo.put("individual", axio.getIndividual().asOWLNamedIndividual().getIRI().getShortForm());

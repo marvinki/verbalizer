@@ -233,7 +233,7 @@ public enum VerbaliseTreeManager {
 		}
 		
 		for(int i: order){
-			System.out.println("verbaliseNL at step no. " + i);
+			// System.out.println("verbaliseNL at step no. " + i);
 			// Get all information on this step
 			GentzenStep step = tree.getTreesteps().get(i);
 			List<Integer> premiseids = step.getPremises();
@@ -257,7 +257,7 @@ public enum VerbaliseTreeManager {
 			SequentInferenceRule infrule = step.getInfrule();
 			
 			// DEBUG
-			System.out.println("verbaliseNL DEBUG -- " + infrule.getName());
+			// System.out.println("verbaliseNL DEBUG -- " + infrule.getName());
 			
 			if(infrule.equals(INLG2012NguyenEtAlRules.RULE23Repeat) && !singletonStep){
 				continue; // do not even advance the conclusions
@@ -317,7 +317,7 @@ public enum VerbaliseTreeManager {
 			// System.out.println(additions_to_antecedent);
 			// System.out.println("DEBUG -- additions_to_antecedent " + additions_to_antecedent);
 
-			System.out.println("now preparing output");
+			// System.out.println("now preparing output");
 			
 			String output;
 			
@@ -335,18 +335,18 @@ public enum VerbaliseTreeManager {
 			}
 			
 			else{
-				System.out.println("before textualise statement");
+				// System.out.println("before textualise statement");
 				TextElementSequence seq = textualiseStatementNL(tree, infrule,
 
 						premiseformulas,
 						additions_to_antecedent,
 						additions_to_succedent,prevconc,beforeprevconc,obfuscator);
 				// System.out.println("seq " + seq);
-				System.out.println("atfer textualise statement");
+				// System.out.println("atfer textualise statement");
 				seq.makeUppercaseStart();
 				seq.pluralise(); // <--- introduce plurals
 				output = seq.toString();	
-				System.out.println("Output " + output);
+				// System.out.println("Output " + output);
 			}
 				
 			if (!output.equals(previoustext)
@@ -380,7 +380,7 @@ public enum VerbaliseTreeManager {
 			previous_step = i;
 			
 		}
-		System.out.println("returning result " + result);
+		System.out.println("verbalise NL returning result: " + result);
 		return result;
 }
 	
