@@ -946,6 +946,10 @@ public enum VerbalisationManager {
 			if (str.equals("exercise")) {
 				return "an exercise";
 			}
+			
+			// Reduce length
+			if (str.length()>40)
+				str = str.substring(0, 40) + "[...]";
 			return str;
 		}
 		// System.out.println("get class NL String (3) " + classname);
@@ -973,6 +977,10 @@ public enum VerbalisationManager {
 			// System.out.println("DEBGU -- " + str);
 			if (!isUncountable)
 				str = aOrAnIfy(str);
+			
+			if (str.length()>40)
+				str = str.substring(0, 40) + "[...]";
+			
 			return str;
 		}
 		if (!str2.equals("")) {
@@ -981,6 +989,10 @@ public enum VerbalisationManager {
 
 		if (!hasLabel || ontologyLabelsIncludeDeterminers == false)
 			str = aOrAnIfy(str);
+		
+		if (str.length()>40)
+			str = str.substring(0, 40) + "[...]";
+		
 		return str;
 	};
 
