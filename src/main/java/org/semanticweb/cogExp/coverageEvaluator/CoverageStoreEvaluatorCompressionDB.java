@@ -2558,8 +2558,8 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 				
 				// check database before starting
 				List<String> queryResult = DatabaseManager.INSTANCE.getRestrictedBioExplanation(
-    					subAx.getSubClass().toString(), 
-    					subAx.getSuperClass().toString(), 
+    					subAx.getSubClass().toString().replaceAll("'", "\\'"), 
+    					subAx.getSuperClass().toString().replaceAll("'", "\\'"), 
     					ontologyid);
     			
     			boolean solved = DatabaseManager.INSTANCE.getSolved(queryResult);
@@ -2672,8 +2672,8 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     	    					ontologyid);
     					
     					DatabaseManager.INSTANCE.insertBioExplanation(
-		    					subAx.getSubClass().toString(), 
-		    					subAx.getSuperClass().toString(), 
+		    					subAx.getSubClass().toString().replaceAll("'", "\\\\'"), 
+		    					subAx.getSuperClass().toString().replaceAll("'", "\\\\'"), 
 		    					ontologyid,
 		    					"bio", 
 		    					true, 
@@ -2809,8 +2809,8 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 		    			
 	    				
 	    				DatabaseManager.INSTANCE.insertBioExplanation(
-		    					subAx.getSubClass().toString(), 
-		    					subAx.getSuperClass().toString(), 
+		    					subAx.getSubClass().toString().replaceAll("'", "\\\\'"), 
+		    					subAx.getSuperClass().toString().replaceAll("'", "\\\\'"), 
 		    					ontologyid,
 		    					"bio", 
 		    					false, 
@@ -2834,7 +2834,8 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 					System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax) + "\":\n");
 					System.out.println(VerbaliseTreeManager.listOutput(tree));
 					System.out.println(explanation);
-					String result = explanation;
+					// String result = explanation;
+					String result = explanation.replaceAll("'", "\\'");
 					
 					GentzenTree tree2 = InferenceApplicationService.computeProofTree(axiomFormula, justificationFormulas, 1000, timelimit1 * 1000,
 	    					"ELnonredundant");
@@ -2851,8 +2852,8 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 							*/
 					
 					String explanation2 = VerbalisationManager.computeVerbalization(tree2, false, false,null);
-					String result3 = VerbaliseTreeManager.listOutput(tree);
-					String result4 = VerbaliseTreeManager.listOutput(tree2);
+					String result3 = VerbaliseTreeManager.listOutput(tree).replaceAll("'", "\\'");
+					String result4 = VerbaliseTreeManager.listOutput(tree2).replaceAll("'", "\\'");
 					
 					List<SequentInferenceRule> infRules = tree.getInfRules();
 					int noVerbalizedSteps = 0;
@@ -2935,12 +2936,12 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    			}
 	    			
 	    			
-	    			DatabaseManager.INSTANCE.deleteBioExplanation(subAx.getSubClass().toString(), 
-	    					subAx.getSuperClass().toString(), ontologyid);
+	    			DatabaseManager.INSTANCE.deleteBioExplanation(subAx.getSubClass().toString().replaceAll("'", "\\\\'"), 
+	    					subAx.getSuperClass().toString().replaceAll("'", "\\\\'"), ontologyid);
 	    			
 					DatabaseManager.INSTANCE.insertBioExplanation(
-	    					subAx.getSubClass().toString(), 
-	    					subAx.getSuperClass().toString(), 
+	    					subAx.getSubClass().toString().replaceAll("'", "\\\\'"), 
+	    					subAx.getSuperClass().toString().replaceAll("'", "\\\\'"), 
 	    					ontologyid,
 	    					"bio", 
 	    					true, 

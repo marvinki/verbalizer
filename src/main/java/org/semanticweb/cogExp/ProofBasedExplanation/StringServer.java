@@ -58,16 +58,9 @@ public class StringServer {
 		server = new ServerSocket(port);
 		this.service = service;
 		while (true) {
+			System.out.println(".");
+			
 			final Socket socket = server.accept();
-			/*Runtime.getRuntime().addShutdownHook(new Thread() {
-				public void run() {
-					try {
-						socket.close();
-						System.out.println("The server is shut down!");
-					} catch (IOException e) {
-						/* failed  }
-				}
-			});*/
 			
 			new Thread(new Runnable() {
 				
@@ -76,6 +69,7 @@ public class StringServer {
 					// Socket socket = null;
 					try {
 						handle(socket);
+						socket.close();
 					}
 
 					catch (IOException e) {
@@ -83,6 +77,7 @@ public class StringServer {
 					}
 				}
 			}).start();
+			
 		}
 
 	}
@@ -146,8 +141,9 @@ public class StringServer {
 			} else {
 				// System.out.println("idlecount " + idlecount);
 				try {
-					Thread.sleep(1);
-				} catch (InterruptedException e) {
+					Thread.sleep(200);
+					// System.out.println("sleep");
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
