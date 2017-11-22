@@ -248,8 +248,8 @@ System.out.println("insert statement " + sql);
 stmt.executeUpdate(sql);
 stmt.close();
 
+/*
 Statement stmt2 = conn.createStatement();
-
 
 String sql2 = "INSERT IGNORE INTO OCCURENCES(subclass, superclass,ontologypath) VALUES('" 
 + subclass + "','" + superclass + "','" + ontologypath + "');";
@@ -259,7 +259,7 @@ String sql2 = "INSERT IGNORE INTO OCCURENCES(subclass, superclass,ontologypath) 
 stmt2.executeUpdate(sql2);
 
 stmt2.close();
-
+*/
 } catch (SQLException e) {
 // TODO Auto-generated catch block
 e.printStackTrace();

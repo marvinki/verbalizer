@@ -2746,6 +2746,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     					justificationFormulas.add(ConversionManager.fromOWLAPI(ax2));
     					System.out.println("Adding axiom: " +
     					  ConversionManager.fromOWLAPI(ax2).prettyPrint());
+    					System.out.println(ax2);
     				}
     			} catch (Exception e) {
     				return null;
