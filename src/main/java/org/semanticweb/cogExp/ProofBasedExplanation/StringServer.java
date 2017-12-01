@@ -1,6 +1,7 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,6 +13,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,15 +22,19 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.FileDocumentSource;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
+import org.semanticweb.owlapi.util.AutoIRIMapper;
 
 import uk.ac.manchester.cs.jfact.JFactFactory;
 
@@ -107,12 +113,13 @@ public class StringServer {
 		String s;
 
 		// while(inputReader.ready()) {
-		int idlecount = 0;
 		while (socket != null && socket.isConnected()) {
-			if (inputReader.ready()) {
+			int inp = inputReader.read();
+			// if end of stream is reached, 'read' returns -1
+			if (inp>0) {
 				s = "";
 				
-				char fc = (char)inputReader.read();
+				char fc = (char) inp;
 				while (fc != '[' && fc != '{')
 					fc = (char)inputReader.read();
 				s += fc;
@@ -125,24 +132,17 @@ public class StringServer {
 					s +=nc;
 				}
 				
-				if (s == null) {
-					System.out.println("We've lost connection");
-					break;
-				}
 
-				System.out.println("[Reading input: " + s + "]");
-				String output = "";
+				System.out.println(">>Reading input: " + s + "<<");
+				
 				try {
-					output = service.handleBoschRequest(s, outputStream);
+					service.handleBoschRequest(s, outputStream);
 				} catch (OWLOntologyCreationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				// outputStream.println(output);
-				// System.out.println("input reader ready? " +
-				// inputReader.ready() + " socket: " + socket + " is closed "+
-				// socket.isClosed());
-				System.out.println("[Waiting]");
+				
+				System.out.println(">>Waiting<<");
 			} else {
 				// System.out.println("idlecount " + idlecount);
 				try {
@@ -183,7 +183,15 @@ public class StringServer {
 		if (args.length > 1 && args[1] != null) {
 			String ontologyfile = args[1];
 			ClusterExplanationService.setOntologyfile(ontologyfile);
+			File inputfile = new File(ontologyfile);
+			System.out.println("inputfile " + inputfile.getAbsoluteFile());
+			System.out.println("inputfile parent " + inputfile.getAbsoluteFile().getParentFile());
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			AutoIRIMapper autoIRIMapper = new AutoIRIMapper(inputfile.getAbsoluteFile().getParentFile(),true);
+			// OWLOntologyIRIMapper autoIRIMapper = new AutoIRIMapper(inputfile.getAbsoluteFile().getParentFile(),true);
+	        // We can now use this mapper in the usual way, i.e.
+			manager.addIRIMapper(autoIRIMapper);
+			System.out.println(autoIRIMapper.getOntologyIRIs());
 			java.io.File file = new java.io.File(ontologyfile);
 			// System.out.println("Ontologyfile exists?: "+ file.exists());
 			// System.out.println("Ontologyfile can read?: "+ file.canRead());
@@ -195,15 +203,24 @@ public class StringServer {
 			// System.out.println("Is file: "+ file.isFile());
 			// FileInputStream inputStr = new
 			// FileInputStream(file.getAbsolutePath());
-			// inputStr.close();
-			OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration();
-			loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
-			loaderconfig = loaderconfig
-					.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
+			// inputStr.close()
+			// OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration();
+			// loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.THROW_EXCEPTION);
+			// loaderconfig = loaderconfig
+			// 		.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("THROW_EXCEPTION"));
 
 			String result = "";
 			try {
-				ontology = manager.loadOntologyFromOntologyDocument(source, loaderconfig);
+				ontology =  manager.loadOntologyFromOntologyDocument(source);
+				Set<OWLOntology> imports = ontology.getImports();
+				for (OWLOntology imp : imports){
+					Set<OWLAxiom> ax = imp.getAxioms();		
+					for (OWLAxiom axio : ax)
+						System.out.println(axio);
+				}
+				
+				
+				// ontology = manager.loadOntologyFromOntologyDocument(source, loaderconfig);
 				
 				VerbalisationManager.INSTANCE.setOntology(ontology);
 				

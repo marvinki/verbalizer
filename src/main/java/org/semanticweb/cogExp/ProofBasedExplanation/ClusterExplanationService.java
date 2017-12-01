@@ -37,10 +37,12 @@ import org.semanticweb.elk.reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
@@ -159,6 +161,8 @@ public class ClusterExplanationService {
 	private OWLOntology ontology = null;
 	private OWLOntology inferredOntology = null;
 	private static String ontologyfile = "";
+	
+	private static final String instructionsIRI = "http://www.semanticweb.org/diy-instructions";
 	
 	public static void setOntologyfile(String ontfile){
 		ontologyfile = ontfile;
@@ -329,7 +333,7 @@ public class ClusterExplanationService {
 			OWLDataFactory dataFactory2=manager.getOWLDataFactory();
 			iog.fillOntology(dataFactory2, ontology);
 			// iog.fillOntology(outputOntologyManager, infOnt);
-			newaxioms = ontology.getAxioms();
+			newaxioms = ontology.getAxioms(true);
 			newaxioms.removeAll(previousaxioms);
 			}
 			
@@ -349,7 +353,7 @@ public class ClusterExplanationService {
 	
 	public String listClasses(){
 		String result = "";
-		Set<OWLClass> classes = ontology.getClassesInSignature();
+		Set<OWLClass> classes = ontology.getClassesInSignature(true); // <--- boolean indicates whether imports closure is considered
 		for (OWLClass cl : classes){
 			result += cl.asOWLClass().getIRI().getFragment() + "\n";
 		}
@@ -398,7 +402,7 @@ public class ClusterExplanationService {
 	public String listAllNumbers(){
 		System.out.println("list all numbers called");
 		String results = "";
-		Set<OWLAxiom>  axioms = ontology.getAxioms();
+		Set<OWLAxiom>  axioms = ontology.getAxioms(true);
 		Set<Long> donies = new HashSet<Long>();
 		for (OWLAxiom ax : axioms){
 			if (ax instanceof OWLDataPropertyAssertionAxiom){
@@ -425,7 +429,7 @@ public class ClusterExplanationService {
 	public String reportConfigs(){
 		JSONArray resultarray = new JSONArray();
 		String results = "";
-		Set<OWLAxiom>  axioms = ontology.getAxioms();
+		Set<OWLAxiom>  axioms = ontology.getAxioms(true);
 		axioms.addAll(inferredAxioms);
 		boolean middle = false;
 		
@@ -814,9 +818,9 @@ public class ClusterExplanationService {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
 		
-		OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#action1"));
-		OWLObjectProperty performsActivityProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#instr_name"));
-		OWLIndividual name_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + actionName));
+		OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#action1"));
+		OWLObjectProperty performsActivityProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_name"));
+		OWLIndividual name_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#" + actionName));
 		OWLObjectPropertyAssertionAxiom name_ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(performsActivityProp,new_indiv, name_indiv);
 		
 		System.out.println(" assuming " + name_ax);;
@@ -829,15 +833,15 @@ public class ClusterExplanationService {
 		for (Object ob : params){
 			String obString = (String) ob;
 			// System.out.println("obString " + obString);
-			OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#instr_arg" + counter));
-			OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + obString));
+			OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_arg" + counter));
+			OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#" + obString));
 			OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(argProp,new_indiv, target_indiv);
 			AddAxiom addAxiomAction2= new AddAxiom(ontology,ax);
 			manager.applyChange(addAxiomAction2);
 			counter++;
 			memory.add(ax);
 			
-			// System.out.println(" assuming " + ax);;
+			System.out.println(" assuming " + ax);;
 			
 		}
 		
@@ -922,6 +926,74 @@ public class ClusterExplanationService {
 		
 	}
 	
+	// {"getGermanLabels":["PSR18Li2","Hook"]}
+	
+	public String getGermanLabels(JSONObject ob){
+		JSONArray arr = ob.getJSONArray("getGermanLabels");
+		String result = "";
+		
+		/*
+		Set<OWLAxiom> axioms = ontology.getAxioms(true);
+		Set<OWLAnnotationAxiom> annotations = new HashSet<OWLAnnotationAxiom>();
+		for (OWLAxiom ax: axioms){
+			System.out.println(ax.getAnnotations());
+			
+			if (ax instanceof OWLAnnotationAxiom){
+				OWLAnnotationAxiom annotAx = (OWLAnnotationAxiom) ax;
+				Set<OWLAnnotation> annots = annotAx.getAnnotations();
+				for (OWLAnnotation annot : annots){
+					System.out.println(annot);
+					if (annot.getProperty().asOWLAnnotationProperty().isLabel())
+						annotations.add(annotAx);
+				}
+			}
+		}
+		System.out.println(">>Using " + annotations.size() + " annotation axioms<<");
+		*/
+		
+		Set<OWLClass> classes = ontology.getClassesInSignature(true);
+		
+		boolean needSep = false;
+		if (arr!=null){
+			for (Object obj : arr){
+				boolean foundLabel = false;
+				String label = obj.toString();
+				System.out.println(label);
+				for (OWLClass cl: classes){
+					if (cl.getIRI().getFragment().equals(obj.toString())){
+						String germanLabel = VerbalisationManager.INSTANCE.getLabel(cl,"de");
+						System.out.println(germanLabel);
+						
+						if (needSep)
+							result += ",";
+						needSep = true;
+						result += germanLabel;
+						foundLabel = true;
+						
+						break;
+					}
+				}
+				
+				if (!foundLabel)
+					result += ",";
+				/* 
+				for (OWLAnnotationAxiom annotAx : annotations){
+					if (annotAx.getAxiomWithoutAnnotations() instanceof OWLClassAssertionAxiom){
+						OWLClassAssertionAxiom classassertion = (OWLClassAssertionAxiom) annotAx;
+						if (classassertion.getClassExpression().asOWLClass().getIRI().getFragment().equals(label)){
+						Set<OWLAnnotation> annots = annotAx.getAnnotations();
+							for (OWLAnnotation annot : annots){
+									System.out.println(annot.getValue());
+								}
+							}
+						}
+				}
+				*/
+			}
+		}
+		return "[" +  result + "]";
+	} 
+	
 	public List<String> getMostSpecificDataValue(List<JSONObject> objects, List<List<String>> properties){
 		List<String> results = new ArrayList<String>();
 		List<OWLAxiom> memory = new ArrayList<OWLAxiom>();
@@ -929,6 +1001,8 @@ public class ClusterExplanationService {
 		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
 		
 		OWLOntology origin = ontology;
+		System.out.println("Ontology id : " + origin.getOntologyID());
+		System.out.println("Ontology axiom count : " + ontology.getAxiomCount(true));
 		
 		// big loop for actions
 		for (int index = 0; index<objects.size(); index++){
@@ -936,9 +1010,9 @@ public class ClusterExplanationService {
 			String actionName = obj.getString("name");
 			JSONArray params = (JSONArray) obj.get("actionParameter");
 		
-			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#action" + index));
-			OWLObjectProperty performsActivityProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#instr_name"));
-			OWLIndividual name_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + actionName));
+			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#action" + index));
+			OWLObjectProperty performsActivityProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_name"));
+			OWLIndividual name_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#" + actionName));
 			OWLObjectPropertyAssertionAxiom name_ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(performsActivityProp,new_indiv, name_indiv);
 			System.out.println(" assuming " + name_ax);;
 		
@@ -951,14 +1025,14 @@ public class ClusterExplanationService {
 			for (Object ob : params){
 				String obString = (String) ob;
 				// System.out.println("obString" + obString);
-				OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#instr_arg" + counter));
-				OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + obString));
+				OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_arg" + counter));
+				OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-domain#" + obString)); // <-- objects in the domain!
 				OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(argProp,new_indiv, target_indiv);
 				AddAxiom addAxiomAction2= new AddAxiom(origin,ax);
 				manager.applyChange(addAxiomAction2);
 				counter++;
 				memory.add(ax);
-				// System.out.println(" assuming " + ax);;
+				System.out.println(" assuming " + ax);;
 			}	
 		} // assumptions done, now comes the reasoning!
 		
@@ -967,7 +1041,7 @@ public class ClusterExplanationService {
 			System.out.println("create empty ontology");
 			OWLOntology infOnt = manager.createOntology();
 		
-		Set<OWLAxiom> previousaxioms = ontology.getAxioms();
+		Set<OWLAxiom> previousaxioms = ontology.getAxioms(true);
 		previousaxioms.addAll(inferredAxioms);
 		// System.out.println("Previous axioms " + previousaxioms.size());
 		
@@ -993,19 +1067,15 @@ public class ClusterExplanationService {
 		iog.fillOntology(dataFactory2, infOnt);
 		System.out.println("done filling");
 		// iog.fillOntology(outputOntologyManager, infOnt);
-		Set<OWLAxiom> newaxioms = infOnt.getAxioms();
+		Set<OWLAxiom> newaxioms = infOnt.getAxioms(true);
 		
 		newaxioms.removeAll(previousaxioms);
 		for (OWLAxiom ax : newaxioms){
 		System.out.println(ax);
 		}
 		
-		System.out.println("ontology contains " + ontology.getAxioms().size() + "axioms");
+		System.out.println("ontology contains " + ontology.getAxioms(true).size() + "axioms");
 		
-		for (OWLAxiom delax : memory){
-			RemoveAxiom removeAxiomAction= new RemoveAxiom(origin,delax);
-			manager.applyChange(removeAxiomAction);
-		}
 		
 		/*
 		for (OWLAxiom testaxiom : ontology.getAxioms()){
@@ -1017,15 +1087,18 @@ public class ClusterExplanationService {
 		
 		// big loop for actions
 		for (int index = 0; index<objects.size(); index++){
-			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#action" + index));
+			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#action" + index));
 			for (OWLAxiom axes : newaxioms){
 				if (axes instanceof OWLClassAssertionAxiom){
 					OWLClassAssertionAxiom cax = (OWLClassAssertionAxiom) axes;
 					if (cax.getClassExpression().isOWLThing())
 						continue;
-					if (!cax.getIndividual().equals(new_indiv))
+					if (!cax.getIndividual().equals(new_indiv)){
+						// System.out.println("skipping");	
 						continue;
-					//  System.out.println(reasoner.getSubClasses(cax.getClassExpression(),true));
+					}
+					System.out.println("considering : " + cax);
+					// System.out.println(reasoner.getSubClasses(cax.getClassExpression(),true));
 					if (reasoner.getSubClasses(cax.getClassExpression(),true).isBottomSingleton()){
 						// System.out.println("Now need to get stuff for " + cax.getClassExpression());
 					
@@ -1039,10 +1112,13 @@ public class ClusterExplanationService {
 								for (OWLAnnotationAssertionAxiom annot : annots){
 									results.add(annot.getValue().asLiteral().orNull().getLiteral());
 									headingFound = true;
+									System.out.println("heading found for " + cax.getClassExpression().asOWLClass());
 									break;
 								}
-								if (!headingFound)
+								if (!headingFound){
 									System.out.println("Searching for heading for instruction " + cax.getClassExpression().asOWLClass() + ", but none found!");
+									results.add(cax.getClassExpression().asOWLClass().toString());
+								}
 							}
 							boolean propFound = false;
 							for (OWLAxiom axprobe : ontology.getAxioms()){
@@ -1069,6 +1145,7 @@ public class ClusterExplanationService {
 							}
 							if (propFound == false && !property.equals("getHeading")){
 								System.out.println("Can't find property " + property + " for class " +cax.getClassExpression());
+								throw new RuntimeException();
 							}
 						}
 						// break;
@@ -1081,6 +1158,11 @@ public class ClusterExplanationService {
 		
 		} catch (Exception e){
 			System.out.println("ops, exception");
+		}
+		
+		for (OWLAxiom delax : memory){
+			RemoveAxiom removeAxiomAction= new RemoveAxiom(origin,delax);
+			manager.applyChange(removeAxiomAction);
 		}
 		
 		
@@ -1181,7 +1263,7 @@ public class ClusterExplanationService {
 		Set<OWLAxiom> filteredClassAssertionAxioms = new HashSet<OWLAxiom>();
 		Set<OWLAxiom> filteredObjectPropertyAssertionAxioms = new HashSet<OWLAxiom>();
 		Set<OWLAxiom> filteredDataPropertyAssertionAxioms = new HashSet<OWLAxiom>();
-		inferredAxioms.addAll(ontology.getAxioms());
+		inferredAxioms.addAll(ontology.getAxioms(true));
 		
 		// filter out trivial axioms: (top)(x), x subclassof top
 		for (OWLAxiom ax: inferredAxioms){
@@ -1464,7 +1546,7 @@ public class ClusterExplanationService {
 		}
 		
 		
-		System.out.println("[Sending " + filteredInferredAxioms.size() + " results]");
+		System.out.println("[(listInferredClassAssertions2) Sending " + filteredInferredAxioms.size() + " results]");
 		
 		for (OWLAxiom ax: filteredClassAssertionAxioms){
 			if (ax instanceof OWLClassAssertionAxiom){
@@ -1628,7 +1710,7 @@ public class ClusterExplanationService {
 		Set<OWLClass> concepts = ontology.getClassesInSignature();
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLDataFactory dataFactory=manager.getOWLDataFactory();
-		OWLClass materialsAndTools = dataFactory.getOWLClass(IRI.create("http://www.semanticweb.org/powertools#MaterialsAndTools"));
+		OWLClass materialsAndTools = dataFactory.getOWLClass(IRI.create("http://www.semanticweb.org/diy-instructions#MaterialsAndTools"));
 		System.out.println(materialsAndTools);
 		NodeSet<OWLClass> subclasses= reasoner.getSubClasses(materialsAndTools,false);
 		Set<OWLClass> allSubClasses = subclasses.getFlattened();
@@ -1657,7 +1739,7 @@ public String describeVisual(JSONObject input){
 	String result = "";
 	JSONArray resultArray = new JSONArray();
 	
-	Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature();
+	Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature(true);
 	
 	OWLNamedIndividual targetIndividual = null;
 	for (OWLNamedIndividual indiv: individuals){
@@ -1666,7 +1748,7 @@ public String describeVisual(JSONObject input){
 		}
 	}
 	
-	Set<OWLClass> classes  = ontology.getClassesInSignature();
+	Set<OWLClass> classes  = ontology.getClassesInSignature(true);
 	OWLClass targetClass = null;
 	for (OWLClass cls: classes){
 		if (cls.getIRI().getShortForm().equals(toBeDescribed)){
@@ -1686,12 +1768,12 @@ public String describeVisual(JSONObject input){
 			if (cas.getClassExpression().isAnonymous())
 				continue;
 			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
-			axioms.addAll(ontology.getAxioms(classToBeDescribed));
-			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed));
+			axioms.addAll(ontology.getAxioms(classToBeDescribed,true));
+			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed,true));
 		}
 		} else { // we are talking about a class
-			axioms.addAll(ontology.getAxioms(targetClass));
-			axioms.addAll(inferredOntology.getAxioms(targetClass));
+			axioms.addAll(ontology.getAxioms(targetClass,true));
+			axioms.addAll(inferredOntology.getAxioms(targetClass,true));
 		}
 	
 		// System.out.println("REACHED CODE");
@@ -1738,20 +1820,22 @@ public String describe(JSONObject input){
 	String result = "";
 	JSONArray resultArray = new JSONArray();
 	
-	Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature();
+	Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature(true);
 	
 	OWLNamedIndividual targetIndividual = null;
 	for (OWLNamedIndividual indiv: individuals){
 		if (indiv.getIRI().getShortForm().equals(toBeDescribed)){
 			targetIndividual = indiv;
+			System.out.println("identified target individual: " + targetIndividual);
 		}
 	}
 	
-	Set<OWLClass> classes  = ontology.getClassesInSignature();
+	Set<OWLClass> classes  = ontology.getClassesInSignature(true);
 	OWLClass targetClass = null;
 	for (OWLClass cls: classes){
 		if (cls.getIRI().getShortForm().equals(toBeDescribed)){
 			targetClass = cls;
+			System.out.println("identified target class: " + targetClass);
 		}
 	}
 	
@@ -1760,18 +1844,27 @@ public String describe(JSONObject input){
 		Set<OWLClassAxiom> axioms = null;
 		
 		if (targetIndividual!=null){
-		Set<OWLClassAssertionAxiom> classAssertionAxioms = ontology.getClassAssertionAxioms(targetIndividual);
+			
+		Set<OWLOntology> closure = ontology.getImportsClosure();	
+		Set<OWLClassAssertionAxiom> classAssertionAxioms = new HashSet<OWLClassAssertionAxiom>();
+		for (OWLOntology on : closure){	
+			classAssertionAxioms.addAll(on.getClassAssertionAxioms(targetIndividual));
+		}
+		
+		
+		// Stream<OWLClassAssertionAxiom> classAssertionAxioms = ontology.classAssertionAxioms(targetIndividual);
+		System.out.println("Got " + classAssertionAxioms.size() + " class assertion axioms.");
 		// classAssertionAxioms.addAll(inferredOntology.getClassAssertionAxioms(targetIndividual));
 		for (OWLClassAssertionAxiom cas : classAssertionAxioms){
 			if (cas.getClassExpression().isAnonymous())
 				continue;
 			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
-			axioms = ontology.getAxioms(classToBeDescribed);
-			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed));
+			axioms = ontology.getAxioms(classToBeDescribed,true);
+			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed,true));
 		}
 		} else {
-			axioms = ontology.getAxioms(targetClass);
-			axioms.addAll(inferredOntology.getAxioms(targetClass));
+			axioms = ontology.getAxioms(targetClass,true);
+			axioms.addAll(inferredOntology.getAxioms(targetClass,true));
 		}
 			
 		Set<OWLClassAxiom> simpleSubsumptions = new HashSet<OWLClassAxiom>();
@@ -1875,9 +1968,9 @@ public String elaborate(JSONObject input){
 	OWLDataFactory dataFactory2=manager.getOWLDataFactory();
 	for (String key : keys){
 		if (key.equals("elaborate")){
-			OWLObjectProperty performsActivityProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/powertools#performsActivity"));
-			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#event"));
-			OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + input.get(key)));
+			OWLObjectProperty performsActivityProp = dataFactory2.getOWLObjectProperty(IRI.create("http://www.semanticweb.org/diy-domain#performsActivity"));
+			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-domain#event"));
+			OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-domain#" + input.get(key)));
 			OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(performsActivityProp,new_indiv, target_indiv);
 			AddAxiom addAxiomAction= new AddAxiom(ontology,ax);
 			manager.applyChange(addAxiomAction);
@@ -1908,8 +2001,8 @@ public String elaborate(JSONObject input){
 				}
 			}
 			
-			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#event"));
-			OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/powertools#" + input.get(key)));
+			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-instructions#event"));
+			OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-instructions#" + input.get(key)));
 			OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(targetObjectProperty,new_indiv, target_indiv);
 			AddAxiom addAxiomAction= new AddAxiom(ontology,ax);
 			manager.applyChange(addAxiomAction);
@@ -2030,6 +2123,14 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  		return result;
 	  	}
 	  	
+	  	if (inputObject.has("getGermanLabels")){
+   			
+   			System.out.println("++ calling ++ :  getGermanLabels");
+   			
+			String result = getGermanLabels(inputObject);	
+			printstream.println(result);
+			return result;
+	  	}
 	  	
 	  	 
 	  	 if (inputObject.has("query")){
@@ -2162,7 +2263,9 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 				return output;
 		}
    		if (command.contains("listClassAssertions2")){
-			String ontname;
+   			System.out.println("++ calling ++ :  listClassAssertions2 ");
+   			
+   			String ontname;
 			if (inputObject.has("ontologyName"))
 				ontname = 	inputObject.getString("ontologyName");
 			else
@@ -2172,6 +2275,9 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 			return output;
 	}
    		if (command.contains("listClassAssertions")){
+   			
+   			System.out.println("++ calling ++ :  listClassAssertions ");
+   			
 			String ontname;
 			if (inputObject.has("ontologyName"))
 				ontname = 	inputObject.getString("ontologyName");
@@ -2182,12 +2288,19 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 			return output;
 	}
    		if (command.contains("listClassesBraced")){
+   			
+   			System.out.println("++ calling ++ :  listClassesBraced ");
+   			
 			output = listClasses();	
 			printstream.println("{" + output + "}");
 			return output;
 	}
    		
+   		
    		if (command.contains("listClassesPanda")){
+   			
+   			System.out.println("++ calling ++ :  listClassesPanda ");
+   			
 			output = listClassesPanda();	
 			printstream.println("{" + output + "}");
 			return output;
