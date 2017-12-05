@@ -209,16 +209,156 @@ public class ClusterExplanationService {
 		return out;
 	}
 	
+	public Set<OWLAxiom> inferAxioms(OWLOntology ontology){
+		System.out.println("Axiom count " + ontology.getAxiomCount());
+		
+	    
+		// List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+		// gens.add(new InferredSubClassAxiomGenerator());
+		
+	    // Put the inferred axioms into a fresh empty ontology.
+		Set<OWLAxiom> previousaxioms = ontology.getAxioms();
+		// System.out.println("Previous axioms " + previousaxioms.size());
+		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
+		try {
+			OWLOntology newontology = manager.createOntology();
+		
+		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
+		iog.fillOntology(dataFactory2, newontology);
+		// iog.fillOntology(outputOntologyManager, infOnt);
+		newaxioms = newontology.getAxioms();
+		System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
+		
+		newaxioms.removeAll(previousaxioms);
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	
+		
+		return newaxioms;
+}
+
+public void precomputeAxioms(){
+	Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
+	Set<OWLAxiom> previousaxioms = new HashSet<OWLAxiom>();
+	if (inferredAxioms.size()>0){
+		System.out.println("[Using cached axioms]");
+		newaxioms = inferredAxioms;
+	} else{
+	
+// OWLReasonerFactory reasonerFactory2 = new JFactFactory();
+// SimpleConfiguration configuration = new SimpleConfiguration(50000);
+// System.out.println("Ontology " + ontology);;
+// OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology);
+// List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+// gens.add(new InferredSubClassAxiomGenerator());
+ 
+// Put the inferred axioms into a fresh empty ontology.
+OWLOntologyManager outputOntologyManager = OWLManager.createOWLOntologyManager();
+
+
+try {
+	OWLOntology infOnt = outputOntologyManager.createOntology();
+
+previousaxioms = ontology.getAxioms();
+// System.out.println("Previous axioms " + previousaxioms.size());
+InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+
+
+OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+OWLDataFactory dataFactory2=manager.getOWLDataFactory();
+iog.fillOntology(dataFactory2, infOnt);
+// iog.fillOntology(outputOntologyManager, infOnt);
+newaxioms = infOnt.getAxioms();
+inferredOntology = infOnt;
+} catch (OWLOntologyCreationException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+newaxioms.removeAll(previousaxioms);
+}
+
+System.out.println("[Newly inferred axioms: " + newaxioms.size() + "]");
+
+inferredAxioms = newaxioms;
+}
+
+public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
+	System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
+	System.out.println("[Retrieving list of superclasses]");
+		// find classname
+		String ontologyname =ontologynameinput.replaceAll("\"", "");
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		String result = "";
+		try {
+			
+			if (ontology==null){
+							
+				java.io.File file = new java.io.File(ontologyname);
+				FileDocumentSource source = new FileDocumentSource(file);
+				OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
+				loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+				loaderconfig = loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
+							
+			
+			ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
+			System.out.println("[Done loading ontology]");
+			} else{ 
+				System.out.println("[Using preloaded ontology]");
+				}
+			
+		Set<OWLAxiom> newaxioms;
+		Set<OWLAxiom> previousaxioms = new HashSet<OWLAxiom>();
+			
+			if (inferredAxioms.size()>0){
+				System.out.println("[Using cached axioms]");
+				newaxioms = inferredAxioms;
+			} else{
+		 
+	    // Put the inferred axioms into a fresh empty ontology.
+	    OWLOntologyManager outputOntologyManager = OWLManager.createOWLOntologyManager();
+		OWLOntology infOnt = outputOntologyManager.createOntology();
+		previousaxioms = ontology.getAxioms();
+		// System.out.println("Previous axioms " + previousaxioms.size());
+		
+
+		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+		
+		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
+		iog.fillOntology(dataFactory2, ontology);
+		// iog.fillOntology(outputOntologyManager, infOnt);
+		newaxioms = ontology.getAxioms(true);
+		newaxioms.removeAll(previousaxioms);
+		}
+		
+		System.out.println("[Newly inferred axioms: " + newaxioms.size() + "]");
+		
+		inferredAxioms = newaxioms;
+		System.out.println("[Inferred axioms cached: " + inferredAxioms.size()+ "]");
+			
+		HashSet<OWLClassExpression> superclasses = new HashSet<OWLClassExpression>();
+			} catch (Exception e){
+				e.printStackTrace();
+			}
+		System.out.println("Returning list: " + result);
+	return inferredAxioms;
+	
+}
+
+	
+	
+/*	
+
 	public Set<OWLAxiom> inferAxioms(OWLOntology ontology){
 			System.out.println("Axiom count " + ontology.getAxiomCount());
 			
-		    
-			// List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
-			// gens.add(new InferredSubClassAxiomGenerator());
-			
 		    // Put the inferred axioms into a fresh empty ontology.
-			Set<OWLAxiom> previousaxioms = ontology.getAxioms();
+			Set<OWLAxiom> previousaxioms = ontology.getAxioms(true);
 			// System.out.println("Previous axioms " + previousaxioms.size());
 			InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -229,7 +369,7 @@ public class ClusterExplanationService {
 			OWLDataFactory dataFactory2=manager.getOWLDataFactory();
 			iog.fillOntology(dataFactory2, newontology);
 			// iog.fillOntology(outputOntologyManager, infOnt);
-			newaxioms = newontology.getAxioms();
+			newaxioms = newontology.getAxioms(true);
 			System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
 			
 			newaxioms.removeAll(previousaxioms);
@@ -265,7 +405,7 @@ public class ClusterExplanationService {
     try {
 		OWLOntology infOnt = outputOntologyManager.createOntology();
 	
-	previousaxioms = ontology.getAxioms();
+	previousaxioms = ontology.getAxioms(); //<--- include imports closure
 	// System.out.println("Previous axioms " + previousaxioms.size());
 	InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 	
@@ -274,13 +414,13 @@ public class ClusterExplanationService {
 	OWLDataFactory dataFactory2=manager.getOWLDataFactory();
 	iog.fillOntology(dataFactory2, infOnt);
 	// iog.fillOntology(outputOntologyManager, infOnt);
-	newaxioms = infOnt.getAxioms();
+	newaxioms = infOnt.getAxioms(true);
 	inferredOntology = infOnt;
 	} catch (OWLOntologyCreationException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	newaxioms.removeAll(previousaxioms);
+	// newaxioms.removeAll(previousaxioms);
 	}
 	
 	System.out.println("[Newly inferred axioms: " + newaxioms.size() + "]");
@@ -350,6 +490,8 @@ public class ClusterExplanationService {
 		return inferredAxioms;
 		
 	}
+	
+	*/
 	
 	public String listClasses(){
 		String result = "";
@@ -1841,7 +1983,7 @@ public String describe(JSONObject input){
 	
 	if (targetIndividual !=null || targetClass !=null){
 		
-		Set<OWLClassAxiom> axioms = null;
+		Set<OWLClassAxiom> axioms = new HashSet<OWLClassAxiom>();
 		
 		if (targetIndividual!=null){
 			
@@ -1859,8 +2001,15 @@ public String describe(JSONObject input){
 			if (cas.getClassExpression().isAnonymous())
 				continue;
 			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
-			axioms = ontology.getAxioms(classToBeDescribed,true);
+			
+			// only use most specific class!!!
+			if (reasoner.getSubClasses(cas.getClassExpression(),true).isBottomSingleton()){
+			
+			System.out.println("class to be described " + classToBeDescribed);
+			axioms.addAll(ontology.getAxioms(classToBeDescribed,true));
+			System.out.println("axioms for this class " + ontology.getAxioms(classToBeDescribed,true));
 			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed,true));
+			}
 		}
 		} else {
 			axioms = ontology.getAxioms(targetClass,true);
@@ -1876,7 +2025,7 @@ public String describe(JSONObject input){
 			for (OWLClassAxiom ax : axioms){
 				if (ax instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom) ax).getSuperClass().isClassExpressionLiteral())
 				{
-					// System.out.println("Simple: " + ax);
+					System.out.println("Simple: " + ax);
 					simpleSubsumptions.add(ax);
 				}
 				else {
@@ -1885,11 +2034,11 @@ public String describe(JSONObject input){
 							&& VerbalisationManager.textualise(ax).toJSON().toString().contains("eignet")
 							// &&  ((OWLObjectSomeValuesFrom) ((OWLSubClassOfAxiom) ax).getSuperClass()).getProperty().toString().contains("isSuitedFor")
 							){
-						// System.out.println("Useage: " + ax);
+						System.out.println("Useage: " + ax);
 						usageSubsumptions.add(ax);
 					}
 					else {
-						// System.out.println("Other: " + ax);
+						System.out.println("Other: " + ax);
 						// System.out.println(VerbalisationManager.textualise(ax).toJSON().toString());
 						otherSubsumptions.add(ax);
 					}

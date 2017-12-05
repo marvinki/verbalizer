@@ -1539,6 +1539,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		List<List<TextElement>> fillerelements = new ArrayList<List<TextElement>>();
 		List<TextElement> middle = new ArrayList<TextElement>();
 		middle.add(new LogicElement(arg0.getValue().getLiteral()));
+		System.out.println(" middle! " + middle.toString());
 		result = VerbalisationManager.textualiseDataPropertyAsSentence(arg0.getProperty(),fillerelements,middle);
 		// result.addToSubject(arg0.getProperty().accept(this).toTextElementSequence());
 		// System.out.println(result.inspect());

@@ -237,10 +237,11 @@ public enum VerbalisationManager {
 	public String getPropertyNLString(OWLObjectPropertyExpression property) {
 		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN)){
 			if (getLabel(property.asOWLObjectProperty(),"de")!=null)
+				System.out.println("VerbalisationManager returning property : " + getLabel(property.asOWLObjectProperty(),"de"));
 				return getLabel(property.asOWLObjectProperty(),"de");
 		}
 		OWLProperty namedproperty = property.getNamedProperty();
-		// System.out.println("DEBUG - named : " + namedproperty);
+		System.out.println("DEBUG - named : " + namedproperty);
 		String str = "";
 		if (namedproperty != null) {
 			if (this.ontology == null) { // if no ontology is provided, simply
@@ -619,6 +620,7 @@ public enum VerbalisationManager {
 		}
 
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(property);
+		System.out.println("propstring " + propstring);
 		// check case where string contains a pattern.
 		if (propstring.indexOf("[X]") >= 0) {
 			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
@@ -660,7 +662,8 @@ public enum VerbalisationManager {
 		}
 		// result +=
 		// VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
-
+System.out.println("textualiseDataPropertyAsSentence returns " + result);
+		
 		return result; // .getSentence();
 	}
 	
@@ -834,9 +837,11 @@ public enum VerbalisationManager {
 	 */
 	
 	public String getLabel(OWLEntity obj, String lang){
+		System.out.println("called getLabel for " + obj + " lang " + lang);
 		String label = "";
 		Set<OWLAnnotation> annotations = collectAnnotations(obj);
 		for (OWLAnnotation annotation : annotations) {
+			System.out.println("annotation : " + annotation);
 			if (annotation.getProperty().getIRI().getFragment().equals("label") && annotation.getValue().asLiteral().orNull().hasLang(lang)
 					) {
 				label = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString()
@@ -880,7 +885,7 @@ public enum VerbalisationManager {
 	public Set<OWLAnnotation> collectAnnotations(OWLEntity entity){
 		Set<OWLAnnotation> annotations = new HashSet<OWLAnnotation>();
 		if (this.ontology != null) {
-			Set<OWLOntology> imported = ontology.getImports();
+			Set<OWLOntology> imported = ontology.getImportsClosure();
 			/*
 			 * Stream<OWLAnnotationAssertionAxiom> aaa =
 			 * EntitySearcher.getAnnotationAssertionAxioms(classname,

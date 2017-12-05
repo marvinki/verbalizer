@@ -229,6 +229,9 @@ public class StringServer {
 				reasonerFactory = new JFactFactory();
 				SimpleConfiguration configuration = new SimpleConfiguration(50000);
 				reasoner = reasonerFactory.createReasoner(ontology, configuration);
+				
+				
+				
 				//reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 				// reasoner.precomputeInferences();
 			} catch (Exception e) {
