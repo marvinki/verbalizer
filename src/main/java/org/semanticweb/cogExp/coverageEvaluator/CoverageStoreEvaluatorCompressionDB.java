@@ -89,6 +89,7 @@ import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
+import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 import org.slf4j.LoggerFactory;
 
 // import ch.qos.logback.classic.Level;
@@ -2090,7 +2091,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 	
 	public static OWLAxiom parseAxiomFunctional(String str, OWLOntology ont){
 		
-		//System.out.println("Trying to parse: " + str);
+		System.out.println("Trying to parse: " + str);
 		
 		// OWLFunctionalSyntaxOWLParserFactory parserFactory = new OWLFunctionalSyntaxOWLParserFactory();
 		OWLFunctionalSyntaxOWLParser parser = OWLAPIManagerManager.INSTANCE.getFunctionalSyntaxParser();
@@ -2101,6 +2102,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 		str = "Ontology(" + str + ")";
 		
 		
+		
 		// System.out.println("Trying to parse: " + str);
 		
 		InputStream in = new ByteArrayInputStream(str.getBytes());
@@ -2109,7 +2111,8 @@ public class CoverageStoreEvaluatorCompressionDB {
 		// OWLOntologyDocumentSource toBeParsed = new OWLOntologyDocumentSource();
 		
 		OWLOntologyManager manager = OWLAPIManagerManager.INSTANCE.getOntologyManager();
-		
+		// PrefixOWLOntologyFormat pm = (PrefixOWLOntologyFormat) manager.getOntologyFormat(tmpOntology);
+		// pm.setPrefix("obo", "http://purl.obolibrary.org/obo");
 		
 		OWLAxiom a = null;
 		
@@ -2597,6 +2600,25 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    				continue;
 	    				}
 	    		}
+	    		
+	    		if (justs.size()>10){ // very long justifications cannot be shown in experiment. Ignore and code them as "failed with timelimit of 1 ms"
+	    			DatabaseManager.INSTANCE.insertBioExplanation(
+    					subAx.getSubClass().toString().replaceAll("'", "\\\\'"), 
+    					subAx.getSuperClass().toString().replaceAll("'", "\\\\'"), 
+    					ontologyid,
+    					"bio", 
+    					false, 
+    					"", 
+    					"", 
+    					"", 
+    					0, 
+    					0, 
+    					0, 
+    					1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+			continue;	
+	    		}
+	    		
+	    		
     			
     			Set<OWLObject> justs2 = new HashSet<OWLObject>();
     			for (OWLAxiom axi : justs){
