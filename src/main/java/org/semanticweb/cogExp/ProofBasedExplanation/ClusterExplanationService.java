@@ -58,6 +58,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -79,9 +80,17 @@ import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredDataPropertyCharacteristicAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredEquivalentDataPropertiesAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredInverseObjectPropertiesAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredObjectPropertyAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredObjectPropertyCharacteristicAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredSubDataPropertyAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredSubObjectPropertyAxiomGenerator;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -209,6 +218,73 @@ public class ClusterExplanationService {
 		return out;
 	}
 	
+	/*
+	public Set<OWLAxiom> inferAxioms(OWLOntology ontology){
+		System.out.println("Axiom count " + ontology.getAxiomCount());
+		
+	    
+		// List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+		// gens.add(new InferredSubClassAxiomGenerator());
+		
+	    // Put the inferred axioms into a fresh empty ontology.
+		Set<OWLAxiom> previousaxioms = ontology.getAxioms();
+		// System.out.println("Previous axioms " + previousaxioms.size());
+		
+		
+		 List<InferredAxiomGenerator<? extends OWLAxiom>> generators=new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+	        generators.add(new InferredSubClassAxiomGenerator());
+	        generators.add(new InferredClassAssertionAxiomGenerator());
+	        generators.add(new InferredDataPropertyCharacteristicAxiomGenerator());
+	        generators.add(new InferredEquivalentClassAxiomGenerator());
+	        generators.add(new InferredEquivalentDataPropertiesAxiomGenerator());
+	        generators.add(new InferredEquivalentObjectPropertyAxiomGenerator());
+	        generators.add(new InferredInverseObjectPropertiesAxiomGenerator());
+	        generators.add(new InferredObjectPropertyCharacteristicAxiomGenerator());
+	        generators.add(new org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator());
+
+	        generators.add(new InferredSubClassAxiomGenerator());
+	        generators.add(new InferredSubDataPropertyAxiomGenerator());
+	        generators.add(new InferredSubObjectPropertyAxiomGenerator());
+	        
+	       // InferredObjectPropertyAxiomGenerator<OWLObjectPropertyAxiom> testSubject0 = new InferredObjectPropertyAxiomGenerator<OWLObjectPropertyAxiom>();
+	        
+	        // InferredObjectPropertyAxiomGenerator generator1 = new InferredObjectPropertyAxiomGenerator<OWLObjectPropertyAxiom>();
+	       //  generators.add(generator1);
+
+
+			// InferredObjectPropertyAxiomGenerator generator = new InferredObjectPropertyAxiomGenerator();
+			// generator.createAxioms(owldatafactory, reasoner);
+
+
+		
+		// InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner,generators);
+		
+		
+		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
+		try {
+			OWLOntology newontology = manager.createOntology();
+		
+		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
+		iog.fillOntology(dataFactory2, newontology);
+		// iog.fillOntology(outputOntologyManager, infOnt);
+		newaxioms = newontology.getAxioms();
+		System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
+		
+		newaxioms.removeAll(previousaxioms);
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	
+		
+		return newaxioms;
+}
+*/
+
 	public Set<OWLAxiom> inferAxioms(OWLOntology ontology){
 		System.out.println("Axiom count " + ontology.getAxiomCount());
 		
@@ -240,7 +316,8 @@ public class ClusterExplanationService {
 	
 		
 		return newaxioms;
-}
+}	
+	
 
 public void precomputeAxioms(){
 	Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
