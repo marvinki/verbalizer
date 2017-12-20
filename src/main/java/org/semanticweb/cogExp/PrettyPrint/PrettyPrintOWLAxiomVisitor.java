@@ -151,8 +151,17 @@ public String visit(OWLObjectPropertyDomainAxiom arg0) {
 }
 
 public String visit(OWLEquivalentObjectPropertiesAxiom arg0) {
-	// TODO Auto-generated method stub
-	return null;
+	String res = "equivProps(";
+	boolean needsep = false;
+	Set<OWLObjectPropertyExpression> props = arg0.getProperties();
+	for (OWLObjectPropertyExpression exp : props){
+		if (needsep){
+			res = res + ",";
+			needsep = true;
+		}
+		res = res + exp.accept(ppPropertyExpressionVisit);
+	}
+	return res + ")";
 }
 
 public String visit(OWLNegativeDataPropertyAssertionAxiom arg0) {
