@@ -839,7 +839,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	}
 	
 	public Sentence visit(OWLEquivalentClassesAxiom arg0) {
-		System.out.println("sentence visitor for equiv called");
+		// System.out.println("sentence visitor for equiv called");
 		Sentence result = new Sentence();
 		// List<TextElement> result = new ArrayList<TextElement>();
 		OWLClass classexp = null;
@@ -880,7 +880,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 							Sentence recSentence2 = ex.accept(this);
 							result.setObjekt(recSentence2);
 								
-							System.out.println("result:  " + result.inspect());
+							//  System.out.println("result:  " + result.inspect());
 					}
 				}
 			}
