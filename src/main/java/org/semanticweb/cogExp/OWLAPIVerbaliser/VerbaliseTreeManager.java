@@ -350,6 +350,9 @@ public enum VerbaliseTreeManager {
 			Object before_previousconclusion,
 			Obfuscator obfuscator
 			){
+		
+		// System.out.println("textualiseStatementNL called. Locale: " + locale);
+		
 		// if (additions_to_antecedent==null){
 		// 	System.out.println("null addition to antecedent");}
 		// else
@@ -359,6 +362,7 @@ public enum VerbaliseTreeManager {
 		TextElementSequence aSeq = new TextElementSequence();
 		
 			if(locale == Locale.ENGLISH){
+				// System.out.println("locale-is-English case.");
 				//check
 				if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) && premiseformulas.contains(previousconclusion)){
 					OWLEquivalentClassesAxiom equivpremise;
@@ -501,13 +505,16 @@ public enum VerbaliseTreeManager {
 					// System.out.println(previousconclusion);
 					// System.out.println(before_previousconclusion);
 					// System.out.println(premiseformulas);
+					// System.out.println("{{{{{{");
 					if(premiseformulas.contains(previousconclusion)
 						&& 	premiseformulas.contains(before_previousconclusion) || premiseformulas.size()==2 // this is unlike in the paper!
 							){
 						OWLObject addition = (OWLObject) additions_to_antecedent.get(0);
 						TextElementSequence seq = new TextElementSequence();
 						seq.add(new LogicElement(LogicLabels.getString("thus")));
+						// System.out.println(">" +  LogicLabels.getString("thus") +  "<" );
 						seq.concat(VerbalisationManager.textualise(addition,obfuscator));
+						// System.out.println("[[[[[" + seq.toString());
 						return seq;
 						//return  "Therefore, " + VerbalisationManager.verbalise(addition);
 								// makeUppercaseStart(VerbalisationManager.verbalise(addition));
@@ -525,6 +532,7 @@ public enum VerbaliseTreeManager {
 							TextElementSequence seq = new TextElementSequence();
 							seq.add(new LogicElement(LogicLabels.getString("furthermoreSince")));
 							seq.concat(VerbalisationManager.textualise(addition,obfuscator));
+							// System.out.println("]]]]" + seq.toString());
 							return seq;
 							// return "Furthermore, since " + VerbalisationManager.verbalise(prem) + ", " + VerbalisationManager.verbalise(addition);
 						}
@@ -609,7 +617,7 @@ public enum VerbaliseTreeManager {
 					return seq;
 				}
 				if (rule.equals(AdditionalDLRules.EQUIVEXTRACT) && !laconicDefs){
-					System.out.println("EQUIVEXTRACT APPLICATION");
+					// System.out.println("EQUIVEXTRACT APPLICATION");
 					OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
 					TextElementSequence firstpart = VerbalisationManager.textualise(premiseformula,obfuscator);
 					firstpart.makeUppercaseStart();
@@ -922,6 +930,7 @@ public enum VerbaliseTreeManager {
 					}
 				}
 				if (rule.equals(AdditionalDLRules.SUBCLCHAIN)){
+					// System.out.println("SUBCLCHAIN!!!!");
 					TextElementSequence seq = new TextElementSequence();
 					boolean firstprem = true;
 					boolean innerprem = false;
@@ -951,7 +960,7 @@ public enum VerbaliseTreeManager {
 				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && !premiseformulas.contains(previousconclusion) &&  premiseformulas.size()==2){
 					
-					System.out.println("Case Rule 12 (3)");
+					// System.out.println("Case Rule 12 (3)");
 					OWLSubClassOfAxiom subcl = (OWLSubClassOfAxiom) additions_to_antecedent.get(0); 
 					OWLClassExpression superclass = subcl.getSuperClass();
 					OWLClassExpression subclass = subcl.getSubClass();
@@ -1101,7 +1110,7 @@ public enum VerbaliseTreeManager {
 		}
 			
 		if(locale == Locale.GERMAN){
-			
+			// System.out.println("locale-is-German case.");
 			if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) && premiseformulas.contains(previousconclusion)){
 				OWLEquivalentClassesAxiom equivpremise;
 				OWLSubClassOfAxiom subclpremise;
@@ -1183,8 +1192,8 @@ public enum VerbaliseTreeManager {
 					prem1 = (OWLClassAssertionAxiom) premiseformulas.get(1);
 					prem2 = (OWLSubClassOfAxiom) premiseformulas.get(0);
 				}
-				System.out.println(prem1);
-				System.out.println(prem2);
+				// System.out.println(prem1);
+				// System.out.println(prem2);
 				// premiseformulas.get(0)
 				// get only axiom that has been added
 				// OWLSubClassOfAxiom addition = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
@@ -1220,7 +1229,7 @@ public enum VerbaliseTreeManager {
 				return seq;
 			}
 			if (rule.equals(AdditionalDLRules.SUBCLCHAIN)){
-				System.out.println(" premiseformulas -- " + premiseformulas);
+				// System.out.println(" premiseformulas -- " + premiseformulas);
 				OWLClassAssertionAxiom conclusion =  (OWLClassAssertionAxiom) additions_to_antecedent.get(0);
 				TextElementSequence seq = new TextElementSequence();
 				// seq.add(new LogicElement(LogicLabels.getString("INDIVIDUAL")));
@@ -1239,8 +1248,8 @@ public enum VerbaliseTreeManager {
 					prem2 = (OWLClassAssertionAxiom) premiseformulas.get(1);
 					prem1 = (OWLObjectPropertyAssertionAxiom) premiseformulas.get(0);
 				}
-				System.out.println(prem1);
-				System.out.println(prem2);
+				// System.out.println(prem1);
+				// System.out.println(prem2);
 				TextElementSequence seq = new TextElementSequence();
 				seq.add(new LogicElement(LogicLabels.getString("Since")));
 				seq.concat(VerbalisationManager.textualise(prem1,obfuscator));
@@ -1361,7 +1370,7 @@ public enum VerbaliseTreeManager {
 					seq.add(conclusionMarker);
 					if(debug) seq.add(new LogicElement("-6-"));
 			
-					
+					// System.out.println("RULE5!!!!!!!!:  " + seq.toString());
 					return seq;
 				
 				} else {
@@ -1380,6 +1389,7 @@ public enum VerbaliseTreeManager {
 						ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(addition,obfuscator));
 						seq.add(conclusionMarker);
 						if(debug) seq.add(new LogicElement("-7-"));
+						// System.out.println("RULE5++++++++:  " + seq.toString());
 						return seq;
 					}
 					
@@ -1397,6 +1407,7 @@ public enum VerbaliseTreeManager {
 				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(addition,obfuscator));
 				seq.add(conclusionMarker);
 				if(debug) seq.add(new LogicElement("-8-"));
+				// System.out.println("RULE5======:  " + seq.toString());
 				return seq;
 				}
 			}
@@ -1960,6 +1971,8 @@ public enum VerbaliseTreeManager {
 	
 	public static void setLocale(Locale alocale) {
 		VerbaliseTreeManager.locale = alocale;
+		// System.out.println("setting locale...");
+		LogicLabels =  ResourceBundle.getBundle("LogicLabels", locale);
 	}
 
 
