@@ -1339,11 +1339,11 @@ public enum VerbaliseTreeManager {
 				
 				seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("itFollowsThat")));
 				
-				OWLSubClassOfAxiom conclusion =  (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
+				OWLSubClassOfAxiom conclusion2 =  (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
 				// System.out.println(VerbalisationManager.textualise(conclusion,obfuscator));
 				
 				// seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("INDIVIDUAL")));
-				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(conclusion,obfuscator).getTextElements());
+				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(conclusion2,obfuscator).getTextElements());
 				// seq.concat(VerbalisationManager.textualise(addition,obfuscator));
 				seq.add(conclusionMarker);
 				return seq;

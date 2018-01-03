@@ -1358,7 +1358,9 @@ public class CoverageStoreEvaluatorCompressionDB {
 				List<String> verbs = stats.getVerbalizations(); 
 				 int j = 0;
 				 */
+				 System.out.println("before getNoSteps ");
 				 List<Integer> noSteps = stats.getNoSteps();
+				 System.out.println("after: getNoSteps ");
 				 List<Integer> noStepsVerb = stats.getNoVerbalizedSteps();
 				 List<Integer> noNoncompressedSteps = stats.getNoNoncompressedSteps();
 				 List<Integer> noNoncompressedCalculatedSteps = stats.getNoNoncompressedCalculatedSteps();
@@ -2529,6 +2531,8 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 			
 			int counting = 0;
 			int counter;
+			int unioncounter = 0;
+			int ohvcounter = 0;
 			for (OWLAxiom ax : axioms){
 				long starttime_proofsearch = System.currentTimeMillis();
     			long endtime_proofsearch = System.currentTimeMillis();
@@ -2537,6 +2541,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 				counter = counting;
 				counting++;
 				OWLSubClassOfAxiom subAx = (OWLSubClassOfAxiom ) ax;
+			
 				
 				/* 
 				OWLSubClassOfAxiom axSub = (OWLSubClassOfAxiom) ax;
@@ -2582,6 +2587,27 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     				if (DatabaseManager.INSTANCE.getTime(queryResult) >= timelimit1 * 1000){
     					System.out.println("Timeout in DB: " + subAx);
     					System.out.println("had timed out before at: " + DatabaseManager.INSTANCE.getTime(queryResult)  + "ms" );
+    					
+    					// show what we have been dealing with:
+    					List<OWLAxiom> justs = justifications.get(counter);
+    					boolean containsUnion = false;
+    					boolean containsObjectHasValue = false;
+    					for (OWLAxiom jus : justs){
+    						if (!containsUnion)
+    							containsUnion = jus.toString().contains("Union");
+    						if (!containsObjectHasValue)
+    							containsObjectHasValue = jus.toString().contains("ObjectHasValue");
+    						System.out.println("containsUnion: " + containsUnion);
+    						System.out.println("containsObjectHasValue: " + containsObjectHasValue);
+    						System.out.println("jus: " + jus);
+    					}
+    					if (containsUnion)
+    						unioncounter++;
+    					System.out.println("unioncounter " + unioncounter);
+    					if (containsObjectHasValue)
+    						ohvcounter++;
+    					System.out.println("unioncounter " + ohvcounter);
+    					
     					continue;
     				}
     			}
@@ -2766,9 +2792,9 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     				for (OWLAxiom ax2 : justifications.get(counter)) {
     					System.out.println("DEBUG --- Trying to add " + ax2);
     					justificationFormulas.add(ConversionManager.fromOWLAPI(ax2));
-    					System.out.println("Adding axiom: " +
-    					  ConversionManager.fromOWLAPI(ax2).prettyPrint());
-    					System.out.println(ax2);
+    					// System.out.println("Adding axiom: " +
+    					//   ConversionManager.fromOWLAPI(ax2).prettyPrint());
+    					// System.out.println(ax2);
     				}
     			} catch (Exception e) {
     				return null;
@@ -3031,6 +3057,8 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 		    	}
 		    }
 			
+		    System.out.println("generating statistic with noStepsList " + noStepsList.toString());
+		    
 			 Statistic resultStatistic = new Statistic(ontologyid, nontrivCounter, 
 			    		verbalizedSubsumptionCounter, timedoutCounter, intAvg, // intAvg, 
 			    		avgJustTime,
