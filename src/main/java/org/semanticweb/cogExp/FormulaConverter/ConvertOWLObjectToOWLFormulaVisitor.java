@@ -333,6 +333,7 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 		for (OWLObjectPropertyExpression exp : exprs){
 			tail.add(exp.accept(this));
 		}
+		System.out.println("conversion returning: " + new OWLFormula(OWLSymb.EQUIVOBJPROP,tail));
 		return new OWLFormula(OWLSymb.EQUIVOBJPROP,tail);
 	}
 

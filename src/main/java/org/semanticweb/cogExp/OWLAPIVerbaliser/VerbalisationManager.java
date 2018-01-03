@@ -1033,6 +1033,10 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			if (str.equals("exercise")) {
 				return "an exercise";
 			}
+			
+			// Reduce length
+			if (str.length()>40)
+				str = str.substring(0, 40) + "[...]";
 			return str;
 		}
 		// System.out.println("get class NL String (3) " + classname);
@@ -1060,6 +1064,10 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			// System.out.println("DEBGU -- " + str);
 			if (!isUncountable)
 				str = aOrAnIfy(str);
+			
+			if (str.length()>40)
+				str = str.substring(0, 40) + "[...]";
+			
 			return str;
 		}
 		if (!str2.equals("")) {
@@ -1068,6 +1076,10 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 
 		if (!hasLabel || ontologyLabelsIncludeDeterminers == false)
 			str = aOrAnIfy(str);
+		
+		if (str.length()>40)
+			str = str.substring(0, 40) + "[...]";
+		
 		return str;
 	};
 
@@ -1086,7 +1098,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 	}
 
 	public String getSimpleIntersectionNLString(List<OWLClassExpression> exprs) {
-		System.out.println("<><> getSimpleIntersectionNLString called");
+		// System.out.println("<><> getSimpleIntersectionNLString called");
 		String result = "";
 		List<OWLObject> noun_concepts = new ArrayList<OWLObject>();
 		List<OWLObject> attribute_concepts = new ArrayList<OWLObject>();
@@ -1261,7 +1273,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			// attributes first
 			for (String str : attribute_concepts_strings) {
 				result = result + str + _space;
-				System.out.println("result-}" + result + "{");
+				// System.out.println("result-}" + result + "{");
 				noun_or_attribute_concepts_strings.remove(str);
 			}
 			// if several items can be used either way, order them
@@ -1282,7 +1294,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				}
 				noun_or_attribute_concepts_strings.remove(current);
 				result = result + current + _space;
-				System.out.println("result-}" + result + "{");
+				// System.out.println("result-}" + result + "{");
 				noun_concepts_strings.remove(current);
 			}
 			for (String str : noun_concepts_strings) {
@@ -1304,7 +1316,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			result = result.substring(0, result.length() - 1); // need to remove
 			// last spacer
 		
-		System.out.println("last step: +" + result + "+++");
+		// System.out.println("last step: +" + result + "+++");
 		return aOrAnIfy(result);
 	}
 
@@ -1439,7 +1451,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 	}
 
 	public String verbaliseComplexIntersection(OWLObjectIntersectionOf inter, Obfuscator obfuscator) {
-		System.out.println(" <><> complex intersection called with " + inter);
+		// System.out.println(" <><> complex intersection called with " + inter);
 		String result = "";
 		List<OWLClassExpression> simpleExpressions = new ArrayList<OWLClassExpression>();
 		List<OWLClassExpression> existsExpressions = new ArrayList<OWLClassExpression>();
@@ -1469,7 +1481,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) someobj;
 				String somefillertext = some.getFiller().accept(sentenceOWLObjectVisit).toString();
 				if (some.getFiller() instanceof OWLObjectSomeValuesFrom) {
-					System.out.println("<><> inserting 'something that' ");
+					// System.out.println("<><> inserting 'something that' ");
 					somefillertext = LogicLabels.getString("somethingThat") + somefillertext;
 				}
 				substrings.add(somefillertext);
@@ -1508,7 +1520,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 
 	public static String pseudoNLStringMultipleExistsPattern(OWLObjectIntersectionOf ints,
 			Obfuscator obfuscator) {
-		System.out.println("<><> multiple exists called (1)");
+		// System.out.println("<><> multiple exists called (1)");
 		String result = "";
 		List<OWLClassExpression> exprs = ints.getOperandsAsList();
 		List<String> substrings = new ArrayList<String>();
@@ -1528,7 +1540,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 	}
 
 	public List<TextElement> textualiseMultipleExistsPattern(OWLObjectIntersectionOf ints) {
-		System.out.println("<><> multiple exists called (2)");
+		// System.out.println("<><> multiple exists called (2)");
 		List<TextElement> result;
 		List<OWLClassExpression> exprs = ints.getOperandsAsList();
 		List<List<TextElement>> substrings = new ArrayList<List<TextElement>>();
@@ -1967,7 +1979,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		//System.out.println(ontology.getAxioms().size());
 		for (OWLAxiom ax: ontology.getAxioms()){
 			if (ax.toString().equals(axiom.toString())){
-				System.out.println("DEBUG (3)");
+				// System.out.println("DEBUG (3)");
 				resultSequence.concat(VerbalisationManager.textualise(axiom));
 				return resultSequence;
 			}
@@ -1975,7 +1987,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		}
 		
 		if (ontology.getAxioms().contains(axiom)) {
-			System.out.println("DEBUG (3)");	
+			// System.out.println("DEBUG (3)");	
 			// LogicElement element = new LogicElement("Axiom contained.");
 			// resultSequence.add(element);
 			// resultSequence.add(new LinebreakElement());
@@ -1983,11 +1995,11 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			return resultSequence;
 		}
 
-		System.out.println("DEBUG (4)");
+		// System.out.println("DEBUG (4)");
 		GentzenTree tree = computeGentzenTree(axiom, reasoner, factory, ontology, maxsteps, maxtime, ruleset);
-		System.out.println("DEBUG (5)");
+		// System.out.println("DEBUG (5)");
 		if (tree == null) {
-			System.out.println("DEBUG (6)");
+			// System.out.println("DEBUG (6)");
 			// resultSequence.add(new LogicElement("fooooo"));
 			resultSequence.add(new EmptyTreeElement());
 			return resultSequence;

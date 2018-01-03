@@ -738,8 +738,12 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 				// for (RuleBinding rb: bindings){
 					// System.out.println(" in simple loop " + rb.getNewAntecedent());
 				// }
-				   System.out.println("ONE APPLICATION is carried out by runSimpleLoop");
-				   System.out.println("rulename " + current_rule.getName() + " at bfs level " + bfsLevel + " limit " + limit + " timelimit " + (timelimit - (System.currentTimeMillis()-starttime)));
+					
+					/* ENABLE THIS FOR DEBUG OUTPUT */
+				   // System.out.println("ONE APPLICATION is carried out by runSimpleLoop");
+				   // System.out.println("rulename " + current_rule.getName() + " at bfs level " + bfsLevel + " limit " + limit + " timelimit " + (timelimit - (System.currentTimeMillis()-starttime)));
+				 
+				   
 				   // System.out.println(" in simple loop " + bindings.get(0).getNewAntecedent());
 				// System.out.println(current_rule.getName() + "-->" + bindings.get(0).getNewAntecedent());
 				   
