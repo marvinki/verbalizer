@@ -13,7 +13,7 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.SentenceOWLObjectVisitor;
 //import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementOWLObjectVisitor;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
+// import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -65,7 +65,7 @@ public class ConversionAndPrettyPrintingTest {
 		
 		// Sentences
 		System.out.println("\n\n English sentences...\n");
-		WordNetQuery.INSTANCE.disableDict();
+		// WordNetQuery.INSTANCE.disableDict();
 		VerbaliseTreeManager.setLocale(Locale.GERMAN);
 		SentenceOWLObjectVisitor sentenceOWLObjectVisit = new SentenceOWLObjectVisitor();
 		

@@ -8,7 +8,6 @@ import org.semanticweb.cogExp.GentzenTree.GentzenStep;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
@@ -64,7 +63,7 @@ public class UsageExample {
 					)
 			);
 	
-	WordNetQuery.INSTANCE.disableDict();
+	// WordNetQuery.INSTANCE.disableDict();
 	// String explanation = VerbalisationManager.verbalizeAxiom(axiom, reasoner, reasonerFactory, tinyExampleOntology, false,false);
 	
 	OWLOntologyManager manager = OWLManager.createOWLOntologyManager();

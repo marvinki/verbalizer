@@ -16,7 +16,7 @@ import org.semanticweb.cogExp.GentzenTree.GentzenStep;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
+// import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.core.RuleSetManager;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
@@ -135,7 +135,7 @@ public class RunTroughExample {
 		}
 		
 		try{
-		WordNetQuery.INSTANCE.disableDict();
+		// WordNetQuery.INSTANCE.disableDict();
 		String explanation = VerbalisationManager.computeVerbalization(tree, false, false,null);
 		System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax) + "\":\n");
 		System.out.println(explanation);

@@ -59,7 +59,7 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
 
-import edu.smu.tspell.wordnet.SynsetType;
+
 
 public enum VerbalisationManager {
 	INSTANCE;
@@ -699,21 +699,21 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		 */
 
 		int[] types = null;
-		if (!WordNetQuery.INSTANCE.isDisabled())
-			types = WordNetQuery.INSTANCE.getTypes(str);
-		if (!WordNetQuery.INSTANCE.isDisabled() && !(types[0] > 0) && !isNoun) {
-			// System.out.println("NOT A NOUN");
-			str = lowerCaseFirstLetter(str);
-			// System.out.println("not using article");
-			return str;
-		}
+		// if (!WordNetQuery.INSTANCE.isDisabled())
+		// 	types = WordNetQuery.INSTANCE.getTypes(str);
+		// if (!WordNetQuery.INSTANCE.isDisabled() && !(types[0] > 0) && !isNoun) {
+		// 	// System.out.println("NOT A NOUN");
+		// 	str = lowerCaseFirstLetter(str);
+		// 	// System.out.println("not using article");
+		// 	return str;
+		// }
 		// Check if gerund, if so, leave unchanged!
 		if (str.indexOf("ing") > 0 && !str.equals("Ring") && !str.equals("ring") && !str.contains(" ring")
 				&& !str.contains("Ring"))
 			return str.toLowerCase();
 		// Plural does not get an article
 
-		if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isPlural(str)) {
+		if (false) {// (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isPlural(str)) {
 
 			return str;
 		}
@@ -1142,10 +1142,10 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				}
 			} // end loop for collecting annotations
 			int[] types = null;
-			if (!WordNetQuery.INSTANCE.isDisabled() && (attrAnnotString == null || attrAnnotString.equals(""))
-					&& (attrAnnotString == null || attrAnnotString.equals(""))) {
-				types = WordNetQuery.INSTANCE.getTypes(genericClassname);
-			}
+			// if (!WordNetQuery.INSTANCE.isDisabled() && (attrAnnotString == null || attrAnnotString.equals(""))
+			// 		&& (attrAnnotString == null || attrAnnotString.equals(""))) {
+			// 	types = WordNetQuery.INSTANCE.getTypes(genericClassname);
+			// }
 			/* fill buckets */
 			// Attributes and Nouns
 			if (attrAnnotString != null && !attrAnnotString.equals("")
@@ -1282,13 +1282,14 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				attributiveness = 0;
 				String current = "";
 				for (String str : noun_or_attribute_concepts_strings) {
-					if (!WordNetQuery.INSTANCE.isDisabled()) {
-						int[] types = WordNetQuery.INSTANCE.getTypes(str);
-						float currentattr = types[2] + types[4];
+					if // (!WordNetQuery.INSTANCE.isDisabled()) {
+					(false) {
+						 //int[] types = WordNetQuery.INSTANCE.getTypes(str);
+						 float currentattr=0; // = types[2] + types[4];
 						// do not consider type 4
-						if (currentattr >= attributiveness) {
+					    if (currentattr >= attributiveness) {
 							attributiveness = currentattr;
-							current = str;
+						 	current = str;
 						}
 					}
 				}
@@ -1766,8 +1767,8 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		int i = str.indexOf(" of");
 		if (i > 0) {
 			String prefix = str.substring(0, i);
-			if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isType(prefix, SynsetType.NOUN) > 0)
-				return true;
+			// if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isType(prefix, SynsetType.NOUN) > 0)
+			//	return true;
 		}
 		return false;
 	}
