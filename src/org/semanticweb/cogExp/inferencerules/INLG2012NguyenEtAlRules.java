@@ -2959,7 +2959,12 @@ RULE14{
 						// 	continue; // abort trivial case <-- above.
 						// }
 						// restriction to avoid cyclicity: SECOND FORMULA MAY NOT BE CYCLIC!!!
-						if (!OWLFormula.containsSubformula(cand2.getArgs().get(1),cand2.getArgs().get(0))){
+						// Need to avoid bloating. However, bloating is allowed if bloated formulae are around.
+						if (!OWLFormula.containsSubformula(cand2.getArgs().get(1),cand2.getArgs().get(0))
+								|| s.succedentContainsOrDeeplyContains(cand2.getArgs().get(1))
+								|| s.antecedentContainsOrDeeplyContains(cand2.getArgs().get(1))
+								){
+						// if (!OWLFormula.containsSubformula(cand2.getArgs().get(1),cand2.getArgs().get(0))){
 							// now filter out those conclusions that already exist
 							OWLFormula conclusion = OWLFormula.createFormula(OWLSymb.SUBCL,
 									candidates.get(i).getArgs().get(0), // v1
