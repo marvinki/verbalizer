@@ -3096,7 +3096,7 @@ RULE14{
 							// System.out.println(s.alreadyContainedInAntecedent(conclusion));
 							// System.out.println("prem 1 " + cand1.prettyPrint());
 							// System.out.println("prem 2 " + cand2.prettyPrint());
-							System.out.println("conclusion " + conclusion.prettyPrint());
+							// System.out.println("conclusion " + conclusion.prettyPrint());
 							if (badConcls.contains(conclusion))
 								continue;
 							if (!s.alreadyContainedInAntecedent(conclusion) && 
@@ -3131,7 +3131,7 @@ RULE14{
 									}
 									if (allclear){
 										// now construct the binding!
-											System.out.println("creating binding for " + conclusion.prettyPrint());
+											// System.out.println("creating binding for " + conclusion.prettyPrint());
 											// System.out.println(s.alreadyContainedInAntecedent(conclusion));
 											RuleBinding binding = new RuleBinding(conclusion,null);
 											SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(cand1));
