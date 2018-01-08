@@ -30,6 +30,9 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 public class ConversionAndPrettyPrintingTest {
 	public static void main(String[] args) {
 	
+		String teststring = "'";
+		System.out.println(teststring.replaceAll("'", "\\\\'"));
+		
 		VerbalisationManager.treatCamelCaseAndUnderscores("2009/09/28 Alan Ruttenberg. Fucoidan-use-case");
 		
 		

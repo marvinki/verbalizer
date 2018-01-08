@@ -227,6 +227,7 @@ public class TextElementSequence extends TextElement{
 		}
 	}
 
+	
 	public JSONArray toJSON(){
 		JSONArray result = new JSONArray();
 		// JSONObject result = new JSONObject();
@@ -296,6 +297,7 @@ public class TextElementSequence extends TextElement{
 		}
 		return result;
 }
+
 	
 	
 }

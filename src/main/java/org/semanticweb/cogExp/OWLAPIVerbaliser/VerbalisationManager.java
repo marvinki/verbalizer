@@ -942,14 +942,16 @@ public enum VerbalisationManager {
 				str = treatCamelCaseAndUnderscores(str);
 				// System.out.println("str (B) " + str);
 			// System.out.println("returning (1) " + str);
-			// Cheating
-			if (str.equals("exercise")) {
-				return "an exercise";
-			}
+			
 			
 			// Reduce length
 			if (str.length()>40)
 				str = str.substring(0, 40) + "[...]";
+			
+			if (str.contains("'")){
+				str = str.replaceAll("'","");	
+			System.out.println("replaced 's");
+			}
 			return str;
 		}
 		// System.out.println("get class NL String (3) " + classname);
@@ -980,7 +982,10 @@ public enum VerbalisationManager {
 			
 			if (str.length()>40)
 				str = str.substring(0, 40) + "[...]";
-			
+			if (str.contains("'")){
+				str = str.replaceAll("'","");
+				System.out.println("replaced 's");
+			}
 			return str;
 		}
 		if (!str2.equals("")) {
@@ -992,7 +997,10 @@ public enum VerbalisationManager {
 		
 		if (str.length()>40)
 			str = str.substring(0, 40) + "[...]";
-		
+		if (str.contains("'")){
+			System.out.println("replaced 's");
+			str = str.replaceAll("'","");
+		}
 		return str;
 	};
 

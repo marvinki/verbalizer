@@ -722,7 +722,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 				bfsLevel=bfsLevel + 1;
 				// System.out.println("BFS LEVEL NOW: " + bfsLevel);
 				/// HACKY!
-				if (bfsLevel > 30){
+				if (bfsLevel > 50){
 					System.out.println("simpleLoop: Reached BFS bounds.");
 					return initialtree;
 				}

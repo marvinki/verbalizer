@@ -188,7 +188,7 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE35nary,
     			AdditionalDLRules.APPLRANGE,
     			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
-    			// AdditionalDLRules.R0, // introduce trivial subsumptions
+    			AdditionalDLRules.R0, // introduce trivial subsumptions // <--- DONT TURN THIS OFF! Needed for A->B, A^B->C ---> A->C.
     			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
     			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
     			INLG2012NguyenEtAlRules.RULE42,
@@ -280,7 +280,7 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE35, // handle disjointness
     			INLG2012NguyenEtAlRules.RULE35nary,
     			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
-    			// AdditionalDLRules.R0, // introduce trivial subsumptions  // <--- off?
+    			AdditionalDLRules.R0, // introduce trivial subsumptions  // <--- DONT TURN THIS OFF! Needed for A->B, A^B->C ---> A->C.
     		    AdditionalDLRules.DEFDOMAIN, // translate domain definition 
     			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
     			INLG2012NguyenEtAlRules.RULE42,

@@ -662,9 +662,14 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			// TODO: this is not aggregating in case there is a multiple exists pattern
 			boolean isFirst = true;
 			for(OWLClassExpression allelse : allelseExps){
+				System.out.println("DEBUG --  allelse " + allelse);
 				if (!isFirst)
 					seq4.add(new LogicElement(VerbalisationManager.LogicLabels.getString(("and")))) ;
-				List<TextElement> allelseString = allelse.accept(this).toTextElementSequence().getTextElements();
+				Sentence allelseSentence = allelse.accept(this);
+				System.out.println("DEBUG --  allelseSentence " + allelseSentence.toString());
+				TextElementSequence allelseTES = allelseSentence.toTextElementSequence();
+				System.out.println("DEBUG --  allelseTES " + allelseTES.toString());
+				List<TextElement> allelseString = allelseTES.getTextElements();
 				if (allelseString == null){
 					seq.add(new LogicElement("{NULL}"));
 				}else{
@@ -686,15 +691,17 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	
 
 	public Sentence visit(OWLObjectIntersectionOf arg0) {
-		// System.out.println(" intersection text visitor called with: " + arg0);
+		System.out.println(" intersection text visitor called with: " + arg0);
 		Sentence result = new Sentence();
 		LogicElement somethingthatElement = new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat"));
 		if (VerbalisationManager.checkMultipleExistsPattern(arg0)){
 			result.setSubjekt(somethingthatElement);
 			result.addToSubject(new TextElementSequence(VerbalisationManager.INSTANCE.textualiseMultipleExistsPattern(arg0)));
 			// System.out.println("visit intersect (1): " + new TextElementSequence(resultList).toString());
-
+			result.setOrder(SentenceOrder.A_is_B); //
+			result.makeAisBSentence();
 			if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
+			System.out.println(" DEBUG intersection text visitor  returning (1) " + result);
 			return result;
 			// return result.getSentence();
 		} else{
@@ -707,6 +714,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
 				result.setOrder(SentenceOrder.A_is_B);
 				result.makeABisSentence();
+				System.out.println(" DEBUG intersection text visitor  returning (2)  " + result);
 				return result;
 				// return result.getSentence();
 			} else{
@@ -723,6 +731,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 						if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
 						result.setOrder(SentenceOrder.A_is_B);
 						result.makeABisSentence();
+						System.out.println(" DEBUG intersection text visitor  returning (3) " + result);
 						return result;
 						// return result.getSentence();
 						}
@@ -734,6 +743,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
 		result.setOrder(SentenceOrder.A_is_B);
 		result.makeABisSentence();
+		System.out.println(" DEBUG intersection text visitor  returning (4) " + result);
 		return result;
 		// return result.getSentence();
 	}

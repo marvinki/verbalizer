@@ -3078,7 +3078,11 @@ RULE14{
 						// }
 						// restriction to avoid cyclicity: SECOND FORMULA MAY NOT BE CYCLIC!!!
 						// if (!testImpactContainsSubformula(cand2.getArgs().get(1),cand2.getArgs().get(0))){
-						if (!OWLFormula.containsSubformula(cand2.getArgs().get(1),cand2.getArgs().get(0))){
+						
+						// Need to avoid bloating. However, bloating is allowed if bloated formulae are around.
+						if (!OWLFormula.containsSubformula(cand2.getArgs().get(1),cand2.getArgs().get(0))
+								|| testImpactContainsOrDeeplyContains(s,cand2.getArgs().get(1))
+								){
 							// now filter out those conclusions that already exist
 							OWLFormula conclusion = OWLFormula.createFormula(OWLSymb.SUBCL,
 									candidates.get(i).getArgs().get(0), // v1
@@ -3092,7 +3096,7 @@ RULE14{
 							// System.out.println(s.alreadyContainedInAntecedent(conclusion));
 							// System.out.println("prem 1 " + cand1.prettyPrint());
 							// System.out.println("prem 2 " + cand2.prettyPrint());
-							// System.out.println("conclusion " + conclusion.prettyPrint());
+							System.out.println("conclusion " + conclusion.prettyPrint());
 							if (badConcls.contains(conclusion))
 								continue;
 							if (!s.alreadyContainedInAntecedent(conclusion) && 
@@ -3127,7 +3131,7 @@ RULE14{
 									}
 									if (allclear){
 										// now construct the binding!
-											// System.out.println("creating binding for " + conclusion.prettyPrint());
+											System.out.println("creating binding for " + conclusion.prettyPrint());
 											// System.out.println(s.alreadyContainedInAntecedent(conclusion));
 											RuleBinding binding = new RuleBinding(conclusion,null);
 											SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(cand1));
@@ -3135,7 +3139,7 @@ RULE14{
 											SequentPosition position2 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(cand2));
 											binding.insertPosition("A2", position2);
 											results.add(binding);
-											continue; // <--- to not cache this case as unsuccessful!
+											continue; // <--- do not cache this case as unsuccessful!
 									} // endif allclear
 									else{
 										if (chain)

@@ -2565,11 +2565,13 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 					*/
 				
 				// check database before starting
+				System.out.println("before checking if solved for subsumption: " + subAx.getSubClass().toString().replaceAll("'", "\\\\'") + " and " + subAx.getSuperClass().toString().replaceAll("'", "\\\\'"));
 				List<String> queryResult = DatabaseManager.INSTANCE.getRestrictedBioExplanation(
-    					subAx.getSubClass().toString().replaceAll("'", "\\'"), 
-    					subAx.getSuperClass().toString().replaceAll("'", "\\'"), 
+    					subAx.getSubClass().toString().replaceAll("'", "\\\\'"), 
+    					subAx.getSuperClass().toString().replaceAll("'", "\\\\'"), 
     					ontologyid);
-    			
+				System.out.println("after checking if solved.");
+				
     			boolean solved = DatabaseManager.INSTANCE.getSolved(queryResult);
     			// System.out.println("solved? " + solved);
     			
@@ -2627,6 +2629,8 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    				}
 	    		}
 	    		
+	    		/*
+	    		
 	    		if (justs.size()>10){ // very long justifications cannot be shown in experiment. Ignore and code them as "failed with timelimit of 1 ms"
 	    			DatabaseManager.INSTANCE.insertBioExplanation(
     					subAx.getSubClass().toString().replaceAll("'", "\\\\'"), 
@@ -2643,6 +2647,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     					1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 			continue;	
 	    		}
+	    		*/
 	    		
 	    		
     			
