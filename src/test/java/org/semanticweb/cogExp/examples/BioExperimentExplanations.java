@@ -297,7 +297,7 @@ public class BioExperimentExplanations {
 		
 		
 		// final
-		// String conclusion4 = "SubClassOf(<http://www.drugbank.ca/drugs/DB05812>  <http://www.ebi.ac.uk/chembl/ftc/FTC_A0019825>)";
+		String conclusion4 = "SubClassOf(<http://www.drugbank.ca/drugs/DB05812>  <http://www.ebi.ac.uk/chembl/ftc/FTC_A0019825>)";
 		
 		// step 1: ok
 		// String conclusion4 = "SubClassOf(<http://www.drugbank.ca/drugs/DB05812>  ObjectIntersectionOf(<http://schema.org/Drug> ObjectSomeValuesFrom(<http://www.ebi.ac.uk/chembl/ftc/FTC_R4> <http://purl.uniprot.org/uniprot/P05093>)))";
@@ -321,7 +321,7 @@ public class BioExperimentExplanations {
 		// String conclusion4 = "SubClassOf(<http://purl.obolibrary.org/obo/GO_0019825> ObjectIntersectionOf(<http://purl.obolibrary.org/obo/GO_0003674> <http://purl.obolibrary.org/obo/GO_0019825>))";
 		
 		// helper 2:
-		String conclusion4 = "SubClassOf(<http://purl.uniprot.org/uniprot/P05093> ObjectSomeValuesFrom(<http://www.ebi.ac.uk/chembl/ftc/FTC_R2> ObjectIntersectionOf(<http://purl.obolibrary.org/obo/GO_0003674> <http://purl.obolibrary.org/obo/GO_0019825>)))";
+		// String conclusion4 = "SubClassOf(<http://purl.uniprot.org/uniprot/P05093> ObjectSomeValuesFrom(<http://www.ebi.ac.uk/chembl/ftc/FTC_R2> ObjectIntersectionOf(<http://purl.obolibrary.org/obo/GO_0003674> <http://purl.obolibrary.org/obo/GO_0019825>)))";
 				
 		
 		 ProofTree prooftree4 = constructProoftree(conclusion4,justifications4,"/Users/marvin/marvin_work_ulm/resources/ontologies/bio/FTC.owl");
