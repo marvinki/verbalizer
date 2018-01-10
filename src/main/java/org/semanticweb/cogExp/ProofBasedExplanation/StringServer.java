@@ -141,14 +141,9 @@ public class StringServer {
 			} else {
 				// System.out.println("idlecount " + idlecount);
 				try {
-<<<<<<< HEAD
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-=======
 					Thread.sleep(200);
 					// System.out.println("sleep");
 				} catch (Exception e) {
->>>>>>> cluster1
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

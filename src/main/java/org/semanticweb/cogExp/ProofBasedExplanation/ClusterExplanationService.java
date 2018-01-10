@@ -1897,9 +1897,9 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 				String text = "";
 				if (propertylabel.equals("text")){
 					text = results.get(resind);
-					System.out.println("to be parsed: " + text);
-					JSONArray arr = new JSONArray(text);
-					newobject.put(propertylabel,arr);
+					// System.out.println("to be parsed: " + text);
+					// JSONArray arr = new JSONArray(text);
+					newobject.put(propertylabel,text);
 				}else{
 					text = results.get(resind);
 					newobject.put(propertylabel,text);
@@ -1955,6 +1955,27 @@ public String handleBoschInstructionRequest(String jsonstring, PrintStream print
   	System.out.println(queryItems.toString());
   	
 	return "foo";
+}
+
+
+public String queryAvailable(JSONObject input){
+	String result = "Vorhanden sind: ";
+	String category = input.getString("queryAvailable");
+	System.out.println("ontologyfile : " + ontologyfile);
+	List<String> individuals = SpinQuery.getInstancesOfClass("file://" + ontologyfile, category);
+	if (individuals.size()==0){
+		return "Es ist kein " + category + " vorhanden.";
+	}
+	boolean needsep = false;
+	for (String str : individuals){
+		if (needsep)
+		{
+			result += ", ";
+		}
+		needsep = true;
+		result += str ;
+	}
+	return result;
 }
 
 public String describeVisual(JSONObject input){
@@ -2345,6 +2366,12 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	
 	  	if (inputObject.has("describe")){
 	  		 String result = describe(inputObject);
+	  		printstream.println(result);
+	  		return result;
+	  	}
+	  	
+	  	if (inputObject.has("queryAvailable")){
+	  		 String result = queryAvailable(inputObject);
 	  		printstream.println(result);
 	  		return result;
 	  	}
