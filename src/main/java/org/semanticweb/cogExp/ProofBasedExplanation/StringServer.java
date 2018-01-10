@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.model.IRI;
@@ -59,7 +58,7 @@ public class StringServer {
 		*/
 		
 		////// WE ARE NOT USING WORDNET!
-		WordNetQuery.INSTANCE.disableDict();
+		// WordNetQuery.INSTANCE.disableDict();
 		
 		server = new ServerSocket(port);
 		this.service = service;

@@ -11,7 +11,6 @@ import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
 import org.semanticweb.cogExp.core.InferenceApplicationService;
@@ -96,7 +95,7 @@ public class TacticExample {
 			// Output the expanded proof tree (each line is a rule application: rule name, conclusion, premises)
 			System.out.println("Prooftree \n" + VerbaliseTreeManager.listOutput(tree2) + "\n");
 			
-			WordNetQuery.INSTANCE.disableDict();
+			// WordNetQuery.INSTANCE.disableDict();
 			
 			String seq1 = VerbalisationManager.computeVerbalization(tree1, false, false, null);
 			System.out.println(seq1);
