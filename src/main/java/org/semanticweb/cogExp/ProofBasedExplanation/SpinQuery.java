@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.jena.ext.com.google.common.graph.Graph;
 import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
@@ -15,7 +16,11 @@ import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.util.LocationMapper;
 import org.topbraid.spin.arq.ARQFactory;
@@ -49,7 +54,7 @@ public class SpinQuery {
     // FileManager fileManager = new FileManager(locMap);
     // fileManager.addLocatorClassLoader(SpinQuery.class.getClassLoader()); 
     // fileManager.addLocatorClassLoader(SpinQuery.class.getClassLoader());
-    baseModel = fileManager.loadModel(ontologyfile); 
+    // baseModel = fileManager.loadModel(ontologyfile); 
     // baseModel = fileManager.loadModel("http://www.semanticweb.org/diy-domain"); 
    
     
@@ -68,22 +73,59 @@ public class SpinQuery {
     
     // baseModel.read("file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-instructions.owl");
     // baseModel.read(ontologyfile);
-    OntModel model = JenaUtil.createOntologyModel(OntModelSpec.OWL_MEM,
-            baseModel);
    
-	
+    // OntModel model = JenaUtil.createOntologyModel(OntModelSpec.OWL_MEM,
+    //          baseModel);
+   
+    OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM );
    
     
     // model.write(System.out);
     
     
+   // model.setDynamicImports(true);
+   // OntDocumentManager docMan = model.getDocumentManager();
+  //  docMan.setFileManager(fileManager);
+   // docMan.setProcessImports(true);
+  //  docMan.loadImports(model);
+   
+  
+   OntDocumentManager dm = model.getDocumentManager();
+   dm.addAltEntry( "http://www.semanticweb.org/diy-domain",
+		   "file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl" );
+  //  model.read("http://www.semanticweb.org/diy-domain" );
    model.setDynamicImports(true);
-   OntDocumentManager docMan = model.getDocumentManager();
-   docMan.setFileManager(fileManager);
-   docMan.setProcessImports(true);
-   docMan.loadImports(model);
-  
-  
+   model.read(ontologyfile);
+   
+// list the statements in the Model
+StmtIterator iter = model.listStatements();
+
+// print out the predicate, subject and object of each statement
+/*
+while (iter.hasNext()) {
+    Statement stmt      = iter.nextStatement();  // get next statement
+    Resource  subject   = stmt.getSubject();     // get the subject
+    Property  predicate = stmt.getPredicate();   // get the predicate
+    RDFNode   object    = stmt.getObject();      // get the object
+
+    System.out.print(subject.toString());
+    System.out.print(" " + predicate.toString() + " ");
+    if (object instanceof Resource) {
+       System.out.print(object.toString());
+    } else {
+        // object is a literal
+        System.out.print(" \"" + object.toString() + "\"");
+    }
+
+    System.out.println(" .");
+} 
+*/
+   
+   // model.read("http://www.semanticweb.org/diy-domain");
+   List<org.apache.jena.graph.Graph> subgraphs =  model.getSubGraphs();
+   for (org.apache.jena.graph.Graph gr : subgraphs){
+	   System.out.println(gr.size());
+   }
    
    model.write(System.out); 
    
@@ -100,7 +142,7 @@ public class SpinQuery {
     
     // Find all drill drivers
     Query query = ARQFactory.get().createQuery(newTriples,"PREFIX diy:<http://www.semanticweb.org/diy-domain#> " +
-    										"SELECT DISTINCT ?dev WHERE{ ?devclass rdfs:subClassOf* :" + classname + ". "
+    										"SELECT DISTINCT ?dev WHERE{ ?devclass rdfs:subClassOf* diy:" + classname + ". "
     										+ "						  ?dev rdf:type ?devclass}");
     
   

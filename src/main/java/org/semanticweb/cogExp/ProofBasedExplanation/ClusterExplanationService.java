@@ -1961,10 +1961,14 @@ public String queryAvailable(JSONObject input){
 	String result = "Vorhanden sind: ";
 	String category = input.getString("queryAvailable");
 	System.out.println("ontologyfile : " + ontologyfile);
+	
 	List<String> individuals = SpinQuery.getInstancesOfClass("file://" + ontologyfile, category);
 	if (individuals.size()==0){
 		return "Es ist kein " + category + " vorhanden.";
 	}
+	
+	Set<OWLNamedIndividual> indivs = ontology.getIndividualsInSignature(true);
+	
 	boolean needsep = false;
 	for (String str : individuals){
 		if (needsep)
@@ -1972,6 +1976,21 @@ public String queryAvailable(JSONObject input){
 			result += ", ";
 		}
 		needsep = true;
+		
+		for (OWLNamedIndividual ind : indivs){
+			int subind = str.indexOf("#");
+			String shortstr = str.substring(subind+1, str.length());
+			System.out.println("shortstring : " + shortstr);
+			System.out.println(ind.toString());
+			if (ind.toString().contains(shortstr)){
+				 str = VerbalisationManager.INSTANCE.getLabel(ind,"de");
+				 str= str.replaceAll("der","ein");
+				 str= str.replaceAll("das","ein");
+				 str= str.replaceAll("die","eine");
+				break;
+			}
+		}
+		
 		result += str ;
 	}
 	return result;

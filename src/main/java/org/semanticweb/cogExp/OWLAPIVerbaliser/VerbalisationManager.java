@@ -837,16 +837,24 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 	 */
 	
 	public String getLabel(OWLEntity obj, String lang){
-		System.out.println("called getLabel for " + obj + " lang " + lang);
+		// System.out.println("called getLabel for " + obj + " lang " + lang);
 		String label = "";
+		String fallback = "";
 		Set<OWLAnnotation> annotations = collectAnnotations(obj);
 		for (OWLAnnotation annotation : annotations) {
-			System.out.println("annotation : " + annotation);
+			// System.out.println("annotation : " + annotation);
+			// System.out.println(annotation.getProperty().getIRI().getFragment().equals("label"));
+			// System.out.println(annotation.getValue().asLiteral().orNull().hasLang(lang));
 			if (annotation.getProperty().getIRI().getFragment().equals("label") && annotation.getValue().asLiteral().orNull().hasLang(lang)
 					) {
+				// System.out.println("DBG: " +  annotation.getValue().asLiteral());
+				
 				label = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString()
 			}
+			fallback = annotation.getValue().asLiteral().orNull().getLiteral();
 		}
+		if (label.equals("") && !fallback.equals(""))
+			return fallback;
 		if (label.equals(""))
 			return null;
 		return label;
