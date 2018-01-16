@@ -1,5 +1,6 @@
 package org.semanticweb.cogExp.coverageEvaluator;
 
+import static java.nio.charset.StandardCharsets.*;
 import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 
@@ -18,6 +19,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
+
+// byte[] ptext = myString.getBytes(ISO_8859_1); 
+// String value = new String(ptext, UTF_8); 
+
 
 public enum DatabaseManager {
 	INSTANCE;

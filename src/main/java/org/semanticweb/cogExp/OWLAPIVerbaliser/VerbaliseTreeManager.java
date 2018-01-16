@@ -215,7 +215,7 @@ public enum VerbaliseTreeManager {
 	
 	public static String verbaliseNL(GentzenTree tree, boolean withrulenames, boolean asHTML, boolean longtext, Obfuscator obfuscator){
 		// System.out.println("verbaliseNL called");
-		System.out.println("featuresOff (2)=" + VerbalisationManager.INSTANCE.featuresOFF);
+		// System.out.println("featuresOff (2)=" + VerbalisationManager.INSTANCE.featuresOFF);
 		List<Integer> order = tree.computePresentationOrder();
 		// System.out.println("order: " + order);
 		String result = "";

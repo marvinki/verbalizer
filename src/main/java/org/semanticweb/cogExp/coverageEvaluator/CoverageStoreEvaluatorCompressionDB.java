@@ -2093,7 +2093,7 @@ public class CoverageStoreEvaluatorCompressionDB {
 	
 	public static OWLAxiom parseAxiomFunctional(String str, OWLOntology ont){
 		
-		System.out.println("Trying to parse: " + str);
+		// System.out.println("Trying to parse: " + str);
 		
 		// OWLFunctionalSyntaxOWLParserFactory parserFactory = new OWLFunctionalSyntaxOWLParserFactory();
 		OWLFunctionalSyntaxOWLParser parser = OWLAPIManagerManager.INSTANCE.getFunctionalSyntaxParser();
@@ -2533,6 +2533,11 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 			int counter;
 			int unioncounter = 0;
 			int ohvcounter = 0;
+			int  hugejuscounter = 0;
+			
+			int selfjustcounter = 0;
+			
+			
 			for (OWLAxiom ax : axioms){
 				long starttime_proofsearch = System.currentTimeMillis();
     			long endtime_proofsearch = System.currentTimeMillis();
@@ -2543,34 +2548,14 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 				OWLSubClassOfAxiom subAx = (OWLSubClassOfAxiom ) ax;
 			
 				
-				/* 
-				OWLSubClassOfAxiom axSub = (OWLSubClassOfAxiom) ax;
-				for (OWLAxiom checkAx : ontology.getAxioms()){
-					if (checkAx instanceof OWLSubClassOfAxiom){
-						OWLSubClassOfAxiom checkAxSub = (OWLSubClassOfAxiom) checkAx;
-						System.out.println("comparing " + axSub + " and " + checkAxSub);
-						
-						
-							if (checkAxSub.getSubClass().equals(axSub.getSubClass())
-									&& checkAxSub.getSuperClass().equals(axSub.getSuperClass())
-									){
-								System.out.println("Axiom already contained.");
-								identical = true;
-						}
-					}
-				}
-				
-				if (identical)
-					continue;
-					*/
 				
 				// check database before starting
-				System.out.println("before checking if solved for subsumption: " + subAx.getSubClass().toString().replaceAll("'", "\\\\'") + " and " + subAx.getSuperClass().toString().replaceAll("'", "\\\\'"));
+				// System.out.println("before checking if solved for subsumption: " + subAx.getSubClass().toString().replaceAll("'", "\\\\'") + " and " + subAx.getSuperClass().toString().replaceAll("'", "\\\\'"));
 				List<String> queryResult = DatabaseManager.INSTANCE.getRestrictedBioExplanation(
     					subAx.getSubClass().toString().replaceAll("'", "\\\\'"), 
     					subAx.getSuperClass().toString().replaceAll("'", "\\\\'"), 
     					ontologyid);
-				System.out.println("after checking if solved.");
+				// System.out.println("after checking if solved.");
 				
     			boolean solved = DatabaseManager.INSTANCE.getSolved(queryResult);
     			// System.out.println("solved? " + solved);
@@ -2579,37 +2564,38 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     			if (solved){
     				System.out.println("Found as solved in database: " + subAx);
     				alreadyTreatedConclusions.add(subAx);
-    				// System.out.println("already in database: " + subAx.toString());
-    				// System.out.println(queryResult);
     				continue;
+    			} else{
+    				System.out.println("Not solved in database: " + subAx);
     			}
     			
     			// if this has timed out before when given at least the same time
     			if (!solved &&  DatabaseManager.INSTANCE.getTime(queryResult)>0){
+    				
+    				// show what we have been dealing with:
+					List<OWLAxiom> justs = justifications.get(counter);
+					boolean containsUnion = false;
+					boolean containsObjectHasValue = false;
+					for (OWLAxiom jus : justs){
+						if (!containsUnion)
+							containsUnion = jus.toString().contains("Union");
+						if (!containsObjectHasValue)
+							containsObjectHasValue = jus.toString().contains("ObjectHasValue");
+						System.out.println("containsUnion: " + containsUnion);
+						System.out.println("containsObjectHasValue: " + containsObjectHasValue);
+						System.out.println("jus: " + jus);
+					}
+					if (containsUnion)
+						unioncounter++;
+					System.out.println("unioncounter " + unioncounter);
+					if (containsObjectHasValue)
+						ohvcounter++;
+					System.out.println("ohvcounter " + ohvcounter);
+    				
     				if (DatabaseManager.INSTANCE.getTime(queryResult) >= timelimit1 * 1000){
     					System.out.println("Timeout in DB: " + subAx);
     					System.out.println("had timed out before at: " + DatabaseManager.INSTANCE.getTime(queryResult)  + "ms" );
-    					
-    					// show what we have been dealing with:
-    					List<OWLAxiom> justs = justifications.get(counter);
-    					boolean containsUnion = false;
-    					boolean containsObjectHasValue = false;
-    					for (OWLAxiom jus : justs){
-    						if (!containsUnion)
-    							containsUnion = jus.toString().contains("Union");
-    						if (!containsObjectHasValue)
-    							containsObjectHasValue = jus.toString().contains("ObjectHasValue");
-    						System.out.println("containsUnion: " + containsUnion);
-    						System.out.println("containsObjectHasValue: " + containsObjectHasValue);
-    						System.out.println("jus: " + jus);
-    					}
-    					if (containsUnion)
-    						unioncounter++;
-    					System.out.println("unioncounter " + unioncounter);
-    					if (containsObjectHasValue)
-    						ohvcounter++;
-    					System.out.println("unioncounter " + ohvcounter);
-    					
+    					System.out.println("We are allowing: " + (timelimit1 * 1000) + "ms" );
     					continue;
     				}
     			}
@@ -2625,11 +2611,30 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    					&& ((OWLSubClassOfAxiom) singleJust).getSuperClass().equals(subAx.getSuperClass())
 	    					)
 	    			{	System.out.println("IGNORING SELF-JUSTIFICATION WITH ANNOTATION");
+	    				selfjustcounter++;
 	    				continue;
 	    				}
 	    		}
 	    		
-	    		/*
+	    		
+	    		/* Skip those justification sets that are just too huge */
+	    		int juschars = 0;
+	    		for (OWLAxiom juss: justs){
+	    			juschars += juss.toString().length();
+	    		}
+	    		
+	    		int charlimit = 10000;
+	    		if (juschars>charlimit){
+	    			System.out.println("Justification with more than " + charlimit + "characters: " + juschars);
+	    			hugejuscounter += 1;
+	    			for (OWLAxiom jusss : justs){
+	    				System.out.println(jusss);
+	    			}
+	    			
+	    			continue;
+	    		}
+	    		
+	    		
 	    		
 	    		if (justs.size()>10){ // very long justifications cannot be shown in experiment. Ignore and code them as "failed with timelimit of 1 ms"
 	    			DatabaseManager.INSTANCE.insertBioExplanation(
@@ -2647,7 +2652,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     					1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 			continue;	
 	    		}
-	    		*/
+	    		
 	    		
 	    		
     			
@@ -2657,7 +2662,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
     			}
     			
     			// 
-    			int replacementEqualCheckSize = 4;
+    			int replacementEqualCheckSize = 1;
     			
     			if (alreadyTreatedJustifications.size()==0 || justs.size()>replacementEqualCheckSize){
     				if (alreadyTreatedJustifications.size()==0)
@@ -2777,7 +2782,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 						}
     					
     					 // throw new RuntimeException();
-    					// continue;
+    					 continue;
     				}
     				
     			}
@@ -3091,7 +3096,12 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 			    		);
 			
 			
-		
+			 System.out.println("unioncounter " + unioncounter);
+			 System.out.println("ohvcounter " + ohvcounter);
+			 System.out.println("hugejuscounter " + hugejuscounter);
+			 System.out.println("selfjuscounter " + selfjustcounter);
+			
+			 
 		return resultStatistic;
 	}
 	
