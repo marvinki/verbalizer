@@ -168,7 +168,7 @@ public class ClusterExplanationService {
 	private Set<OWLAxiom> inferredAxioms = new HashSet<OWLAxiom>();
 	private OWLOntology ontology = null;
 	private OWLOntology inferredOntology = null;
-	private static String ontologyfile = "";
+	public static String ontologyfile = "";
 	
 	private static final String instructionsIRI = "http://www.semanticweb.org/diy-instructions";
 	
@@ -1984,6 +1984,10 @@ public String queryAvailable(JSONObject input){
 			System.out.println(ind.toString());
 			if (ind.toString().contains(shortstr)){
 				 str = VerbalisationManager.INSTANCE.getLabel(ind,"de");
+				 if (str==null){
+					 str = shortstr;
+				 }
+				 System.out.println("DEBUG -- str " + str);
 				 str= str.replaceAll("der","ein");
 				 str= str.replaceAll("das","ein");
 				 str= str.replaceAll("die","eine");

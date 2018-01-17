@@ -44,7 +44,7 @@ public class SpinQuery {
     
    
     
-    System.out.println(ontologyfile);
+    // System.out.println(ontologyfile);
     LocationMapper locMap = new LocationMapper();
     locMap.addAltEntry("http://www.semanticweb.org/diy-domain", "file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl");
    
@@ -91,8 +91,14 @@ public class SpinQuery {
    
   
    OntDocumentManager dm = model.getDocumentManager();
+   // dm.addAltEntry( "http://www.semanticweb.org/diy-domain",
+// 	   "file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl" );
+   
+   System.out.println("Attempting to load: file://" + ClusterExplanationService.ontologyfile.substring(0,ontologyfile.length()-27) + "diy-domain.owl");
+   
    dm.addAltEntry( "http://www.semanticweb.org/diy-domain",
-		   "file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl" );
+		   "file://" + ClusterExplanationService.ontologyfile.substring(0,ontologyfile.length()-27) + "diy-domain.owl");
+		   
   //  model.read("http://www.semanticweb.org/diy-domain" );
    model.setDynamicImports(true);
    model.read(ontologyfile);
