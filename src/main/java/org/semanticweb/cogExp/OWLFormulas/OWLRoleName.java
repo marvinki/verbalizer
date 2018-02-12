@@ -1,5 +1,12 @@
 package org.semanticweb.cogExp.OWLFormulas;
 
+import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPIManagerManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+
 /** Class for role names (object properties) in OWLFormula-s
  * 
  * @author marvin
@@ -82,6 +89,16 @@ public class OWLRoleName implements OWLAtom {
 	@Override
 	public boolean isIndividual() {
 		return false;
+	}
+	
+	@Override
+	public String toNLString() {
+		OWLDataFactory dataFactory = OWLAPIManagerManager.INSTANCE.getDataFactory();
+		OWLObjectPropertyExpression expr = dataFactory.getOWLObjectProperty(IRI.create(ontologyname));
+		String str = VerbalisationManager.INSTANCE.getPropertyNLString(expr);
+		// System.out.println("rolename " + ontologyname);
+		// System.out.println("rolename returned: " +  str);
+		return str;
 	}
 	
 }

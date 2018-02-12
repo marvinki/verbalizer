@@ -11,5 +11,6 @@ public interface OWLAtom {
 	
 	public boolean isIndividual();
 
+	public String toNLString();
 	
 }

@@ -1,6 +1,12 @@
 package org.semanticweb.cogExp.OWLFormulas;
 
-
+import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPIManagerManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObject;
 
 public class OWLClassName implements OWLAtom{
 	private String classname;
@@ -77,5 +83,16 @@ public class OWLClassName implements OWLAtom{
 		return false;
 	}
 
+	@Override
+	public String toNLString() {
+		OWLDataFactory dataFactory = OWLAPIManagerManager.INSTANCE.getDataFactory();
+		// OWLClass cl = dataFactory.getOWLClass(IRI.create(ontologyname + classname));
+		// String str = VerbalisationManager.INSTANCE.getClassNLString(cl);
+		OWLObject obj = ConversionManager.toOWLAPI(this);
+		String str = VerbalisationManager.INSTANCE.getClassNLString((OWLClass) obj);
+		// System.out.println("classname " +  ontologyname );
+		// System.out.println("classname returned: " +  str);
+		return str;
+	}
 	
 }

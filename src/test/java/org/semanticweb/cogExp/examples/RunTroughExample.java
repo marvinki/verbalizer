@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 
@@ -17,6 +18,7 @@ import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
+import org.semanticweb.cogExp.OWLFormulas.OWLAtom;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.core.RuleSetManager;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
@@ -135,6 +137,7 @@ public class RunTroughExample {
 		}
 		
 		try{
+			VerbaliseTreeManager.setLocale(Locale.ENGLISH);
 		WordNetQuery.INSTANCE.disableDict();
 		String explanation = VerbalisationManager.computeVerbalization(tree, false, null);
 		System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax).toString() + "\":\n");
@@ -160,6 +163,25 @@ public class RunTroughExample {
 			OWLFormula prem4 = infrule.getP4(premises,conclusion);
 			OWLFormula prem5 = infrule.getP5(premises,conclusion);
 			OWLFormula prem6 = infrule.getP6(premises,conclusion);
+			
+			
+			// just for testing
+			/*
+			List<OWLFormula> iterlist = new ArrayList<OWLFormula>();
+			iterlist.add(prem1);
+			while (iterlist.size()>0){
+				OWLFormula iter = iterlist.remove(0);
+				if (iter==null || iter.getHead()==null)
+					continue;
+				OWLAtom head = iter.getHead();
+				System.out.println("+++ "  + head.toNLString());
+				if (iter.getArgs()!=null && iter.getArgs().size()>0)
+				iterlist.add(iter.getArgs().get(0));
+				if (iter.getArgs()!=null && iter.getArgs().size()>1)
+					iterlist.add(iter.getArgs().get(1));
+				if (iter.getArgs()!=null && iter.getArgs().size()>2)
+					iterlist.add(iter.getArgs().get(2));
+			}*/
 			
 			// Convert everything to OWLAPI format
 			List<OWLObject> premisesOWLAPI = ConversionManager.toOWLAPI(premises);

@@ -285,7 +285,7 @@ public enum ConversionManager {
 		return result;
 	}
 	
-	private static OWLObject toOWLAPI(OWLAtom atom){
+	public static OWLObject toOWLAPI(OWLAtom atom){
 		OWLObject result = null;
 		if (atom instanceof OWLClassName)
 			result = toOWLAPI((OWLClassName) atom);

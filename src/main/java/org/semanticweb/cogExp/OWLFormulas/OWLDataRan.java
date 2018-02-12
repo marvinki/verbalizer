@@ -26,4 +26,8 @@ public enum OWLDataRan implements OWLAtom{
 		return false;
 	}
 	
+	public String toNLString() {
+		return this.toString();
+	}
+	
 }

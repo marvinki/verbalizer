@@ -81,4 +81,9 @@ public enum OWLSymb implements OWLAtom{
 		return false;
 	}
 	
+	@Override
+	public String toNLString() {
+		return this.toString();
+	}
+	
 }
