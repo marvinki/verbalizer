@@ -299,5 +299,68 @@ public class TextElementSequence extends TextElement{
 		return result;
 }
 	
+	public String toWikiFormat(){
+		String result = "";		
+		for (TextElement element : sequence){
+			
+			System.out.println("toWikiFormat dealing with " + element + " " + element.getClass());
+			
+			if (element instanceof ClassElement){
+				ClassElement classElement = (ClassElement) element;
+				String classDescription = classElement.toString();
+				String tooltip = classElement.getToolTipText();
+				result += "[[" + classDescription + "|" + tooltip + "]]";
+				
+			}
+			if (element instanceof LogicElement){
+				LogicElement logicElement = (LogicElement) element;
+				String logicDescription = logicElement.toString();
+				result += logicDescription;
+				
+			}
+			if (element instanceof RoleElement){
+				RoleElement roleElement = (RoleElement) element;
+				String roleDescription = roleElement.toString();
+				result += roleDescription;
+				
+			}
+			if (element instanceof ConclusionMarkerElement){
+				ConclusionMarkerElement cme = (ConclusionMarkerElement) element;
+				String recres = cme.toWikiFormat();
+				result += recres;
+				// JSONArray recursiveResult = cme.toJSON();
+				// for (Object io : recursiveResult){
+				// 	result.put(io);
+				// }
+				
+			}
+			
+			if (element instanceof TextElementSequence){
+				TextElementSequence innersequence = (TextElementSequence) element;
+				String innerseq = innersequence.toWikiFormat();
+				// JSONArray innerarray = innersequence.toJSON();
+				// for (Object ob : innerarray){
+				//  	JSONObject oj = (JSONObject) ob;
+				// 	result.put(oj);
+				// }
+				result += innerseq;
+			}
+			
+			if (element instanceof TextElement){
+				TextElement textElement = (TextElement) element;
+				String textDescription = textElement.toString();
+				result += textDescription;
+				// JSONObject innerobject = new JSONObject();
+				// innerobject.put("text", textDescription);
+				// innerobject.put("classTooltip", tooltip);
+				// innerobject.put("type", "text");
+				// result.put(innerobject);
+				// itemcounter++;
+			}
+		
+		}
+		return result;
+}
+	
 	
 }

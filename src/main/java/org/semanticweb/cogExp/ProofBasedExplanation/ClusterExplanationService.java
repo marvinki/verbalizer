@@ -1085,7 +1085,13 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		reasoner = reasonerFactory.createReasoner(ontology, config);
 		
 		System.out.println("create generator");
-		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
+		
+		List<InferredAxiomGenerator<? extends OWLAxiom>> generators=new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+        generators.add(new InferredClassAssertionAxiomGenerator());
+        InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner,generators);
+		
+        // non-parametrized generator
+		// InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 		System.out.println("fill");
 		iog.fillOntology(dataFactory2, infOnt);
 		System.out.println("done filling");
@@ -1245,6 +1251,9 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			for (Object ob : params){
 				String obString = (String) ob;
 				// System.out.println("obString" + obString);
+				if (obString.contains("Dangerous")){ // <-------- find out how this ends up here in the first place!!!
+					continue;
+				}
 				OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_arg" + counter));
 				OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-domain#" + obString)); // <-- objects in the domain!
 				OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(argProp,new_indiv, target_indiv);
@@ -1353,8 +1362,10 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 										if (property.equals("getVideo")) property= "hasVideoPath";
 										if (datahasvalue.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
 											String propstr = datahasvalue.getFiller().getLiteral();
-											if (property.equals("hasInstructionText"))
+											if (property.equals("hasInstructionText")){
+												// propstr = "{\"text\": \"" + propstr +  "\"}";
 												propstr = propstr.replaceAll("\\\\", "");
+											}
 											results.add(propstr);
 											// System.out.println("Propstr " + propstr);
 											propFound = true;
@@ -1962,7 +1973,12 @@ public String queryAvailable(JSONObject input){
 	String category = input.getString("queryAvailable");
 	System.out.println("ontologyfile : " + ontologyfile);
 	
-	List<String> individuals = SpinQuery.getInstancesOfClass("file://" + ontologyfile, category);
+	File inputfile = new File(ontologyfile);
+	System.out.println("inputfile " + inputfile.getAbsoluteFile());
+	System.out.println("inputfile parent " + inputfile.getAbsoluteFile().getParentFile());
+	
+	List<String> individuals = SpinQuery.getInstancesOfClass(inputfile.toString(), category);
+	// List<String> individuals = SpinQuery.getInstancesOfClass("file://" + ontologyfile, category);
 	if (individuals.size()==0){
 		return "Es ist kein " + category + " vorhanden.";
 	}
@@ -1980,8 +1996,8 @@ public String queryAvailable(JSONObject input){
 		for (OWLNamedIndividual ind : indivs){
 			int subind = str.indexOf("#");
 			String shortstr = str.substring(subind+1, str.length());
-			System.out.println("shortstring : " + shortstr);
-			System.out.println(ind.toString());
+			// System.out.println("shortstring : " + shortstr);
+			// System.out.println(ind.toString());
 			if (ind.toString().contains(shortstr)){
 				 str = VerbalisationManager.INSTANCE.getLabel(ind,"de");
 				 if (str==null){
@@ -1997,7 +2013,7 @@ public String queryAvailable(JSONObject input){
 		
 		result += str ;
 	}
-	return result;
+	return "{\"text\": \"" +  result + "\"}";
 }
 
 public String describeVisual(JSONObject input){
@@ -2063,7 +2079,8 @@ public String describeVisual(JSONObject input){
 				TextElementSequence seq = VerbalisationManager.textualise(ax);
 				seq.makeUppercaseStart();
 				
-				seq.makeUppercaseStart();
+				// result += seq.toWikiFormat();
+				// seq.makeUppercaseStart();
 				JSONArray arr1 = seq.toJSON();
 				resultArray = concatenate(resultArray,arr1);
 				resultArray.put(makeFullstop());
@@ -2170,6 +2187,36 @@ public String describe(JSONObject input){
 			}
 			
 			for (OWLClassAxiom ax : simpleSubsumptions){
+				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("Arbeitsmittel"))
+					continue;
+				if (ax instanceof OWLSubClassOfAxiom){
+					OWLSubClassOfAxiom subclax = (OWLSubClassOfAxiom) ax;
+					
+					// System.out.println(" checking " + VerbalisationManager.textualise(subclax.getSubClass()).toString() + 
+					// 		" and " + VerbalisationManager.textualise(subclax.getSuperClass()).toString());
+					
+					String subclassstring = VerbalisationManager.textualise(subclax.getSubClass()).toString();
+					String superclassstring = VerbalisationManager.textualise(subclax.getSuperClass()).toString();
+					subclassstring = subclassstring.replaceAll("eine ", "");
+					subclassstring = subclassstring.replaceAll("die ", "");
+					subclassstring = subclassstring.replaceAll("ein ", "");
+					subclassstring = subclassstring.replaceAll("der ", "");
+					
+					superclassstring = superclassstring.replaceAll("der ", "");
+					superclassstring = superclassstring.replaceAll("die ", "");
+					superclassstring = superclassstring.replaceAll("eine ", "");
+					superclassstring = superclassstring.replaceAll("ein ", "");
+					
+					
+					System.out.println(" ----  " + subclassstring + " -- " + superclassstring);
+					
+					if (subclassstring.contains(superclassstring)){
+						System.out.println(" subsumption considered trivial between " + VerbalisationManager.textualise(subclax.getSubClass()).toString() + 
+								" and " + VerbalisationManager.textualise(subclax.getSuperClass()).toString());
+						continue;
+					}
+					
+				}
 				TextElementSequence seq1 = VerbalisationManager.textualise(ax);
 				seq1.makeUppercaseStart();
 				JSONArray arr1 = seq1.toJSON();
@@ -2193,6 +2240,8 @@ public String describe(JSONObject input){
 			
 			for (OWLClassAxiom ax : otherSubsumptions){
 				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
+					continue;
+				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("hat"))
 					continue;
 				// if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
 				// 	continue;

@@ -79,11 +79,18 @@ public class StringServer {
 
 					catch (IOException e) {
 						e.printStackTrace();
+					} finally {
+						try {
+							socket.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}).start();
 			
-		}
+		} // end loop
 
 	}
 
@@ -103,31 +110,67 @@ public class StringServer {
 
 	private void handle(Socket socket) throws IOException {
 		BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		PrintStream outputStream = new PrintStream(socket.getOutputStream());
-		String s;
-
+		PrintStream outputStream = new PrintStream(socket.getOutputStream(),true);
+		String s = "";
+		
+		
 		// while(inputReader.ready()) {
+		
 		while (socket != null && socket.isConnected()) {
+			
+			// System.out.println("br");
 			int inp = inputReader.read();
+			// System.out.println("ar " + inp);
+			
 			// if end of stream is reached, 'read' returns -1
 			if (inp>0) {
+				// System.out.println("there is something.");
 				s = "";
 				
 				char fc = (char) inp;
-				while (fc != '[' && fc != '{')
-					fc = (char)inputReader.read();
+				while (fc != '[' && fc != '{'){
+					// System.out.println("bef fst inner read .");
+					int innp = inputReader.read();
+					if (innp<0) { // <-- end of stream is reached
+						System.out.println("Socket connection lost.");
+						inputReader.close();
+						outputStream.close();
+						socket.close();
+						return;
+					}
+					fc = (char) innp;
+					// System.out.println("af fst inner read. " + innp);
+				}
 				s += fc;
 				int oc = 1;
-				while (oc != 0){
+				// while (oc != 0){ 
+			    while (oc > 0){ //<--- catch -1 case as well
+					// System.out.println("bef inner read .");
 					char nc = (char)inputReader.read();
+					// System.out.println("af inner read.");
 					if (nc == fc) oc++;
 					else if (fc == '[' && nc == ']') oc--;
 					else if (fc == '{' && nc == '}') oc--;
 					s +=nc;
 				}
 				
-
+				
+				// while ((inp = inputReader.readLine()) != null) {	
+				// 	s+= inp;
+				// }
+			
+				// String readLine = inputReader.readLine();
+				// s = readLine;
+				
 				System.out.println(">>Reading input: " + s + "<<");
+				
+				if (s==null){
+					System.out.println("Socket connection lost.");
+					inputReader.close();
+					outputStream.close();
+					socket.close();
+					return;
+				}
 				
 				try {
 					service.handleBoschRequest(s, outputStream);
@@ -137,21 +180,24 @@ public class StringServer {
 				}
 				
 				System.out.println(">>Waiting<<");
-			} else {
+			
+		
+		} else {
 				// System.out.println("idlecount " + idlecount);
 				try {
 					Thread.sleep(200);
-					// System.out.println("sleep");
+					 System.out.println("sleep");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			
 				/*
 				 * idlecount++; if (idlecount>1000){
 				 * outputStream.println("PROBING THE CONNECTION!!!"); if
 				 * (outputStream.checkError()){ idlecount = 0; break; } }
 				 */
-			}
+		 }
 
 		}
 		System.out.println("Socket connection lost.");

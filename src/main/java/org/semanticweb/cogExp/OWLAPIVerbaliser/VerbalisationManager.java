@@ -1043,8 +1043,8 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			}
 			
 			// Reduce length
-			if (str.length()>40)
-				str = str.substring(0, 40) + "[...]";
+			// if (str.length()>40)
+			// 	str = str.substring(0, 40) + "[...]";
 			return str;
 		}
 		// System.out.println("get class NL String (3) " + classname);
@@ -1073,8 +1073,8 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			if (!isUncountable)
 				str = aOrAnIfy(str);
 			
-			if (str.length()>40)
-				str = str.substring(0, 40) + "[...]";
+			// if (str.length()>40)
+			// 	str = str.substring(0, 40) + "[...]";
 			
 			return str;
 		}
@@ -1085,8 +1085,8 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		if (!hasLabel || ontologyLabelsIncludeDeterminers == false)
 			str = aOrAnIfy(str);
 		
-		if (str.length()>40)
-			str = str.substring(0, 40) + "[...]";
+		// if (str.length()>40)
+		// 	str = str.substring(0, 40) + "[...]";
 		
 		return str;
 	};

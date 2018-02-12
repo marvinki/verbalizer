@@ -1,5 +1,6 @@
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,10 +95,17 @@ public class SpinQuery {
    // dm.addAltEntry( "http://www.semanticweb.org/diy-domain",
 // 	   "file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl" );
    
-   System.out.println("Attempting to load: file://" + ClusterExplanationService.ontologyfile.substring(0,ontologyfile.length()-27) + "diy-domain.owl");
+   File inputfile = new File(ontologyfile);
+  System.out.println("inputfile " + inputfile.getAbsoluteFile());
+   
+  String inputfileAbsolute =  inputfile.getAbsoluteFile().toString();
+  
+   String filetobeopened = inputfileAbsolute .substring(0,inputfileAbsolute.length()-20) + "diy-domain.owl";
+   
+   System.out.println("Attempting to load: file://" + filetobeopened);
    
    dm.addAltEntry( "http://www.semanticweb.org/diy-domain",
-		   "file://" + ClusterExplanationService.ontologyfile.substring(0,ontologyfile.length()-27) + "diy-domain.owl");
+		   "file://" + filetobeopened);
 		   
   //  model.read("http://www.semanticweb.org/diy-domain" );
    model.setDynamicImports(true);
@@ -133,7 +141,7 @@ while (iter.hasNext()) {
 	   System.out.println(gr.size());
    }
    
-   model.write(System.out); 
+   // model.write(System.out); 
    
     // INFERENCES
     Model newTriples = ModelFactory.createDefaultModel();

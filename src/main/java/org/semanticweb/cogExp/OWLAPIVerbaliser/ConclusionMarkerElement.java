@@ -57,4 +57,9 @@ public class ConclusionMarkerElement extends TextElement{
 		return seq.toJSON();
 	}
 	
+	public String toWikiFormat(){
+		TextElementSequence seq = new TextElementSequence(content);
+		return seq.toWikiFormat();
+	}
+	
 }
