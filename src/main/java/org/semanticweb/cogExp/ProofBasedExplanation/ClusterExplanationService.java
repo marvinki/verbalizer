@@ -1546,6 +1546,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			else 
 			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("hasEnergy") && dAss.getObject().asLiteral().toString().contains("1")
 				|| 	dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("unusable") && dAss.getObject().asLiteral().toString().contains("1")
+				|| 	dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("accessible") && dAss.getObject().asLiteral().toString().contains("1")
 				|| dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("usable") && dAss.getObject().asLiteral().toString().contains("1")
 					)
 				if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("unusable")
