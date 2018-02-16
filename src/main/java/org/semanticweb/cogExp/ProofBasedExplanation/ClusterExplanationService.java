@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -1030,6 +1031,9 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 	}
 	
 	public String getMostSpecificDataValue(JSONObject obj, String property){
+		
+		OWLClassExpression debugclass = null;
+		
 		List<OWLAxiom> memory = new ArrayList<OWLAxiom>();
 		String actionName = obj.getString("name");
 		System.out.println(actionName);
@@ -1121,6 +1125,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 				if (cax.getClassExpression().isOWLThing())
 					continue;
 				//  System.out.println(reasoner.getSubClasses(cax.getClassExpression(),true));
+				debugclass = cax.getClassExpression();
 				if (reasoner.getSubClasses(cax.getClassExpression(),true).isBottomSingleton()){
 					System.out.println("Now need to get stuff for " + cax.getClassExpression());
 					
@@ -1145,7 +1150,10 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		
 		
 		} catch (Exception e){
+			e.printStackTrace();
+			System.out.println("working on class expression: " + debugclass);
 			System.out.println("ops, exception");
+			
 		}
 		
 		return "";
@@ -1221,6 +1229,8 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 	} 
 	
 	public List<String> getMostSpecificDataValue(List<JSONObject> objects, List<List<String>> properties){
+		OWLClassExpression _DEBUG_ = null;
+		
 		List<String> results = new ArrayList<String>();
 		List<OWLAxiom> memory = new ArrayList<OWLAxiom>();
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -1314,45 +1324,116 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		
 		// Set<OWLAnnotation> annotations = ontology.getAnnotations();
 		
+		
+		HashMap<OWLIndividual,List<OWLAxiom>> actionsWithAxioms = new HashMap<OWLIndividual,List<OWLAxiom>>();
+		for (int index = 0; index<objects.size(); index++){
+			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#action" + index));
+			List<OWLAxiom> assertionlist = new ArrayList<OWLAxiom>();
+			actionsWithAxioms.put(new_indiv,assertionlist);
+			
+		}
+		
+		for (OWLAxiom axes : newaxioms){
+			if (axes instanceof OWLClassAssertionAxiom){
+				OWLClassAssertionAxiom cax = (OWLClassAssertionAxiom) axes;
+				if (cax.getClassExpression().isOWLThing())
+					continue;
+				OWLIndividual ind = cax.getIndividual();
+				List<OWLAxiom> axiomslist = actionsWithAxioms.get(ind);
+				// System.out.println("adding!" + axes);
+				if (axiomslist!=null)
+				axiomslist.add(axes);
+			}
+		}
+				
+		Set<OWLIndividual> indivs = actionsWithAxioms.keySet();	
+		for (OWLIndividual ind : indivs){
+			System.out.println(ind);
+			System.out.println(actionsWithAxioms.get(ind).toString());
+		}
+		
+			
 		// big loop for actions
 		for (int index = 0; index<objects.size(); index++){
 			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#action" + index));
-			for (OWLAxiom axes : newaxioms){
-				if (axes instanceof OWLClassAssertionAxiom){
+			
+			List<OWLAxiom> axiomlist = actionsWithAxioms.get(new_indiv);
+			
+			OWLClassAssertionAxiom mostSpecificClass = null;
+			
+			List<OWLClassExpression> classificationresults = new ArrayList<OWLClassExpression>();
+			for (OWLAxiom axes : axiomlist){
+				OWLClassAssertionAxiom cax = (OWLClassAssertionAxiom) axes;
+				classificationresults.add(cax.getClassExpression());
+			}
+			
+			
+			for (OWLAxiom axes : axiomlist){
 					OWLClassAssertionAxiom cax = (OWLClassAssertionAxiom) axes;
-					if (cax.getClassExpression().isOWLThing())
-						continue;
-					if (!cax.getIndividual().equals(new_indiv)){
-						// System.out.println("skipping");	
-						continue;
-					}
-					System.out.println("considering : " + cax);
-					// System.out.println(reasoner.getSubClasses(cax.getClassExpression(),true));
-					if (reasoner.getSubClasses(cax.getClassExpression(),true).isBottomSingleton()){
-						// System.out.println("Now need to get stuff for " + cax.getClassExpression());
+					NodeSet<OWLClass> resnode = reasoner.getSubClasses(cax.getClassExpression(),true);
+					System.out.println("Looking at subclasses of " + cax.getClassExpression());
+					System.out.println("Subclasses size " + resnode.getNodes().size());
 					
+					List<OWLClassExpression> remainingclassificationresults = new ArrayList<OWLClassExpression>();
+					for (OWLClassExpression rem : classificationresults){
+						if (rem instanceof OWLClass){
+							if (resnode.containsEntity((OWLClass) rem))
+								remainingclassificationresults.add(rem);
+						}
+					}
+					System.out.println("Now looking at subclasses " + remainingclassificationresults.toString());
+					if (remainingclassificationresults.size()==0)
+						mostSpecificClass = cax;
+					
+					// if (resnode.isBottomSingleton()){
+					// 	mostSpecificClass = cax;
+					// }
+					if (resnode.getNodes().size()==0){
+						System.out.println("empty subclasses");
+						mostSpecificClass = cax;
+					}
+			}
+			
+			if (mostSpecificClass==null && axiomlist.size()>0){
+				System.out.println("getting first best : " + axiomlist.get(0).toString());
+				mostSpecificClass = (OWLClassAssertionAxiom) axiomlist.get(0);
+			}
+			if (mostSpecificClass==null)	{
+				System.out.println("SERIOUS PROBLEM!");
+			}	
+					
+					
+			System.out.println("considering  action : " + mostSpecificClass);
 						// System.out.println("ontology contains " + ontology.getAxioms().size() + "axioms");
-						
 						//loop for properties
+			
+			_DEBUG_ =  mostSpecificClass.getClassExpression();
+			
+			boolean headFound = false;
+			boolean imgFound = false;
+			boolean textFound = false;
+			boolean vidFound = false;
+			
 						for (String property : properties.get(index)){
 							if (property.equals("getHeading")){
 								boolean headingFound = false;
-								Collection<OWLAnnotationAssertionAxiom> annots = EntitySearcher.getAnnotationAssertionAxioms(cax.getClassExpression().asOWLClass(), this.ontology);
+								Collection<OWLAnnotationAssertionAxiom> annots = EntitySearcher.getAnnotationAssertionAxioms(mostSpecificClass.getClassExpression().asOWLClass(), this.ontology);
 								for (OWLAnnotationAssertionAxiom annot : annots){
 									results.add(annot.getValue().asLiteral().orNull().getLiteral());
 									headingFound = true;
-									System.out.println("heading found for " + cax.getClassExpression().asOWLClass());
+									headFound = true;
+									System.out.println("heading found for " + mostSpecificClass.getClassExpression().asOWLClass());
 									break;
 								}
 								if (!headingFound){
-									System.out.println("Searching for heading for instruction " + cax.getClassExpression().asOWLClass() + ", but none found!");
-									results.add(cax.getClassExpression().asOWLClass().toString());
+									System.out.println("Searching for heading for instruction " + mostSpecificClass.getClassExpression().asOWLClass() + ", but none found!");
+									results.add(mostSpecificClass.getClassExpression().asOWLClass().toString());
 								}
-							}
+							} // end if property equals getHeading
 							boolean propFound = false;
 							for (OWLAxiom axprobe : ontology.getAxioms()){
 								// System.out.println("examining " + axprobe);
-								if (axprobe instanceof OWLSubClassOfAxiom && (((OWLSubClassOfAxiom) axprobe).getSubClass().equals(cax.getClassExpression()))){
+								if (axprobe instanceof OWLSubClassOfAxiom && (((OWLSubClassOfAxiom) axprobe).getSubClass().equals(mostSpecificClass.getClassExpression()))){
 									OWLSubClassOfAxiom subclAx = (OWLSubClassOfAxiom) axprobe;
 									   // System.out.println(" interested in " + subclAx);
 									if (subclAx.getSuperClass() instanceof OWLDataHasValue){
@@ -1367,28 +1448,46 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 												propstr = propstr.replaceAll("\\\\", "");
 											}
 											results.add(propstr);
+											if (property.equals("hasVideoPath"))
+												vidFound = true;
+											if (property.equals("hasImagePath"))
+												imgFound = true;
+											if (property.equals("hasInstructionText"))
+												textFound = true;
+											
 											// System.out.println("Propstr " + propstr);
 											propFound = true;
 												
 										}
 									}
 								}
-							}
+							} // end for axprobe
 							if (propFound == false && !property.equals("getHeading")){
-								System.out.println("Can't find property " + property + " for class " +cax.getClassExpression());
+								System.out.println("Can't find property " + property + " for class " + mostSpecificClass.getClassExpression());
 								throw new RuntimeException();
 							}
+							
+							/*
+							
+							*/
+							
+										
 						}
-						// break;
-					}
-			}
-			}
+						
+						if (! (imgFound && vidFound && textFound && headFound)){
+							System.out.println("WE ARE MISSING SOMETHING! With: " +  mostSpecificClass);
+							System.out.println(headFound);
+							System.out.println(imgFound);
+							System.out.println(vidFound);
+							System.out.println(textFound);
+							throw new RuntimeException();
+						}			
 		}
 		
 		
-		
 		} catch (Exception e){
-			System.out.println("ops, exception");
+			System.out.println("OOOOOps, exception while working on " + _DEBUG_);
+			e.printStackTrace();
 		}
 		
 		for (OWLAxiom delax : memory){
