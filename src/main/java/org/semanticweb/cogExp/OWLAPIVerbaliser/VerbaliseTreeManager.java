@@ -40,9 +40,9 @@ public enum VerbaliseTreeManager {
 	/**
 	 * switch between languages (German, English) with setting locale.
 	 * Also check out /src/main/resources/LogicLabels_de.properties or /src/main/resources/LogicLabels_en.properties (take care of spelling)
-	 */
-//	static Locale locale = Locale.ENGLISH;
-	 static Locale locale = Locale.GERMAN;
+	 */	
+	 static Locale locale = Locale.ENGLISH;
+	 // static Locale locale = Locale.GERMAN;
 		
 	/**
 	 * 
@@ -362,7 +362,7 @@ public enum VerbaliseTreeManager {
 		TextElementSequence aSeq = new TextElementSequence();
 		
 			if(locale == Locale.ENGLISH){
-				// System.out.println("locale-is-English case.");
+				System.out.println("locale-is-English case.");
 				//check
 				if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) && premiseformulas.contains(previousconclusion)){
 					OWLEquivalentClassesAxiom equivpremise;
@@ -392,7 +392,7 @@ public enum VerbaliseTreeManager {
 					TextElementSequence seq = new TextElementSequence();
 					// [CONCEPTNAME] is defined as [DEFINITION]
 					seq.add(new ClassElement(definedconceptname,tooltiptext));
-					seq.add(new LogicElement(LogicLabels.getString("is")));
+					seq.add(new LogicElement(LogicLabels.getString("isDefinedAs")));
 					seq.concat(defSeq);
 					seq.add(new LogicElement("."));
 					// Thus [SUBCLASS] is by definition [CONCEPTNAME]
@@ -1110,7 +1110,7 @@ public enum VerbaliseTreeManager {
 		}
 			
 		if(locale == Locale.GERMAN){
-			// System.out.println("locale-is-German case.");
+			System.out.println("locale-is-German case.");
 			if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) && premiseformulas.contains(previousconclusion)){
 				OWLEquivalentClassesAxiom equivpremise;
 				OWLSubClassOfAxiom subclpremise;
@@ -1413,6 +1413,7 @@ public enum VerbaliseTreeManager {
 			}
 			
 			//check
+			System.out.println("is this used at all?");
 			if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM)){
 				OWLEquivalentClassesAxiom equivpremise;
 				OWLSubClassOfAxiom subclpremise;
