@@ -362,7 +362,7 @@ public enum VerbaliseTreeManager {
 		TextElementSequence aSeq = new TextElementSequence();
 		
 			if(locale == Locale.ENGLISH){
-				System.out.println("locale-is-English case.");
+				// System.out.println("locale-is-English case.");
 				//check
 				if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) && premiseformulas.contains(previousconclusion)){
 					OWLEquivalentClassesAxiom equivpremise;
@@ -1110,7 +1110,7 @@ public enum VerbaliseTreeManager {
 		}
 			
 		if(locale == Locale.GERMAN){
-			System.out.println("locale-is-German case.");
+			// System.out.println("locale-is-German case.");
 			if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) && premiseformulas.contains(previousconclusion)){
 				OWLEquivalentClassesAxiom equivpremise;
 				OWLSubClassOfAxiom subclpremise;
@@ -1413,7 +1413,7 @@ public enum VerbaliseTreeManager {
 			}
 			
 			//check
-			System.out.println("is this used at all?");
+			// System.out.println("is this used at all?");
 			if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM)){
 				OWLEquivalentClassesAxiom equivpremise;
 				OWLSubClassOfAxiom subclpremise;
@@ -1524,7 +1524,7 @@ public enum VerbaliseTreeManager {
 			
 			
 			if (rule.equals(INLG2012NguyenEtAlRules.RULE23) && premiseformulas.contains(previousconclusion)){
-				// System.out.println("PREVIOUS CONCLUSION " + previousconclusion);
+				// println("PREVIOUS CONCLUSION " + previousconclusion);
 				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) premiseformulas.get(1);
 				OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(0);
 				TextElementSequence seq = new TextElementSequence();
