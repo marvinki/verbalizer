@@ -32,7 +32,9 @@ public class SpinQueryTest {
     Model baseModel = ModelFactory.createDefaultModel();
     // works: baseModel.read("http://topbraid.org/examples/kennedysSPIN");
    //  works: baseModel.read("file:///Users/marvin/kennedysSPIN.owl");
-   baseModel.read("file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl");
+   // baseModel.read("file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl");
+    baseModel.read("C:/Users/marvin/Desktop/Bosch/Modelle/Ontologien/diy-domain.owl");
+    
     // Create OntModel with imports
     OntModel model = JenaUtil.createOntologyModel(OntModelSpec.OWL_MEM,
             baseModel);
@@ -66,7 +68,7 @@ public class SpinQueryTest {
     ResultSetFormatter.out(System.out, results, query);
     qe.close();
     
-    List<String> instances =  SpinQuery.getInstancesOfClass("file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl", "Tool");
+    List<String> instances =  SpinQuery.getInstancesOfClass("C:/Users/marvin/Desktop/Bosch/Modelle/Ontologien/diy-domain.owl", "Tool");
     // SpinQuery.getInstancesOfClass("file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl", "Tool");
     
     

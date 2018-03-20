@@ -2,6 +2,7 @@ package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class SpinQuery {
 
 	// "file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl"
 	public static List<String> getInstancesOfClass(String ontologyfile, String classname){
+		System.out.println("ontologyfile " + ontologyfile + " classname "  + classname);
 	
 		List result = new ArrayList<String>();
 		
@@ -47,10 +49,10 @@ public class SpinQuery {
     
     // System.out.println(ontologyfile);
     LocationMapper locMap = new LocationMapper();
-    locMap.addAltEntry("http://www.semanticweb.org/diy-domain", "file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl");
+    // locMap.addAltEntry("http://www.semanticweb.org/diy-domain", "file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl");
    
-    FileManager fileManager = FileManager.get();
-    fileManager.setLocationMapper(locMap);
+    // FileManager fileManager = FileManager.get();
+    // fileManager.setLocationMapper(locMap);
     
     // FileManager fileManager = new FileManager(locMap);
     // fileManager.addLocatorClassLoader(SpinQuery.class.getClassLoader()); 
@@ -96,20 +98,40 @@ public class SpinQuery {
 // 	   "file:///Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Modelle/Ontologien/diy-domain.owl" );
    
    File inputfile = new File(ontologyfile);
-  System.out.println("inputfile " + inputfile.getAbsoluteFile());
+  // System.out.println("inputfile " + inputfile.getAbsoluteFile());
+  try {
+	System.out.println("inputfile " + inputfile.getCanonicalPath());
+} catch (IOException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+  
    
-  String inputfileAbsolute =  inputfile.getAbsoluteFile().toString();
+  String inputfileAbsolute = "";
+try {
+	inputfileAbsolute = inputfile.getCanonicalPath().toString();
+} catch (IOException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
   
    String filetobeopened = inputfileAbsolute .substring(0,inputfileAbsolute.length()-20) + "diy-domain.owl";
    
-   System.out.println("Attempting to load: file://" + filetobeopened);
+   System.out.println("Attempting to load " + filetobeopened);
    
    dm.addAltEntry( "http://www.semanticweb.org/diy-domain",
-		   "file://" + filetobeopened);
+		    filetobeopened);
+		   // "file://" + filetobeopened);
 		   
   //  model.read("http://www.semanticweb.org/diy-domain" );
    model.setDynamicImports(true);
-   model.read(ontologyfile);
+   
+   InputStream in = FileManager.get().open(ontologyfile);
+   
+   System.out.println("before read");
+   model.read(in,null);
+   // model.read(ontologyfile);
+   System.out.println("after read");
    
 // list the statements in the Model
 StmtIterator iter = model.listStatements();
