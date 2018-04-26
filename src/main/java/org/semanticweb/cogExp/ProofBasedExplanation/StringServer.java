@@ -10,13 +10,16 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -35,7 +38,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.util.AutoIRIMapper;
 
-import uk.ac.manchester.cs.jfact.JFactFactory;
+// import uk.ac.manchester.cs.jfact.JFactFactory;
 
 public class StringServer {
 	private final ServerSocket server;
@@ -179,14 +182,21 @@ public class StringServer {
 					e.printStackTrace();
 				}
 				
-				System.out.println(">>Waiting<<");
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
+				Date resultdate = new Date(System.currentTimeMillis());
+				
+				// System.out.println("[" + sdf.format(resultdate) +"] >>Waiting<<");
 			
 		
 		} else {
 				// System.out.println("idlecount " + idlecount);
 				try {
 					Thread.sleep(200);
-					 System.out.println("sleep");
+					
+					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
+					Date resultdate = new Date(System.currentTimeMillis());
+					
+					//  System.out.println("[" + sdf.format(resultdate) + "] idle.");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -267,7 +277,12 @@ public class StringServer {
 				
 				// manager.loadOntologyFromOntologyDocument(file);
 				System.out.println("Done loading ontology " + ontology.getOntologyID() + ". Now loading reasoner.");
-				reasonerFactory = new JFactFactory();
+				
+				
+				// reasonerFactory = new JFactFactory();
+				
+				reasonerFactory =new Reasoner.ReasonerFactory();
+				
 				SimpleConfiguration configuration = new SimpleConfiguration(50000);
 				reasoner = reasonerFactory.createReasoner(ontology, configuration);
 				

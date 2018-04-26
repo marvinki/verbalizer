@@ -105,35 +105,42 @@
 	<dependency>
     <groupId>net.sourceforge.owlapi</groupId>
     <artifactId>owlapi-distribution</artifactId>
+    <!--   <version>4.2.8</version> -->
+    <!--    <version>3.5.6</version> -->
     <version>4.2.8</version>
     <scope>provided</scope>
 	</dependency>
 	<dependency>
     <groupId>net.sourceforge.owlapi</groupId>
     <artifactId>owlapi-api</artifactId>
+    <!--   <version>3.5.6</version> -->
+    <!--  <version>4.2.8</version> -->
     <version>4.2.8</version>
     <scope>provided</scope>
 	</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-osgidistribution</artifactId>
-			<version>4.2.8</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlexplanation</artifactId>
 			<version>2.0.0</version>
 			<scope>provided</scope>
+			<!--   
+			<exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.owlapi</groupId>
+					<artifactId>owlapi-osgidistribution</artifactId>
+				</exclusion>
+			</exclusions>
+			-->
 		</dependency>
 		
-		<!--   
+		<!--  this dependency is required for wordnet! -->    
 		<dependency>
 			<groupId>com.github.jaytaylor</groupId>
 			<artifactId>jaws</artifactId>
 			<version>1.3.1</version>
 		</dependency>
-		-->
+		
+		
 		<dependency>
 			<groupId>org.semanticweb.elk</groupId>
 			<artifactId>elk-owlapi</artifactId>
@@ -141,11 +148,19 @@
 		    <!--   <scope>test</scope> -->
 			<!-- https://mvnrepository.com/artifact/com.hermit-reasoner/org.semanticweb.hermit -->
 			</dependency>
-	<dependency>
+			
+<dependency>
+    <groupId>net.sourceforge.owlapi</groupId>
+    <artifactId>org.semanticweb.hermit</artifactId>
+    <version>1.3.8.413</version>
+</dependency>
+			
+			
+	<!--   <dependency>
     	<groupId>com.hermit-reasoner</groupId>
    	 <artifactId>org.semanticweb.hermit</artifactId>
-  	  <version>1.3.8.4</version>
-	</dependency>
+  	  <version>1.3.8.413</version>
+	</dependency> -->
 		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
 	<dependency>
     <groupId>ch.qos.logback</groupId>

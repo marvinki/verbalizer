@@ -104,9 +104,9 @@ public class RunTroughExample {
 		
 		OWLOntology newontology = outputOntologyManager.createOntology();
 		
-		iog.fillOntology(outputOntologyManager.getOWLDataFactory(), newontology);
+		// iog.fillOntology(outputOntologyManager.getOWLDataFactory(), newontology);
 		
-		System.out.println("filled");
+		System.out.println("NOT filled");
 		
 	
 		newaxioms = newontology.getAxioms();

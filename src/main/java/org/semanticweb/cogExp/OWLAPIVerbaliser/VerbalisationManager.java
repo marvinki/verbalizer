@@ -289,8 +289,13 @@ public enum VerbalisationManager {
 						// SimpleRenderer renderer = new SimpleRenderer();
 						// OWLLiteral literal =
 						// axiom.getAnnotation().getValue().asLiteral().get();
-						OWLLiteral literal = axiom.getAnnotation().getValue().asLiteral().get();
+						
+						// 
+						OWLLiteral literal = OWLAPICompatibility.getLiteral(axiom); // axiom.getAnnotation().getValue().asLiteral().get();
+								
 						str = literal.getLiteral();
+						
+						
 						// str = axiom.getAnnotation().getValue().toString();
 					}
 				}
@@ -392,8 +397,12 @@ public enum VerbalisationManager {
 						// SimpleRenderer renderer = new SimpleRenderer();
 						// OWLLiteral literal =
 						// axiom.getAnnotation().getValue().asLiteral().get();
-						OWLLiteral literal = axiom.getAnnotation().getValue().asLiteral().get();
+						
+						// redo!
+						OWLLiteral literal = OWLAPICompatibility.getLiteral(axiom); //  axiom.getAnnotation().getValue().asLiteral().get();
 						str = literal.getLiteral();
+						
+						
 						// str = axiom.getAnnotation().getValue().toString();
 					}
 				}
@@ -845,13 +854,26 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			// System.out.println("annotation : " + annotation);
 			// System.out.println(annotation.getProperty().getIRI().getFragment().equals("label"));
 			// System.out.println(annotation.getValue().asLiteral().orNull().hasLang(lang));
-			if (annotation.getProperty().getIRI().getFragment().equals("label") && annotation.getValue().asLiteral().orNull().hasLang(lang)
+			
+			
+			if (annotation.getProperty().getIRI().getFragment().equals("label") 
+					&& OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang(lang)
 					) {
+			
+			// if (annotation.getProperty().getIRI().getFragment().equals("label") && annotation.getValue().asLiteral().orNull().hasLang(lang)
+			// 		) {
+				
+				
 				// System.out.println("DBG: " +  annotation.getValue().asLiteral());
 				
-				label = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString()
+				// label = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString()
+				
+				label = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral();// annotation.getValue().toString()
+			
+				
 			}
-			fallback = annotation.getValue().asLiteral().orNull().getLiteral();
+			// fallback = annotation.getValue().asLiteral().orNull().getLiteral();
+			fallback = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral();
 		}
 		if (label.equals("") && !fallback.equals(""))
 			return fallback;
@@ -874,14 +896,16 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			// System.out.println("DEBUG --- annotation: " + annotation);
 			if (annotation.getProperty().getIRI().getFragment().equals("label")
 					) {
-				str = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString()
+				 str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral();// annotation.getValue().toString()
+				// str = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString()
 			}
-			if (annotation.getProperty().getIRI().getFragment().equals("label") && annotation.getValue().asLiteral().orNull().hasLang("de")
+			if (annotation.getProperty().getIRI().getFragment().equals("label") 
+					&& OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("de")
 					) {
-				germanlabel = annotation.getValue().asLiteral().orNull().getLiteral();// annotation.getValue().toString()
+				germanlabel = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral();// annotation.getValue().toString()
 			}
 			if (annotation.getProperty().getIRI().getFragment().equals("label2")) {
-				str2 = annotation.getValue().asLiteral().orNull().getLiteral();
+				str2 = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral();
 				// str2= annotation.getValue().toString();
 			}
 		}
@@ -957,8 +981,9 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				
 				if (VerbaliseTreeManager.locale==Locale.GERMAN) {
 					// System.out.println("GERMAN LOCALE");
-					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("de")){ //is locale german ?
-						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
+					if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
+							&& OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("de")){ //is locale german ?
+						str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral() ;// annotation.getValue().toString()
 						System.out.println("prop " + annotation.getProperty());
 						if (annotation.getProperty().isLabel())
 							labelStr = str;
@@ -967,7 +992,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 						labelFound = true;
 					}
 					if(!labelFound){
-						str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"";
+						str = "\"" + OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral() + "\"";
 						labelFound = true;// annotation.getValue().toString()
 					}
 				}
@@ -977,15 +1002,17 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				
 				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
 					// System.out.println("ENGLISH LOCALE");
-					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("en")){
-						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
+					if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
+							&& OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
+							&& OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("en")){
+						str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral() ;// annotation.getValue().toString()
 						System.out.println(" prop (1): " + annotation.getProperty());
 						System.out.println(" prop (1): " + annotation.getProperty().getIRI());
 						System.out.println(" prop (1): " + annotation.getProperty().getIRI().equals(OWLRDFVocabulary.RDFS_LABEL.getIRI()));
 						labelFound = true;
-					}if(annotation.getValue().asLiteral().isPresent()){
+					}if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent()){
 						// Marvin: using quotes makes Mrs Koelle's structural cueing module crash.
-						str = annotation.getValue().asLiteral().orNull().getLiteral();
+						str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral();
 						System.out.println("prop " + annotation.getProperty().getEntityType());
 						System.out.println(" prop (2): " + annotation.getProperty().getIRI());
 						System.out.println(" prop (2): " + annotation.getProperty().getIRI().equals(OWLRDFVocabulary.RDFS_LABEL.getIRI()));
@@ -1724,7 +1751,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		// System.out.println("props :" + props);
 		// second loop: now find also all other axioms
 		for (OWLObjectProperty prop1 : props) {
-			axioms.addAll(ontology.getAxioms(prop1, true));
+			axioms.addAll(OWLAPICompatibility.getAxioms(ontology,prop1, true));
 		}
 		// System.out.println(axioms);
 		// now actually hunt for the class expression

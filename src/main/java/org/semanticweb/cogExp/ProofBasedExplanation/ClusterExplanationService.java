@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 // import org.apache.log4j.spi.LoggerFactory;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPICompatibility;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
@@ -293,8 +294,9 @@ public class ClusterExplanationService {
 		// gens.add(new InferredSubClassAxiomGenerator());
 		
 	    // Put the inferred axioms into a fresh empty ontology.
-		Set<OWLAxiom> previousaxioms = ontology.getAxioms();
+		Set<OWLAxiom> previousaxioms = ontology.getAxioms(true);
 		// System.out.println("Previous axioms " + previousaxioms.size());
+		
 		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
@@ -302,9 +304,12 @@ public class ClusterExplanationService {
 			OWLOntology newontology = manager.createOntology();
 		
 		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
-		iog.fillOntology(dataFactory2, newontology);
+		
+		// iog.fillOntology(dataFactory2, newontology);
 		// iog.fillOntology(outputOntologyManager, infOnt);
-		newaxioms = newontology.getAxioms();
+		OWLAPICompatibility.fill(iog, dataFactory2, newontology);
+		
+		newaxioms = newontology.getAxioms(true);
 		System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
 		
 		newaxioms.removeAll(previousaxioms);
@@ -341,16 +346,20 @@ OWLOntologyManager outputOntologyManager = OWLManager.createOWLOntologyManager()
 try {
 	OWLOntology infOnt = outputOntologyManager.createOntology();
 
-previousaxioms = ontology.getAxioms();
+previousaxioms = ontology.getAxioms(true);
 // System.out.println("Previous axioms " + previousaxioms.size());
 InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 
 
 OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 OWLDataFactory dataFactory2=manager.getOWLDataFactory();
-iog.fillOntology(dataFactory2, infOnt);
+
+// iog.fillOntology(dataFactory2, infOnt);
 // iog.fillOntology(outputOntologyManager, infOnt);
-newaxioms = infOnt.getAxioms();
+
+OWLAPICompatibility.fill(iog, dataFactory2, infOnt);
+
+newaxioms = infOnt.getAxioms(true);
 inferredOntology = infOnt;
 } catch (OWLOntologyCreationException e) {
 	// TODO Auto-generated catch block
@@ -407,9 +416,16 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 		
 		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
-		iog.fillOntology(dataFactory2, ontology);
+		
+		// iog.fillOntology(dataFactory2, ontology);
 		// iog.fillOntology(outputOntologyManager, infOnt);
-		newaxioms = ontology.getAxioms(true);
+		
+		OWLAPICompatibility.fill(iog, dataFactory2, ontology);
+		
+		// newaxioms = ontology.getAxioms(true);
+		
+		newaxioms = OWLAPICompatibility.getAxioms(ontology, true);
+		
 		newaxioms.removeAll(previousaxioms);
 		}
 		
@@ -621,7 +637,10 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 	public String listAllNumbers(){
 		System.out.println("list all numbers called");
 		String results = "";
-		Set<OWLAxiom>  axioms = ontology.getAxioms(true);
+		
+		Set<OWLAxiom>  axioms= OWLAPICompatibility.getAxioms(ontology, true);
+		
+		// Set<OWLAxiom>  axioms = ontology.getAxioms(true);
 		Set<Long> donies = new HashSet<Long>();
 		for (OWLAxiom ax : axioms){
 			if (ax instanceof OWLDataPropertyAssertionAxiom){
@@ -648,7 +667,9 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 	public String reportConfigs(){
 		JSONArray resultarray = new JSONArray();
 		String results = "";
-		Set<OWLAxiom>  axioms = ontology.getAxioms(true);
+		
+		Set<OWLAxiom>  axioms = OWLAPICompatibility.getAxioms(ontology, true);
+		// Set<OWLAxiom>  axioms = ontology.getAxioms(true);
 		axioms.addAll(inferredAxioms);
 		boolean middle = false;
 		
@@ -908,7 +929,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("Instruction"))
 				result.put(toJSON(dAss));
 			else 
-			if (dAss.getObject().asLiteral().toString().contains("1"))
+			if (OWLAPICompatibility.asLiteral(dAss.getObject()).toString().contains("1"))
 				result.put(toJSON(dAss));
 		}
 		return result;
@@ -1097,7 +1118,8 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
         // non-parametrized generator
 		// InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 		System.out.println("fill");
-		iog.fillOntology(dataFactory2, infOnt);
+		// iog.fillOntology(dataFactory2, infOnt);
+		OWLAPICompatibility.fill(iog, dataFactory2, infOnt);
 		System.out.println("done filling");
 		// iog.fillOntology(outputOntologyManager, infOnt);
 		Set<OWLAxiom> newaxioms = infOnt.getAxioms();
@@ -1238,7 +1260,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		
 		OWLOntology origin = ontology;
 		System.out.println("Ontology id : " + origin.getOntologyID());
-		System.out.println("Ontology axiom count : " + ontology.getAxiomCount(true));
+		// System.out.println("Ontology axiom count : " + ontology.getAxiomCount(true));
 		
 		// big loop for actions
 		for (int index = 0; index<objects.size(); index++){
@@ -1308,7 +1330,10 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			System.out.println("create empty ontology");
 			OWLOntology infOnt = manager.createOntology();
 		
-		Set<OWLAxiom> previousaxioms = ontology.getAxioms(true);
+		// Set<OWLAxiom> previousaxioms = ontology.getAxioms(true);
+		
+			Set<OWLAxiom> previousaxioms = OWLAPICompatibility.getAxioms(ontology, true);
+		
 		previousaxioms.addAll(inferredAxioms);
 		// System.out.println("Previous axioms " + previousaxioms.size());
 		
@@ -1331,17 +1356,19 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		// InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 		
 		System.out.println("fill");
-		iog.fillOntology(dataFactory2, infOnt);
+		// iog.fillOntology(dataFactory2, infOnt);
+		OWLAPICompatibility.fill(iog, dataFactory2, infOnt);
 		System.out.println("done filling");
 		// iog.fillOntology(outputOntologyManager, infOnt);
-		Set<OWLAxiom> newaxioms = infOnt.getAxioms(true);
+		// Set<OWLAxiom> newaxioms = infOnt.getAxioms(true);
+		Set<OWLAxiom> newaxioms = OWLAPICompatibility.getAxioms(infOnt, true);
 		
 		newaxioms.removeAll(previousaxioms);
 		for (OWLAxiom ax : newaxioms){
 		System.out.println(ax);
 		}
 		
-		System.out.println("ontology contains " + ontology.getAxioms(true).size() + "axioms");
+		// System.out.println("ontology contains " + ontology.getAxioms(true).size() + "axioms");
 		
 		
 		/*
@@ -1447,7 +1474,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 								boolean headingFound = false;
 								Collection<OWLAnnotationAssertionAxiom> annots = EntitySearcher.getAnnotationAssertionAxioms(mostSpecificClass.getClassExpression().asOWLClass(), this.ontology);
 								for (OWLAnnotationAssertionAxiom annot : annots){
-									results.add(annot.getValue().asLiteral().orNull().getLiteral());
+									results.add(OWLAPICompatibility.asLiteral(annot.getValue()).orNull().getLiteral());
 									headingFound = true;
 									headFound = true;
 									System.out.println("heading found for " + mostSpecificClass.getClassExpression().asOWLClass());
@@ -1870,10 +1897,10 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("Instruction"))
 				result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
 				+ " " + dAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm() 
-				+ " " + dAss.getObject().asLiteral().orNull().getLiteral()
+				+ " " + OWLAPICompatibility.asLiteral(dAss.getObject()).orNull().getLiteral()
 		+ ")\n";
 			else 
-			if (dAss.getObject().asLiteral().toString().contains("1"))
+			if (OWLAPICompatibility.asLiteral(dAss.getObject()).toString().contains("1"))
 			result += "(" + dAss.getProperty().asOWLDataProperty().getIRI().getFragment() 
 						+ " " + dAss.getSubject().asOWLNamedIndividual().getIRI().getShortForm()
 				+ ")\n";
@@ -1894,7 +1921,8 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		Set<OWLAxiom> filteredClassAssertionAxioms = new HashSet<OWLAxiom>();
 		Set<OWLAxiom> filteredObjectPropertyAssertionAxioms = new HashSet<OWLAxiom>();
 		Set<OWLAxiom> filteredDataPropertyAssertionAxioms = new HashSet<OWLAxiom>();
-		inferredAxioms.addAll(ontology.getAxioms(true));
+		// inferredAxioms.addAll(ontology.getAxioms(true));
+		inferredAxioms.addAll(OWLAPICompatibility.getAxioms(ontology, true));
 		
 		// filter out trivial axioms: (top)(x), x subclassof top
 		for (OWLAxiom ax: inferredAxioms){
@@ -1944,10 +1972,10 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 				// + " \"" + dAss.getObject().asLiteral().orNull().getLiteral() + "\""
 		 // +       //")\n";
 			else 
-			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("hasEnergy") && dAss.getObject().asLiteral().toString().contains("1")
-				|| 	dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("unusable") && dAss.getObject().asLiteral().toString().contains("1")
-				|| 	dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("accessible") && dAss.getObject().asLiteral().toString().contains("1")
-				|| dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("usable") && dAss.getObject().asLiteral().toString().contains("1")
+			if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("hasEnergy") && OWLAPICompatibility.asLiteral(dAss.getObject()).toString().contains("1")
+				|| 	dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("unusable") && OWLAPICompatibility.asLiteral(dAss.getObject()).toString().contains("1")
+				|| 	dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("accessible") && OWLAPICompatibility.asLiteral(dAss.getObject()).toString().contains("1")
+				|| dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("usable") && OWLAPICompatibility.asLiteral(dAss.getObject()).toString().contains("1")
 					)
 				if (dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("unusable")
 						|| dAss.getProperty().asOWLDataProperty().getIRI().getFragment().contains("usable")
@@ -2000,7 +2028,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 	public String getPropertyIndividual(JSONObject ob, String property, String individualString){
 		System.out.println("prop: " + property + " indiv: " + individualString);
 		
-		Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature();
+		Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature(true);
 		
 		OWLNamedIndividual targetIndividual = null;
 		for (OWLNamedIndividual indiv: individuals){
@@ -2072,8 +2100,9 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		
 		
 		OWLClass centralClass = null;
-		Set<OWLClass> classes = ontology.getClassesInSignature();
+		Set<OWLClass> classes = ontology.getClassesInSignature(true);
 		for (OWLClass cl : classes){
+			System.out.println("candidate : " + cl);
 			if (cl.getIRI().getFragment().equals(classString)){
 				centralClass = cl;
 				break;
@@ -2084,8 +2113,8 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		for (OWLClass cl : classes){
 			Collection<OWLAnnotationAssertionAxiom> annots = EntitySearcher.getAnnotationAssertionAxioms(cl, this.ontology);
 			for (OWLAnnotationAssertionAxiom annot : annots){
-				System.out.println("comapring : " + classString + " and " + annot.getValue().asLiteral().orNull().getLiteral());
-				if (annot.getValue().asLiteral().orNull().getLiteral().contains(classString)){
+				System.out.println("comparing : " + classString + " and " + OWLAPICompatibility.asLiteral(annot.getValue()).orNull().getLiteral());
+				if (OWLAPICompatibility.asLiteral(annot.getValue()).orNull().getLiteral().contains(classString)){
 					centralClass = cl;
 					break;
 				}
@@ -2098,7 +2127,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			return "{\"error\" : \"class not found\"}";
 		
 			System.out.println("considering central class: " + centralClass);
-			Set<OWLAxiom> axioms = ontology.getAxioms();
+			Set<OWLAxiom> axioms = ontology.getAxioms(true);
 			for (OWLAxiom ax : axioms){
 				if (ax instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom) ax).getSubClass().equals(centralClass)){
 					OWLSubClassOfAxiom subclax = (OWLSubClassOfAxiom) ax;
@@ -2451,12 +2480,15 @@ public String describeVisual(JSONObject input){
 			if (cas.getClassExpression().isAnonymous())
 				continue;
 			OWLClass classToBeDescribed = cas.getClassExpression().asOWLClass();
-			axioms.addAll(ontology.getAxioms(classToBeDescribed,true));
-			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed,true));
+			// axioms.addAll(ontology.getAxioms(classToBeDescribed,true));
+			axioms.addAll(OWLAPICompatibility.getAxioms(inferredOntology,classToBeDescribed, true));
+			//axioms.addAll(inferredOntology.getAxioms(classToBeDescribed,true));
 		}
 		} else { // we are talking about a class
-			axioms.addAll(ontology.getAxioms(targetClass,true));
-			axioms.addAll(inferredOntology.getAxioms(targetClass,true));
+			// axioms.addAll(ontology.getAxioms(targetClass,true));
+			axioms.addAll(OWLAPICompatibility.getAxioms(ontology,targetClass, true));
+			// axioms.addAll(inferredOntology.getAxioms(targetClass,true));
+			axioms.addAll(OWLAPICompatibility.getAxioms(inferredOntology,targetClass, true));
 		}
 	
 		// System.out.println("REACHED CODE");
@@ -2496,11 +2528,30 @@ public String describeVisual(JSONObject input){
 	return result;
 }
 	
-	
-	
-	
 public String describe(JSONObject input){
-	String toBeDescribed = input.getString("describe");
+	String toBeDescribed = input.getString("describe");	
+	String description = describeHelper(toBeDescribed);
+	return description;
+}
+	
+public String describePlain(JSONObject input){
+	String toBeDescribed = input.getString("describePlain");	
+	String description = describeHelper(toBeDescribed);
+	
+	String plainresult = "";
+	
+	JSONArray jsonarray = new JSONArray(description);
+	for (int i = 0; i < jsonarray.length(); i++) {
+	    JSONObject jsonobject = jsonarray.getJSONObject(i);
+	    String text = jsonobject.getString("text");
+	    plainresult += text + " ";
+	}
+	
+	return plainresult;
+}
+	
+public String describeHelper(String toBeDescribed){
+	// String toBeDescribed = input.getString("describe");
 	String result = "";
 	JSONArray resultArray = new JSONArray();
 	
@@ -2523,18 +2574,21 @@ public String describe(JSONObject input){
 		}
 	}
 	
+	Set<OWLSubClassOfAxiom> directSuperClassAxioms = null;
+	
 	if (targetIndividual !=null || targetClass !=null){
 		
 		Set<OWLClassAxiom> axioms = new HashSet<OWLClassAxiom>();
 		
 		if (targetIndividual!=null){
+		// INDIVIDUAL
+			
 			
 		Set<OWLOntology> closure = ontology.getImportsClosure();	
 		Set<OWLClassAssertionAxiom> classAssertionAxioms = new HashSet<OWLClassAssertionAxiom>();
 		for (OWLOntology on : closure){	
 			classAssertionAxioms.addAll(on.getClassAssertionAxioms(targetIndividual));
 		}
-		
 		
 		// Stream<OWLClassAssertionAxiom> classAssertionAxioms = ontology.classAssertionAxioms(targetIndividual);
 		System.out.println("Got " + classAssertionAxioms.size() + " class assertion axioms.");
@@ -2548,14 +2602,30 @@ public String describe(JSONObject input){
 			if (reasoner.getSubClasses(cas.getClassExpression(),true).isBottomSingleton()){
 			
 			System.out.println("class to be described " + classToBeDescribed);
-			axioms.addAll(ontology.getAxioms(classToBeDescribed,true));
-			System.out.println("axioms for this class " + ontology.getAxioms(classToBeDescribed,true));
-			axioms.addAll(inferredOntology.getAxioms(classToBeDescribed,true));
+			axioms.addAll(OWLAPICompatibility.getAxioms(ontology,classToBeDescribed, true));
+			// axioms.addAll(ontology.getAxioms(classToBeDescribed,true));
+			// System.out.println("axioms for this class " + ontology.getAxioms(classToBeDescribed,true));
+			// axioms.addAll(inferredOntology.getAxioms(classToBeDescribed,true));
+			axioms.addAll(OWLAPICompatibility.getAxioms(inferredOntology,classToBeDescribed, true));
+			
+			directSuperClassAxioms = inferredOntology.getSubClassAxiomsForSuperClass(classToBeDescribed);
+			directSuperClassAxioms.addAll(ontology.getSubClassAxiomsForSuperClass(classToBeDescribed));
+			
 			}
 		}
 		} else {
-			axioms = ontology.getAxioms(targetClass,true);
-			axioms.addAll(inferredOntology.getAxioms(targetClass,true));
+			// CLASS
+			
+			// axioms = ontology.getAxioms(targetClass,true);
+			axioms = OWLAPICompatibility.getAxioms(ontology,targetClass, true);
+			// axioms.addAll(inferredOntology.getAxioms(targetClass,true));
+			axioms.addAll(OWLAPICompatibility.getAxioms(inferredOntology,targetClass, true));
+			directSuperClassAxioms = inferredOntology.getSubClassAxiomsForSuperClass(targetClass);
+			directSuperClassAxioms.addAll(ontology.getSubClassAxiomsForSuperClass(targetClass));
+		}
+		
+		for (OWLSubClassOfAxiom axes : directSuperClassAxioms){
+			System.out.println(" &&&&&&&&&& " + axes.toString());
 		}
 			
 		Set<OWLClassAxiom> simpleSubsumptions = new HashSet<OWLClassAxiom>();
@@ -2593,8 +2663,27 @@ public String describe(JSONObject input){
 				if (ax instanceof OWLSubClassOfAxiom){
 					OWLSubClassOfAxiom subclax = (OWLSubClassOfAxiom) ax;
 					
+					if (subclax.getSuperClass().isOWLThing()){
+						System.out.println("throwing out thingy stuff");
+						continue;
+					}
+					
 					// System.out.println(" checking " + VerbalisationManager.textualise(subclax.getSubClass()).toString() + 
 					// 		" and " + VerbalisationManager.textualise(subclax.getSuperClass()).toString());
+					
+					
+					// Throwing out subsumptions where the subclass includes the superclass name
+					if (!subclax.getSubClass().isAnonymous() && !subclax.getSuperClass().isAnonymous()){
+						String subclassname = subclax.getSubClass().asOWLClass().getIRI().getFragment();
+						String superclassname = subclax.getSuperClass().asOWLClass().getIRI().getFragment();
+						System.out.println("checking : " + subclassname.toLowerCase() + " ISA " + superclassname.toLowerCase());
+						if (subclassname.toLowerCase().contains(superclassname.toLowerCase())){
+								System.out.println(" ---- detecting trivial statement: " +  subclassname.toLowerCase() + " ISA " + superclassname.toLowerCase());
+							
+								}
+						
+					}
+					
 					
 					String subclassstring = VerbalisationManager.textualise(subclax.getSubClass()).toString();
 					String superclassstring = VerbalisationManager.textualise(subclax.getSuperClass()).toString();
@@ -2611,13 +2700,30 @@ public String describe(JSONObject input){
 					
 					System.out.println(" ----  " + subclassstring + " -- " + superclassstring);
 					
-					if (subclassstring.contains(superclassstring)){
+					if (subclassstring.toLowerCase().contains(superclassstring.toLowerCase())){
 						System.out.println(" subsumption considered trivial between " + VerbalisationManager.textualise(subclax.getSubClass()).toString() + 
 								" and " + VerbalisationManager.textualise(subclax.getSuperClass()).toString());
 						continue;
 					}
 					
+					
+					
+					
 				}
+				
+				for (OWLSubClassOfAxiom axes : directSuperClassAxioms){
+					if (axes.getSuperClass().equals(((OWLSubClassOfAxiom) ax).getSuperClass())){
+						System.out.println("preferring superconcept! " + axes);
+						ax = axes;
+						break;
+					}
+				}
+				
+				
+				// check if there is a deeper explanation
+				// TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(ax, reasoner, reasonerFactory, ontology,100, 10000, "OP",true,false);
+				// System.out.println("sequence!!! " + sequence);
+				
 				TextElementSequence seq1 = VerbalisationManager.textualise(ax);
 				seq1.makeUppercaseStart();
 				JSONArray arr1 = seq1.toJSON();
@@ -2629,6 +2735,28 @@ public String describe(JSONObject input){
 			}
 			
 			for (OWLClassAxiom ax : usageSubsumptions){
+				
+				// check if there is a deeper explanation
+				// TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(ax, reasoner, reasonerFactory, ontology,100, 10000, "OP",true,false);
+				// System.out.println("sequence (2)!!! " + sequence);
+				
+				// Throw out subclass-superclass relationships that are represented by composite nouns expressing the indicated purpose.
+				OWLSubClassOfAxiom sax = (OWLSubClassOfAxiom) ax;
+				if (sax.getSuperClass() instanceof OWLObjectSomeValuesFrom){
+					OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) sax.getSuperClass();
+					String usestring = VerbalisationManager.textualise(some.getFiller()).toString();
+					String lastchar = usestring.substring(usestring.length() - 1);
+					System.out.println("usestring: " + usestring);
+					System.out.println("usestring: " + usestring.substring(0,usestring.length() - 1));
+					System.out.println("superclass: " + VerbalisationManager.textualise(sax.getSubClass()).toString());
+					if (lastchar.equalsIgnoreCase("n") 
+							&& VerbalisationManager.textualise(sax.getSubClass()).toString().contains(usestring.substring(0,usestring.length() - 1))){
+						System.out.println("Omitting trivial use! " + VerbalisationManager.textualise(ax).toString());
+						continue;
+					}
+				}
+				
+				
 				TextElementSequence seq1 = VerbalisationManager.textualise(ax);
 				seq1.makeUppercaseStart();
 				JSONArray arr1 = seq1.toJSON();
@@ -2642,10 +2770,17 @@ public String describe(JSONObject input){
 			for (OWLClassAxiom ax : otherSubsumptions){
 				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
 					continue;
+				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("hasImagePath"))
+					continue;
 				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("hat"))
 					continue;
 				// if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
 				// 	continue;
+				
+				// check if there is a deeper explanation
+				// TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(ax, reasoner, reasonerFactory, ontology,100, 10000, "OP",true,false);
+				// System.out.println("sequence (3)!!! " + sequence);
+				
 				TextElementSequence seq1 = VerbalisationManager.textualise(ax);
 				seq1.makeUppercaseStart();
 				seq1 = VerbalisationManager.germanGrammarify(seq1);
@@ -2746,8 +2881,11 @@ public String elaborate(JSONObject input){
 	
 	InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 	
-	iog.fillOntology(dataFactory2, infOnt);
+	// iog.fillOntology(dataFactory2, infOnt);
 	// iog.fillOntology(outputOntologyManager, infOnt);
+	
+	OWLAPICompatibility.fill(iog, dataFactory2, infOnt);
+	
 	Set<OWLAxiom> newaxioms = infOnt.getAxioms();
 	
 	newaxioms.removeAll(previousaxioms);
@@ -2832,6 +2970,12 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	
 	  	if (inputObject.has("getImageClass")){
 	  		 String result = getImageClass(inputObject);
+	  		printstream.println(result);
+	  		return result;
+	  	}
+	  	
+	  	if (inputObject.has("describePlain")){
+	  		 String result = describePlain(inputObject);
 	  		printstream.println(result);
 	  		return result;
 	  	}

@@ -444,7 +444,7 @@ public enum VerbaliseTreeManager {
 					}
 					OWLSubClassOfAxiom conclusion = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
 					String definedconceptname = VerbalisationManager.textualise(definedconcept).toString(); 
-					String tooltiptext = definedconcept.asOWLClass().getIRI().asLiteral().toString();
+					String tooltiptext =  OWLAPICompatibility.asLiteral(definedconcept.asOWLClass().getIRI()).toString();
 					TextElementSequence defSeq = VerbalisationManager.textualise(definition);
 					TextElementSequence seq = new TextElementSequence();
 					// [CONCEPTNAME] is defined as [DEFINITION]
@@ -811,7 +811,7 @@ public enum VerbaliseTreeManager {
 						str = str.substring(3);
 					TextElementSequence seq = new TextElementSequence();
 					seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("howeverNo")));
-					String tooltiptext = subcl.getSubClass().asOWLClass().getIRI().asLiteral().toString();
+					String tooltiptext =  OWLAPICompatibility.asLiteral(subcl.getSubClass().asOWLClass().getIRI()).toString();
 					ClassElement classElem = new ClassElement(str,tooltiptext);
 					// System.out.println("DEBUG!!!! :: " + str);
 					seq.add(classElem);
@@ -931,7 +931,7 @@ public enum VerbaliseTreeManager {
 					seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("and")));
 					seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) subcl3).getSubClass(),obfuscator));
 					seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("are")));
-					String tooltiptext = superclassexp.asOWLClass().getIRI().asLiteral().toString();
+					String tooltiptext =  OWLAPICompatibility.asLiteral(superclassexp.asOWLClass().getIRI()).toString();
 					ClassElement classElem = new ClassElement(superclassstring,tooltiptext);
 					seq.add(classElem);
 					seq.add(new LogicElement(","));
@@ -975,7 +975,7 @@ public enum VerbaliseTreeManager {
 						seq.add(new LogicElement(intString));}
 					seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("_thereforeBeing")));
 					// result += ", therefore being " + intString; 
-					String tooltiptext = superclass.asOWLClass().getIRI().asLiteral().toString();
+					String tooltiptext = OWLAPICompatibility.asLiteral(superclass.asOWLClass().getIRI()).toString();
 					seq.add(new ClassElement(intString,tooltiptext));
 					return seq;
 					// return result;
@@ -1206,7 +1206,7 @@ public enum VerbaliseTreeManager {
 				}
 				OWLSubClassOfAxiom conclusion = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
 				String definedconceptname = VerbalisationManager.textualise(definedconcept).toString(); 
-				String tooltiptext = definedconcept.asOWLClass().getIRI().asLiteral().toString();
+				String tooltiptext =  OWLAPICompatibility.asLiteral(definedconcept.asOWLClass().getIRI()).toString();
 				TextElementSequence defSeq = VerbalisationManager.textualise(definition);
 				TextElementSequence seq = new TextElementSequence();
 				
@@ -1722,7 +1722,7 @@ public enum VerbaliseTreeManager {
 			
 				TextElementSequence seq = new TextElementSequence();
 				seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("howeverNo")));
-				String tooltiptext = subcl.getSubClass().asOWLClass().getIRI().asLiteral().toString();
+				String tooltiptext =  OWLAPICompatibility.asLiteral(subcl.getSubClass().asOWLClass().getIRI()).toString();
 				ClassElement classElem = new ClassElement(str,tooltiptext);
 				seq.add(classElem);
 				seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
@@ -1854,7 +1854,7 @@ public enum VerbaliseTreeManager {
 				seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("and")));
 				seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) subcl3).getSubClass(),obfuscator));
 				seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("are")));
-				String tooltiptext = superclassexp.asOWLClass().getIRI().asLiteral().toString();
+				String tooltiptext =  OWLAPICompatibility.asLiteral(superclassexp.asOWLClass().getIRI()).toString();
 				ClassElement classElem = new ClassElement(superclassstring,tooltiptext);
 				seq.add(classElem);
 				seq.add(new LogicElement(","));
@@ -1902,7 +1902,7 @@ public enum VerbaliseTreeManager {
 					seq.add(new LogicElement(intString));}
 				seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("_thereforeBeing")));
 				// result += ", therefore being " + intString; 
-				String tooltiptext = superclass.asOWLClass().getIRI().asLiteral().toString();
+				String tooltiptext =  OWLAPICompatibility.asLiteral(superclass.asOWLClass().getIRI()).toString();
 				seq.add(new ClassElement(intString,tooltiptext));
 				
 				if(debug) seq.add(new LogicElement("-26-"));
