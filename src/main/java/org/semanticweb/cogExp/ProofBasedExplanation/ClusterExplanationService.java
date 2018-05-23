@@ -2164,7 +2164,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		Set<OWLAxiom> filteredClassAssertionAxioms = new HashSet<OWLAxiom>();
 		// Set<OWLAxiom> filteredObjectPropertyAssertionAxioms = new HashSet<OWLAxiom>();
 		// Set<OWLAxiom> filteredDataPropertyAssertionAxioms = new HashSet<OWLAxiom>();
-		inferredAxioms.addAll(ontology.getAxioms());
+		inferredAxioms.addAll(ontology.getAxioms(true));
 		
 		// filter out trivial axioms: (top)(x), x subclassof top
 		for (OWLAxiom ax: inferredAxioms){
@@ -2198,7 +2198,8 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		Set<OWLAxiom> filteredClassAssertionAxioms = new HashSet<OWLAxiom>();
 		// Set<OWLAxiom> filteredObjectPropertyAssertionAxioms = new HashSet<OWLAxiom>();
 		// Set<OWLAxiom> filteredDataPropertyAssertionAxioms = new HashSet<OWLAxiom>();
-		inferredAxioms.addAll(ontology.getAxioms());
+		inferredAxioms.addAll(ontology.getAxioms(true));
+		inferredAxioms.addAll(inferredOntology.getAxioms(true));
 		
 		// filter out trivial axioms: (top)(x), x subclassof top
 		for (OWLAxiom ax: inferredAxioms){
