@@ -224,6 +224,9 @@ public class StringServer {
 			if (lang.equals("de")){
 				VerbaliseTreeManager.setLocale(Locale.GERMAN);
 			}
+			if (lang.equals("en")){
+				VerbaliseTreeManager.setLocale(Locale.ENGLISH);
+			}
 		}
 		if (args.length > 0 && args[0] != null) {
 			port = Integer.parseInt(args[0]);

@@ -980,7 +980,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			for (OWLAnnotation annotation : annotations) {
 				
 				if (VerbaliseTreeManager.locale==Locale.GERMAN) {
-					// System.out.println("GERMAN LOCALE");
+					System.out.println("----- GERMAN LOCALE --------");
 					if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
 							&& OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("de")){ //is locale german ?
 						str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral() ;// annotation.getValue().toString()
@@ -1001,7 +1001,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				
 				
 				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
-					// System.out.println("ENGLISH LOCALE");
+					System.out.println("----- ENGLISH LOCALE -----");
 					if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
 							&& OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
 							&& OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("en")){
