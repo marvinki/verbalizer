@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1493,7 +1494,13 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 									   // System.out.println(" interested in " + subclAx);
 									if (subclAx.getSuperClass() instanceof OWLDataHasValue){
 										OWLDataHasValue datahasvalue = (OWLDataHasValue) subclAx.getSuperClass();
-										if (property.equals("getInstructionText")) property= "hasInstructionText";
+										if (property.equals("getInstructionText")) 
+										{if (VerbaliseTreeManager.getLocale().equals(Locale.ENGLISH)){
+											property= "hasInstructionTextEn";}
+										else {
+											property= "hasInstructionText";
+										}
+										}
 										if (property.equals("getImage")) property= "hasImagePath";
 										if (property.equals("getVideo")) property= "hasVideoPath";
 										if (datahasvalue.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){

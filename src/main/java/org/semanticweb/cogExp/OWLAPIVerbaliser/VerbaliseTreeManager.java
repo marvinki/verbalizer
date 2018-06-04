@@ -50,7 +50,10 @@ public enum VerbaliseTreeManager {
 	 */
 //	static Locale locale = Locale.ENGLISH;
 	 static Locale locale = Locale.GERMAN;
-		
+	
+	
+	 
+	 
 	/**
 	 * 
 	 */
@@ -59,6 +62,10 @@ public enum VerbaliseTreeManager {
 	
 	public static void setLogicLabels(ResourceBundle LogicLabels) {
 		VerbalisationManager.LogicLabels = LogicLabels;
+	}
+	
+	public static Locale getLocale(){
+		return locale;
 	}
 	
 	private static boolean laconicDefs = false;
