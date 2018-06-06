@@ -1006,12 +1006,21 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 							&& OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
 							&& OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("en")){
 						str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral() ;// annotation.getValue().toString()
+						
+		
+						
 						System.out.println(" prop (1): " + annotation.getProperty());
 						System.out.println(" prop (1): " + annotation.getProperty().getIRI());
 						System.out.println(" prop (1): " + annotation.getProperty().getIRI().equals(OWLRDFVocabulary.RDFS_LABEL.getIRI()));
 						labelFound = true;
-					}if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent()){
+					}if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent()
+							&& !OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("de")	// <-- ignore this if english local and german label is found
+							){
 						// Marvin: using quotes makes Mrs Koelle's structural cueing module crash.
+						
+						System.out.println(" Annotation object " + annotation);
+						
+						
 						str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral();
 						System.out.println("prop " + annotation.getProperty().getEntityType());
 						System.out.println(" prop (2): " + annotation.getProperty().getIRI());
