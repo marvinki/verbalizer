@@ -228,10 +228,23 @@ public enum VerbalisationManager {
 	 * @return the original string with the first character in lowercase
 	 */
 	public static String lowerCaseFirstLetter(String s) {
-		if (s.length() > 0 && Character.isUpperCase(s.charAt(0)))
+		if (s.length() > 0 && Character.isUpperCase(s.charAt(0))){
+			// count the uppercase in the letter to avoid the Machine Type being lowercased 
+			int countUppercase = 0;
+			for(int i = 0; i<s.length(); i++){
+				if (Character.isUpperCase(s.charAt(i)))
+					countUppercase++;
+			};
+			
+			if(countUppercase>=2){
+				System.out.println(s);
+				return s;
+			}
+			else{
 			return s.substring(0, 1).toLowerCase() + s.substring(1, s.length());
-		else
-			return s;
+			}}
+		else{
+			return s;}
 	}
 
 	public String getPropertyNLString(OWLObjectPropertyExpression property) {
@@ -749,7 +762,8 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		
 		if(VerbaliseTreeManager.locale == Locale.GERMAN) return str;
 		
-		if(str.length() <= 0 || str.isEmpty() || str.equals("") ) return resultstring;
+		if(str.length() <= 0 || str.isEmpty() || str.equals("") ) 
+			return resultstring;
 
 			
 		List<String> tokens = new ArrayList<String>();
@@ -801,8 +815,19 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				continue;
 			}
 			// now lowercase
-			if (!tokenEmpty) // token.length()>0)
-				token = token.substring(0, 1).toLowerCase() + token.substring(1, token.length());
+			if (!tokenEmpty){ // token.length()>0)
+				int countUppercase = 0;
+				for(int i = 0; i<token.length(); i++){
+					if (Character.isUpperCase(token.charAt(i)))
+						countUppercase++;
+				};
+				
+				if(countUppercase>=2){
+					System.out.println(token);
+				}else{
+					token = token.substring(0, 1).toLowerCase() + token.substring(1, token.length());
+				}
+			}
 			// now find hypens and lowercase
 			int ind = 0;
 			// System.out.println("working on token" + token);
@@ -829,7 +854,8 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				resultstring += processedtokens.get(i) + _space;
 			}
 		}
-		// System.out.println("DEBUG TREATED " + resultstring);
+		
+		//System.out.println("DEBUG TREATED " + resultstring);
 		return resultstring;
 
 	}
@@ -1015,13 +1041,13 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 						System.out.println(" name is " + str); 
 						labelFound = true;
 					}if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent()
-							&& OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("en")	// <-- ignore this if english local and german label is found
+							&& !OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("de")	// <-- ignore this if english local and german label is found
 							){
 						// Marvin: using quotes makes Mrs Koelle's structural cueing module crash.
 				
 						System.out.println(" Annotation object " + annotation);
 						
-						
+				
 						str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral();
 						System.out.println("prop " + annotation.getProperty().getEntityType());
 						System.out.println(" prop (2): " + annotation.getProperty().getIRI());
