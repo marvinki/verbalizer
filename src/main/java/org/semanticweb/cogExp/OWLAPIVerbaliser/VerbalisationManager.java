@@ -253,6 +253,12 @@ public enum VerbalisationManager {
 				System.out.println("VerbalisationManager returning property : " + getLabel(property.asOWLObjectProperty(),"de"));
 				return getLabel(property.asOWLObjectProperty(),"de");
 		}
+		// adding english label version
+		if (VerbaliseTreeManager.locale.equals(Locale.ENGLISH)){
+			if (getLabel(property.asOWLObjectProperty(),"en")!=null)
+				System.out.println("VerbalisationManager returning property : " + getLabel(property.asOWLObjectProperty(),"en"));
+				return getLabel(property.asOWLObjectProperty(),"en");
+		}
 		OWLProperty namedproperty = property.getNamedProperty();
 		System.out.println("DEBUG - named : " + namedproperty);
 		String str = "";
