@@ -1041,7 +1041,11 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 	*/
 	
 	public String getInstructionText(JSONObject obj){
+		if (VerbaliseTreeManager.getLocale().equals(Locale.ENGLISH)){
+		return getMostSpecificDataValue(obj, "hasInstructionTextEn");
+		}else{
 		return getMostSpecificDataValue(obj, "hasInstructionText");
+		}
 	}
 	
 	public String getVideoPath(JSONObject obj){
@@ -1509,12 +1513,18 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 												// propstr = "{\"text\": \"" + propstr +  "\"}";
 												propstr = propstr.replaceAll("\\\\", "");
 											}
+											if (property.equals("hasInstructionTextEn")){
+												// propstr = "{\"text\": \"" + propstr +  "\"}";
+												propstr = propstr.replaceAll("\\\\", "");
+											}
 											results.add(propstr);
 											if (property.equals("hasVideoPath"))
 												vidFound = true;
 											if (property.equals("hasImagePath"))
 												imgFound = true;
 											if (property.equals("hasInstructionText"))
+												textFound = true;
+											if (property.equals("hasInstructionTextEn"))
 												textFound = true;
 											
 											// System.out.println("Propstr " + propstr);
@@ -2005,6 +2015,8 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 						continue;
 				if (datprop.asOWLDataProperty().getIRI().getShortForm().contains("hasInstructionText")) //<-- remove this for Gregor
 				continue;
+				if (datprop.asOWLDataProperty().getIRI().getShortForm().contains("hasInstructionTextEn")) //<-- remove this for Gregor
+					continue;
 				String propStr = datprop.asOWLDataProperty().getIRI().getShortForm();
 				result += "(" + propStr + " " + subject.asOWLNamedIndividual().getIRI().getShortForm() + " " + lit +")\n";
  			}
