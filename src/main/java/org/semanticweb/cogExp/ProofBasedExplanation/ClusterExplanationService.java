@@ -2787,19 +2787,20 @@ public String describeHelper(String toBeDescribed){
 				// 		+ ". ";
 			}
 			
+			
 			for (OWLClassAxiom ax : otherSubsumptions){
 				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
 					continue;
 				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("hasImagePath"))
 					continue;
-				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("hat"))
+				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("image"))
 					continue;
 				// if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
 				// 	continue;
 				
 				// check if there is a deeper explanation
 				// TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(ax, reasoner, reasonerFactory, ontology,100, 10000, "OP",true,false);
-				// System.out.println("sequence (3)!!! " + sequence);
+				//System.out.println("sequence (3)!!! " + sequence);
 				
 				TextElementSequence seq1 = VerbalisationManager.textualise(ax);
 				seq1.makeUppercaseStart();
@@ -2816,7 +2817,7 @@ public String describeHelper(String toBeDescribed){
 		}
 	
 	result = resultArray.toString();
-	
+	System.out.println(result);
 	
 	return result;
 }
@@ -2997,6 +2998,7 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	if (inputObject.has("describePlain")){
 	  		 String result = describePlain(inputObject);
 	  		printstream.println(result);
+	  		System.out.println(result);
 	  		return result;
 	  	}
 	  	
