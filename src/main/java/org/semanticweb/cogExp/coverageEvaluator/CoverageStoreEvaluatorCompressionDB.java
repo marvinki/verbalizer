@@ -3012,7 +3012,7 @@ public static Set<OWLAxiom> parseAxiomsFunctional(String str, OWLOntology ont){
 	    					noSteps2, 
 	    					time.intValue(),
 	    					countRules(infRules,"EQUIVEXTRACT"), 
-	    					countRules(infRules,"SUBCLASSANDEQUIVELIM"),
+	    					countRules(infRules,"SUBCLANDEQUIVELIM"),
 	    					countRules(infRules,"R0"), 
 	    					countRules(infRules,"INLG2012NguyenEtAlRule1"),
 	    					countRules(infRules,"INLG2012NguyenEtAlRule1neo"),
