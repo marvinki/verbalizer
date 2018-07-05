@@ -1475,7 +1475,15 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 								boolean headingFound = false;
 								Collection<OWLAnnotationAssertionAxiom> annots = EntitySearcher.getAnnotationAssertionAxioms(mostSpecificClass.getClassExpression().asOWLClass(), this.ontology);
 								for (OWLAnnotationAssertionAxiom annot : annots){
-									results.add(OWLAPICompatibility.asLiteral(annot.getValue()).orNull().getLiteral());
+									String result = OWLAPICompatibility.asLiteral(annot.getValue()).orNull().getLiteral();
+									System.out.println("lang " +  OWLAPICompatibility.asLiteral(annot.getValue()).orNull().getLang());
+									if (OWLAPICompatibility.asLiteral(annot.getValue()).orNull().getLang().equals("de") && 
+											VerbaliseTreeManager.getLocale().equals(Locale.ENGLISH))
+										continue;
+									if (OWLAPICompatibility.asLiteral(annot.getValue()).orNull().getLang().equals("en") && 
+											VerbaliseTreeManager.getLocale().equals(Locale.GERMAN))
+										continue;
+									results.add(result);
 									headingFound = true;
 									headFound = true;
 									System.out.println("heading found for " + mostSpecificClass.getClassExpression().asOWLClass());
@@ -1515,6 +1523,8 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 											if (property.equals("hasImagePath"))
 												imgFound = true;
 											if (property.equals("hasInstructionText"))
+												textFound = true;
+											if (property.equals("hasInstructionTextEn"))
 												textFound = true;
 											
 											// System.out.println("Propstr " + propstr);
