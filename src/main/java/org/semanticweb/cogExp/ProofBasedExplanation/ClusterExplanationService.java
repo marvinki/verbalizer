@@ -61,6 +61,7 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -2797,8 +2798,21 @@ public String describeHelper(String toBeDescribed){
 			
 			
 			for (OWLClassAxiom ax : otherSubsumptions){
-				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
+				
+				if (getObjectPropertyFromOWLAxiom(ax)!=null){
+					OWLObjectPropertyExpression prop =  getObjectPropertyFromOWLAxiom(ax);
+					OWLObjectProperty objprop = prop.asOWLObjectProperty();
+					System.out.println("Describe helper is checking property expression: " + objprop);
+					System.out.println("Describe helper is checking property expression: " + objprop.getIRI().asLiteral().toString());
+				
+				if // (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
+					(prop.asOWLObjectProperty().getIRI().toString().contains("productimage"))
 					continue;
+				if // (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
+					(prop.asOWLObjectProperty().getIRI().toString().contains("hasVisualFeature"))
+				continue;
+				}
+				
 				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("hasImagePath"))
 					continue;
 				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("image"))
@@ -3384,6 +3398,17 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
    	
    }
 	
+	public static OWLObjectPropertyExpression getObjectPropertyFromOWLAxiom(OWLClassAxiom ax){
+		if (ax instanceof OWLSubClassOfAxiom){
+			OWLSubClassOfAxiom subclax = (OWLSubClassOfAxiom) ax;
+			if (subclax.getSuperClass() instanceof OWLObjectSomeValuesFrom){
+				OWLObjectSomeValuesFrom someax = (OWLObjectSomeValuesFrom) subclax.getSuperClass();
+				OWLObjectPropertyExpression prop = someax.getProperty();
+				return prop;
+			}
+		}
+		return null;
+	}
 	
 
 }
