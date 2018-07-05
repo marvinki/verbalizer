@@ -1041,7 +1041,11 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 	*/
 	
 	public String getInstructionText(JSONObject obj){
+		if (VerbaliseTreeManager.getLocale().equals(Locale.ENGLISH)){
+		return getMostSpecificDataValue(obj, "hasInstructionTextEn");
+		}else{
 		return getMostSpecificDataValue(obj, "hasInstructionText");
+		}
 	}
 	
 	public String getVideoPath(JSONObject obj){
@@ -1514,6 +1518,10 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 										if (datahasvalue.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
 											String propstr = datahasvalue.getFiller().getLiteral();
 											if (property.equals("hasInstructionText")){
+												// propstr = "{\"text\": \"" + propstr +  "\"}";
+												propstr = propstr.replaceAll("\\\\", "");
+											}
+											if (property.equals("hasInstructionTextEn")){
 												// propstr = "{\"text\": \"" + propstr +  "\"}";
 												propstr = propstr.replaceAll("\\\\", "");
 											}
@@ -2015,6 +2023,8 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 						continue;
 				if (datprop.asOWLDataProperty().getIRI().getShortForm().contains("hasInstructionText")) //<-- remove this for Gregor
 				continue;
+				if (datprop.asOWLDataProperty().getIRI().getShortForm().contains("hasInstructionTextEn")) //<-- remove this for Gregor
+					continue;
 				String propStr = datprop.asOWLDataProperty().getIRI().getShortForm();
 				result += "(" + propStr + " " + subject.asOWLNamedIndividual().getIRI().getShortForm() + " " + lit +")\n";
  			}
@@ -2785,19 +2795,20 @@ public String describeHelper(String toBeDescribed){
 				// 		+ ". ";
 			}
 			
+			
 			for (OWLClassAxiom ax : otherSubsumptions){
 				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
 					continue;
 				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("hasImagePath"))
 					continue;
-				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("hat"))
+				if (VerbalisationManager.textualise(ax).toJSON().toString().contains("image"))
 					continue;
 				// if (VerbalisationManager.textualise(ax).toJSON().toString().contains("productimage"))
 				// 	continue;
 				
 				// check if there is a deeper explanation
 				// TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(ax, reasoner, reasonerFactory, ontology,100, 10000, "OP",true,false);
-				// System.out.println("sequence (3)!!! " + sequence);
+				//System.out.println("sequence (3)!!! " + sequence);
 				
 				TextElementSequence seq1 = VerbalisationManager.textualise(ax);
 				seq1.makeUppercaseStart();
@@ -2814,7 +2825,7 @@ public String describeHelper(String toBeDescribed){
 		}
 	
 	result = resultArray.toString();
-	
+	System.out.println(result);
 	
 	return result;
 }
@@ -2995,6 +3006,7 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 	  	if (inputObject.has("describePlain")){
 	  		 String result = describePlain(inputObject);
 	  		printstream.println(result);
+	  		System.out.println(result);
 	  		return result;
 	  	}
 	  	
