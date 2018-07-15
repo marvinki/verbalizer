@@ -2537,7 +2537,14 @@ public String describeVisual(JSONObject input){
 			OWLObjectSomeValuesFrom someax = (OWLObjectSomeValuesFrom) subclax.getSuperClass();
 			OWLPropertyExpression property = someax.getProperty();
 			System.out.println("testing: " + VerbalisationManager.textualise(someax).toJSON().toString());
-			if (VerbalisationManager.textualise(someax).toJSON().toString().contains("hat")){
+			
+			OWLObjectSomeValuesFrom superexp = (OWLObjectSomeValuesFrom) subclax.getSuperClass();
+			OWLObjectPropertyExpression prop = superexp.getProperty();
+			
+			if (VerbalisationManager.textualise(someax).toJSON().toString().contains("hat") ||
+					prop.asOWLObjectProperty().getIRI().toString().contains("hasVisualFeature")
+					// VerbalisationManager.textualise(someax).toJSON().toString().contains("has")
+					){
 				TextElementSequence seq = VerbalisationManager.textualise(ax);
 				seq.makeUppercaseStart();
 				
@@ -2548,6 +2555,10 @@ public String describeVisual(JSONObject input){
 				resultArray.put(makeFullstop());
 				
 			}
+			
+			
+			
+			
 			}
 		}
 	}
@@ -2708,7 +2719,7 @@ public String describeHelper(String toBeDescribed){
 						System.out.println("checking : " + subclassname.toLowerCase() + " ISA " + superclassname.toLowerCase());
 						if (subclassname.toLowerCase().contains(superclassname.toLowerCase())){
 								System.out.println(" ---- detecting trivial statement: " +  subclassname.toLowerCase() + " ISA " + superclassname.toLowerCase());
-							
+								continue;
 								}
 						
 					}
