@@ -2599,7 +2599,9 @@ public String describeHelper(String toBeDescribed){
 	
 	OWLNamedIndividual targetIndividual = null;
 	for (OWLNamedIndividual indiv: individuals){
-		if (indiv.getIRI().getShortForm().equals(toBeDescribed)){
+		if (indiv.getIRI().getShortForm().equals(toBeDescribed)
+				&& !indiv.getIRI().toString().contains("diy-instructions") // <-- making sure only domain objects are retrieved (problem: "Saw" in instructions)
+				){
 			targetIndividual = indiv;
 			System.out.println("identified target individual: " + targetIndividual);
 		}
@@ -2664,9 +2666,12 @@ public String describeHelper(String toBeDescribed){
 			directSuperClassAxioms.addAll(ontology.getSubClassAxiomsForSuperClass(targetClass));
 		}
 		
-		for (OWLSubClassOfAxiom axes : directSuperClassAxioms){
-			System.out.println(" &&&&&&&&&& " + axes.toString());
-		}
+		if (directSuperClassAxioms==null)
+			System.out.println("no direct super class!");
+		else
+			for (OWLSubClassOfAxiom axes : directSuperClassAxioms){
+				System.out.println(" &&&&&&&&&& " + axes.toString());
+			}
 			
 		Set<OWLClassAxiom> simpleSubsumptions = new HashSet<OWLClassAxiom>();
 		Set<OWLClassAxiom> usageSubsumptions = new HashSet<OWLClassAxiom>();
