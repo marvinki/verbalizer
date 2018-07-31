@@ -122,6 +122,7 @@ public class RunTroughExample {
 	int failedProofs = 0;
 	List<OWLAxiom> failed = new ArrayList<OWLAxiom>();
 
+	boolean stop = false;
 	
 	for (OWLAxiom ax : newaxioms){
 		GentzenTree tree = VerbalisationManager.computeGentzenTree(ax, reasoner, reasonerFactory,
@@ -136,12 +137,15 @@ public class RunTroughExample {
 			continue;
 		}
 		
+		
 		try{
 			VerbaliseTreeManager.setLocale(Locale.ENGLISH);
 		WordNetQuery.INSTANCE.disableDict();
 		String explanation = VerbalisationManager.computeVerbalization(tree, false, null);
 		System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax).toString() + "\":\n");
 		System.out.println(explanation);
+		if (explanation.contains("hollow") && explanation.contains("perforating"))
+			stop = true;
 		} catch (Exception e){
 			continue;
 		}
@@ -225,6 +229,8 @@ public class RunTroughExample {
 			
 			System.out.println("Conclusion: " + VerbalisationManager.prettyPrint(conclusionOWLAPI) + "\n");
 		}
+		if (stop)
+			throw new RuntimeException();
 	}
 	
 	System.out.println("Failed proof attempts: " + failedProofs);
