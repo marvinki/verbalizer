@@ -754,13 +754,17 @@ public enum VerbalisationManager {
 				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
 					if(annotation.getValue().asLiteral().orNull().hasLang("en")){
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
-						labelFound = true;
-					}if(!labelFound){
-						// Marvin: using quotes makes Mrs Koelle's structural cueing module crash.
-						str = annotation.getValue().asLiteral().orNull().getLiteral();
-						// str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"" ;
-						labelFound = true;// annotation.getValue().toString()
+						// labelFound = true;
+						// System.out.println("examining str! "+ str);
+						if (annotation.getProperty().isLabel())
+							labelFound = true;
+							break;
 					}
+						// labelFound = true;
+					// System.out.println("examining str (2)! "+ str);
+					if (annotation.getProperty().isLabel() && str.equals(""))
+						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
+						labelFound = true;
 				}				
 					
 //				
@@ -799,6 +803,7 @@ public enum VerbalisationManager {
 			return str;
 		}
 		if (str == "") {
+			System.out.println("CLASS NAME HAS NO LABEL: " + classname);
 			str = ppCEvisit.visit(classname);
 	
 			// check if camelcasing was used

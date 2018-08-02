@@ -864,7 +864,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 							Sentence recSentence2 = ex.accept(this);
 							result.setObjekt(recSentence2);
 								
-							//  System.out.println("result:  " + result.inspect());
+						 // System.out.println("result:  " + result.inspect());
 					}
 				}
 			}
