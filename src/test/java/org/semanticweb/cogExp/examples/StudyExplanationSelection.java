@@ -149,8 +149,11 @@ public class StudyExplanationSelection {
 			
 		// Explanation 
 			
-		String justifications1="EquivalentClasses(<http://purl.obolibrary.org/obo/GO_0010551> <http://purl.obolibrary.org/obo/GO_1900406>)" + 
-				"EquivalentClasses(<http://purl.obolibrary.org/obo/GO_1901718> <http://purl.obolibrary.org/obo/GO_0010551>)";
+			String justifications1="EquivalentClasses(<http://purl.obolibrary.org/obo/GO_0006357> <http://purl.obolibrary.org/obo/GO_1901718> )" +
+			  					   "EquivalentClasses(<http://purl.obolibrary.org/obo/GO_0006357> <http://purl.obolibrary.org/obo/GO_1900406> )";
+			
+		// String justifications1="EquivalentClasses(<http://purl.obolibrary.org/obo/GO_0010551> <http://purl.obolibrary.org/obo/GO_1900406>)" + 
+		//  		"EquivalentClasses(<http://purl.obolibrary.org/obo/GO_1901718> <http://purl.obolibrary.org/obo/GO_0010551>)";
 		String conclusion1 = "SubClassOf(<http://purl.obolibrary.org/obo/GO_1900406> <http://purl.obolibrary.org/obo/GO_1901718>)";
 		
 		String ontology1 = "/Users/marvin/work/ki-ulm-repository/students/hiwis/Tanja-Perleth/resources/ontologies/bioportal/OMIT.owl";			
