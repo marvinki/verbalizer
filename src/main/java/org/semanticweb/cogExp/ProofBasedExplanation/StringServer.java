@@ -44,6 +44,7 @@ public class StringServer {
 	private final ServerSocket server;
 	// private final Socket socket;
 	private ClusterExplanationService service = null;
+	public static String uriFormat = "fragment";
 
 	public StringServer(int port, ClusterExplanationService service) throws IOException {
 		
@@ -218,6 +219,7 @@ public class StringServer {
 
 	public static void main(String[] args) throws IOException {
 		int port = 3111;
+		String ontologyNamespace = "";
 		System.out.println("[Server preparation. Please wait.]");
 		if (args.length > 2 && args[2] != null) {
 			String lang = args[2];
@@ -227,6 +229,9 @@ public class StringServer {
 			if (lang.equals("en")){
 				VerbaliseTreeManager.setLocale(Locale.ENGLISH);
 			}
+		}
+		if (args.length > 3 && args[3] != null) {
+			uriFormat = args[3];
 		}
 		if (args.length > 0 && args[0] != null) {
 			port = Integer.parseInt(args[0]);
@@ -264,19 +269,28 @@ public class StringServer {
 			// 		.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("THROW_EXCEPTION"));
 
 			String result = "";
+			
 			try {
 				ontology =  manager.loadOntologyFromOntologyDocument(source);
+				/* below is just for testing!
 				Set<OWLOntology> imports = ontology.getImports();
 				for (OWLOntology imp : imports){
 					Set<OWLAxiom> ax = imp.getAxioms();		
 					for (OWLAxiom axio : ax)
 						System.out.println(axio);
-				}
+					} 
+				*/ 
 				
 				
 				// ontology = manager.loadOntologyFromOntologyDocument(source, loaderconfig);
 				
 				VerbalisationManager.INSTANCE.setOntology(ontology);
+				IRI ontologyIri = ontology.getOntologyID().getOntologyIRI().get();
+				// ontologyNamespace = ontologyIri.getNamespace();
+				ontologyNamespace = ontologyIri.toString();
+				
+				System.out.println("Namespace: " + ontologyNamespace);
+				
 				
 				// manager.loadOntologyFromOntologyDocument(file);
 				System.out.println("Done loading ontology " + ontology.getOntologyID() + ". Now loading reasoner.");
@@ -306,6 +320,7 @@ public class StringServer {
 		// }
 
 		try {
+			clusterExplanationService.setInstructionsIRI(ontologyNamespace);
 			clusterExplanationService.handleBoschRequest("{\"command\" : \"precompute\"}", null);
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block

@@ -131,29 +131,7 @@ import uk.ac.manchester.cs.jfact.JFactFactory;
  * {"command" : "explainSubclass", "subclass": "Spruce", "superclass": "Material", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
  */
 
-/*
-[ {
-	  "query" : ["getInstructionText",  "getVideo", "getImage", "getHeading"],
-	  "task" : {
-	    "name" : "Saw",
-	    "text" : null,
-	    "pictureURL" : null,
-	    "videoURL" : null,
-	    "actionParameter" : [ "saw-1", "raw", "back", "tray" ]
-	  }
-	},
-	 {
-	  "query" :  ["getInstructionText",  "getVideo", "getImage", "getHeading"],
-	  "task" : {
-	    "name" : "Drill_Screw",
-	    "text" : null,
-	    "pictureURL" : null,
-	    "videoURL" : null,
-	    "actionParameter" : [ "drill-1", "hanger-2", "a1", "back", "a4", "screw-4", "right" ]
-	  }
-	}
-	]
-*/
+
 
 public class ClusterExplanationService {
 	
@@ -165,7 +143,6 @@ public class ClusterExplanationService {
 		// inferredAxioms = inferAxioms(ontology);
 	}
 	
-	private static final String TEMP_PATH = "/tmp/graph.";
 	
 	private OWLReasoner reasoner = null;
 	private OWLReasonerFactory reasonerFactory = null;
@@ -174,119 +151,16 @@ public class ClusterExplanationService {
 	private OWLOntology inferredOntology = null;
 	public static String ontologyfile = "";
 	
-	private static final String instructionsIRI = "http://www.semanticweb.org/diy-instructions";
+	private static String instructionsIRI = ""; // <-- initially empty to remain generic
 	
 	public static void setOntologyfile(String ontfile){
-		ontologyfile = ontfile;
-	}
-
-	/*
-	private static File generateGraph(String dot, String path) {
-
-		
-        GraphViz gv = new GraphViz();
-        
-          gv.add(dot);
-          String type = "png";
-          String representationType="dot";
-          System.out.println(path);
-          File out = new File(path);   
-          System.out.println(out);
-
-          String getsource = gv.getDotSource();
-          
-          byte[] graph = gv.getGraph( gv.getDotSource(), type,  representationType);
-          
-      
-        return out;
-
-    }
-    */
-	
-	private static File createGraph(File source, File out){
-		Runtime rt = Runtime.getRuntime();
-
-		// patch by Mike Chenault
-		// representation type with -K argument by Olivier Duplouy
-		String[] args = {"dot", "-Tpng", source.getAbsolutePath() ,"-o", out.getAbsolutePath()};
-		// System.out.println(Arrays.toString(args));
-		Process p;
-		try {
-			p = rt.exec(args);
-			p.waitFor();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return out;
+		ontologyfile = ontfile;	
 	}
 	
-	/*
-	public Set<OWLAxiom> inferAxioms(OWLOntology ontology){
-		System.out.println("Axiom count " + ontology.getAxiomCount());
-		
-	    
-		// List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
-		// gens.add(new InferredSubClassAxiomGenerator());
-		
-	    // Put the inferred axioms into a fresh empty ontology.
-		Set<OWLAxiom> previousaxioms = ontology.getAxioms();
-		// System.out.println("Previous axioms " + previousaxioms.size());
-		
-		
-		 List<InferredAxiomGenerator<? extends OWLAxiom>> generators=new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
-	        generators.add(new InferredSubClassAxiomGenerator());
-	        generators.add(new InferredClassAssertionAxiomGenerator());
-	        generators.add(new InferredDataPropertyCharacteristicAxiomGenerator());
-	        generators.add(new InferredEquivalentClassAxiomGenerator());
-	        generators.add(new InferredEquivalentDataPropertiesAxiomGenerator());
-	        generators.add(new InferredEquivalentObjectPropertyAxiomGenerator());
-	        generators.add(new InferredInverseObjectPropertiesAxiomGenerator());
-	        generators.add(new InferredObjectPropertyCharacteristicAxiomGenerator());
-	        generators.add(new org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator());
+	public void setInstructionsIRI(String iri){
+		instructionsIRI = iri;
+	}
 
-	        generators.add(new InferredSubClassAxiomGenerator());
-	        generators.add(new InferredSubDataPropertyAxiomGenerator());
-	        generators.add(new InferredSubObjectPropertyAxiomGenerator());
-	        
-	       // InferredObjectPropertyAxiomGenerator<OWLObjectPropertyAxiom> testSubject0 = new InferredObjectPropertyAxiomGenerator<OWLObjectPropertyAxiom>();
-	        
-	        // InferredObjectPropertyAxiomGenerator generator1 = new InferredObjectPropertyAxiomGenerator<OWLObjectPropertyAxiom>();
-	       //  generators.add(generator1);
-
-
-			// InferredObjectPropertyAxiomGenerator generator = new InferredObjectPropertyAxiomGenerator();
-			// generator.createAxioms(owldatafactory, reasoner);
-
-
-		
-		// InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner,generators);
-		
-		
-		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
-		
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
-		try {
-			OWLOntology newontology = manager.createOntology();
-		
-		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
-		iog.fillOntology(dataFactory2, newontology);
-		// iog.fillOntology(outputOntologyManager, infOnt);
-		newaxioms = newontology.getAxioms();
-		System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
-		
-		newaxioms.removeAll(previousaxioms);
-		} catch (OWLOntologyCreationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	
-		
-		return newaxioms;
-}
-*/
 
 	public Set<OWLAxiom> inferAxioms(OWLOntology ontology){
 		System.out.println("Axiom count " + ontology.getAxiomCount());
@@ -445,148 +319,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 	
 }
 
-	
-	
-/*	
 
-	public Set<OWLAxiom> inferAxioms(OWLOntology ontology){
-			System.out.println("Axiom count " + ontology.getAxiomCount());
-			
-		    // Put the inferred axioms into a fresh empty ontology.
-			Set<OWLAxiom> previousaxioms = ontology.getAxioms(true);
-			// System.out.println("Previous axioms " + previousaxioms.size());
-			InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
-			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-			Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
-			try {
-				OWLOntology newontology = manager.createOntology();
-			
-			OWLDataFactory dataFactory2=manager.getOWLDataFactory();
-			iog.fillOntology(dataFactory2, newontology);
-			// iog.fillOntology(outputOntologyManager, infOnt);
-			newaxioms = newontology.getAxioms(true);
-			System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
-			
-			newaxioms.removeAll(previousaxioms);
-			} catch (OWLOntologyCreationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		
-			
-			return newaxioms;
-	}
-	
-	public void precomputeAxioms(){
-		Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
-		Set<OWLAxiom> previousaxioms = new HashSet<OWLAxiom>();
-		if (inferredAxioms.size()>0){
-			System.out.println("[Using cached axioms]");
-			newaxioms = inferredAxioms;
-		} else{
-		
-   // OWLReasonerFactory reasonerFactory2 = new JFactFactory();
-    // SimpleConfiguration configuration = new SimpleConfiguration(50000);
-    // System.out.println("Ontology " + ontology);;
-	// OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology);
-	// List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
-	// gens.add(new InferredSubClassAxiomGenerator());
-	 
-    // Put the inferred axioms into a fresh empty ontology.
-    OWLOntologyManager outputOntologyManager = OWLManager.createOWLOntologyManager();
-	
-    
-    try {
-		OWLOntology infOnt = outputOntologyManager.createOntology();
-	
-	previousaxioms = ontology.getAxioms(); //<--- include imports closure
-	// System.out.println("Previous axioms " + previousaxioms.size());
-	InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
-	
-	
-	OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-	OWLDataFactory dataFactory2=manager.getOWLDataFactory();
-	iog.fillOntology(dataFactory2, infOnt);
-	// iog.fillOntology(outputOntologyManager, infOnt);
-	newaxioms = infOnt.getAxioms(true);
-	inferredOntology = infOnt;
-	} catch (OWLOntologyCreationException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	// newaxioms.removeAll(previousaxioms);
-	}
-	
-	System.out.println("[Newly inferred axioms: " + newaxioms.size() + "]");
-	
-	inferredAxioms = newaxioms;
-}
-	
-	public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
-		System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
-		System.out.println("[Retrieving list of superclasses]");
-			// find classname
-			String ontologyname =ontologynameinput.replaceAll("\"", "");
-			
-			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-			String result = "";
-			try {
-				
-				if (ontology==null){
-								
-					java.io.File file = new java.io.File(ontologyname);
-					FileDocumentSource source = new FileDocumentSource(file);
-					OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
-					loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
-					loaderconfig = loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
-								
-				
-				ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
-				System.out.println("[Done loading ontology]");
-				} else{ 
-					System.out.println("[Using preloaded ontology]");
-					}
-				
-			Set<OWLAxiom> newaxioms;
-			Set<OWLAxiom> previousaxioms = new HashSet<OWLAxiom>();
-				
-				if (inferredAxioms.size()>0){
-					System.out.println("[Using cached axioms]");
-					newaxioms = inferredAxioms;
-				} else{
-			 
-		    // Put the inferred axioms into a fresh empty ontology.
-		    OWLOntologyManager outputOntologyManager = OWLManager.createOWLOntologyManager();
-			OWLOntology infOnt = outputOntologyManager.createOntology();
-			previousaxioms = ontology.getAxioms();
-			// System.out.println("Previous axioms " + previousaxioms.size());
-			
-
-			InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
-			
-			OWLDataFactory dataFactory2=manager.getOWLDataFactory();
-			iog.fillOntology(dataFactory2, ontology);
-			// iog.fillOntology(outputOntologyManager, infOnt);
-			newaxioms = ontology.getAxioms(true);
-			newaxioms.removeAll(previousaxioms);
-			}
-			
-			System.out.println("[Newly inferred axioms: " + newaxioms.size() + "]");
-			
-			inferredAxioms = newaxioms;
-			System.out.println("[Inferred axioms cached: " + inferredAxioms.size()+ "]");
-				
-			HashSet<OWLClassExpression> superclasses = new HashSet<OWLClassExpression>();
-				} catch (Exception e){
-					e.printStackTrace();
-				}
-			System.out.println("Returning list: " + result);
-		return inferredAxioms;
-		
-	}
-	
-	*/
 	
 	public String listClasses(){
 		String result = "";
@@ -596,8 +329,6 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		}
 		return result;
 	} 
-	
-	
 	
 	public String listClassesPanda(){
 		String result = "";
@@ -1296,7 +1027,10 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 						continue;
 					}
 					OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_arg" + counter));
-					OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-domain#" + obString)); // <-- objects in the domain!
+					
+					OWLIndividual target_indiv = findIndividualsFromFragment(obString);
+					// OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-domain#" + obString)); // <-- objects in the domain!
+					
 					OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(argProp,new_indiv, target_indiv);
 					AddAxiom addAxiomAction2= new AddAxiom(origin,ax);
 					manager.applyChange(addAxiomAction2);
@@ -1312,9 +1046,16 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 						int paramcounter = 1;
 						for (Object param : innerParams){
 							String paramString = (String) param;
+							if (paramString.contains("Dangerous")){ // <-------- find out how this ends up here in the first place!!!
+								continue;
+							}
+							
 							
 							OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_arg" + paramcounter + "-" + actioncounter));
-							OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-domain#" + paramString)); // <-- objects in the domain!
+							
+							OWLIndividual target_indiv = findIndividualsFromFragment(paramString);
+							// OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-domain#" + paramString)); // <-- objects in the domain!
+							
 							OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(argProp,new_indiv, target_indiv);
 							AddAxiom addAxiomAction2= new AddAxiom(origin,ax);
 							manager.applyChange(addAxiomAction2);
@@ -1583,279 +1324,6 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		
 	}
 	
-	/* Old version remains for reference
-	public List<String> getMostSpecificDataValue(List<JSONObject> objects, List<List<String>> properties){
-		OWLClassExpression _DEBUG_ = null;
-		
-		List<String> results = new ArrayList<String>();
-		List<OWLAxiom> memory = new ArrayList<OWLAxiom>();
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory2=manager.getOWLDataFactory();
-		
-		OWLOntology origin = ontology;
-		System.out.println("Ontology id : " + origin.getOntologyID());
-		System.out.println("Ontology axiom count : " + ontology.getAxiomCount(true));
-		
-		// big loop for actions
-		for (int index = 0; index<objects.size(); index++){
-			JSONObject obj = objects.get(index); 
-			String actionName = obj.getString("name");
-			JSONArray params = (JSONArray) obj.get("actionParameter");
-		
-			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#action" + index));
-			OWLObjectProperty performsActivityProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_name"));
-			OWLIndividual name_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#" + actionName));
-			OWLObjectPropertyAssertionAxiom name_ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(performsActivityProp,new_indiv, name_indiv);
-			System.out.println(" assuming " + name_ax);;
-		
-			AddAxiom addAxiomAction= new AddAxiom(origin,name_ax);
-			manager.applyChange(addAxiomAction);
-			memory.add(name_ax);
-		
-			// loop for individual arguments
-			int counter = 1;
-			for (Object ob : params){
-				String obString = (String) ob;
-				// System.out.println("obString" + obString);
-				if (obString.contains("Dangerous")){ // <-------- find out how this ends up here in the first place!!!
-					continue;
-				}
-				OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_arg" + counter));
-				OWLIndividual target_indiv = dataFactory2.getOWLNamedIndividual(IRI.create("http://www.semanticweb.org/diy-domain#" + obString)); // <-- objects in the domain!
-				OWLObjectPropertyAssertionAxiom ax = dataFactory2.getOWLObjectPropertyAssertionAxiom(argProp,new_indiv, target_indiv);
-				AddAxiom addAxiomAction2= new AddAxiom(origin,ax);
-				manager.applyChange(addAxiomAction2);
-				counter++;
-				memory.add(ax);
-				System.out.println(" assuming " + ax);;
-			}	
-		} // assumptions done, now comes the reasoning!
-		
-		
-		try {
-			System.out.println("create empty ontology");
-			OWLOntology infOnt = manager.createOntology();
-		
-		Set<OWLAxiom> previousaxioms = ontology.getAxioms(true);
-		previousaxioms.addAll(inferredAxioms);
-		// System.out.println("Previous axioms " + previousaxioms.size());
-		
-		ConsoleProgressMonitor progressMonitor = new ConsoleProgressMonitor();
-	    OWLReasonerConfiguration config = new SimpleConfiguration(progressMonitor);
-		// SimpleConfiguration config = new SimpleConfiguration(50000);
-		
-	     reasoner = reasonerFactory.createReasoner(origin, config);
-		
-	     
-		System.out.println("create generator");
-		
-		List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
-        // gens.add(new InferredSubClassAxiomGenerator());
-        // gens.add(new InferredEquivalentClassAxiomGenerator());
-		gens.add(new InferredClassAssertionAxiomGenerator());
-		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner,
-                  gens);
-		
-		// InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
-		
-		System.out.println("fill");
-		iog.fillOntology(dataFactory2, infOnt);
-		System.out.println("done filling");
-		// iog.fillOntology(outputOntologyManager, infOnt);
-		Set<OWLAxiom> newaxioms = infOnt.getAxioms(true);
-		
-		newaxioms.removeAll(previousaxioms);
-		for (OWLAxiom ax : newaxioms){
-		System.out.println(ax);
-		}
-		
-		System.out.println("ontology contains " + ontology.getAxioms(true).size() + "axioms");
-		
-		
-		
-		
-	
-		
-		// Set<OWLAnnotation> annotations = ontology.getAnnotations();
-		
-		
-		HashMap<OWLIndividual,List<OWLAxiom>> actionsWithAxioms = new HashMap<OWLIndividual,List<OWLAxiom>>();
-		for (int index = 0; index<objects.size(); index++){
-			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#action" + index));
-			List<OWLAxiom> assertionlist = new ArrayList<OWLAxiom>();
-			actionsWithAxioms.put(new_indiv,assertionlist);
-			
-		}
-		
-		for (OWLAxiom axes : newaxioms){
-			if (axes instanceof OWLClassAssertionAxiom){
-				OWLClassAssertionAxiom cax = (OWLClassAssertionAxiom) axes;
-				if (cax.getClassExpression().isOWLThing())
-					continue;
-				OWLIndividual ind = cax.getIndividual();
-				List<OWLAxiom> axiomslist = actionsWithAxioms.get(ind);
-				// System.out.println("adding!" + axes);
-				if (axiomslist!=null)
-				axiomslist.add(axes);
-			}
-		}
-				
-		Set<OWLIndividual> indivs = actionsWithAxioms.keySet();	
-		for (OWLIndividual ind : indivs){
-			System.out.println(ind);
-			System.out.println(actionsWithAxioms.get(ind).toString());
-		}
-		
-			
-		// big loop for actions
-		for (int index = 0; index<objects.size(); index++){
-			OWLIndividual new_indiv = dataFactory2.getOWLNamedIndividual(IRI.create(instructionsIRI + "#action" + index));
-			
-			List<OWLAxiom> axiomlist = actionsWithAxioms.get(new_indiv);
-			
-			OWLClassAssertionAxiom mostSpecificClass = null;
-			
-			List<OWLClassExpression> classificationresults = new ArrayList<OWLClassExpression>();
-			for (OWLAxiom axes : axiomlist){
-				OWLClassAssertionAxiom cax = (OWLClassAssertionAxiom) axes;
-				classificationresults.add(cax.getClassExpression());
-			}
-			
-			
-			for (OWLAxiom axes : axiomlist){
-					OWLClassAssertionAxiom cax = (OWLClassAssertionAxiom) axes;
-					NodeSet<OWLClass> resnode = reasoner.getSubClasses(cax.getClassExpression(),true);
-					System.out.println("Looking at subclasses of " + cax.getClassExpression());
-					System.out.println("Subclasses size " + resnode.getNodes().size());
-					
-					List<OWLClassExpression> remainingclassificationresults = new ArrayList<OWLClassExpression>();
-					for (OWLClassExpression rem : classificationresults){
-						if (rem instanceof OWLClass){
-							if (resnode.containsEntity((OWLClass) rem))
-								remainingclassificationresults.add(rem);
-						}
-					}
-					System.out.println("Now looking at subclasses " + remainingclassificationresults.toString());
-					if (remainingclassificationresults.size()==0)
-						mostSpecificClass = cax;
-					
-					// if (resnode.isBottomSingleton()){
-					// 	mostSpecificClass = cax;
-					// }
-					if (resnode.getNodes().size()==0){
-						System.out.println("empty subclasses");
-						mostSpecificClass = cax;
-					}
-			}
-			
-			if (mostSpecificClass==null && axiomlist.size()>0){
-				System.out.println("getting first best : " + axiomlist.get(0).toString());
-				mostSpecificClass = (OWLClassAssertionAxiom) axiomlist.get(0);
-			}
-			if (mostSpecificClass==null)	{
-				System.out.println("SERIOUS PROBLEM!");
-			}	
-					
-					
-			System.out.println("considering  action : " + mostSpecificClass);
-						// System.out.println("ontology contains " + ontology.getAxioms().size() + "axioms");
-						//loop for properties
-			
-			_DEBUG_ =  mostSpecificClass.getClassExpression();
-			
-			boolean headFound = false;
-			boolean imgFound = false;
-			boolean textFound = false;
-			boolean vidFound = false;
-			
-						for (String property : properties.get(index)){
-							if (property.equals("getHeading")){
-								boolean headingFound = false;
-								Collection<OWLAnnotationAssertionAxiom> annots = EntitySearcher.getAnnotationAssertionAxioms(mostSpecificClass.getClassExpression().asOWLClass(), this.ontology);
-								for (OWLAnnotationAssertionAxiom annot : annots){
-									results.add(annot.getValue().asLiteral().orNull().getLiteral());
-									headingFound = true;
-									headFound = true;
-									System.out.println("heading found for " + mostSpecificClass.getClassExpression().asOWLClass());
-									break;
-								}
-								if (!headingFound){
-									System.out.println("Searching for heading for instruction " + mostSpecificClass.getClassExpression().asOWLClass() + ", but none found!");
-									results.add(mostSpecificClass.getClassExpression().asOWLClass().toString());
-								}
-							} // end if property equals getHeading
-							boolean propFound = false;
-							for (OWLAxiom axprobe : ontology.getAxioms()){
-								// System.out.println("examining " + axprobe);
-								if (axprobe instanceof OWLSubClassOfAxiom && (((OWLSubClassOfAxiom) axprobe).getSubClass().equals(mostSpecificClass.getClassExpression()))){
-									OWLSubClassOfAxiom subclAx = (OWLSubClassOfAxiom) axprobe;
-									   // System.out.println(" interested in " + subclAx);
-									if (subclAx.getSuperClass() instanceof OWLDataHasValue){
-										OWLDataHasValue datahasvalue = (OWLDataHasValue) subclAx.getSuperClass();
-										if (property.equals("getInstructionText")) property= "hasInstructionText";
-										if (property.equals("getImage")) property= "hasImagePath";
-										if (property.equals("getVideo")) property= "hasVideoPath";
-										if (datahasvalue.getProperty().asOWLDataProperty().getIRI().getShortForm().equals(property)){
-											String propstr = datahasvalue.getFiller().getLiteral();
-											if (property.equals("hasInstructionText")){
-												// propstr = "{\"text\": \"" + propstr +  "\"}";
-												propstr = propstr.replaceAll("\\\\", "");
-											}
-											results.add(propstr);
-											if (property.equals("hasVideoPath"))
-												vidFound = true;
-											if (property.equals("hasImagePath"))
-												imgFound = true;
-											if (property.equals("hasInstructionText"))
-												textFound = true;
-											
-											// System.out.println("Propstr " + propstr);
-											propFound = true;
-												
-										}
-									}
-								}
-							} // end for axprobe
-							if (propFound == false && !property.equals("getHeading")){
-								System.out.println("Can't find property " + property + " for class " + mostSpecificClass.getClassExpression());
-								throw new RuntimeException();
-							}
-							
-							
-							
-							
-							
-										
-						}
-						
-						if (! (imgFound && vidFound && textFound && headFound)){
-							System.out.println("WE ARE MISSING SOMETHING! With: " +  mostSpecificClass);
-							System.out.println(headFound);
-							System.out.println(imgFound);
-							System.out.println(vidFound);
-							System.out.println(textFound);
-							throw new RuntimeException();
-						}			
-		}
-		
-		
-		} catch (Exception e){
-			System.out.println("OOOOOps, exception while working on " + _DEBUG_);
-			e.printStackTrace();
-		}
-		
-		for (OWLAxiom delax : memory){
-			RemoveAxiom removeAxiomAction= new RemoveAxiom(origin,delax);
-			manager.applyChange(removeAxiomAction);
-		}
-		
-		
-		System.out.println(" results " + results);
-		
-		return results;
-		
-	}
-	*/
 	
 	
 	
@@ -2555,10 +2023,7 @@ public String describeVisual(JSONObject input){
 				resultArray.put(makeFullstop());
 				
 			}
-			
-			
-			
-			
+				
 			}
 		}
 	}
@@ -3423,6 +2888,16 @@ public String handleBoschRequest(String input, PrintStream printstream) throws I
 				return prop;
 			}
 		}
+		return null;
+	}
+	
+	public OWLNamedIndividual findIndividualsFromFragment(String fragment){
+		Set<OWLNamedIndividual> indivs = ontology.getIndividualsInSignature(true);
+		for (OWLNamedIndividual indiv : indivs){
+			if (indiv.getIRI().getFragment().equals(fragment))
+				return indiv;
+		}
+		System.out.println("SERIOUS ERROR: findIndividualsFromFragment could not find " + fragment);
 		return null;
 	}
 	
