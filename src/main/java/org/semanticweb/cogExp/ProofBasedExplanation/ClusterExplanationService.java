@@ -1026,6 +1026,13 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 					if (obString.contains("Dangerous")){ // <-------- find out how this ends up here in the first place!!!
 						continue;
 					}
+					if (obString.contains("infinity")){ // <-------- ghost parameter
+						continue;
+					}
+					if (obString.contains("HomObj")){ // <-------- ghost parameter
+						continue;
+					}
+					
 					OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_arg" + counter));
 					
 					OWLIndividual target_indiv = findIndividualsFromFragment(obString);
@@ -1049,7 +1056,12 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 							if (paramString.contains("Dangerous")){ // <-------- find out how this ends up here in the first place!!!
 								continue;
 							}
-							
+							if (paramString.contains("infinity")){ // <-------- ghost parameter
+								continue;
+							}
+							if (paramString.contains("HomObj")){ // <-------- ghost parameter
+								continue;
+							}
 							
 							OWLObjectProperty argProp = dataFactory2.getOWLObjectProperty(IRI.create(instructionsIRI + "#instr_arg" + paramcounter + "-" + actioncounter));
 							
