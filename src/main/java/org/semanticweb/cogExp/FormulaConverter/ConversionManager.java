@@ -259,6 +259,12 @@ public enum ConversionManager {
 				OWLIndividual indivB = (OWLIndividual) toOWLAPI(tail.get(2));
 				result = dataFactory.getOWLObjectPropertyAssertionAxiom(propExp,indivA, indivB);
 				break;
+			case DATAPROPERTYASSERTION:
+				OWLDataPropertyExpression dataExp = (OWLDataPropertyExpression) toOWLAPI(tail.get(0));
+				OWLIndividual indivC = (OWLIndividual) toOWLAPI(tail.get(1));
+				OWLLiteral litA = (OWLLiteral) toOWLAPI(tail.get(2));
+				result = dataFactory.getOWLDataPropertyAssertionAxiom(dataExp,indivC, litA);
+				break;
 			case SUBPROPERTYOF:
 				if (tail.get(0).getHead().equals(OWLSymb.SUBPROPERTYCHAIN)){
 					List<OWLObjectPropertyExpression> props = new ArrayList<OWLObjectPropertyExpression>();

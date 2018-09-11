@@ -411,6 +411,14 @@ public class OWLFormula {
 		return new OWLFormula(OWLSymb.OBJECTPROPERTYASSERTION, taillist);
 	}
 	
+	public static OWLFormula createFormulaDataPropertyAssertion(OWLFormula propertyexpression, OWLFormula indivSub, OWLFormula litObj){
+		ArrayList<OWLFormula> taillist = new ArrayList<OWLFormula>();
+		taillist.add(propertyexpression);
+		taillist.add(indivSub);
+		taillist.add(litObj);
+		return new OWLFormula(OWLSymb.DATAPROPERTYASSERTION, taillist);
+	}
+	
 	public boolean containsSubformula(OWLFormula subformula){
 		if (this.equals(subformula)){
 			return true;

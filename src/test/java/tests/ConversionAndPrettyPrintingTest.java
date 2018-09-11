@@ -21,7 +21,10 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataExactCardinality;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
@@ -59,6 +62,18 @@ public class ConversionAndPrettyPrintingTest {
 		System.out.println(cardForm2);
 		System.out.println(VerbalisationManager.prettyPrint(cardExpr2_b));
 		
+		// Data Properties
+		
+		OWLDataProperty datProp = dataFactory.getOWLDataProperty(IRI.create("http://foo#" + "datprop"));
+		OWLNamedIndividual indiv = dataFactory.getOWLNamedIndividual(IRI.create("http://foo#" + "ind"));
+		OWLLiteral lit = dataFactory.getOWLLiteral(3);
+		OWLDataPropertyAssertionAxiom dataass = dataFactory.getOWLDataPropertyAssertionAxiom(datProp, indiv, lit);
+		
+		OWLFormula dataassForm = ConversionManager.fromOWLAPI(dataass);
+		OWLObject dataass_b = ConversionManager.toOWLAPI(dataassForm);
+		System.out.println("dataass 1: " + dataass);
+		System.out.println("dataass 2: " + dataassForm);
+		System.out.println("dataass 3: " + dataass_b);
 		
 		// Sentences
 		System.out.println("\n\n English sentences...\n");

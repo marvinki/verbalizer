@@ -442,8 +442,14 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLDataPropertyAssertionAxiom arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		OWLDataPropertyExpression propExp = arg0.getProperty();
+		OWLIndividual indivSub = arg0.getSubject();
+		OWLLiteral lit = arg0.getObject();
+		// OWLIndividual indivObj = arg0.getObject();
+		OWLFormula propForm = propExp.accept(this);
+		OWLFormula subForm = indivSub.accept(this);
+		OWLFormula litForm = lit.accept(this);
+		return OWLFormula.createFormulaDataPropertyAssertion(propForm, subForm, litForm);
 	}
 
 	public OWLFormula visit(OWLTransitiveObjectPropertyAxiom ax) {
