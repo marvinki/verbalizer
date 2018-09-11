@@ -1,5 +1,11 @@
 package org.semanticweb.cogExp.OWLFormulas;
 
+import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPIManagerManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 public class OWLIndividualName implements OWLAtom{
 	private String individualname;
@@ -69,7 +75,16 @@ public class OWLIndividualName implements OWLAtom{
 	}
 
 	
-	
+	@Override
+	public String toNLString() {
+		OWLDataFactory dataFactory = OWLAPIManagerManager.INSTANCE.getDataFactory();
+		OWLNamedIndividual cl = dataFactory.getOWLNamedIndividual(IRI.create(individualname));
+		// String str = VerbalisationManager.INSTANCE.getClassNLString(cl);
+		String str = cl.toString(); // <--- insert code for rendering individuals here!
+		System.out.println("{Note: this method has not been fully implemented!} individualname " + individualname);
+		System.out.println("{Note: this method has not been fully implemented!} individualname returned: " +  str);
+		return str;
+	}
 
 	
 }

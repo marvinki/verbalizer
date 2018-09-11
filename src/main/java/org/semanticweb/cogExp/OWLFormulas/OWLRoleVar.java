@@ -58,4 +58,9 @@ public class OWLRoleVar implements OWLAtom {
 		return false;
 	}
 	
+	@Override
+	public String toNLString() {
+		return this.toString();
+	}
+	
 }

@@ -47,6 +47,7 @@ public enum VerbaliseTreeManager {
 	/**
 	 * switch between languages (German, English) with setting locale.
 	 * Also check out /src/main/resources/LogicLabels_de.properties or /src/main/resources/LogicLabels_en.properties (take care of spelling)
+
 	 */
 //	static Locale locale = Locale.ENGLISH;
 	 static Locale locale = Locale.GERMAN;
@@ -456,7 +457,11 @@ public enum VerbaliseTreeManager {
 					TextElementSequence seq = new TextElementSequence();
 					// [CONCEPTNAME] is defined as [DEFINITION]
 					seq.add(new ClassElement(definedconceptname,tooltiptext));
+<<<<<<< HEAD
 					seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
+=======
+					seq.add(new LogicElement(LogicLabels.getString("isDefinedAs")));
+>>>>>>> plugin
 					seq.concat(defSeq);
 					seq.add(new LogicElement("."));
 					// Thus [SUBCLASS] is by definition [CONCEPTNAME]
@@ -1531,6 +1536,7 @@ public enum VerbaliseTreeManager {
 			}
 			
 			//check
+			// System.out.println("is this used at all?");
 			if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM)){
 				OWLEquivalentClassesAxiom equivpremise;
 				OWLSubClassOfAxiom subclpremise;
@@ -1641,7 +1647,7 @@ public enum VerbaliseTreeManager {
 			
 			
 			if (rule.equals(INLG2012NguyenEtAlRules.RULE23) && premiseformulas.contains(previousconclusion)){
-				// System.out.println("PREVIOUS CONCLUSION " + previousconclusion);
+				// println("PREVIOUS CONCLUSION " + previousconclusion);
 				OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) premiseformulas.get(1);
 				OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(0);
 				TextElementSequence seq = new TextElementSequence();

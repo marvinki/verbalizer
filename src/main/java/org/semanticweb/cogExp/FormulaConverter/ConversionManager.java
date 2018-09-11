@@ -266,6 +266,11 @@ public enum ConversionManager {
 					exprsObj.add(ce);
 				}
 				result = dataFactory.getOWLEquivalentObjectPropertiesAxiom(exprsObj);
+			case DATAPROPERTYASSERTION:
+				OWLDataPropertyExpression dataExp = (OWLDataPropertyExpression) toOWLAPI(tail.get(0));
+				OWLIndividual indivC = (OWLIndividual) toOWLAPI(tail.get(1));
+				OWLLiteral litA = (OWLLiteral) toOWLAPI(tail.get(2));
+				result = dataFactory.getOWLDataPropertyAssertionAxiom(dataExp,indivC, litA);
 				break;
 			case SUBPROPERTYOF:
 				if (tail.get(0).getHead().equals(OWLSymb.SUBPROPERTYCHAIN)){
@@ -297,7 +302,7 @@ public enum ConversionManager {
 		return result;
 	}
 	
-	private static OWLObject toOWLAPI(OWLAtom atom){
+	public static OWLObject toOWLAPI(OWLAtom atom){
 		OWLObject result = null;
 		if (atom instanceof OWLClassName)
 			result = toOWLAPI((OWLClassName) atom);

@@ -1037,6 +1037,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				
 				
 				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
+
 					System.out.println("----- ENGLISH LOCALE -----");
 					if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
 							//&& OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
@@ -1070,7 +1071,13 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 						stringsFound.add(str);
 						// str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"" ;
 						labelFound = true;// annotation.getValue().toString()
+
 					}
+						// labelFound = true;
+					// System.out.println("examining str (2)! "+ str);
+					if (annotation.getProperty().isLabel() && str.equals(""))
+						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
+						labelFound = true;
 				}				
 					
 //				
@@ -1122,6 +1129,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		}
 		// System.out.println("get class NL String (3) " + classname);
 		if (str == "") {
+<<<<<<< HEAD
 				str = classname.getIRI().getFragment();
 			
 			// str = ppCEvisit.visit(classname);
@@ -1130,6 +1138,11 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			// 	str = verbOWLObjectVisit.getObfuscator().obfuscateName(str);
 			// }
 			// System.out.println("DEBUG after prettyprint " + str);
+=======
+			System.out.println("CLASS NAME HAS NO LABEL: " + classname);
+			str = ppCEvisit.visit(classname);
+	
+>>>>>>> plugin
 			// check if camelcasing was used
 			str = treatCamelCaseAndUnderscores(str);
 			boolean isUncountable = false;

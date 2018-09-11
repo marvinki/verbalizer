@@ -70,6 +70,9 @@ public class OWLInteger implements OWLAtom{
 		return false;
 	}
 
-	
+	@Override
+	public String toNLString() {
+		return this.toString();
+	}
 	
 }

@@ -52,4 +52,9 @@ public class OWLVar implements OWLAtom {
 		return false;
 	}
 	
+	@Override
+	public String toNLString() {
+		return this.toString();
+	}
+	
 }
