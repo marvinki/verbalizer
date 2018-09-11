@@ -1904,9 +1904,9 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				// System.out.println("DEBUG --- Trying to add " + ax);
 				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
 
-				System.out.println("VerbalisationManager: adding: " +
+				System.out.println("VerbalisationManager: adding (1): " +
 						  ax);
-				System.out.println("VerbalisationManager: adding: " +
+				System.out.println("VerbalisationManager: adding (2): " +
 				  ConversionManager.fromOWLAPI(ax).prettyPrint());
 			}
 		} catch (Exception e) {

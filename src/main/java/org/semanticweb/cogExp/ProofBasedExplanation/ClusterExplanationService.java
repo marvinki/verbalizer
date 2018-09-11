@@ -159,6 +159,7 @@ public class ClusterExplanationService {
 	
 	public void setInstructionsIRI(String iri){
 		instructionsIRI = iri;
+		System.out.println("Setting instructions iri to: " + instructionsIRI);
 	}
 
 
@@ -1298,7 +1299,8 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 							} // end for axprobe
 							if (propFound == false && !property.equals("getHeading")){
 								System.out.println("Can't find property " + property + " for class " + mostSpecificClass.getClassExpression());
-								throw new RuntimeException();
+								results.add("[:MISSING VALUE:]");
+								// throw new RuntimeException();
 							}
 							
 							/*
@@ -1314,7 +1316,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 							System.out.println(imgFound);
 							System.out.println(vidFound);
 							System.out.println(textFound);
-							throw new RuntimeException();
+							// throw new RuntimeException();
 						}			
 		}
 		
