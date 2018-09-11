@@ -73,6 +73,8 @@ public class ConversionAndPrettyPrintingTest {
 		OWLDataPropertyAssertionAxiom dataass = dataFactory.getOWLDataPropertyAssertionAxiom(datProp, indiv, lit);
 		
 		OWLFormula dataassForm = ConversionManager.fromOWLAPI(dataass);
+		System.out.println("dataass 1: " + dataassForm);
+		
 		OWLObject dataass_b = ConversionManager.toOWLAPI(dataassForm);
 		System.out.println("dataass 1: " + dataass);
 		System.out.println("dataass 2: " + dataassForm);
