@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.semanticweb.HermiT.Reasoner;
@@ -89,6 +90,10 @@ public class AIC2018Example {
 			OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);	
 	
 	System.out.println("loaded");
+	
+	// Language setting
+	
+	VerbaliseTreeManager.setLocale(Locale.ENGLISH);
 	
 	// OWLReasonerFactory reasonerFactory = new JFactFactory();
 	// SimpleConfiguration configuration = new SimpleConfiguration(50000);

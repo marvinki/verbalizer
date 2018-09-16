@@ -1,3 +1,20 @@
+/*
+ *     Copyright 2012-2018 Ulm University, AI Institute
+ *     Main author: Marvin Schiller, contributors: Felix Paffrath, Chunhui Zhu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.io.File;
@@ -451,17 +468,17 @@ public enum VerbaliseTreeManager {
 						definition = concept2;
 					}
 					OWLSubClassOfAxiom conclusion = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
-					String definedconceptname = VerbalisationManager.textualise(definedconcept).toString(); 
-					String tooltiptext =  OWLAPICompatibility.asLiteral(definedconcept.asOWLClass().getIRI()).toString();
+					String definedconceptname = VerbalisationManager.textualise(definedconcept).toString();
+					String tooltiptext = "";
+					if (definedconcept.asOWLClass().getIRI()!=null && OWLAPICompatibility.asLiteral(definedconcept.asOWLClass().getIRI())!=null)
+						tooltiptext =  OWLAPICompatibility.asLiteral(definedconcept.asOWLClass().getIRI()).toString();
 					TextElementSequence defSeq = VerbalisationManager.textualise(definition);
 					TextElementSequence seq = new TextElementSequence();
 					// [CONCEPTNAME] is defined as [DEFINITION]
 					seq.add(new ClassElement(definedconceptname,tooltiptext));
-<<<<<<< HEAD
 					seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
-=======
-					seq.add(new LogicElement(LogicLabels.getString("isDefinedAs")));
->>>>>>> plugin
+
+					// seq.add(new LogicElement(LogicLabels.getString("isDefinedAs")));
 					seq.concat(defSeq);
 					seq.add(new LogicElement("."));
 					// Thus [SUBCLASS] is by definition [CONCEPTNAME]
@@ -1218,7 +1235,9 @@ public enum VerbaliseTreeManager {
 				}
 				OWLSubClassOfAxiom conclusion = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
 				String definedconceptname = VerbalisationManager.textualise(definedconcept).toString(); 
-				String tooltiptext =  OWLAPICompatibility.asLiteral(definedconcept.asOWLClass().getIRI()).toString();
+				String tooltiptext =  "";
+				if (OWLAPICompatibility.asLiteral(definedconcept.asOWLClass().getIRI())!=null)		
+						tooltiptext = OWLAPICompatibility.asLiteral(definedconcept.asOWLClass().getIRI()).toString();
 				TextElementSequence defSeq = VerbalisationManager.textualise(definition);
 				TextElementSequence seq = new TextElementSequence();
 				

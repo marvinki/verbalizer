@@ -1,3 +1,20 @@
+/*
+ *     Copyright 2012-2018 Ulm University, AI Institute
+ *     Main author: Marvin Schiller, contributors: Felix Paffrath, Chunhui Zhu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
 import java.awt.Dimension;
@@ -187,9 +204,23 @@ public class ClusterExplanationService {
 		OWLAPICompatibility.fill(iog, dataFactory2, newontology);
 		
 		newaxioms = newontology.getAxioms(true);
-		System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
+		// System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
 		
 		newaxioms.removeAll(previousaxioms);
+		
+		for (OWLAxiom ax : newaxioms){
+			System.out.println("considering " + ax);
+			if (ax instanceof OWLObjectPropertyAssertionAxiom){
+				OWLObjectPropertyAssertionAxiom propax = (OWLObjectPropertyAssertionAxiom) ax;
+				if(propax.getProperty().isOWLTopObjectProperty())
+					System.out.println("removing");
+					newaxioms.remove(ax);
+			}
+		}
+		
+		System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
+		
+		
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -244,6 +275,19 @@ inferredOntology = infOnt;
 }
 newaxioms.removeAll(previousaxioms);
 }
+	
+	Set<OWLAxiom> toBeRemoved = new HashSet<OWLAxiom>();
+	
+	for (OWLAxiom ax : newaxioms){
+		// System.out.println("considering " + ax);
+		if (ax instanceof OWLObjectPropertyAssertionAxiom){
+			OWLObjectPropertyAssertionAxiom propax = (OWLObjectPropertyAssertionAxiom) ax;
+			if(propax.getProperty().isOWLTopObjectProperty())
+				// System.out.println("removing");
+				toBeRemoved.add(ax);
+		}
+	}
+	newaxioms.removeAll(toBeRemoved);
 
 System.out.println("[Newly inferred axioms: " + newaxioms.size() + "]");
 
@@ -1433,7 +1477,9 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		inferredAxioms.addAll(OWLAPICompatibility.getAxioms(ontology, true));
 		
 		// filter out trivial axioms: (top)(x), x subclassof top
+		System.out.println("before filtering");
 		for (OWLAxiom ax: inferredAxioms){
+			System.out.println("considering axiom " + ax);;
 			if (ax instanceof OWLClassAssertionAxiom && ((OWLClassAssertionAxiom) ax).getClassExpression().isOWLThing())
 				continue;
 			if (ax instanceof OWLDeclarationAxiom)

@@ -1,3 +1,20 @@
+/*
+ *     Copyright 2012-2018 Ulm University, AI Institute
+ *     Main author: Marvin Schiller, contributors: Felix Paffrath, Chunhui Zhu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.io.File;
@@ -1129,7 +1146,6 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		}
 		// System.out.println("get class NL String (3) " + classname);
 		if (str == "") {
-<<<<<<< HEAD
 				str = classname.getIRI().getFragment();
 			
 			// str = ppCEvisit.visit(classname);
@@ -1138,11 +1154,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			// 	str = verbOWLObjectVisit.getObfuscator().obfuscateName(str);
 			// }
 			// System.out.println("DEBUG after prettyprint " + str);
-=======
-			System.out.println("CLASS NAME HAS NO LABEL: " + classname);
-			str = ppCEvisit.visit(classname);
-	
->>>>>>> plugin
+
 			// check if camelcasing was used
 			str = treatCamelCaseAndUnderscores(str);
 			boolean isUncountable = false;
@@ -1565,7 +1577,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		// System.out.println("verbaliseComplexIntersection --- CAN'T HANDLE
 		// THIS! " + otherExpressions);
 		// Verbalise the "easy" part
-		result = result + getSimpleIntersectionNLString(simpleExpressions) + _space;
+		result = LogicLabels.getString("something") + result + getSimpleIntersectionNLString(simpleExpressions) + _space;
 		// Verbalise the existential part
 		List<List<OWLClassExpression>> buckets = groupMultipleExistsPatterns(existsExpressions);
 		for (int i = 0; i < buckets.size(); i++) {

@@ -1,3 +1,20 @@
+/*
+ *     Copyright 2012-2018 Ulm University, AI Institute
+ *     Main author: Marvin Schiller, contributors: Felix Paffrath, Chunhui Zhu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
 import java.util.ArrayList;
@@ -488,11 +505,11 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			recSentence.setSubjekt(leftstring);
 			return recSentence;
 		}
-		
+		System.out.println(" HERE ! ");;
 		// Multiple Exists Pattern
 		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
 				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
-			// System.out.println("DEBUG : case of multiple exists patterns");
+			System.out.println("DEBUG : case of multiple exists patterns");
 			middlestring.addAll(VerbalisationManager.INSTANCE.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass()));
 			
 			Sentence sentence = new Sentence(new TextElementSequence(leftstring),
@@ -534,7 +551,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		// 	middlestring.add(isElement);
 
 		middlestring.add(isElement);
-		
+		System.out.println("HERE 2");;
 		Sentence anotherSentence = arg0.getSuperClass().accept(this);
 		anotherSentence.setOrder(SentenceOrder.A_is_B);
 		if (anotherSentence.toTextElementSequence()!=null)
@@ -577,7 +594,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
    }
 	
 	public Sentence verbaliseComplexIntersection(OWLObjectIntersectionOf arg0, Obfuscator obfuscator){
-		// System.out.println("complx int " + arg0);
+		System.out.println("complx int " + arg0);
 		List<OWLClassExpression> operands = arg0.getOperandsAsList();
 		// distinguish operands by their types and order them appropriately
 		List<OWLClassExpression> classExps = new ArrayList<OWLClassExpression>();
@@ -631,7 +648,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			Sentence sentence = new Sentence();
 			sentence.setSubjekt(headElement3);
 			
-			// System.out.println("returning ::: " + sentence.inspect());
+			System.out.println("returning ::: " + sentence.inspect());
 			
 			sentence.setOrder(SentenceOrder.A_is_B);
 			sentence.makeABisSentence();
