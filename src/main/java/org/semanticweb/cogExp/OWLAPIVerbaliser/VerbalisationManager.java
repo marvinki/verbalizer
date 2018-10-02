@@ -2048,7 +2048,9 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			// 2: show rule names
 			// 3: HTML/text
 
-			String result = VerbaliseTreeManager.verbaliseNL(tree, false, false, asHTML, obfuscator); // parameter
+			TextElementSequence seq = VerbaliseTreeManager.verbaliseTextElementSequence(tree, false, obfuscator);
+			String result = seq.toString();
+			// String result = VerbaliseTreeManager.verbaliseNL(tree, false, false, asHTML, obfuscator); // parameter
 																								// for
 																								// rule
 																								// names!
@@ -2243,7 +2245,9 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 
 	public static String computeVerbalization(GentzenTree tree, boolean asHTML, boolean longtext, Obfuscator obfuscator) {
 		// WordNetQuery.INSTANCE.disableDict();
-		String result = VerbaliseTreeManager.verbaliseNL(tree, true, asHTML, longtext, obfuscator);
+		TextElementSequence textElementSequence = VerbaliseTreeManager.verbaliseTextElementSequence(tree, false,
+				obfuscator);
+		String result = textElementSequence.toString();
 		return result;
 	}
 	

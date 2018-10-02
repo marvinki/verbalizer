@@ -21,9 +21,11 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.GentzenTree.GentzenStep;
@@ -86,7 +88,10 @@ public enum VerbaliseTreeManager {
 		return locale;
 	}
 	
-	private static boolean laconicDefs = false;
+	private static boolean laconicDefs = true;
+	
+	private static boolean skipDefs = true;
+	
 	
 	public static void setLaconicDefs(){
 		laconicDefs = true;
@@ -128,6 +133,7 @@ public enum VerbaliseTreeManager {
 		TextElementSequence resultsequence = new TextElementSequence();
 		// Variables to remember previous states' information
 		int previous_step = -1;
+		Set<OWLFormula> implied_conclusions = new HashSet<OWLFormula>();
 		OWLFormula previousconclusion = null;
 		OWLFormula before_previousconclusion = null;
 		Object printed_previousconclusion = null;
@@ -154,6 +160,9 @@ public enum VerbaliseTreeManager {
 			// System.out.println("DEBUG -- premises " + premises);
 			// System.out.println("DEBUG -- conclusion " + conclusion);
 			SequentInferenceRule infrule = step.getInfrule();
+			// implied conclusions maintenance: add all conclusions, no matter what.
+			implied_conclusions.add(conclusion);
+			
 			//
 			// Debug
 			// 
@@ -179,7 +188,11 @@ public enum VerbaliseTreeManager {
 					|| infrule.equals(AdditionalDLRules.DEFDOMAIN)
 					|| (infrule.equals(INLG2012NguyenEtAlRules.RULE2) && previous_step!=-1)
 					// || (infrule.equals(INLG2012NguyenEtAlRules.RULE5) && previous_step!=-1)
-					// || infrule.equals(INLG2012NguyenEtAlRules.RULE5)
+				    || infrule.equals(INLG2012NguyenEtAlRules.RULE5)
+				    || infrule.equals(INLG2012NguyenEtAlRules.RULE1) // <-- definitions off
+				    || infrule.equals(AdditionalDLRules.RULE5MULTI)
+				    || infrule.equals(AdditionalDLRules.EQUIVEXTRACT) // <-- new
+					// || infrule.equals(INLG2012NguyenEtAlRules.RULE15) // <-- new
 					|| (infrule.equals(AdditionalDLRules.R0) && !singletonStep)
 					|| (infrule.equals(AdditionalDLRules.TOPINTRO) && !singletonStep)
 					// || infrule.equals(AdditionalDLRules.EQUIVEXTRACT)
@@ -211,7 +224,7 @@ public enum VerbaliseTreeManager {
 				TextElementSequence seq = textualiseStatementNL(tree, infrule,
 						premiseformulas,
 						additions_to_antecedent,
-						additions_to_succedent,prevconc,beforeprevconc,obfuscator);
+						additions_to_succedent,prevconc,beforeprevconc, implied_conclusions, obfuscator);
 				seq.makeUppercaseStart();
 				if (!seq.toString().equals(previoustext)
 						&& ! previoustexts.contains(seq.toString())
@@ -238,180 +251,11 @@ public enum VerbaliseTreeManager {
 	}
 			
 	
-	public static String verbaliseNL(GentzenTree tree, boolean withrulenames, boolean asHTML, boolean longtext, Obfuscator obfuscator){
-		// System.out.println("verbaliseNL called");
-		System.out.println("featuresOff (2)=" + VerbalisationManager.INSTANCE.featuresOFF);
-		List<Integer> order = tree.computePresentationOrder();
-		// System.out.println("order: " + order);
-		String result = "";
-		// Variables to remember previous states' information
-		int previous_step = -1;
-		
-		OWLFormula previousconclusion = null;
-		OWLFormula before_previousconclusion = null;
-		String previoustext = "";
-		List<String> previoustexts = new ArrayList<String>();
-		boolean singletonStep = false;
-		
-		if (order.size()==1){
-			singletonStep = true;
-		}
-		
-		for(int i: order){
-			// System.out.println("verbaliseNL at step no. " + i);
-			// Get all information on this step
-			GentzenStep step = tree.getTreesteps().get(i);
-			List<Integer> premiseids = step.getPremises();
-
-			// System.out.println("premiseids " + premiseids);
-			
-			// Debugging only!
-			/*
-			if(step.getInfrule().equals(INLG2012NguyenEtAlRules.RULE5)){
-					System.out.println("R5 premises " + premiseids);
-			} 
-			*/
-			
-			List<Integer> axiompremiseids = step.getAxiomPremises();
-			List<OWLFormula> premises = tree.idsToFormulas(premiseids);
-			OWLFormula conclusion = tree.getFormulas().get(step.getConclusion());
-			// System.out.println("DEBUG -- premises " + axiompremiseids);
-			// System.out.println("DEBUG -- premises " + premises);
-			// System.out.println("DEBUG -- conclusion " + conclusion);
-
-			SequentInferenceRule infrule = step.getInfrule();
-			
-			// DEBUG
-			// System.out.println("verbaliseNL DEBUG -- " + infrule.getName());
-			
-			if(infrule.equals(INLG2012NguyenEtAlRules.RULE23Repeat) && !singletonStep){
-				continue; // do not even advance the conclusions
-			}
-			
-			// if (!(longtext && (infrule.equals(INLG2012NguyenEtAlRules.RULE2) || infrule.equals(AdditionalDLRules.DEFDOMAIN))))
-			if (!(longtext && (infrule.equals(INLG2012NguyenEtAlRules.RULE2) )))
-			if (!singletonStep 	&& infrule.equals(AdditionalDLRules.TOPINTRO)){
-				before_previousconclusion = previousconclusion;
-				previousconclusion = conclusion;
-				continue;
-			}
-			if (!singletonStep 
-			&& !VerbalisationManager.INSTANCE.featuresOFF	
-			&& (infrule.equals(AdditionalDLRules.ELEXISTSMINUS) 
-			|| infrule.equals(AdditionalDLRules.UNIONINTRO)
-			|| infrule.equals(AdditionalDLRules.DEFDOMAIN)
-			|| (infrule.equals(INLG2012NguyenEtAlRules.RULE2) && previous_step!=-1)
-			|| (infrule.equals(AdditionalDLRules.R0) && !singletonStep)
-			|| (infrule.equals(AdditionalDLRules.TOPINTRO) && !singletonStep))){
-				System.out.println("skipping, featuresOFF=" + VerbalisationManager.INSTANCE.featuresOFF);
-				before_previousconclusion = previousconclusion;
-				previousconclusion = conclusion;
-				continue;
-			}
-
-			/* <-- what the hell was that?
-			if (infrule.equals(AdditionalDLRules.ONLYSOME)){
-				premiseids.addAll(axiompremiseids);
-			}
-			*/
-
-			// now transform back from OWL Formula to OWLAPI (this should become redundant)
-			List<Object> premiseformulas = new ArrayList<Object>();
-			for (OWLFormula prem: premises){
-				premiseformulas.add(ConversionManager.toOWLAPI(prem));
-			}
-			
-			List<Object> additions_to_antecedent = new ArrayList<Object>();
-			additions_to_antecedent.add(ConversionManager.toOWLAPI(conclusion));
-			List<Object> additions_to_succedent = new ArrayList<Object>();
-			Object prevconc = null;
-			
-			if (previousconclusion!=null){
-				prevconc = ConversionManager.toOWLAPI(previousconclusion);
-			}
-			
-			Object beforeprevconc = null;
-
-			if (before_previousconclusion!=null)
-					beforeprevconc = ConversionManager.toOWLAPI(before_previousconclusion);
-			// Debug
-			
-			// System.out.println("DEBUG");
-			// System.out.println(infrule);
-			// System.out.println(premiseformulas);
-			// System.out.println(additions_to_antecedent);
-			// System.out.println("DEBUG -- additions_to_antecedent " + additions_to_antecedent);
-
-			// System.out.println("now preparing output");
-			
-			String output;
-			
-			if (asHTML){
-				TextElementSequence seq = textualiseStatementNL(tree, infrule,
-																premiseformulas,
-																additions_to_antecedent,
-																additions_to_succedent,
-																prevconc,beforeprevconc,
-																obfuscator);
-				seq.makeUppercaseStart();
-				seq.pluralise(); // <--- introduce plurals
-				//output = seq.toString();
-				output = seq.toHTML();	
-			}
-			
-			else{
-				// System.out.println("before textualise statement");
-				TextElementSequence seq = textualiseStatementNL(tree, infrule,
-
-						premiseformulas,
-						additions_to_antecedent,
-						additions_to_succedent,prevconc,beforeprevconc,obfuscator);
-				// System.out.println("seq " + seq);
-				// System.out.println("atfer textualise statement");
-				seq.makeUppercaseStart();
-				seq.pluralise(); // <--- introduce plurals
-				output = seq.toString();	
-				// System.out.println("Output " + output);
-			}
-				
-			if (!output.equals(previoustext)
-			&& !previoustexts.contains(output)){
-				// System.out.println("producing. Withrulenames " + withrulenames);
-				 // Avoid duplicate use of equivextract, if different conclusions are extracted
-				String linebr = "\n";
-				
-				if (asHTML){
-					linebr = "<br>";
-				}
-	
-				if (withrulenames){
-					// System.out.println("with rulenames case");
-					result = result + infrule.getName() + ">: " + output + "." + linebr;
-					// System.out.println("result " + result);
-				}
-				else{ 
-					// System.out.println("not with rulenames case");
-					result = result + output + "." + linebr;
-				}
-				// result = result + "\t\t• " + output + "." + linebr; // <-- Koelle stuff
-				
-			}
-			
-			
-			before_previousconclusion = previousconclusion;
-			previousconclusion = conclusion;
-			previoustext = output;
-			previoustexts.add(output);
-			previous_step = i;
-			
-		}
-		System.out.println("verbalise NL returning result: " + result);
-		return result;
-}
 	
 	
 	
-	/** outputs verbalization of one proof step as a string. TODO: implement verbalization rules as rules (with their proper interface, etc)
+	
+	/** outputs verbalization of one proof step as a text element sequence. TODO: implement verbalization rules as rules (with their proper interface, etc)
 	 * 
 	 * @param tree 							(TODO: add description)
 	 * @param rule							employed SequentInferenceRule
@@ -430,6 +274,7 @@ public enum VerbaliseTreeManager {
 			List<Object> additions_to_succedent,
 			Object previousconclusion,
 			Object before_previousconclusion,
+			Set<OWLFormula> implied_conclusions,
 			Obfuscator obfuscator
 			){
 		
@@ -588,6 +433,7 @@ public enum VerbaliseTreeManager {
 				
 				
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE5)){
+					System.out.println(" VERBALISING RULE 5");
 					// System.out.println(previousconclusion);
 					// System.out.println(before_previousconclusion);
 					// System.out.println(premiseformulas);
@@ -715,6 +561,7 @@ public enum VerbaliseTreeManager {
 					OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
 					TextElementSequence firstpart = VerbalisationManager.textualise(premiseformula,obfuscator);
 					firstpart.makeUppercaseStart();
+					implied_conclusions.add(ConversionManager.fromOWLAPI((OWLSubClassOfAxiom) additions_to_antecedent.get(0)));
 					return firstpart;
 					// return firstpart;
 					// return  firstpart + ". Thus, in particular, "
@@ -723,6 +570,11 @@ public enum VerbaliseTreeManager {
 				if (rule.equals(AdditionalDLRules.EQUIVEXTRACT) && laconicDefs){
 					TextElementSequence firstpart = VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator);
 					firstpart.makeUppercaseStart();
+					implied_conclusions.add(ConversionManager.fromOWLAPI((OWLSubClassOfAxiom) additions_to_antecedent.get(0)));
+					for (OWLFormula form : implied_conclusions){
+						System.out.println("now contain: " + form);
+					}
+					
 					return firstpart;
 					// return firstpart;
 					// return  firstpart + ". Thus, in particular, "
@@ -894,6 +746,18 @@ public enum VerbaliseTreeManager {
 					// 		+ ", " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); // + " Previousconclusion " + previousconclusion;
 				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE15) && 
+						implied_conclusions.contains(ConversionManager.fromOWLAPI((OWLSubClassOfAxiom) premiseformulas.get(0))) &&
+						implied_conclusions.contains(ConversionManager.fromOWLAPI((OWLSubClassOfAxiom) premiseformulas.get(1)))){
+					TextElementSequence seq = new TextElementSequence();
+					seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("hence")));
+					seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) additions_to_antecedent.get(0)),obfuscator));
+					return seq;
+				}
+				if (rule.equals(INLG2012NguyenEtAlRules.RULE15)){
+					System.out.println("RULE15: " + premiseformulas.get(0));
+					System.out.println("RULE15: " + premiseformulas.get(1));
+				} 
+				if (rule.equals(INLG2012NguyenEtAlRules.RULE15) && 
 						(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
 					Object prem1 = premiseformulas.get(0);
 					Object prem2 = premiseformulas.get(1);
@@ -919,6 +783,7 @@ public enum VerbaliseTreeManager {
 					// 		+ ", thus " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); // + " Previousconclusion " + previousconclusion;
 				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE15)){ //  && !premiseformulas.contains(previousconclusion)){
+					System.out.println(" VERBALISING RULE 15");
 					OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) premiseformulas.get(0);
 					OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(1);
 					OWLClassExpression superExpr = ((OWLSubClassOfAxiom) subcl2).getSuperClass();
@@ -972,6 +837,26 @@ public enum VerbaliseTreeManager {
 					//                     ", " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0));
 					                     
 				}
+				if (rule.equals(INLG2012NguyenEtAlRules.RULE12new)){
+				for (OWLFormula form : implied_conclusions){
+					System.out.println("contains === : " + form);
+				}
+			}
+				if (rule.equals(INLG2012NguyenEtAlRules.RULE12new) && 
+						implied_conclusions.contains(ConversionManager.fromOWLAPI((OWLSubClassOfAxiom) premiseformulas.get(0))) &&
+						implied_conclusions.contains(ConversionManager.fromOWLAPI((OWLSubClassOfAxiom) premiseformulas.get(1)))){
+					   TextElementSequence seq = new TextElementSequence();
+					   seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("therefore"))); 
+					   seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
+					   return seq;
+				}
+				if (rule.equals(INLG2012NguyenEtAlRules.RULE12new) && 
+						VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator).toString().contains("something")){
+						TextElementSequence seq = new TextElementSequence();
+					   seq.concat(VerbalisationManager.textualise((OWLObject) premiseformulas.get(1),obfuscator));
+					   return seq;
+				}
+				
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && premiseformulas.contains(previousconclusion)){
 					Object newformula = null;
 					for (Object formula : premiseformulas){
@@ -1115,6 +1000,7 @@ public enum VerbaliseTreeManager {
 						// resultstring += rule + "Thus, we have established that ";
 					} else {
 						if (premiseformulas.contains(previousconclusion) && premiseformulas.size()>1){
+							System.out.println("some rule " + rule);
 							seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("furthermore_Since")));
 							// resultstring += "Furthermore, since ";
 						} else{
@@ -1934,7 +1820,9 @@ public enum VerbaliseTreeManager {
 					seq.add(new LogicElement(intString));}
 				seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("_thereforeBeing")));
 				// result += ", therefore being " + intString; 
-				String tooltiptext =  OWLAPICompatibility.asLiteral(superclass.asOWLClass().getIRI()).toString();
+				String tooltiptext = "--anon--";
+				if (!superclass.isAnonymous())
+					tooltiptext =  OWLAPICompatibility.asLiteral(superclass.asOWLClass().getIRI()).toString();
 				seq.add(new ClassElement(intString,tooltiptext));
 				
 				if(debug) seq.add(new LogicElement("-26-"));

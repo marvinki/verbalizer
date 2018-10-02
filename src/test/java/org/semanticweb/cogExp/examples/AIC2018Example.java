@@ -35,7 +35,9 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -180,11 +182,27 @@ public class AIC2018Example {
 	
 	
 	// Set<OWLAxiom> infAxs = clusterExplanationService.inferAxioms(ontology);
-	for (OWLAxiom infAx : infAxs){
-		if (infAx.toString().contains("3MM") && infAx.toString().contains("SmallScrew")){
-		TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(infAx, reasoner, reasonerFactory, ontology,100, 30000, "OP",true,false);
-	 	System.out.println(sequence.toString());}
-	 }
+	
+		
+		OWLClass activity = dataFactory.getOWLClass(IRI.create(ontologyuri + "Screwing3MMScrewInSpruce"));
+		OWLClass predrilling = dataFactory.getOWLClass(IRI.create(ontologyuri + "Predrilling"));
+		OWLClass spruce = dataFactory.getOWLClass(IRI.create(ontologyuri + "Spruce"));
+		OWLClass screw3mm = dataFactory.getOWLClass(IRI.create(ontologyuri + "Screw3MM"));
+	  	OWLObjectProperty doesNotRequire = dataFactory.getOWLObjectProperty(IRI.create(ontologyuri + "doesNotRequire"));
+	  	OWLObjectProperty screwingConfig_materialType = dataFactory.getOWLObjectProperty(IRI.create(ontologyuri + "ScrewingConfig_materialType"));
+		OWLObjectProperty screwingConfig_screwType = dataFactory.getOWLObjectProperty(IRI.create(ontologyuri + "ScrewingConfig_screwType"));
+		OWLObjectSomeValuesFrom svf = dataFactory.getOWLObjectSomeValuesFrom(doesNotRequire, predrilling);
+	  	OWLSubClassOfAxiom ax = dataFactory.getOWLSubClassOfAxiom(activity, svf);
+	  	
+	  	OWLObjectSomeValuesFrom matSpruce = dataFactory.getOWLObjectSomeValuesFrom(screwingConfig_materialType, spruce);
+	 	OWLObjectSomeValuesFrom screwSmall = dataFactory.getOWLObjectSomeValuesFrom(screwingConfig_screwType, screw3mm);
+	 	OWLObjectIntersectionOf inter = dataFactory.getOWLObjectIntersectionOf(matSpruce,screwSmall);
+	  	OWLSubClassOfAxiom ax2 = dataFactory.getOWLSubClassOfAxiom(inter, svf);
+		// System.out.println(ax2);
+		
+	    TextElementSequence sequence = VerbalisationManager.verbalizeAxiomAsSequence(ax, reasoner, reasonerFactory, ontology,100, 30000, "OP",true,false);
+		System.out.println(sequence.toString());
+	
 	
 	}
 	

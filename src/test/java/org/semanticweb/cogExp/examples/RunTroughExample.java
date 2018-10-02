@@ -40,6 +40,7 @@ import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
 import org.slf4j.LoggerFactory;
@@ -93,7 +94,7 @@ public class RunTroughExample {
 	// inferred axiom generators
 	List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
 	gens.add(new InferredSubClassAxiomGenerator());
-	// gens.add(new InferredEquivalentClassAxiomGenerator());
+	gens.add(new InferredEquivalentClassAxiomGenerator());
     
 	/*
 	Compute the inferrable axioms
@@ -144,15 +145,17 @@ public class RunTroughExample {
                     // 	System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax) + "\":\n");
 			VerbaliseTreeManager.setLocale(Locale.ENGLISH);
 		WordNetQuery.INSTANCE.disableDict();
-		String explanation = VerbalisationManager.computeVerbalization(tree, false, null);
+		String explanation = VerbalisationManager.computeVerbalization(tree, false, false, null);
 		System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax).toString() + "\":\n");
 
+		
 		System.out.println(explanation);
 		if (explanation.contains("hollow") && explanation.contains("perforating"))
 			stop = true;
 		} catch (Exception e){
 			continue;
 		}
+		
 		
 		List<Integer> proofsteps =  tree.computePresentationOrder();
 		System.out.println(proofsteps);

@@ -17,23 +17,9 @@
 
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
-import java.awt.Dimension;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.net.Socket;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,27 +27,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-
-// import org.apache.log4j.spi.LoggerFactory;
-import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPICompatibility;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
-import org.semanticweb.elk.reasoner.Reasoner;
-import org.semanticweb.elk.reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
-import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLAnnotationAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
@@ -77,21 +52,17 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
-import org.semanticweb.owlapi.reasoner.InferenceType;
-import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
@@ -100,53 +71,12 @@ import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredDataPropertyCharacteristicAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentDataPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredInverseObjectPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredObjectPropertyCharacteristicAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
-import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubDataPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubObjectPropertyAxiomGenerator;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 
-// import com.github.jabbalaci.graphviz.GraphViz;
-
-// import ch.qos.logback.classic.Level;
-// import ch.qos.logback.classic.Logger;
-
-// import ch.qos.logback.classic.Logger;
-
-// import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.*;
 
-import uk.ac.manchester.cs.jfact.JFactFactory;
-
-/*
- *  nc localhost 3113
- * {"command" : "explainSubclass", "subclass": "CoalTit", "superclass": "BirdRequiringSmallEntranceHole", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl"}
- * {"command" : "list", "className": "Tit", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl"}
- * {"command" : "listAll", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl"}
- *
- * Tools
- * {"command" : "listAll", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
- * {"command" : "explainSubclass", "subclass": "DrillingInWoodWithRotationalSpeedAbove1000Umin", "superclass": "ActivityPerformedIncorrectly", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
- * {"command" : "explainSubclass", "subclass": "DrillDriver", "superclass": "DIYPowerTool", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
- * {"command" : "explainSubclass", "subclass": "DrillingInWood", "superclass": "Drilling", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
- * {"command" : "explainClassAssertion", "class": "WoodDrillingBit", "individual": "woodDrillingBit7mm", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
- * {"command" : "explainSubclass", "subclass": "Spruce", "superclass": "Material", "ontologyName" : "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch-intern/ontologies/simple-tools.owl"}
- */
 
 
 
@@ -156,7 +86,6 @@ public class ClusterExplanationService {
 		this.ontology = ontology;
 		this.reasonerFactory = reasonerFactory;
 		this.reasoner = reasoner;
-		
 		// inferredAxioms = inferAxioms(ontology);
 	}
 	
@@ -176,7 +105,6 @@ public class ClusterExplanationService {
 	
 	public void setInstructionsIRI(String iri){
 		instructionsIRI = iri;
-		System.out.println("Setting instructions iri to: " + instructionsIRI);
 	}
 
 
@@ -189,7 +117,6 @@ public class ClusterExplanationService {
 		
 	    // Put the inferred axioms into a fresh empty ontology.
 		Set<OWLAxiom> previousaxioms = ontology.getAxioms(true);
-		// System.out.println("Previous axioms " + previousaxioms.size());
 		
 		InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -209,25 +136,20 @@ public class ClusterExplanationService {
 		newaxioms.removeAll(previousaxioms);
 		
 		for (OWLAxiom ax : newaxioms){
-			System.out.println("considering " + ax);
 			if (ax instanceof OWLObjectPropertyAssertionAxiom){
 				OWLObjectPropertyAssertionAxiom propax = (OWLObjectPropertyAssertionAxiom) ax;
 				if(propax.getProperty().isOWLTopObjectProperty())
-					System.out.println("removing");
 					newaxioms.remove(ax);
 			}
 		}
 		
-		System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
+		// System.out.println("Newly inferred axioms: " + (newaxioms.size() - previousaxioms.size()));
 		
 		
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
-	
-		
+		}	
 		return newaxioms;
 }	
 	
@@ -236,7 +158,7 @@ public void precomputeAxioms(){
 	Set<OWLAxiom> newaxioms = new HashSet<OWLAxiom>();
 	Set<OWLAxiom> previousaxioms = new HashSet<OWLAxiom>();
 	if (inferredAxioms.size()>0){
-		System.out.println("[Using cached axioms]");
+		// System.out.println("[Using cached axioms]");
 		newaxioms = inferredAxioms;
 	} else{
 	
@@ -289,14 +211,14 @@ newaxioms.removeAll(previousaxioms);
 	}
 	newaxioms.removeAll(toBeRemoved);
 
-System.out.println("[Newly inferred axioms: " + newaxioms.size() + "]");
+// System.out.println("[Newly inferred axioms: " + newaxioms.size() + "]");
 
 inferredAxioms = newaxioms;
 }
 
 public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
-	System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
-	System.out.println("[Retrieving list of superclasses]");
+	// System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
+	// System.out.println("[Retrieving list of superclasses]");
 		// find classname
 		String ontologyname =ontologynameinput.replaceAll("\"", "");
 		
@@ -359,7 +281,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			} catch (Exception e){
 				e.printStackTrace();
 			}
-		System.out.println("Returning list: " + result);
+		// System.out.println("Returning list: " + result);
 	return inferredAxioms;
 	
 }
@@ -413,7 +335,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 	}
 	
 	public String listAllNumbers(){
-		System.out.println("list all numbers called");
+		// System.out.println("list all numbers called");
 		String results = "";
 		
 		Set<OWLAxiom>  axioms= OWLAPICompatibility.getAxioms(ontology, true);
@@ -424,11 +346,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			if (ax instanceof OWLDataPropertyAssertionAxiom){
 				OWLDataPropertyAssertionAxiom datax =  (OWLDataPropertyAssertionAxiom) ax;
 				String lit = datax.getObject().getLiteral();
-				System.out.println("looking at " + lit);
-				System.out.println("is number " + NumberUtils.isNumber(lit));
-				System.out.println("contained " + donies.contains(NumberUtils.toLong(lit)));
 				if (NumberUtils.isDigits(lit) && !donies.contains(NumberUtils.toLong(lit))){
-					System.out.println("Dealing with number " + NumberUtils.toLong(lit));
 				    String nlit = "n" + lit; 
 					results = results + nlit + " ";
 					donies.add(NumberUtils.toLong(lit));
@@ -438,7 +356,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			}
 		}
 		
-		System.out.println(results);
+		
 		return results;
 	}
 	
@@ -475,7 +393,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 									continue;
 								String fillerString = someclax.getFiller().asOWLClass().getIRI().getShortForm();
 								String propString = someclax.getProperty().asOWLObjectProperty().getIRI().getShortForm();
-								System.out.println("(" + propString + " " + configIndiv.asOWLNamedIndividual().getIRI().getFragment() + " " + fillerString + ")");
+								// System.out.println("(" + propString + " " + configIndiv.asOWLNamedIndividual().getIRI().getFragment() + " " + fillerString + ")");
 								JSONObject axJSON = new JSONObject();
 								axJSON.put("predicate", propString);
 								axJSON.put("arg1", configIndiv.asOWLNamedIndividual().getIRI().getFragment());
@@ -496,7 +414,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 								}
 								OWLDataPropertyExpression datprop = datax.getProperty();
 								String propStr = datprop.asOWLDataProperty().getIRI().getShortForm();
-								System.out.println("(" + propStr + " " + configIndiv.asOWLNamedIndividual().getIRI().getFragment() + " " + lit + ")");
+								// System.out.println("(" + propStr + " " + configIndiv.asOWLNamedIndividual().getIRI().getFragment() + " " + lit + ")");
 								JSONObject axJSON = new JSONObject();
 								axJSON.put("predicate", propStr);
 								axJSON.put("arg1", configIndiv.asOWLNamedIndividual().getIRI().getFragment());
@@ -506,10 +424,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 							// System.out.println("dataprop " + innerax);
 						}
 					}
-					// if (middle)
-					// 	results += ",";
-					// middle = true;
-					// results += clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
+					
 				}
 			// }
 		// }
@@ -555,10 +470,6 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 				OWLClassAssertionAxiom clax = (OWLClassAssertionAxiom) ax;
 				if (clax.getClassExpression().toString().contains("MaterialsAndTools")){
 					individuals.add(clax.getIndividual().asOWLNamedIndividual());
-					// if (middle)
-					// 	results += ",";
-					// middle = true;
-					// results += clax.getIndividual().asOWLNamedIndividual().getIRI().getShortForm();
 				}
 			}
 		}
@@ -588,8 +499,8 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 	
 	
 	public String listAllAxioms(String ontologyname){
-		System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
-		System.out.println("[Retrieving list of superclasses]");
+		// System.out.println("[Inferred Axioms cached: " + inferredAxioms.size() + "]");
+		// System.out.println("[Retrieving list of superclasses]");
 		String result = "";
 			// find classname
 			// String classnameString = input.get(0);
@@ -599,9 +510,11 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			
 			axioms.addAll(getInferredAxioms(ontologyname));
 			
+			/* 
 			for (OWLAxiom ax : axioms){
 				System.out.println(VerbalisationManager.prettyPrint(ax));
 			}
+			*/
 			
 			return "foo";
 			}
@@ -620,7 +533,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			Set<OWLAxiom>  previousaxioms = ontology.getAxioms();
 			
 			Set<OWLAxiom> inferredAxioms = getInferredAxioms(ontologyname);
-			System.out.println("[Inferred axioms cached: " + inferredAxioms.size()+ "]");
+			// System.out.println("[Inferred axioms cached: " + inferredAxioms.size()+ "]");
 				
 			HashSet<OWLClassExpression> superclasses = new HashSet<OWLClassExpression>();
 			
@@ -646,7 +559,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 			    }
 				 
 				
-			System.out.println("Returning list: " + result);
+			// System.out.println("Returning list: " + result);
 		return result;
 		
 	}
@@ -682,7 +595,7 @@ public Set<OWLAxiom> getInferredAxioms(String ontologynameinput){
 		}
 		
 		
-		System.out.println("[Sending " + filteredInferredAxioms.size() + " results]");
+		// System.out.println("[Sending " + filteredInferredAxioms.size() + " results]");
 		
 		for (OWLAxiom ax: filteredClassAssertionAxioms){
 			if (ax instanceof OWLClassAssertionAxiom){
