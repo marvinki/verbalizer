@@ -15,6 +15,7 @@ import org.semanticweb.cogExp.PrettyPrint.PrettyPrintClassExpressionVisitor;
 import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLAxiomVisitor;
 import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLObjectVisitor;
 import org.semanticweb.cogExp.core.InferenceApplicationService;
+import org.semanticweb.cogExp.core.RuleSetManager;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owl.explanation.api.ExplanationGenerator;
@@ -803,7 +804,7 @@ public enum VerbalisationManager {
 			return str;
 		}
 		if (str == "") {
-			System.out.println("CLASS NAME HAS NO LABEL: " + classname);
+			// System.out.println("CLASS NAME HAS NO LABEL: " + classname);
 			str = ppCEvisit.visit(classname);
 	
 			// check if camelcasing was used
@@ -1534,7 +1535,8 @@ public enum VerbalisationManager {
 
 			for (OWLAxiom ax : explanation) {
 				// System.out.println("DEBUG --- Trying to add " + ax);
-				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
+				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));		
+				RuleSetManager.addAxiom(ConversionManager.fromOWLAPI(ax));
 
 				// System.out.println("VerbalisationManager: adding: " +
 				// ConversionManager.fromOWLAPI(ax).prettyPrint());

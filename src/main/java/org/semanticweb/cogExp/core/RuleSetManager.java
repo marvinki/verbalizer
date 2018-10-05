@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 import org.semanticweb.cogExp.inferencerules.SequentTerminationAxiom;
@@ -13,6 +14,16 @@ import org.semanticweb.cogExp.inferencerules.SequentTerminationAxiom;
 public enum RuleSetManager {
 	INSTANCE;
 	private HashMap<java.lang.String,List<SequentInferenceRule>> rulesets = new HashMap<java.lang.String,List<SequentInferenceRule>>(); 
+	
+	private static List<OWLFormula> axiom_store = new ArrayList<OWLFormula>();
+	
+	public static void addAxiom(OWLFormula ax){
+		axiom_store.add(ax);
+	}
+	
+	public static List<OWLFormula>  getAxioms(){
+		return axiom_store;
+	}
 	
 	private RuleSetManager(){
 		// generate ALC ruleset

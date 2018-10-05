@@ -23,6 +23,7 @@ import org.semanticweb.cogExp.core.RuleApplicationResults;
 import org.semanticweb.cogExp.core.RuleBinding;
 import org.semanticweb.cogExp.core.RuleBindingForNode;
 import org.semanticweb.cogExp.core.RuleKind;
+import org.semanticweb.cogExp.core.RuleSetManager;
 import org.semanticweb.cogExp.core.Sequent;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
 import org.semanticweb.cogExp.core.SequentList;
@@ -3794,19 +3795,29 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 				}
 			}
 		}
-		/* System.out.println("Pairs " + results.size());
+		
+		Set<List<Pair<OWLFormula,OWLFormula>>> filtered_results = new HashSet<List<Pair<OWLFormula,OWLFormula>>>();
+		
+		// System.out.println("Pairs " + results.size());
 		for (List<Pair<OWLFormula,OWLFormula>> lst : results){
+			boolean axiomPresent = false;
+			boolean incoherence = false;
 			for (Pair p : lst){
-				System.out.print(p.t + " "+ p.u  + ",");
+				OWLFormula subcl = OWLFormula.createFormula(OWLSymb.SUBCL, (OWLFormula) p.t, (OWLFormula) p.u);
+				if (! RuleSetManager.getAxioms().contains(subcl) && axiomPresent)
+					incoherence=true;
+				if (RuleSetManager.getAxioms().contains(subcl))
+				axiomPresent=true;
 				}
-			System.out.println();
+			if (!incoherence)
+				filtered_results.add(lst);
 		}
-		*/
+		
 		
 		CHAINS_CACHE = results;
 		CHAINS_INPUT_CACHE = input;
 		
-		return results;
+		return filtered_results;
 	}
 	
 	
