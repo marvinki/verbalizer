@@ -1,10 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>verbalizer</groupId>
-	<artifactId>verbalizer</artifactId>
+	<groupId>ontologyManager</groupId>
+	<artifactId>ontologyManager</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Verbalizer</name>
+	<name>ontologyManager</name>
 	<packaging>bundle</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,23 +14,17 @@
 		<plugin-zip.file>
 			${project.artifactId}-${project.version}
 		</plugin-zip.file>
-		<protege.version>5.2.1-SNAPSHOT</protege.version>
-		<!--   <elk.version>0.4.0</elk.version>-->
-		<!--   <elk.version>0.5.0-SNAPSHOT</elk.version> -->
-		<!--  <elk.version>0.3.2</elk.version> -->
-		<!--  <elk.version>0.4.0</elk.version> -->
-		<elk.version>0.4.3</elk.version>
 	</properties>
 	<repositories>
 		<repository>
 			<id>jitpack.io</id>
 			<name>jitpack</name>
 			<url>https://jitpack.io</url>
-		</repository>  
-		 <repository>
-        <id>org.topbraid</id>
-        <url>http://topquadrant.com/repository/spin</url>
-    </repository>
+		</repository>
+		<repository>
+			<id>org.topbraid</id>
+			<url>http://topquadrant.com/repository/spin</url>
+		</repository>
 	</repositories>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
@@ -55,7 +50,7 @@
 						<Export-Package>org.semanticweb.cogExp.ProofBasedExplanation</Export-Package>
 						<Embed-Dependency>*;scope=!provided;scope=compile|runtime;inline=false</Embed-Dependency>
 						<Embed-Directory>target/dependency</Embed-Directory>
-						<!--   <Bundle-ClassPath></Bundle-ClassPath> -->
+						<!-- <Bundle-ClassPath></Bundle-ClassPath> -->
 					</instructions>
 					<executions>
 						<execution>
@@ -79,245 +74,125 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<description>Serves to verbalise derivations</description>
 	<dependencies>
-	<!--  PROTEGE DEPENDENCY
-		   <dependency>
-			<groupId>edu.stanford.protege</groupId>
-			<artifactId>protege-common</artifactId>
-			<version>${protege.version}</version>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-distribution</artifactId>
+			<!-- <version>4.2.8</version> -->
+			<!-- <version>3.5.6</version> -->
+			<version>4.2.8</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>edu.stanford.protege</groupId>
-			<artifactId>protege-editor-core</artifactId>
-			<version>${protege.version}</version>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-api</artifactId>
+			<!-- <version>3.5.6</version> -->
+			<!-- <version>4.2.8</version> -->
+			<version>4.2.8</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>edu.stanford.protege</groupId>
-			<artifactId>protege-editor-owl</artifactId>
-			<version>${protege.version}</version>
-			<scope>provided</scope>
-		</dependency> 
-		--> 
-	<dependency>
-    <groupId>net.sourceforge.owlapi</groupId>
-    <artifactId>owlapi-distribution</artifactId>
-    <!--   <version>4.2.8</version> -->
-    <!--    <version>3.5.6</version> -->
-    <version>4.2.8</version>
-    <scope>provided</scope>
-	</dependency>
-	<dependency>
-    <groupId>net.sourceforge.owlapi</groupId>
-    <artifactId>owlapi-api</artifactId>
-    <!--   <version>3.5.6</version> -->
-    <!--  <version>4.2.8</version> -->
-    <version>4.2.8</version>
-    <scope>provided</scope>
-	</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlexplanation</artifactId>
 			<version>2.0.0</version>
 			<scope>provided</scope>
-			<!--   
-			<exclusions>
-				<exclusion>
-					<groupId>net.sourceforge.owlapi</groupId>
-					<artifactId>owlapi-osgidistribution</artifactId>
-				</exclusion>
-			</exclusions>
-			-->
+			<!-- <exclusions> <exclusion> <groupId>net.sourceforge.owlapi</groupId> 
+				<artifactId>owlapi-osgidistribution</artifactId> </exclusion> </exclusions> -->
 		</dependency>
-		
-		<!--  this dependency is required for wordnet! -->    
+
+		<!-- this dependency is required for wordnet! -->
 		<dependency>
 			<groupId>com.github.jaytaylor</groupId>
 			<artifactId>jaws</artifactId>
 			<version>1.3.1</version>
 		</dependency>
-		
-		
 		<dependency>
-			<groupId>org.semanticweb.elk</groupId>
-			<artifactId>elk-owlapi</artifactId>
-			<version>${elk.version}</version>
-		    <!--   <scope>test</scope> -->
-			<!-- https://mvnrepository.com/artifact/com.hermit-reasoner/org.semanticweb.hermit -->
-			</dependency>
-			
-<dependency>
-    <groupId>net.sourceforge.owlapi</groupId>
-    <artifactId>org.semanticweb.hermit</artifactId>
-    <version>1.3.8.413</version>
-</dependency>
-			
-			
-	<!--   <dependency>
-    	<groupId>com.hermit-reasoner</groupId>
-   	 <artifactId>org.semanticweb.hermit</artifactId>
-  	  <version>1.3.8.413</version>
-	</dependency> -->
-		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
-	<dependency>
-    <groupId>ch.qos.logback</groupId>
-    <artifactId>logback-classic</artifactId>
-    <version>1.2.3</version>
-    <scope>test</scope>
-	</dependency>
-		<dependency>
-    <groupId>net.sourceforge.owlapi</groupId>
-    <artifactId>jfact</artifactId>
-    <version>1.0.0</version>
-    <!--   <scope>test</scope> -->
-	</dependency>
-		<dependency>
-			<groupId>org.semanticweb.elk</groupId>
-			<artifactId>elk-reasoner</artifactId>
-			<version>${elk.version}</version>
-		   <!--   <scope>test</scope>  -->
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>org.semanticweb.hermit</artifactId>
+			<version>1.3.8.413</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.semanticweb.elk/elk-util-collections -->
-<dependency>
-    <groupId>org.semanticweb.elk</groupId>
-    <artifactId>elk-util-collections</artifactId>
-    <version>0.4.3</version>
-</dependency>
-		
-		<!-- <dependency> <groupId>net.sourceforge.owlapi</groupId> <artifactId>telemetry</artifactId> 
-			<version>2.0.0</version> <scope>provided</scope> </dependency> -->
-		<!-- <dependency> <groupId>net.sourceforge.owlapi</groupId> <artifactId>owlapi-distribution</artifactId> 
-			<version>5.0.5</version> <scope>system</scope> <systemPath>/Users/marvin/git/verbalizerPlugin/src/main/resources/owlapi-distribution-5.0.5.jar</systemPath> 
-			</dependency> -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.2.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>jfact</artifactId>
+			<version>1.0.0</version>
+			<!-- <scope>test</scope> -->
+		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>18.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-		<!--  
-	<dependency>
-    	<groupId>mysql</groupId>
-    	<artifactId>mysql-connector-java</artifactId>
-    	<version>5.1.6</version>
-	</dependency>
-	-->
+
 		<!-- https://mvnrepository.com/artifact/org.json/json -->
-	<dependency>
-    	<groupId>org.json</groupId>
-    	<artifactId>json</artifactId>
-    	<version>20160810</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-lang3</artifactId>
-    <version>3.0</version>
-</dependency>
- <dependency>
-    	<groupId>org.topbraid</groupId>
-    	<artifactId>spin</artifactId>
-    	<version>2.0.0</version>
-    </dependency>
 		<dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>apache-jena-libs</artifactId>
-    <type>pom</type>
-    <version>3.4.0</version>
-    <scope>runtime</scope>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>apache-jena-osgi</artifactId>
-    <type>pom</type>
-    <version>3.4.0</version>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>jena-core</artifactId>
-    <version>3.4.0</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>jena-arq</artifactId>
-    <version>3.4.0</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>jena-iri</artifactId>
-    <version>3.4.0</version>
-</dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160810</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.topbraid</groupId>
+			<artifactId>spin</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>apache-jena-libs</artifactId>
+			<type>pom</type>
+			<version>3.4.0</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>apache-jena-osgi</artifactId>
+			<type>pom</type>
+			<version>3.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-core</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-arq</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-iri</artifactId>
+			<version>3.4.0</version>
+		</dependency>
 	</dependencies>
 
-	<profiles>
-		<profile>
-			<!-- with this profile put META-INF/MANIFEST.MF, plugin.xml so that Eclipse/PDE 
-				can find them; to use in Eclipse right click on the project > Configure > 
-				Convert to Plug-in Projects... -->
-			<id>eclipse</id>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-resources-plugin</artifactId>
-						<version>2.7</version>
-						<executions>
-							<execution>
-								<id>copy-plugin-xml-for-eclipse</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>copy-resources</goal>
-								</goals>
-								<configuration>
-									<outputDirectory>${basedir}</outputDirectory>
-									<resources>
-										<resource>
-											<directory>src/main/resources</directory>
-											<includes>
-												<include>plugin.xml</include>
-											</includes>
-											<filtering>true</filtering>
-										</resource>
-										<resource>
-											<directory>resource</directory>
-										</resource>resource>
-									</resources>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.felix</groupId>
-						<artifactId>maven-bundle-plugin</artifactId>
-						<version>3.0.1</version>
-						<extensions>true</extensions>
-						<configuration>
-							<manifestLocation>META-INF</manifestLocation>
-						</configuration>
-					</plugin>
-					<plugin>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>copy-dependencies</id>
-								<phase>package</phase>
-								<goals>
-									<goal>copy-dependencies</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<excludeScope>provided</excludeScope>
-							<includeScope>compile</includeScope>
-							<includeScope>runtime</includeScope>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+	<!-- <profiles> <profile> <id>eclipse</id> <build> <plugins> <plugin> <artifactId>maven-resources-plugin</artifactId> 
+		<version>2.7</version> <executions> <execution> <id>copy-plugin-xml-for-eclipse</id> 
+		<phase>validate</phase> <goals> <goal>copy-resources</goal> </goals> <configuration> 
+		<outputDirectory>${basedir}</outputDirectory> <resources> <resource> <directory>src/main/resources</directory> 
+		<includes> <include>plugin.xml</include> </includes> <filtering>true</filtering> 
+		</resource> <resource> <directory>resource</directory> </resource>resource> 
+		</resources> </configuration> </execution> </executions> </plugin> <plugin> 
+		<groupId>org.apache.felix</groupId> <artifactId>maven-bundle-plugin</artifactId> 
+		<version>3.0.1</version> <extensions>true</extensions> <configuration> <manifestLocation>META-INF</manifestLocation> 
+		</configuration> </plugin> <plugin> <artifactId>maven-dependency-plugin</artifactId> 
+		<executions> <execution> <id>copy-dependencies</id> <phase>package</phase> 
+		<goals> <goal>copy-dependencies</goal> </goals> </execution> </executions> 
+		<configuration> <excludeScope>provided</excludeScope> <includeScope>compile</includeScope> 
+		<includeScope>runtime</includeScope> </configuration> </plugin> </plugins> 
+		</build> </profile> </profiles> -->
 
 </project>
