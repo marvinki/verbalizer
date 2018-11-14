@@ -733,10 +733,14 @@ public enum VerbalisationManager {
 		String str2 = "";
 		boolean hasLabel = false;
 		boolean labelFound = false;
+		String rdfsLabel = "";
+		String firstLabel = "";
+		
 		
 		if (this.ontology != null) {
 			Set<OWLAnnotation> annotations = collectAnnotations(classname);
 			for (OWLAnnotation annotation : annotations) {
+				// System.out.println("Annotation " + annotation);
 				
 				if (VerbaliseTreeManager.locale==Locale.GERMAN) {
 					if(annotation.getValue().asLiteral().orNull().hasLang("de")){ //is locale german ?
@@ -751,22 +755,42 @@ public enum VerbalisationManager {
 				
 //				annotation.getProperty().getIRI().getFragment().equals("@en")
 				
-				
 				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
-					if(annotation.getValue().asLiteral().orNull().hasLang("en")){
+					// System.out.println("ENGLISH LOCALE");
+					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("en")){
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
-						// labelFound = true;
-						// System.out.println("examining str! "+ str);
-						if (annotation.getProperty().isLabel())
-							labelFound = true;
-							break;
-					}
-						// labelFound = true;
-					// System.out.println("examining str (2)! "+ str);
-					if (annotation.getProperty().isLabel() && str.equals(""))
-						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
+						// System.out.println("(1)" + annotation.getProperty());
+						if(annotation.getProperty().toString().contains("rdfs:label")){
+							// System.out.println("label!" + str);
+							rdfsLabel = str;
+						}
+						if (firstLabel.equals(""))
+							firstLabel = str;
 						labelFound = true;
-				}				
+					}if(rdfsLabel.equals("") && annotation.getValue().asLiteral().isPresent()){
+						// System.out.println("(2)" + annotation.getProperty());
+						// Marvin: using quotes makes Mrs Koelle's structural cueing module crash.
+						str = annotation.getValue().asLiteral().orNull().getLiteral();
+						// str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"" ;
+						if(annotation.getProperty().toString().contains("rdfs:label")){
+							// System.out.println("label!" + str);
+							rdfsLabel = str;
+							break;
+						}
+						if(annotation.getProperty().toString().contains("Reference")){
+							str = rdfsLabel;
+						}
+						if (firstLabel.equals(""))
+							firstLabel = str;
+						labelFound = true;// annotation.getValue().toString()
+					}
+} 
+				if (!rdfsLabel.equals(""))
+					str = rdfsLabel;
+				else{
+					str = firstLabel;
+				}
+						
 					
 //				
 //					if (annotation.getProperty().getIRI().getFragment().equals("label")) {
