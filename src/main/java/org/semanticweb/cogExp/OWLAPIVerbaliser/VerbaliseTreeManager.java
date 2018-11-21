@@ -393,6 +393,9 @@ public enum VerbaliseTreeManager {
 					// [CONCEPTNAME] is defined as [DEFINITION]
 					seq.add(new ClassElement(definedconceptname,tooltiptext));
 					seq.add(new LogicElement(LogicLabels.getString("isDefinedAs")));
+					if (definition instanceof OWLObjectSomeValuesFrom){
+						seq.add(new LogicElement("something that"));
+					}
 					seq.concat(defSeq);
 					seq.add(new LogicElement("."));
 					// Thus [SUBCLASS] is by definition [CONCEPTNAME]
@@ -557,6 +560,7 @@ public enum VerbaliseTreeManager {
 					}
 				}
 				if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM)){
+					// System.out.println("This is where we really are!");
 					OWLEquivalentClassesAxiom equivpremise;
 					OWLSubClassOfAxiom subclpremise;
 					if (premiseformulas.get(0) instanceof OWLEquivalentClassesAxiom){
@@ -569,10 +573,13 @@ public enum VerbaliseTreeManager {
 					OWLClassExpression concept1 = equivpremise.getClassExpressionsAsList().get(0);
 					OWLClassExpression concept2 = equivpremise.getClassExpressionsAsList().get(1);
 					OWLClassExpression definedconcept;
+					OWLClassExpression otherconcept;
 					if (concept2.isClassExpressionLiteral()){
 						definedconcept = concept2;
+						otherconcept = concept1;
 					} else{
 						definedconcept = concept1;
+						otherconcept = concept2;
 					}
 									
 //					TextElementSequence seq = new TextElementSequence();
@@ -594,9 +601,19 @@ public enum VerbaliseTreeManager {
 					mainClause.setPraedikat(new TextElement(""));
 					mainClause.makeSinceSentence();
 					
+					
+					
 					Sentence sideClause = new Sentence();
-					sideClause.setSubjekt(VerbalisationManager.textualise(definedconcept,obfuscator));
+					TextElementSequence subjekt = VerbalisationManager.textualise(otherconcept,obfuscator);
+					
+					
+					
+					sideClause.setSubjekt(VerbalisationManager.textualise(otherconcept,obfuscator));
 					sideClause.makebyDefinitionItIsSentence();
+					if (subjekt.getTextElements().get(0).toString().contains("has")){
+						// System.out.println("sideSentence  " + sideClause);
+						sideClause.getTextElements().get(0).setContent("by definition it");
+					}
 										
 					mainClause.concat(sideClause.getSentence());
 					
@@ -816,9 +833,15 @@ public enum VerbaliseTreeManager {
 					else{
 					seq.concat(VerbalisationManager.textualise(subcl,obfuscator));
 					seq.makeUppercaseStart();
-					seq.add(new LogicElement(LogicLabels.getString("_thus")));
-					// System.out.println("RULE15 -- " + additions_to_antecedent.get(0));
-					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
+					// Below is considered trivial, if the superclass is top
+					OWLSubClassOfAxiom test = (OWLSubClassOfAxiom) prem2;
+					System.out.println("test " + test);
+					if (test.getSuperClass().isOWLThing()){
+						return seq;
+					}
+					 seq.add(new LogicElement(LogicLabels.getString("_thus")));
+					 // System.out.println("RULE15 -- " + additions_to_antecedent.get(0));
+					 seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
 					}
 					return seq;
 					// return makeUppercaseStart(VerbalisationManager.verbalise(subcl)) 
@@ -877,6 +900,24 @@ public enum VerbaliseTreeManager {
 					//                     " are " + superclassstring + 
 					//                     ", " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0));
 					                     
+				}
+				if (rule.equals(INLG2012NguyenEtAlRules.RULE12new) 
+						&& ((OWLSubClassOfAxiom) premiseformulas.get(0)).getSuperClass() instanceof OWLObjectSomeValuesFrom 
+						&& ((OWLObjectSomeValuesFrom) ((OWLSubClassOfAxiom) premiseformulas.get(0)).getSuperClass()).getFiller().isOWLThing()
+						){
+					// System.out.println(" prem0  " + premiseformulas.get(0));
+					// System.out.println(" prem 1 " + premiseformulas.get(1));
+					TextElementSequence seq = new TextElementSequence();
+					seq.add(new LogicElement("Everything that"));
+					OWLClassExpression existsexp = ((OWLSubClassOfAxiom) premiseformulas.get(1)).getSubClass();
+					seq.concat(VerbalisationManager.textualise(existsexp,obfuscator));
+					// System.out.println("existsexp " + existsexp);
+					seq.add(new LogicElement("is"));
+					seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) premiseformulas.get(1)).getSuperClass(),obfuscator));
+					seq.add(new LogicElement(", thus"));
+					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
+					System.out.println("RULE12new! + " + premiseformulas.get(0));			
+					return seq;
 				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && premiseformulas.contains(previousconclusion)){
 					Object newformula = null;
@@ -1412,9 +1453,9 @@ public enum VerbaliseTreeManager {
 				}
 			}
 			
-			//check
-			// System.out.println("is this used at all?");
+			// the below has been replaced, see above
 			if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM)){
+				// System.out.println("YES WE ARE BEING USED!");
 				OWLEquivalentClassesAxiom equivpremise;
 				OWLSubClassOfAxiom subclpremise;
 				if (premiseformulas.get(0) instanceof OWLEquivalentClassesAxiom){
@@ -1427,10 +1468,13 @@ public enum VerbaliseTreeManager {
 				OWLClassExpression concept1 = equivpremise.getClassExpressionsAsList().get(0);
 				OWLClassExpression concept2 = equivpremise.getClassExpressionsAsList().get(1);
 				OWLClassExpression definedconcept;
+				OWLClassExpression otherexpression;
 				if (concept2.isClassExpressionLiteral()){
 					definedconcept = concept2;
+					otherexpression = concept1;
 				} else{
 					definedconcept = concept1;
+					otherexpression = concept2;
 				}
 				TextElementSequence seq = new TextElementSequence();
 				seq.add(new LogicElement(LogicLabels.getString("since")));
@@ -1439,9 +1483,18 @@ public enum VerbaliseTreeManager {
 
 //				seq.add(new LogicElement("_" +subclpremise.toString()+ "_" ));
 				
-				seq.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
+				String byDef = LogicLabels.getString("byDefinitionItIs");
+				System.out.println("AYAYA" + VerbalisationManager.textualise(otherexpression,obfuscator).toString());
+				if (VerbalisationManager.textualise(otherexpression,obfuscator).toString().contains("has")){
+					byDef = byDef.replace("is", "");
+				}
+				
+				seq.add(new LogicElement(byDef));
 
-				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(definedconcept,obfuscator));
+				// seq.add(new LogicElement(LogicLabels.getString("by the definition of")));
+				// seq.add(VerbalisationManager.textualise(definedconcept,obfuscator));
+				ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(otherexpression,obfuscator));
+				// ConclusionMarkerElement conclusionMarker = new ConclusionMarkerElement(VerbalisationManager.textualise(definedconcept,obfuscator));
 				seq.add(conclusionMarker);
 				if(debug) seq.add(new LogicElement("-9-"));
 				return seq;

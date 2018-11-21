@@ -375,6 +375,7 @@ public enum VerbalisationManager {
 		}
 
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(property);
+		// System.out.println(propstring);
 		// check case where string contains a pattern.
 		if (propstring.indexOf("[X]") >= 0) {
 			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
@@ -1214,6 +1215,21 @@ public enum VerbalisationManager {
 		// if (otherExpressions.size()>0)
 		// System.out.println("verbaliseComplexIntersection --- CAN'T HANDLE
 		// THIS! " + otherExpressions);
+		// Check if there is no "easy" part, but if it can be replaced
+		if (simpleExpressions.size()<1 && existsExpressions.size()>0){
+			OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) (existsExpressions.get(0));
+			OWLObjectPropertyExpression prop = someexpr.getProperty();
+			String propstr = VerbalisationManager.INSTANCE.getPropertyNLString(prop);
+			if (WordNetQuery.INSTANCE.findNounSubstring(propstr)!=null && propstr.contains("is")){
+				String noun = WordNetQuery.INSTANCE.findNounSubstring(propstr);
+				String someexpstr = existsExpressions.get(0).accept(sentenceOWLObjectVisit).toString();
+				// remove the "is"
+				someexpstr = someexpstr.replaceAll("is ", "");
+				result = result + someexpstr + _space;
+				// result = result + noun + _space;
+				existsExpressions.remove(0);
+			}
+		}
 		// Verbalise the "easy" part
 		result = result + getSimpleIntersectionNLString(simpleExpressions) + _space;
 		// Verbalise the existential part
@@ -1235,6 +1251,8 @@ public enum VerbalisationManager {
 				result = result + _space + LogicLabels.getString("and") + _space;
 			}
 		}
+		//System.out.println("complex intersection returning " + result);
+		result = result.replace("part of","a part of");
 		return result;
 	}
 

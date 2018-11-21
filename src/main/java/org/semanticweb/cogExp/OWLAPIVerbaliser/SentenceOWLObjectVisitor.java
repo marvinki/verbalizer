@@ -808,6 +808,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		}
 		fillerstrs.add(filler.accept(this).toList());
 		List<TextElement> resultseq = VerbalisationManager.textualiseProperty(property,fillerstrs,middle);
+		// System.out.println("DEBUG visit " + resultseq);
 		// String str = VerbalisationManager.verbaliseProperty(property,fillerstrs,middle);
 		// System.out.println("DEBUG visit " + str);
 //		result.add(new LogicElement("_blabla_"));

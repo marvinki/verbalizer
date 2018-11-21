@@ -127,4 +127,16 @@ public enum WordNetQuery {
 		else return true;
 	}
 	
+	public String findNounSubstring(String str){
+		// System.out.println("findNounSubstring called with + " + str);
+		String[] arr = str.split(_space);  
+		for (String st : arr){
+			if (isType(st,SynsetType.NOUN)>0 && !st.equals("is")){
+				//System.out.println("noun found! " + st);
+				return st;
+			}
+		}
+		return null;
+	}
+	
 }
