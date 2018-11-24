@@ -113,7 +113,7 @@ public class StudyExplanationSelection {
 					
 					System.out.println("EXPLANATION:");
 					VerbalisationManager.INSTANCE.featuresOFF=false; // second arg below is rule names
-					String result = VerbaliseTreeManager.verbaliseNL(gentzenTree3_b, false, true,null).replace("<font>&nbsp;</font>"
+					String result = VerbaliseTreeManager.verbaliseNL(gentzenTree3_b, true, true,null).replace("<font>&nbsp;</font>"
 							," ").replace("<font color=blue>","<span style=\"color: blue\">").replace("</font>","</span>");
 					
 					System.out.println(result.replaceAll("  ", " "));
@@ -152,9 +152,9 @@ public class StudyExplanationSelection {
 		
 		String justifications2_1= "EquivalentClasses(<http://sweet.jpl.nasa.gov/2.3/phenSystem.owl#Decrease> <http://sweet.jpl.nasa.gov/2.3/phenSystem.owl#Drop> )"
 					+ "EquivalentClasses(<http://sweet.jpl.nasa.gov/2.3/phenSystem.owl#Decline> <http://sweet.jpl.nasa.gov/2.3/phenSystem.owl#Decrease> )";
-			String ontology2_1 = ontologypath + "MINERAL.owl";
-			String conclusion2_1 = "SubClassOf(<http://sweet.jpl.nasa.gov/2.3/phenSystem.owl#Decline> <http://sweet.jpl.nasa.gov/2.3/phenSystem.owl#Drop> )";
-			generateExplanation(justifications2_1,conclusion2_1, ontology2_1);
+		String ontology2_1 = ontologypath + "MINERAL.owl";
+		String conclusion2_1 = "SubClassOf(<http://sweet.jpl.nasa.gov/2.3/phenSystem.owl#Decline> <http://sweet.jpl.nasa.gov/2.3/phenSystem.owl#Drop> )";
+		generateExplanation(justifications2_1,conclusion2_1, ontology2_1);
 		
 			
 			String justifications2_2= "SubClassOf(<http://purl.obolibrary.org/obo/UBERON_0005876> ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0002202> <http://purl.obolibrary.org/obo/UBERON_0004874>))"
@@ -163,20 +163,22 @@ public class StudyExplanationSelection {
 			String conclusion2_2 = "SubClassOf(<http://purl.obolibrary.org/obo/UBERON_0005876> <http://purl.obolibrary.org/obo/BFO_0000004>)";
 			generateExplanation(justifications2_2,conclusion2_2, ontology2_2);
 			
+			/*
 			String justifications2_3= "EquivalentClasses(<http://www.flyglycodb.org/ontologies/2015/enzyme> ObjectSomeValuesFrom(<http://www.flyglycodb.org/ontologies/2015/FGDBOWL_0008> <http://www.flyglycodb.org/ontologies/2015/Substrate>) )"
 									+ "SubClassOf(<http://www.flyglycodb.org/ontologies/2015/glycosidase> <http://www.flyglycodb.org/ontologies/2015/enzyme>)"
 									+ "EquivalentClasses(<http://www.flyglycodb.org/ontologies/2015/Protein> ObjectSomeValuesFrom(<http://www.flyglycodb.org/ontologies/2015/FGDBOWL_0008> <http://www.flyglycodb.org/ontologies/2015/Substrate>) )";
 			String ontology2_3 = ontologypath + "FLYGLYCODB.owl";
 			String conclusion2_3 = "SubClassOf(<http://www.flyglycodb.org/ontologies/2015/glycosidase> <http://www.flyglycodb.org/ontologies/2015/Protein>)";
 			generateExplanation(justifications2_3,conclusion2_3, ontology2_3);
+			*/
 			
-			String justifications2_4 = "SubClassOf(<http://www.co-ode.org/ontologies/galen#Vomer> ObjectSomeValuesFrom(<http://www.co-ode.org/ontologies/galen#isStructuralComponentOf> <http://www.co-ode.org/ontologies/galen#Nose>))"
+			String justifications2_3 = "SubClassOf(<http://www.co-ode.org/ontologies/galen#Vomer> ObjectSomeValuesFrom(<http://www.co-ode.org/ontologies/galen#isStructuralComponentOf> <http://www.co-ode.org/ontologies/galen#Nose>))"
 										+ "EquivalentClasses(<http://www.co-ode.org/ontologies/galen#BoneOfNose> ObjectIntersectionOf(<http://www.co-ode.org/ontologies/galen#Bone> ObjectSomeValuesFrom(<http://www.co-ode.org/ontologies/galen#isStructuralComponentOf> <http://www.co-ode.org/ontologies/galen#Nose>)) )"
 										+ "SubClassOf(<http://www.co-ode.org/ontologies/galen#Vomer> <http://www.co-ode.org/ontologies/galen#Bone>)"; // corrected
 										// + "SubClassOf(<http://www.co-ode.org/ontologies/galen#NAMEDBone> <http://www.co-ode.org/ontologies/galen#Bone>)";
-			String ontology2_4 = ontologypath + "GALEN.owl";
-			String conclusion2_4 = "SubClassOf(<http://www.co-ode.org/ontologies/galen#Vomer> <http://www.co-ode.org/ontologies/galen#BoneOfNose> )";
-			generateExplanation(justifications2_4,conclusion2_4, ontology2_4);
+			String ontology2_3 = ontologypath + "GALEN.owl";
+			String conclusion2_3 = "SubClassOf(<http://www.co-ode.org/ontologies/galen#Vomer> <http://www.co-ode.org/ontologies/galen#BoneOfNose> )";
+			generateExplanation(justifications2_3,conclusion2_3, ontology2_3);
 			
 		// for explanation with three steps
 		
@@ -189,6 +191,18 @@ public class StudyExplanationSelection {
 		String ontology3_1 = ontologypath + "FOODON.owl";
 		
 		generateExplanation(justifications3_1,conclusion3_1, ontology3_1);
+		
+		String justifications3_1a= "SubClassOf(<http://purl.obolibrary.org/obo/VO_0003082> ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0000086> <http://purl.obolibrary.org/obo/VO_0000173>))"
+				+ "SubClassOf(<http://purl.obolibrary.org/obo/VO_0000566> <http://purl.obolibrary.org/obo/VO_0000165>)"
+				+ "SubClassOf(<http://purl.obolibrary.org/obo/VO_0000763> <http://purl.obolibrary.org/obo/VO_0000566>)"
+				+ "SubClassOf(<http://purl.obolibrary.org/obo/VO_0000165> <http://purl.obolibrary.org/obo/VO_0000001>)"
+				+ "EquivalentClasses(<http://purl.obolibrary.org/obo/VO_0000367> ObjectIntersectionOf(<http://purl.obolibrary.org/obo/VO_0000001> ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0000086> <http://purl.obolibrary.org/obo/VO_0000173>)) )"
+				+ "SubClassOf(<http://purl.obolibrary.org/obo/VO_0003082> <http://purl.obolibrary.org/obo/VO_0000763>)";
+				 
+		String conclusion3_1a = "SubClassOf(<http://purl.obolibrary.org/obo/VO_0003082> <http://purl.obolibrary.org/obo/VO_0000367>)";
+		String ontology3_1a = ontologypath + "VO.owl";
+		
+		generateExplanation(justifications3_1a,conclusion3_1a, ontology3_1a);
 	
 		
 		String justifications3_2= "ObjectPropertyDomain(<http://purl.obolibrary.org/obo/RO_0002202> <http://purl.obolibrary.org/obo/BFO_0000004>)"

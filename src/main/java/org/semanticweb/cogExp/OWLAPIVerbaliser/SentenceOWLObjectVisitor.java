@@ -335,6 +335,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		// System.out.println("visit subclassof called with " + arg0);
 		// Left hand side
 		Sentence leftstringSentence = arg0.getSubClass().accept(this);
+		// System.out.println("leftstringsentence " + leftstringSentence);
 		List<TextElement> leftstring = leftstringSentence.toList();
 		List<TextElement> somethingthat = new ArrayList<TextElement>();
 		somethingthat.add(somethingthatElement);
@@ -344,7 +345,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) arg0.getSubClass();
 			OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 //		 System.out.println("SUBCLASS SOMEOF DEBUG " + some1 + " " + cl);
-			if (cl!=null){
+			if (cl!=null && !cl.equals(arg0.getSuperClass())){ // in the second case, would produce tautological statement
 				//somethingthat = cl.toString() + " that ";
 				somethingthat =cl.accept(this).toList(); 
 				somethingthat.add(thatElement);
@@ -1028,13 +1029,15 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 
 	public Sentence visit(OWLObjectPropertyDomainAxiom arg0) {
 		// treat this as syntactic sugar, convert this to the form \exists r. \top \sqsubseteq X and output
+		// System.out.println("HERE!!!");
 		OWLObjectPropertyExpression prop = arg0.getProperty();
 		OWLClassExpression classexp = arg0.getDomain();
 		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		OWLSubClassOfAxiom subclax = dataFactory.getOWLSubClassOfAxiom(
 				dataFactory.getOWLObjectSomeValuesFrom(prop,dataFactory.getOWLThing()), classexp);
 		Sentence result = new Sentence(subclax.accept(this));
-		
+		// System.out.println("HERE!!!" + subclax);
+		// System.out.println("HERE!!!" + result);
 		if (visitorDebug) result.concat(new TextElement("visit:objctpropdom"));
 		return  result.getSentence();
 	}

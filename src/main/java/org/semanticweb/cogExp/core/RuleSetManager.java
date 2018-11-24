@@ -175,11 +175,11 @@ public enum RuleSetManager {
 	    SequentInferenceRule[] ELInit = {
 	    		AdditionalDLRules.SIMPLETERMINATION,
 	    		SequentTerminationAxiom.INSTANCE,
+	    		AdditionalDLRules.SUBCLANDEQUIVELIM,
+	    		INLG2012NguyenEtAlRules.RULE12new,
     			AdditionalDLRules.EQUIVEXTRACT,
     			INLG2012NguyenEtAlRules.RULE1neo,
     			INLG2012NguyenEtAlRules.RULE1,
-    			AdditionalDLRules.SUBCLANDEQUIVELIM,
-    			INLG2012NguyenEtAlRules.RULE12new,
     			// AdditionalDLRules.FORALLUNION,
     			// INLG2012NguyenEtAlRules.RULE23Repeat,
     			// INLG2012NguyenEtAlRules.RULE23,
@@ -206,7 +206,8 @@ public enum RuleSetManager {
     			AdditionalDLRules.INDIVIDUAL,
     			AdditionalDLRules.INVERSEOBJECTPROPERTY,
     			AdditionalDLRules.OBJPROPASSERIONEXISTS,
-    			AdditionalDLRules.INDIVTOPINTRO
+    			AdditionalDLRules.INDIVTOPINTRO,
+    			AdditionalDLRules.SUBCLCHAIN
     			
 	    };
 	    

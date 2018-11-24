@@ -12,6 +12,7 @@ import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
 import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
@@ -365,6 +366,9 @@ public enum VerbaliseTreeManager {
 				// System.out.println("locale-is-English case.");
 				//check
 				if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) && premiseformulas.contains(previousconclusion)){
+					System.out.println("Case (1)");
+					System.out.println("premiseformulas: " + premiseformulas);
+					System.out.println("additions to antecedent: " + additions_to_antecedent);
 					OWLEquivalentClassesAxiom equivpremise;
 					OWLSubClassOfAxiom subclpremise;
 					if (premiseformulas.get(0) instanceof OWLEquivalentClassesAxiom){
@@ -392,6 +396,12 @@ public enum VerbaliseTreeManager {
 					TextElementSequence seq = new TextElementSequence();
 					// [CONCEPTNAME] is defined as [DEFINITION]
 					seq.add(new ClassElement(definedconceptname,tooltiptext));
+					/*
+					if (definition instanceof OWLClass)
+						seq.add(new LogicElement("is synonymous with"));
+					else
+						seq.add(new LogicElement(LogicLabels.getString("isDefinedAs")));
+					*/
 					seq.add(new LogicElement(LogicLabels.getString("isDefinedAs")));
 					if (definition instanceof OWLObjectSomeValuesFrom){
 						seq.add(new LogicElement("something that"));
@@ -399,10 +409,17 @@ public enum VerbaliseTreeManager {
 					seq.concat(defSeq);
 					seq.add(new LogicElement("."));
 					// Thus [SUBCLASS] is by definition [CONCEPTNAME]
+					OWLSubClassOfAxiom addition = (OWLSubClassOfAxiom) additions_to_antecedent.get(0);
+					seq.add(new LogicElement(LogicLabels.getString("thus")));
+					seq.concat(VerbalisationManager.textualise(addition,obfuscator));
+					// the below does not always make sense! :(
+					
+					/*
 					seq.add(new LogicElement(LogicLabels.getString("thus")));
 					seq.concat(VerbalisationManager.textualise(conclusion.getSubClass(),obfuscator));
 					seq.add(new LogicElement(LogicLabels.getString("is")));
 					seq.add(new ClassElement(definedconceptname,tooltiptext));
+					*/
 					return seq;
 					// return  // "By definition of " + VerbalisationManager.verbalise(definedconcept) + ", "
 							// + VerbalisationManager.verbalise(additions_to_antecedent.get(0));
@@ -665,8 +682,20 @@ public enum VerbaliseTreeManager {
 					}
 				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE1)){
+					// System.out.println("RULE 111111");
 					OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
 					OWLClassExpression definedconcept = premiseformula.getClassExpressionsAsList().get(0);
+					OWLClassExpression otherconcept = premiseformula.getClassExpressionsAsList().get(1);
+					/*
+					if (definedconcept instanceof OWLClass && otherconcept instanceof OWLClass){
+						// case of synonyms
+						TextElementSequence seq = new TextElementSequence();
+						seq.concat(VerbalisationManager.textualise(definedconcept,obfuscator) );
+						seq.add(new LogicElement("is synonymous with"));
+						seq.concat(VerbalisationManager.textualise(otherconcept,obfuscator) );
+						return seq;
+					}
+					*/
 					if (((OWLSubClassOfAxiom) additions_to_antecedent.get(0)).getSubClass().equals(definedconcept)){
 						TextElementSequence seq = new TextElementSequence();
 						seq.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
@@ -908,7 +937,7 @@ public enum VerbaliseTreeManager {
 					// System.out.println(" prem0  " + premiseformulas.get(0));
 					// System.out.println(" prem 1 " + premiseformulas.get(1));
 					TextElementSequence seq = new TextElementSequence();
-					seq.add(new LogicElement("Everything that"));
+					seq.add(new LogicElement("Something that")); // <----- or "anything that/everything that"
 					OWLClassExpression existsexp = ((OWLSubClassOfAxiom) premiseformulas.get(1)).getSubClass();
 					seq.concat(VerbalisationManager.textualise(existsexp,obfuscator));
 					// System.out.println("existsexp " + existsexp);
@@ -916,7 +945,7 @@ public enum VerbaliseTreeManager {
 					seq.concat(VerbalisationManager.textualise(((OWLSubClassOfAxiom) premiseformulas.get(1)).getSuperClass(),obfuscator));
 					seq.add(new LogicElement(", thus"));
 					seq.concat(VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator));
-					System.out.println("RULE12new! + " + premiseformulas.get(0));			
+					// System.out.println("RULE12new! + " + premiseformulas.get(0));			
 					return seq;
 				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE12) && premiseformulas.contains(previousconclusion)){
@@ -1553,6 +1582,7 @@ public enum VerbaliseTreeManager {
 			
 			
 			if (rule.equals(INLG2012NguyenEtAlRules.RULE1)){
+				// System.out.println("RULE 111111");
 				OWLEquivalentClassesAxiom premiseformula = (OWLEquivalentClassesAxiom) premiseformulas.get(0);
 				OWLClassExpression definedconcept = premiseformula.getClassExpressionsAsList().get(0);
 				if (((OWLSubClassOfAxiom) additions_to_antecedent.get(0)).getSubClass().equals(definedconcept)){
