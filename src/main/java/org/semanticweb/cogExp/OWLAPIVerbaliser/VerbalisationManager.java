@@ -93,6 +93,9 @@ public enum VerbalisationManager {
 
 	public static TextElementSequence textualise(OWLObject ob) {
 		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit).toList());
+		// System.out.println("seq: " + seq.toHTML());
+		// System.out.println("seq: " + seq.inspect());
+		
 		if(verbalisationManagerdebug) seq.add(new LogicElement("textualise(OWLObject ob)"));
 		return seq;
 	}
@@ -1016,7 +1019,7 @@ public enum VerbalisationManager {
 			// first case: more than one noun
 			// start with nouns, then use "that is"
 			for (String str : noun_concepts_strings) {
-				System.out.println("}" + str + "{");
+				// System.out.println("}" + str + "{");
 				if (firstToken == true) {
 					firstToken = false;
 					str = aOrAnIfy(str);
@@ -1047,7 +1050,7 @@ public enum VerbalisationManager {
 			// attributes first
 			for (String str : attribute_concepts_strings) {
 				result = result + str + _space;
-				System.out.println("result-}" + result + "{");
+				// System.out.println("result-}" + result + "{");
 				noun_or_attribute_concepts_strings.remove(str);
 			}
 			// if several items can be used either way, order them

@@ -337,6 +337,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		Sentence leftstringSentence = arg0.getSubClass().accept(this);
 		// System.out.println("leftstringsentence " + leftstringSentence);
 		List<TextElement> leftstring = leftstringSentence.toList();
+		
 		List<TextElement> somethingthat = new ArrayList<TextElement>();
 		somethingthat.add(somethingthatElement);
 		

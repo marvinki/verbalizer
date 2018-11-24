@@ -162,7 +162,9 @@ public class ClassElement extends TextElement{
 			name = content;
 		}
 		
-		return article + "<font color=blue>" + name + "</font>"; 
+		String result = article + "<font color=blue>" + name + "</font>"; 
+		// System.out.println("Class elem result " + result );
+		return result;
 	}
 	
 	@Override

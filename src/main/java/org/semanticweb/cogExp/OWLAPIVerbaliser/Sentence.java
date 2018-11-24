@@ -569,6 +569,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	/**
 	 * @return the sentence as List of TextElements
 	 */
+	/* The below is evil because it removes information about the types of elements
 	public List<TextElement> toList(){
 		List<TextElement> list = new ArrayList<TextElement>();
 //		list.add(new TextElement("example text"));
@@ -581,6 +582,11 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		}
 		//		list.add(this);		
 		return list;
+		
+	} */ 
+	
+	public List<TextElement> toList(){	
+		return sequence;
 		
 	}
 

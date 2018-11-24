@@ -54,25 +54,33 @@ public class StudyExplanationSelection {
 				OWLAxiom conclusion1axiom = OWLAPIManagerManager.parseAxiomFunctional(conclusion,ontology);
 				Set<OWLAxiom> justifications1axioms = OWLAPIManagerManager.parseAxiomsFunctional(justifications,ontology);
 				
-				System.out.println("Conclusion " + conclusion1axiom.toString().replaceAll("  ", " "));
-				System.out.println("Justifications " + justifications1axioms.toString().replaceAll("  ", " "));
+				System.out.println("Conclusion " + conclusion1axiom.toString());
+				System.out.println("Justifications " + justifications1axioms.toString());
 				
 				// conversion
 				IncrementalSequent sequent = new IncrementalSequent();
 				System.out.println("VERBALIZED AXIOMS:");
+				int count = 1;
 				for(OWLAxiom just:justifications1axioms){
 					try {
 						sequent.addAntecedent(ConversionManager.fromOWLAPI(just));
 						// get sequence
 						TextElementSequence justSeq = VerbalisationManager.textualise(just);
-						String justHTML = justSeq.toHTML();
+						justSeq.makeUppercaseStart();
+						String justHTML = justSeq.toHTML(); // <========= change this to "toString" if html is not required
+						// String justHTML = justSeq.toString();
+						// System.out.println(justHTML);
 						String justHTML2 = justHTML.replace("<font>&nbsp;</font>"," ");
 						String justHTML3 = justHTML2.replace("<font color=blue>","<span style=\"color: blue\">");
 						String justHTML4 = justHTML3.replace("</font>","</span>");
 						String justHTML5 = justHTML4.replace("<font color=Maroon>","<span style=\"color: black\">");
 						String result = justHTML5.replaceAll("  ", " ");
 						// System.out.println(justHTML5);
-						System.out.println(result);
+						if (count < justifications1axioms.size())   
+						System.out.println(result + ".<br>"); /// <======= change this if you don't need the <br>'s
+						else
+						System.out.println(result + ".");
+						count++;
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

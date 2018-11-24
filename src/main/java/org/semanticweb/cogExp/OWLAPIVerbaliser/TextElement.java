@@ -42,6 +42,12 @@ public class TextElement {
 	 * some HTML-tags here for formatting. 
 	 */
 	public String toHTML(){
+		// the below should be unnecessary. Find out why it is not!
+		if (this instanceof ClassElement){
+			ClassElement clelem = (ClassElement) this;
+			String str = clelem.toHTML();
+			return str;
+			}
 		return content;
 	}
 	

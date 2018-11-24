@@ -366,9 +366,9 @@ public enum VerbaliseTreeManager {
 				// System.out.println("locale-is-English case.");
 				//check
 				if (rule.equals(AdditionalDLRules.SUBCLANDEQUIVELIM) && premiseformulas.contains(previousconclusion)){
-					System.out.println("Case (1)");
-					System.out.println("premiseformulas: " + premiseformulas);
-					System.out.println("additions to antecedent: " + additions_to_antecedent);
+					// System.out.println("Case (1)");
+					// System.out.println("premiseformulas: " + premiseformulas);
+					// System.out.println("additions to antecedent: " + additions_to_antecedent);
 					OWLEquivalentClassesAxiom equivpremise;
 					OWLSubClassOfAxiom subclpremise;
 					if (premiseformulas.get(0) instanceof OWLEquivalentClassesAxiom){

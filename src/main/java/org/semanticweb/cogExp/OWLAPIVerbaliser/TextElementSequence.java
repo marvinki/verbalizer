@@ -14,7 +14,7 @@ import org.protege.editor.owl.OWLEditorKit;
  */
 public class TextElementSequence extends TextElement{
 
-	private List<TextElement> sequence = new ArrayList<TextElement>();
+	protected List<TextElement> sequence = new ArrayList<TextElement>();
 	
 	
 	/**
@@ -38,6 +38,7 @@ public class TextElementSequence extends TextElement{
 	public String inspect(){
 		String result = ">";
 		for(TextElement elem : sequence){
+			result += elem.getClass() + ":";
 			result += elem.toString();
 			result +="|";
 		}
@@ -73,6 +74,8 @@ public class TextElementSequence extends TextElement{
 		String result = "";
 		boolean needsep = false;
 		for(TextElement elem : sequence){
+			// System.out.println("dealing with element " + elem);
+			// System.out.println("element is class element " + (elem instanceof ClassElement));
 			if (elem.content.startsWith(","))
 				needsep = false;
 			if (elem.content.startsWith("."))
