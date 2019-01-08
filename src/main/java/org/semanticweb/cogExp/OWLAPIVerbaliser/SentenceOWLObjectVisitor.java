@@ -327,7 +327,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLSubClassOfAxiom arg0) {
 		// System.out.println("-------");
 		// define some elements that will be used later
-		LogicElement somethingthatElement = new LogicElement(LogicLabels.getString("somethingThat"));
+		// LogicElement somethingthatElement = new LogicElement(LogicLabels.getString("somethingThat"));
+		// When "something" is on the left hand side, it plays the role of "everything"
+		LogicElement somethingthatElement = new LogicElement("everything that");
 		LogicElement thatElement =  new LogicElement(LogicLabels.getString("that"));
 		LogicElement commaElement =  new LogicElement(",");
 		LogicElement isElement =  new LogicElement(LogicLabels.getString("is"));

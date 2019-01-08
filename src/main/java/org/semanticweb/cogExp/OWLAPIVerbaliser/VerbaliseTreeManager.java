@@ -181,6 +181,8 @@ public enum VerbaliseTreeManager {
 						premiseformulas,
 						additions_to_antecedent,
 						additions_to_succedent,prevconc,beforeprevconc,obfuscator);
+				if (seq==null)
+					continue;
 				seq.makeUppercaseStart();
 				if (!seq.toString().equals(previoustext)
 						&& ! previoustexts.contains(seq.toString())
@@ -285,6 +287,8 @@ public enum VerbaliseTreeManager {
 																additions_to_succedent,
 																prevconc,beforeprevconc,
 																obfuscator);
+				if (seq.size()==0)
+					continue;
 				seq.makeUppercaseStart();
 				seq.pluralise(); // <--- introduce plurals
 				//output = seq.toString();
@@ -847,6 +851,7 @@ public enum VerbaliseTreeManager {
 				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE15) && 
 						(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
+					// System.out.println("HERE - WE ARE HERE!!!");
 					Object prem1 = premiseformulas.get(0);
 					Object prem2 = premiseformulas.get(1);
 					OWLSubClassOfAxiom subcl;
@@ -864,9 +869,11 @@ public enum VerbaliseTreeManager {
 					seq.makeUppercaseStart();
 					// Below is considered trivial, if the superclass is top
 					OWLSubClassOfAxiom test = (OWLSubClassOfAxiom) prem2;
-					System.out.println("test " + test);
-					if (test.getSuperClass().isOWLThing()){
-						return seq;
+					// System.out.println("test " + test);
+					if (test.getSuperClass().isOWLThing()){ // <-- case of sth.
+						TextElementSequence seq2 = new TextElementSequence();
+						return seq2;
+						// return seq; // <-- should not be reached
 					}
 					 seq.add(new LogicElement(LogicLabels.getString("_thus")));
 					 // System.out.println("RULE15 -- " + additions_to_antecedent.get(0));
@@ -937,7 +944,7 @@ public enum VerbaliseTreeManager {
 					// System.out.println(" prem0  " + premiseformulas.get(0));
 					// System.out.println(" prem 1 " + premiseformulas.get(1));
 					TextElementSequence seq = new TextElementSequence();
-					seq.add(new LogicElement("Something that")); // <----- or "anything that/everything that"
+					seq.add(new LogicElement("Everything that")); // <----- or "anything that/everything that"
 					OWLClassExpression existsexp = ((OWLSubClassOfAxiom) premiseformulas.get(1)).getSubClass();
 					seq.concat(VerbalisationManager.textualise(existsexp,obfuscator));
 					// System.out.println("existsexp " + existsexp);
@@ -1000,7 +1007,7 @@ public enum VerbaliseTreeManager {
 					}
 				}
 				if (rule.equals(AdditionalDLRules.SUBCLCHAIN)){
-					// System.out.println("SUBCLCHAIN!!!!");
+					// System.out.println("SUBCLCHAIN!!!!"); <--- this is in use!
 					TextElementSequence seq = new TextElementSequence();
 					boolean firstprem = true;
 					boolean innerprem = false;
@@ -1011,8 +1018,10 @@ public enum VerbaliseTreeManager {
 							seq.concat(VerbalisationManager.textualise(prem.getSubClass()));
 							seq.add(new LogicElement(LogicLabels.getString("is")));
 							seq.concat(VerbalisationManager.textualise(prem.getSuperClass()));
+							seq.add(new LogicElement(","));
 							innerprem = true;
 						}
+						// if (!firstprem && innerprem){
 						if (!firstprem && innerprem){
 							seq.add(new LogicElement("which is"));
 							seq.concat(VerbalisationManager.textualise(prem.getSuperClass()));
