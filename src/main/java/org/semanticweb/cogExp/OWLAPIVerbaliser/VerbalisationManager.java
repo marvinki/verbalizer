@@ -1933,6 +1933,8 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 						  ax);
 				System.out.println("VerbalisationManager: adding (2): " +
 				  ConversionManager.fromOWLAPI(ax).prettyPrint());
+				System.out.println("VerbalisationManager: adding (3): " +
+				  VerbalisationManager.textualise(ax).toString());
 			}
 		} catch (Exception e) {
 			return null;
