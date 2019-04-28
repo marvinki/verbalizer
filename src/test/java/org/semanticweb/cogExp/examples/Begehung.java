@@ -12,7 +12,6 @@ import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 // import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
-import org.semanticweb.cogExp.ProofBasedExplanation.WordnetTmpdirManager;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -54,14 +53,7 @@ public class Begehung {
   	// Now specify which axiom is to be explained;
 	// OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(WT_ChestTIRETTriceps, Upper_Body_Training_Template);
 		
-	// WordNetQuery.INSTANCE.disableDict();
-	String tmpdir = "";
-	try {
-		tmpdir = WordnetTmpdirManager.makeTmpdir();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	
 	// WordNetQuery.INSTANCE.setDict(tmpdir);
 	
 	// GentzenTree tree = ProofBasedExplanationService.computeTree("WT_Chest-Triceps", "Upper_Body_Training_Template", "/Users/marvin/work/ki-ulm-repository/miscellaneous/cluster-1-and-6/ontology/in rdf-xml format/cluster6ontology_complete.rdf");
