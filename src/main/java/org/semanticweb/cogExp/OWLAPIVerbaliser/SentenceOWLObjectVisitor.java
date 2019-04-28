@@ -342,14 +342,14 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	
 	// VERBALIZE SUBCLASSOFAXIOM
 	public Sentence visit(OWLSubClassOfAxiom arg0) {
-		// System.out.println("-------");
+		System.out.println("-------");
 		// define some elements that will be used later
 		LogicElement somethingthatElement = new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat"));
 		LogicElement thatElement =  new LogicElement(VerbalisationManager.LogicLabels.getString("that"));
 		LogicElement commaElement =  new LogicElement(",");
 		LogicElement isElement =  new LogicElement(VerbalisationManager.LogicLabels.getString("is"));
 		
-		// System.out.println("visit subclassof called with " + arg0);
+		System.out.println("visit subclassof called with " + arg0);
 		// Left hand side
 		Sentence leftstringSentence = arg0.getSubClass().accept(this);
 		// System.out.println("DEBUG 1 " +  leftstringSentence);
@@ -480,12 +480,14 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				}	
 			}
 		
-			//System.out.println(" DEBUG (1) -- " +  filler.accept(this));
+			System.out.println(" DEBUG (1) -- " +  filler.accept(this));
 			Sentence fillerSentence = filler.accept(this); 
 			fillerSentence.setOrder(SentenceOrder.A_is_B);
 			fillerstrs.add(fillerSentence.toTextElementSequence().getTextElements());
+			System.out.println(" DEBUG (2a) -- " +  fillerSentence.toTextElementSequence());
 			Sentence propsentence = VerbalisationManager.textualisePropertyAsSentence(property, fillerstrs, middle);
-						
+			
+			System.out.println(" DEBUG (2b) -- " +  propsentence);
 			Sentence sentence = new Sentence(new TextElementSequence(leftstring),
 					new TextElementSequence(),
 					new TextElementSequence());
