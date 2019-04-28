@@ -433,11 +433,10 @@ public enum VerbaliseTreeManager {
 				
 				
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE5)){
-					System.out.println(" VERBALISING RULE 5");
+					// System.out.println(" VERBALISING RULE 5");
 					// System.out.println(previousconclusion);
 					// System.out.println(before_previousconclusion);
 					// System.out.println(premiseformulas);
-					// System.out.println("{{{{{{");
 					if(premiseformulas.contains(previousconclusion)
 						&& 	premiseformulas.contains(before_previousconclusion) || premiseformulas.size()==2 // this is unlike in the paper!
 							){
@@ -754,8 +753,8 @@ public enum VerbaliseTreeManager {
 					return seq;
 				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE15)){
-					System.out.println("RULE15: " + premiseformulas.get(0));
-					System.out.println("RULE15: " + premiseformulas.get(1));
+					// System.out.println("RULE15: " + premiseformulas.get(0));
+					// System.out.println("RULE15: " + premiseformulas.get(1));
 				} 
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE15) && 
 						(premiseformulas.contains(previousconclusion))){ // || premiseformulas.contains(before_previousconclusion))){
@@ -783,7 +782,7 @@ public enum VerbaliseTreeManager {
 					// 		+ ", thus " + VerbalisationManager.verbalise((OWLObject) additions_to_antecedent.get(0)); // + " Previousconclusion " + previousconclusion;
 				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE15)){ //  && !premiseformulas.contains(previousconclusion)){
-					System.out.println(" VERBALISING RULE 15");
+					// System.out.println(" VERBALISING RULE 15");
 					OWLSubClassOfAxiom subcl1 = (OWLSubClassOfAxiom) premiseformulas.get(0);
 					OWLSubClassOfAxiom subcl2 = (OWLSubClassOfAxiom) premiseformulas.get(1);
 					OWLClassExpression superExpr = ((OWLSubClassOfAxiom) subcl2).getSuperClass();
@@ -838,9 +837,11 @@ public enum VerbaliseTreeManager {
 					                     
 				}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE12new)){
+				/*
 				for (OWLFormula form : implied_conclusions){
 					System.out.println("contains === : " + form);
 				}
+				*/
 			}
 				if (rule.equals(INLG2012NguyenEtAlRules.RULE12new) && 
 						implied_conclusions.contains(ConversionManager.fromOWLAPI((OWLSubClassOfAxiom) premiseformulas.get(0))) &&
@@ -1000,7 +1001,7 @@ public enum VerbaliseTreeManager {
 						// resultstring += rule + "Thus, we have established that ";
 					} else {
 						if (premiseformulas.contains(previousconclusion) && premiseformulas.size()>1){
-							System.out.println("some rule " + rule);
+							// System.out.println("some rule " + rule);
 							seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("furthermore_Since")));
 							// resultstring += "Furthermore, since ";
 						} else{

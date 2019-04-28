@@ -83,7 +83,6 @@ public enum VerbalisationManager {
 
 //	static final TextElementOWLObjectVisitor textOWLObjectVisit = new TextElementOWLObjectVisitor();
 	static final SentenceOWLObjectVisitor sentenceOWLObjectVisit = new SentenceOWLObjectVisitor();
-	
 	static final PrettyPrintClassExpressionVisitor ppCEvisit = new PrettyPrintClassExpressionVisitor();
 	static final PrettyPrintOWLAxiomVisitor ppOAvisit = new PrettyPrintOWLAxiomVisitor();
 	static final PrettyPrintOWLObjectVisitor ppOOvisit = new PrettyPrintOWLObjectVisitor();
@@ -130,8 +129,8 @@ public enum VerbalisationManager {
 	
 
 	public static TextElementSequence textualise(OWLObject ob) {
-		System.out.println("textualise called with " + ob);
-		System.out.println(ob.accept(sentenceOWLObjectVisit));
+		// System.out.println("textualise called with " + ob);
+		// System.out.println(ob.accept(sentenceOWLObjectVisit));
 		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit).toList());
 		if(verbalisationManagerdebug) seq.add(new LogicElement("textualise(OWLObject ob)"));
 		return seq;
@@ -256,7 +255,7 @@ public enum VerbalisationManager {
 			};
 			
 			if(countUppercase>=2){
-				System.out.println(s);
+				// System.out.println(s);
 				return s;
 			}
 			else{
@@ -267,22 +266,22 @@ public enum VerbalisationManager {
 	}
 
 	public String getPropertyNLString(OWLObjectPropertyExpression property) {
-		System.out.println("getPropertyNLString called with__ "  + property);
+		// System.out.println("getPropertyNLString called with__ "  + property);
 		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN)){
 			if (getLabel(property.asOWLObjectProperty(),"de")!=null){
-				System.out.println("VerbalisationManager returning property : " + getLabel(property.asOWLObjectProperty(),"de"));
+				// System.out.println("VerbalisationManager returning property : " + getLabel(property.asOWLObjectProperty(),"de"));
 				return getLabel(property.asOWLObjectProperty(),"de");
 			}
 		}
 		// adding english label version
 		if (VerbaliseTreeManager.locale.equals(Locale.ENGLISH)){
 			if (getLabel(property.asOWLObjectProperty(),"en")!=null){
-				System.out.println("VerbalisationManager returning property : " + getLabel(property.asOWLObjectProperty(),"en"));
+				// System.out.println("VerbalisationManager returning property : " + getLabel(property.asOWLObjectProperty(),"en"));
 				return getLabel(property.asOWLObjectProperty(),"en");
 			}
 		}
 		OWLProperty namedproperty = property.getNamedProperty();
-		System.out.println("DEBUG - named : " + namedproperty);
+		// System.out.println("DEBUG - named : " + namedproperty);
 		String str = "";
 		if (namedproperty != null) {
 			if (this.ontology == null) { // if no ontology is provided, simply
@@ -293,7 +292,7 @@ public enum VerbalisationManager {
 				if (sentenceOWLObjectVisit.getObfuscator() != null) {
 					result = sentenceOWLObjectVisit.getObfuscator().obfuscateRole(result);
 				}
-				System.out.println("returning __ (2) " + str);
+				// System.out.println("returning __ (2) " + str);
 				return result;
 			}
 			// collect annotation axioms
@@ -336,9 +335,6 @@ public enum VerbalisationManager {
 						OWLLiteral literal = OWLAPICompatibility.getLiteral(axiom); // axiom.getAnnotation().getValue().asLiteral().get();
 								
 						str = literal.getLiteral();
-						
-						
-						// str = axiom.getAnnotation().getValue().toString();
 					}
 				}
 			}
@@ -350,7 +346,7 @@ public enum VerbalisationManager {
 				str = sentenceOWLObjectVisit.getObfuscator()
 						.obfuscateRole(property.getNamedProperty().getIRI().getFragment());
 			}
-			System.out.println("returning __(1) " + str);
+			// System.out.println("returning __(1) " + str);
 			return str;
 		}
 		// remove language tags
@@ -381,12 +377,11 @@ public enum VerbalisationManager {
 		// detect if name is of the form "_ of"
 		if (detect_noun_of(str) && !str.contains("is"))
 			str = LogicLabels.getString("is") + _space + str;
-		System.out.println("returning __ " + str);
 		return str;
 	}
 	
 	public String getPropertyNLString(OWLDataPropertyExpression property) {
-		System.out.println("getPropertyNLString called with data prop expression ");
+		// System.out.println("getPropertyNLString called with data prop expression ");
 		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN)){
 			if (getLabel(property.asOWLDataProperty(),"de")!=null)
 				return getLabel(property.asOWLDataProperty(),"de");
@@ -451,8 +446,6 @@ public enum VerbalisationManager {
 						OWLLiteral literal = OWLAPICompatibility.getLiteral(axiom); //  axiom.getAnnotation().getValue().asLiteral().get();
 						str = literal.getLiteral();
 						
-						
-						// str = axiom.getAnnotation().getValue().toString();
 					}
 				}
 			}
@@ -613,7 +606,6 @@ public enum VerbalisationManager {
 	
 	public static Sentence textualisePropertyAsSentence(OWLObjectPropertyExpression property,
 			List<List<TextElement>> fillerelements, List<TextElement> middle) {
-		System.out.println(" textualisePropertyAsSentence called");
 		Sentence result = new Sentence();
 		
 		//
@@ -622,12 +614,11 @@ public enum VerbalisationManager {
 			VerbalisationManager.INSTANCE.featureRoleAgg = true;
 		}
 		
-		System.out.println("  textualisePropertyAsSentence called (1)");
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(property);
-		System.out.println(" textualisePropertyAsSentence called (2) " + propstring + " property " + property);
+		// System.out.println(" textualisePropertyAsSentence called (2) " + propstring + " property " + property);
 		// check case where string contains a pattern.
 		if (propstring.indexOf("[X]") >= 0) {
-			System.out.println("if part");
+			// System.out.println("if part");
 			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
 			String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 			if (part1.endsWith(" ")) {
@@ -636,7 +627,7 @@ public enum VerbalisationManager {
 			if (part2.startsWith(" ")) {
 				part2 = part2.substring(1, part2.length());
 			}
-			System.out.println("if part (1)");
+			// System.out.println("if part (1)");
 			result.setPraedikat(new RoleElement(part1)); // += part1;
 			if (part2.equals("") && part1.equals("") || part1 == null && part2 == null) {
 				result.setPraedikat(new RoleElement(
@@ -646,7 +637,6 @@ public enum VerbalisationManager {
 				// "-successor ";;
 			}
 		} else {
-			System.out.println("else part");
 			result.setPraedikat(new RoleElement(propstring));
 		}
 
@@ -667,9 +657,6 @@ public enum VerbalisationManager {
 			}
 			result.setObjekt(new RoleElement(p2));
 		}
-		// result +=
-		// VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
-
 		return result.getSentence();
 	}
 	
@@ -1911,7 +1898,6 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		// System.out.println("checking axiom " + axiom);
 		// BRANCH FOR DIFFERENT TYPES OF AXIOMS
 
-		System.out.println("DBG: before generating explanation");
 		if (axiom instanceof OWLSubClassOfAxiom || axiom instanceof OWLObjectPropertyDomainAxiom
 				|| axiom instanceof OWLClassAssertionAxiom) {
 			Set<Explanation<OWLAxiom>> explanations = gen.getExplanations(axiom, 1);
@@ -1921,8 +1907,6 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				explanation = exp.getAxioms();
 			}
 		}
-		System.out.println("DBG: after generating explanation");
-		System.out.println("explanation " + explanation);
 
 		if (explanation.size() == 0) {
 			System.out.println("no justification found!");
@@ -1938,19 +1922,20 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		OWLFormula axiomFormula;
 		List<OWLFormula> justificationFormulas = new ArrayList<OWLFormula>();
 		try {
-			System.out.println("DEBUG --- to be proven " + axiom);
+			// System.out.println("DEBUG --- to be proven " + axiom);
 			axiomFormula = ConversionManager.fromOWLAPI(axiom);
 
 			for (OWLAxiom ax : explanation) {
 				// System.out.println("DEBUG --- Trying to add " + ax);
 				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
-
+				/*
 				System.out.println("VerbalisationManager: adding (1): " +
 						  ax);
 				System.out.println("VerbalisationManager: adding (2): " +
 				  ConversionManager.fromOWLAPI(ax).prettyPrint());
 				System.out.println("VerbalisationManager: adding (3): " +
 				  VerbalisationManager.textualise(ax).toString());
+				  */
 			}
 		} catch (Exception e) {
 			System.out.println("exception hit");

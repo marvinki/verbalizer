@@ -342,14 +342,12 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	
 	// VERBALIZE SUBCLASSOFAXIOM
 	public Sentence visit(OWLSubClassOfAxiom arg0) {
-		System.out.println("-------");
 		// define some elements that will be used later
 		LogicElement somethingthatElement = new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat"));
 		LogicElement thatElement =  new LogicElement(VerbalisationManager.LogicLabels.getString("that"));
 		LogicElement commaElement =  new LogicElement(",");
 		LogicElement isElement =  new LogicElement(VerbalisationManager.LogicLabels.getString("is"));
 		
-		System.out.println("visit subclassof called with " + arg0);
 		// Left hand side
 		Sentence leftstringSentence = arg0.getSubClass().accept(this);
 		// System.out.println("DEBUG 1 " +  leftstringSentence);
@@ -480,14 +478,11 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				}	
 			}
 		
-			System.out.println(" DEBUG (1) -- " +  filler.accept(this));
 			Sentence fillerSentence = filler.accept(this); 
 			fillerSentence.setOrder(SentenceOrder.A_is_B);
 			fillerstrs.add(fillerSentence.toTextElementSequence().getTextElements());
-			System.out.println(" DEBUG (2a) -- " +  fillerSentence.toTextElementSequence());
 			Sentence propsentence = VerbalisationManager.textualisePropertyAsSentence(property, fillerstrs, middle);
 			
-			System.out.println(" DEBUG (2b) -- " +  propsentence);
 			Sentence sentence = new Sentence(new TextElementSequence(leftstring),
 					new TextElementSequence(),
 					new TextElementSequence());
@@ -507,11 +502,10 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			recSentence.setSubjekt(leftstring);
 			return recSentence;
 		}
-		System.out.println(" HERE ! ");;
 		// Multiple Exists Pattern
 		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
 				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
-			System.out.println("DEBUG : case of multiple exists patterns");
+			// System.out.println("DEBUG : case of multiple exists patterns");
 			middlestring.addAll(VerbalisationManager.INSTANCE.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass()));
 			
 			Sentence sentence = new Sentence(new TextElementSequence(leftstring),
@@ -553,7 +547,6 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		// 	middlestring.add(isElement);
 
 		middlestring.add(isElement);
-		System.out.println("HERE 2");;
 		Sentence anotherSentence = arg0.getSuperClass().accept(this);
 		anotherSentence.setOrder(SentenceOrder.A_is_B);
 		if (anotherSentence.toTextElementSequence()!=null)

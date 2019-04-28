@@ -2,6 +2,7 @@ package org.semanticweb.cogExp.examples;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.GentzenTree.GentzenStep;
@@ -10,7 +11,6 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
-import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -29,6 +29,8 @@ public class UsageExample {
 	
 	public static void main(String[] args) throws OWLOntologyCreationException{
 	
+	VerbaliseTreeManager.setLocale(Locale.ENGLISH);	
+		
 	// load an ontology through the OWL API
 	File file = new File(".");
 	File ontologyfile = new java.io.File(Paths.get(file.getAbsoluteFile().getParentFile().getAbsolutePath(),
@@ -82,8 +84,6 @@ public class UsageExample {
 	System.out.println(explanation);
 	
 
-	System.out.println(VerbalisationManager.treatCamelCaseAndUnderscores("Stage_IV_Enteropathy-type_T-Cell_Lymphoma"));
-	
 	List<Integer> proofsteps =  tree.computePresentationOrder();
 	System.out.println(proofsteps);
 	System.out.println("\n == INFORMATION CONTAINED IN THE PROOFTREE == \n");
