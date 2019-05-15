@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ontologyManager</groupId>
-	<artifactId>ontologyManager</artifactId>
+	<groupId>verbalizer</groupId>
+	<artifactId>verbalizer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ontologyManager</name>
+	<name>verbalizer</name>
 	<packaging>bundle</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -75,7 +75,6 @@
 		</plugins>
 	</build>
 
-	<description>Serves to verbalise derivations</description>
 	<dependencies>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
@@ -184,4 +183,5 @@
 	</dependencies>
 
 
+	<description>Core functionality for verbalizing ontological axioms and derivations</description>
 </project>
