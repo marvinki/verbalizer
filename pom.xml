@@ -102,7 +102,6 @@
 				<artifactId>owlapi-osgidistribution</artifactId> </exclusion> </exclusions> -->
 		</dependency>
 
-		<!-- this dependency is required for wordnet! -->
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>org.semanticweb.hermit</artifactId>
@@ -184,22 +183,5 @@
 </dependency>
 	</dependencies>
 
-<!-- 
-	<profiles> <profile> <id>eclipse</id> <build> <plugins> <plugin> <artifactId>maven-resources-plugin</artifactId> 
-		<version>2.7</version> <executions> <execution> <id>copy-plugin-xml-for-eclipse</id> 
-		<phase>validate</phase> <goals> <goal>copy-resources</goal> </goals> <configuration> 
-		<outputDirectory>${basedir}</outputDirectory> <resources> <resource> <directory>src/main/resources</directory> 
-		<includes> <include>plugin.xml</include> </includes> <filtering>true</filtering> 
-		</resource> <resource> <directory>resource</directory> </resource>resource> 
-		</resources> </configuration> </execution> </executions> </plugin> <plugin> 
-		<groupId>org.apache.felix</groupId> <artifactId>maven-bundle-plugin</artifactId> 
-		<version>3.0.1</version> <extensions>true</extensions> <configuration> <manifestLocation>META-INF</manifestLocation> 
-		</configuration> </plugin> <plugin> <artifactId>maven-dependency-plugin</artifactId> 
-		<executions> <execution> <id>copy-dependencies</id> <phase>package</phase> 
-		<goals> <goal>copy-dependencies</goal> </goals> </execution> </executions> 
-		<configuration> <excludeScope>provided</excludeScope> <includeScope>compile</includeScope> 
-		<includeScope>runtime</includeScope> </configuration> </plugin> </plugins> 
-		</build> </profile> </profiles> 
-		-->
 
 </project>
