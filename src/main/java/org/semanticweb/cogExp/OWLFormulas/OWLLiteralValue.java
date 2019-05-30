@@ -75,5 +75,10 @@ public class OWLLiteralValue implements OWLAtom{
 	public boolean isIndividual() {
 		return false;
 	}
+
+	@Override
+	public String toNLString() {
+		return this.toString();
+	}
 	
 }

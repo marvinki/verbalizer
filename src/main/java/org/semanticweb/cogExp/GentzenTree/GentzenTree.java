@@ -181,8 +181,9 @@ public class GentzenTree {
 					*/
 					// System.out.println(conclusion.getArgs().get(0));
 					// System.out.println(formula2.getArgs().get(0));
-						
+
 					/*
+
 					if (conclusion.getArgs().get(0).equals(formula2.getArgs().get(0))){
 						subclassOnlysome = formula2;
 						superclassOnlysome = formula1;
@@ -383,9 +384,6 @@ public class GentzenTree {
 						int tmp2 = nodelabel.indexOf("&#x2261;",i+2);
 						int tmp3 = nodelabel.indexOf("&#x2293;",i+2);
 						int tmp4 = nodelabel.indexOf("&#x2294;",i+2);
-
-						System.out.println("i " + i + " tmp1 " + tmp1 + " tmp2 " + tmp2 + " tmp3 " + tmp3 + " tmp4 " + tmp4 + " i " + i);
-
 						if (tmp1<skip) 
 							tmp1=5000;
 						if (tmp2<skip) 
@@ -395,9 +393,6 @@ public class GentzenTree {
 						if (tmp4<skip) 
 							tmp4=5000;
 						int min = Math.min(tmp1,Math.min(tmp2,Math.min(tmp3,tmp4)));
-
-						System.out.println("min " + min); 
-
 						if (min<5000 && min>skip){
 							nodelabel = nodelabel.substring(0, min) + "\n" +  nodelabel.substring(min, nodelabel.length());
 						}

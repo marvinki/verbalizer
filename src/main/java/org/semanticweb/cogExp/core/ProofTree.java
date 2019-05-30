@@ -783,19 +783,8 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 			}
 		}
 		return results;
-		
-		
 	}
 			
-
-	public String toString(){
-		String result = "Opennodes: \n";
-			for (Type opennode : open_nodes){
-				result += opennode.toString();
-			}
-		return result;
-	}
-
 	public ProofNode getDirectlyJustifiedNode(JustificationNode justnode){
 		for (Integer pnodeid : nodesHashMap.keySet()){
 			ProofNode pnode = nodesHashMap.get(pnodeid);

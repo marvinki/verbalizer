@@ -112,8 +112,6 @@ public class SentenceTest {
 //		System.out.print(array.toString());
 //		
 		
-		
-		
 	}
 
 }

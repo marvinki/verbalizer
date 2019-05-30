@@ -62,7 +62,7 @@ public class MindrillExample {
 
 			Locale locale = Locale.GERMAN;
 			VerbaliseTreeManager.setLocale(locale);
-			// VerbaliseTreeManager.setLogicLabels(ResourceBundle.getBundle("LogicLabels", locale));
+			VerbaliseTreeManager.setLogicLabels(ResourceBundle.getBundle("LogicLabels", locale));
 			
 			System.out.println("Classes : ");
 			
@@ -153,7 +153,8 @@ public class MindrillExample {
 					reasoner);
 			
 //			System.out.println("\n");
-			String result = VerbaliseTreeManager.verbaliseNL(tree, false, false, false, null);
+			boolean withRules = true;
+			String result = VerbaliseTreeManager.verbaliseNL(tree, withRules, false, null);
 			return (result);
 			
 		}

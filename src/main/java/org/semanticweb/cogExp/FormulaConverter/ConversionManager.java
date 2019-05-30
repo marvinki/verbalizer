@@ -245,13 +245,13 @@ public enum ConversionManager {
 				break;
 			case ONEOF:
 				Set<OWLIndividual> individuallist = new HashSet<OWLIndividual>();
-				// System.out.println("tail " + tail);
+				System.out.println("tail " + tail);
 				for (OWLFormula form : tail){
 					OWLIndividual individ = (OWLIndividual) toOWLAPI(form);
 					individuallist.add(individ);
 				}
 				result = dataFactory.getOWLObjectOneOf(individuallist);
-				// System.out.println("oneof conversion " + result);
+				System.out.println("oneof conversion " + result);
 				break;
 			case OBJECTPROPERTYASSERTION:
 				OWLObjectPropertyExpression propExp = (OWLObjectPropertyExpression) toOWLAPI(tail.get(0));
@@ -259,13 +259,12 @@ public enum ConversionManager {
 				OWLIndividual indivB = (OWLIndividual) toOWLAPI(tail.get(2));
 				result = dataFactory.getOWLObjectPropertyAssertionAxiom(propExp,indivA, indivB);
 				break;
-			case EQUIVOBJPROP: 
-				Set<OWLObjectPropertyExpression> exprsObj = new TreeSet<OWLObjectPropertyExpression>();
-				for (int i = 0; i<tail.size();i++){
-					OWLObjectPropertyExpression ce = (OWLObjectPropertyExpression) toOWLAPI(tail.get(i));
-					exprsObj.add(ce);
-				}
-				result = dataFactory.getOWLEquivalentObjectPropertiesAxiom(exprsObj);
+			case DATAPROPERTYASSERTION:
+				OWLDataPropertyExpression dataExp = (OWLDataPropertyExpression) toOWLAPI(tail.get(0));
+				OWLIndividual indivC = (OWLIndividual) toOWLAPI(tail.get(1));
+				OWLLiteralValue literalvalueB = (OWLLiteralValue) tail.get(2).getHead();
+				OWLLiteral litB = (OWLLiteral) toOWLAPI(literalvalueB);
+				result = dataFactory.getOWLDataPropertyAssertionAxiom(dataExp,indivC, litB);
 				break;
 			case SUBPROPERTYOF:
 				if (tail.get(0).getHead().equals(OWLSymb.SUBPROPERTYCHAIN)){
@@ -288,16 +287,12 @@ public enum ConversionManager {
 				result = dataFactory.getOWLNothing();
 			}
 		} else {
-			if (head instanceof OWLInteger){
-				return null;
-			}
-			else
 			result = toOWLAPI(head);
 		}
 		return result;
 	}
 	
-	private static OWLObject toOWLAPI(OWLAtom atom){
+	public static OWLObject toOWLAPI(OWLAtom atom){
 		OWLObject result = null;
 		if (atom instanceof OWLClassName)
 			result = toOWLAPI((OWLClassName) atom);

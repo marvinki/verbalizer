@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormulaComparator;
 import org.semanticweb.cogExp.OWLFormulas.TermTree;
@@ -38,14 +37,6 @@ public class IncrementalSequent extends Sequent{
 	
 	public IncrementalSequent(){
 		mastersequent = new Sequent();
-	}
-	
-	@Override
-	public String getStatistics(){
-		// System.out.println("calling statistics for inc id " + id);
-		String result = "Incremental sequent id " + id + " Mastersequent statistics: " + mastersequent.getStatistics();
-		result = result + " Incremental antecedents: " + antecedents.size() + " succedents: " + succedents.size();		
-		return result;
 	}
 	
 	public int antecedentGetHighestContainedTermID(){
@@ -283,7 +274,6 @@ public class IncrementalSequent extends Sequent{
 			res = res + ",";
 		}
 		return res;
-
 	}
 	
 }

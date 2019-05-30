@@ -155,22 +155,16 @@ public class ClassElement extends TextElement{
 		} else if (content.startsWith("an ")){
 			article = "an ";
 			name = content.substring(3);
-		} else if (content.startsWith("A ")){
-					article = "A ";
-					name = content.substring(2);
-		} else if (content.startsWith("The ")){
-			article = "The ";
-			name = content.substring(4);
-		} else if (content.startsWith("An ")){
-			article = "An ";
-			name = content.substring(3);
 		} else if (content.startsWith("the ")){
 			article = "the ";
 			name = content.substring(4);
 		} else {
 			name = content;
 		}
-		return article + "<font color=blue>" + name + "</font>"; 
+		
+		String result = article + "<font color=blue>" + name + "</font>"; 
+		// System.out.println("Class elem result " + result );
+		return result;
 	}
 	
 	@Override

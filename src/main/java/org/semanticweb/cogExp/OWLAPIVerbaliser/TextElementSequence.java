@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.protege.editor.owl.OWLEditorKit;
 
 /**
@@ -16,7 +14,7 @@ import org.protege.editor.owl.OWLEditorKit;
  */
 public class TextElementSequence extends TextElement{
 
-	private List<TextElement> sequence = new ArrayList<TextElement>();
+	protected List<TextElement> sequence = new ArrayList<TextElement>();
 	
 	
 	/**
@@ -40,6 +38,7 @@ public class TextElementSequence extends TextElement{
 	public String inspect(){
 		String result = ">";
 		for(TextElement elem : sequence){
+			result += elem.getClass() + ":";
 			result += elem.toString();
 			result +="|";
 		}
@@ -68,15 +67,6 @@ public class TextElementSequence extends TextElement{
 		return result;
 	}
 	
-	public String inspect2(){
-		String result = "";
-		for(TextElement elem : sequence){
-			result += "Element " + elem.getClass() + " : " + elem.content + "\n";
-		}
-		return result;
-	}
-	
-	
 	/* (non-Javadoc)
 	 * @see org.semanticweb.cogExp.OWLAPIVerbaliser.TextElement#toHTML()
 	 */
@@ -84,12 +74,14 @@ public class TextElementSequence extends TextElement{
 		String result = "";
 		boolean needsep = false;
 		for(TextElement elem : sequence){
+			// System.out.println("dealing with element " + elem);
+			// System.out.println("element is class element " + (elem instanceof ClassElement));
 			if (elem.content.startsWith(","))
 				needsep = false;
 			if (elem.content.startsWith("."))
 				needsep = false;
 			if (needsep)
-				result += "<font>&nbsp;</font>";  // <--- spaces
+				result += " ";
 			result += elem.toHTML();
 			needsep = true;
 		}
@@ -206,7 +198,7 @@ public class TextElementSequence extends TextElement{
 				String previousString = previousClass.toString();
 				String[] arr = previousString.split(" ");  	
 			    String lastword = arr[arr.length-1];
-			    if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isPlural(lastword) && WordNetQuery.INSTANCE.isKnown("lastword")){
+			    if (!WordNetQuery.INSTANCE.isDisabled() && WordNetQuery.INSTANCE.isPlural(lastword)){
 			    	if (current_element instanceof LogicElement){
 			    		String currString = current_element.toString();
 			    		if (currString.equals("is")){
@@ -226,77 +218,6 @@ public class TextElementSequence extends TextElement{
 			previous = current_element;
 		}
 	}
-
-	
-	public JSONArray toJSON(){
-		JSONArray result = new JSONArray();
-		// JSONObject result = new JSONObject();
-		int itemcounter = 0;
-		for (TextElement element : sequence){
-			
-			System.out.println("dealing with " + element + " " + element.getClass());
-			
-			if (element instanceof ClassElement){
-				ClassElement classElement = (ClassElement) element;
-				String classDescription = classElement.toString();
-				String tooltip = classElement.getToolTipText();
-				JSONObject innerobject = new JSONObject();
-				innerobject.put("text", classDescription);
-				innerobject.put("classTooltip", tooltip);
-				innerobject.put("type", "class-description");
-				result.put(innerobject);
-				itemcounter++;
-			}
-			if (element instanceof LogicElement){
-				LogicElement logicElement = (LogicElement) element;
-				String logicDescription = logicElement.toString();
-				JSONObject innerobject = new JSONObject();
-				innerobject.put("text", logicDescription);
-				innerobject.put("type", "text");
-				result.put(innerobject);
-				itemcounter++;
-			}
-			if (element instanceof RoleElement){
-				RoleElement roleElement = (RoleElement) element;
-				String roleDescription = roleElement.toString();
-				JSONObject innerobject = new JSONObject();
-				innerobject.put("text", roleDescription);
-				innerobject.put("type", "roleDescription");
-				result.put(innerobject);
-				itemcounter++;
-			}
-			if (element instanceof ConclusionMarkerElement){
-				ConclusionMarkerElement cme = (ConclusionMarkerElement) element;
-				JSONArray recursiveResult = cme.toJSON();
-				for (Object io : recursiveResult){
-					result.put(io);
-				}
-				itemcounter++;
-			}
-			
-			if (element instanceof TextElementSequence){
-				TextElementSequence innersequence = (TextElementSequence) element;
-				JSONArray innerarray = innersequence.toJSON();
-				for (Object ob : innerarray){
-					JSONObject oj = (JSONObject) ob;
-					result.put(oj);
-				}
-			}
-			
-			if (element instanceof TextElement){
-				TextElement textElement = (TextElement) element;
-				String textDescription = textElement.toString();
-				JSONObject innerobject = new JSONObject();
-				innerobject.put("text", textDescription);
-				// innerobject.put("classTooltip", tooltip);
-				innerobject.put("type", "text");
-				result.put(innerobject);
-				itemcounter++;
-			}
-		
-		}
-		return result;
-}
 
 	
 	

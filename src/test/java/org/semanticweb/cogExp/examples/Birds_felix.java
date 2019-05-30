@@ -126,7 +126,7 @@ import uk.ac.manchester.cs.jfact.JFactFactory;
 			// GentzenTree tree2 = ProofBasedExplanationService.computeTree("CoalTit", "Tit", "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl", reasonerFactory, reasoner);
 			
 			System.out.println("\n");
-			String result = VerbaliseTreeManager.verbaliseNL(tree, false, false, false,null);
+			String result = VerbaliseTreeManager.verbaliseNL(tree, false, false, null);
 			return (result);
 			
 		}

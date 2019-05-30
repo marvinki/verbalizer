@@ -54,7 +54,7 @@ public class Birds2 {
 //		VerbaliseTreeManager.INSTANCE.setLanguage(Locale.ENGLISH);
 		Locale locale = Locale.GERMAN;
 		VerbaliseTreeManager.setLocale(locale);
-		// VerbaliseTreeManager.setLogicLabels(ResourceBundle.getBundle("LogicLabels", locale));
+		VerbaliseTreeManager.setLogicLabels(ResourceBundle.getBundle("LogicLabels", locale));
 		
 		System.out.println("Birds : \n");
 		
@@ -160,7 +160,7 @@ public class Birds2 {
 		// GentzenTree tree2 = ProofBasedExplanationService.computeTree("CoalTit", "Tit", "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl", reasonerFactory, reasoner);
 		
 		System.out.println("\n");
-		String result = VerbaliseTreeManager.verbaliseNL(tree, false, false, false, null);
+		String result = VerbaliseTreeManager.verbaliseNL(tree, false, false, null);
 		return (result);
 		
 	}

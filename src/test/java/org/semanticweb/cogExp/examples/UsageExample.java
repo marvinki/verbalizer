@@ -77,13 +77,10 @@ public class UsageExample {
 	System.out.println("Prooftree \n" + VerbaliseTreeManager.listOutput(tree) + "\n");
 	
 	// Generate the explanation from the proof tree
-	String explanation = VerbalisationManager.computeVerbalization(tree, false, false, null);
+	String explanation = VerbalisationManager.computeVerbalization(tree, false, null);
 	
 	System.out.println("Explanation for \"" + VerbalisationManager.textualise(axiom).toString() + "\":\n");
 	System.out.println(explanation);
-	
-
-	System.out.println(VerbalisationManager.treatCamelCaseAndUnderscores("Stage_IV_Enteropathy-type_T-Cell_Lymphoma"));
 	
 	List<Integer> proofsteps =  tree.computePresentationOrder();
 	System.out.println(proofsteps);

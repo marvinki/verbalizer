@@ -3,9 +3,6 @@ package org.semanticweb.cogExp.ProofBasedExplanation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-
 /*
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -22,7 +19,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLDecoder;
 
 public enum WordnetTmpdirManager {
@@ -73,23 +69,7 @@ public enum WordnetTmpdirManager {
 		// System.out.println(input2);
 		
 		InputStream input1 = WordnetTmpdirManager.INSTANCE.getClass().getClassLoader().getResourceAsStream(input);
-		
-		/*
-		ClassLoader cl = WordnetTmpdirManager.INSTANCE.getClass().getClassLoader().getSystemClassLoader();
-		URLClassLoader ucl = (URLClassLoader) cl;
-		URL[] urls = ucl.getURLs();
-		for (URL url: urls){
-			System.out.println(url.getFile());
-		}
-		
-		ucl.close();
-		*/
-		
-		System.out.println("input " + input);
-		
 		if (input1==null){
-			System.out.println("NULL!!!!");
-			
 			/*
 			System.out.println(FrameworkUtil.getBundle(WordnetTmpdirManager.INSTANCE.getClass()));
 			BundleContext context = FrameworkUtil.getBundle(WordnetTmpdirManager.class).getBundleContext();

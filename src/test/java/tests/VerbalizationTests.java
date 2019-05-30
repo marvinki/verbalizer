@@ -3,10 +3,10 @@ package tests;
 import java.io.IOException;
 
 
+
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.ProofBasedExplanation.WordnetTmpdirManager;
-
 
 import edu.smu.tspell.wordnet.SynsetType;
 
@@ -14,7 +14,6 @@ public class VerbalizationTests {
 
 	public static void main(String[] args){
 		
-
   String tmpdir = "";
 		
    try {
@@ -54,7 +53,6 @@ public class VerbalizationTests {
 		   	System.out.println("number test \t\t failed.");
 	   		}
 	   
-
 	   //Noun Test
 	   if(isNoun == (0<WordNetQuery.INSTANCE.isType(testString, SynsetType.NOUN)))
 	   {
@@ -79,9 +77,7 @@ public class VerbalizationTests {
   }
   
   
-
 	
 }
-
 
 

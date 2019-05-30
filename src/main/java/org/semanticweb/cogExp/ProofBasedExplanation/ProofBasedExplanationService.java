@@ -29,16 +29,13 @@ import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.slf4j.LoggerFactory;
 
 // import ch.qos.logback.classic.Level;
 // import ch.qos.logback.classic.Logger;
 //import uk.ac.manchester.cs.jfact.JFactFactory;
 //import tests.CustomGUIList;
-import uk.ac.manchester.cs.jfact.JFactFactory;
 
 
 public class ProofBasedExplanationService extends ExplanationService{
@@ -90,6 +87,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 		String tmpdir = "";
 		if (enableDict!=null & enableDict){
 			try {
+				// tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
 				tmpdir = WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
 				//  Auto-generated catch block
@@ -117,6 +115,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 		String tmpdir = "";
 		if (enableDict!=null & enableDict){
 			try {
+				// tmpdir = org.semanticweb.wordnetdicttmp.WordnetTmpdirManager.makeTmpdir();
 				tmpdir = WordnetTmpdirManager.makeTmpdir();
 			} catch (IOException e) {
 				//  Auto-generated catch block
@@ -215,109 +214,9 @@ public class ProofBasedExplanationService extends ExplanationService{
 			 }
 		 }
 		 
-		 if (subcl==null)
-			 System.out.println("Class not found in ontology: " + subclass);
-		 
-		 if (supercl==null)
-			 System.out.println("Class not found in ontology: " + superclass);
-		 
 		 if (subcl==null || supercl==null){
 			 return null;
 		 }
-		 
-		 
-		 
-		 OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(subcl, supercl);
-		
-		// get reasoner
-		 OWLReasonerFactory reasonerFactory2 = new JFactFactory();
-		 OWLReasonerConfiguration config = new SimpleConfiguration(30000);
-		 OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology,config);
-		 
-		
-		 
-		 tree = VerbalisationManager.computeGentzenTree(axiom, 
-					reasonerJFact, 
-					reasonerFactory2, 
-					ontology, 
-					50000,
-					60000,
-					"OP");	
-		// } catch (OWLOntologyCreationException e) {
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		
-		return tree;
-	}
-	
-	
-	/** computes a GentzenTree of two classes with respect to an specified ontology
-	 * 
-	 * @param subclass			subclass as String	
-	 * @param superclass		superclass as String	
-	 * @param ontologyname		path to the ontology as string
-	 * @return	a GentzenTree object 
-	 * @see GentzenTree
-	 */
-	public static GentzenTree computeTree(String subclass, String superclass, OWLOntology ontology){
-		
-		System.out.println("compute Gentzen Tree called with " + subclass + " " + superclass + " ontology " + ontology.getOntologyID());
-		
-		// Logger rootlogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-		// rootlogger.setLevel(Level.OFF);
-		
-		GentzenTree tree = null;
-		
-		/* 
-		// load ontology
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		java.io.File file = new java.io.File(ontologyname);
-		FileDocumentSource source = new FileDocumentSource(file);
-		OWLOntologyLoaderConfiguration loaderconfig = new OWLOntologyLoaderConfiguration(); 
-		loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
-		loaderconfig = loaderconfig.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.valueOf("SILENT"));
-				
-		OWLOntology ontology;
-		try {
-			ontology = manager.loadOntologyFromOntologyDocument(source,loaderconfig);
-			VerbalisationManager.INSTANCE.setOntology(ontology);
-		*/
-		
-		try{
-		
-		// construct axiom
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-	  	OWLDataFactory dataFactory=manager.getOWLDataFactory();
-		
-		 
-		 OWLClass subcl = null;
-		 OWLClass supercl = null;
-		 
-		 Set<OWLClass> classes = ontology.getClassesInSignature();
-		 for (OWLClass cl : classes){
-			 // System.out.println(cl.toString());
-			 if (cl.getIRI().getFragment().equals(subclass)){
-				 subcl = cl;
-			 }
-			 if (cl.getIRI().getFragment().equals(superclass)){
-				 supercl = cl;
-			 }
-		 }
-		 
-		 if (subcl==null)
-			 System.out.println("Class not found in ontology: " + subclass);
-		 
-		 if (supercl==null)
-			 System.out.println("Class not found in ontology: " + superclass);
-		 
-		 if (subcl==null || supercl==null){
-			 return null;
-		 }
-		 
-		 
 		 
 		 OWLSubClassOfAxiom axiom = dataFactory.getOWLSubClassOfAxiom(subcl, supercl);
 		
@@ -326,10 +225,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 //		 OWLReasonerConfiguration config = new SimpleConfiguration(30000);
 //		 OWLReasoner reasonerJFact = reasonerFactory2.createReasoner(ontology,config);
 		 
-		 OWLReasonerFactory reasonerFactory = new JFactFactory();
-		 OWLReasonerConfiguration config = new SimpleConfiguration(30000);
-		 OWLReasoner reasoner = reasonerFactory.createReasoner(ontology,config);
-		 
+		
 		 
 		 tree = VerbalisationManager.computeGentzenTree(axiom, 
 					reasoner, 
@@ -350,7 +246,7 @@ public class ProofBasedExplanationService extends ExplanationService{
 	
 	public static String computeVerbalization(GentzenTree tree, boolean asHTML, Obfuscator obfuscator){
 		WordNetQuery.INSTANCE.disableDict();
-		String result = VerbaliseTreeManager.verbaliseNL(tree, false,asHTML,false, obfuscator); 
+		String result = VerbaliseTreeManager.verbaliseNL(tree, false,asHTML,obfuscator); 
 		return result;
 	}
 	

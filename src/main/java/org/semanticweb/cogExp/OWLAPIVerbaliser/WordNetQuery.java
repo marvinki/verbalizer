@@ -81,7 +81,7 @@ public enum WordNetQuery {
 	
 	public int[] getTypes(String str){
 		if (cache.containsKey(str)){
-			// System.out.println("DEBUG -- retrieved cached element for " + str + " ! " + Arrays.toString(cache.get(str)));
+			// System.out.println("DEBUG -- retrieved cached element for " + str + " ! " + cache.get(str).toString());
 			return cache.get(str);
 		}
 		// errorWriter.write("get Types called with " + str + ", data base " + database.toString() + "\n");
@@ -91,9 +91,7 @@ public enum WordNetQuery {
 	    int[] types = new int[5]; 
 	    String lastword = arr[arr.length-1];
 	    
-	    // System.out.println("Lastword " +  lastword);
 		Synset[] synsets = database.getSynsets(lastword); // getting synsets for last word
-		// System.out.println("Synsets length " + synsets.length);
 		// errorWriter.write("synsets " + synsets + "\n");
 		for (int i = 0; i < synsets.length; i++) {
 			int count = 0;
@@ -105,18 +103,14 @@ public enum WordNetQuery {
 			}	
 		// errorWriter.write("types " + Arrays.toString(types) + "\n");
 		// errorWriter.close();
-		// System.out.println("Caching element " + str + " " + Arrays.toString(types));
+		// System.out.println("Caching element " + str + " " + types.toString());
 		cache.put(str, types);
 		return types;
 	}
 	
 	public boolean isPlural(String str){
-		// known exceptions
-		if (str.equals("workout")){
-			return false;
-		}
 		Synset[] synsets = database.getSynsets(str,SynsetType.NOUN);
-		// System.out.println("Length " + synsets.length);
+		// System.out.println(synsets);
 		if (synsets.length<1)
 			return false;
 		boolean exactfound = false;
@@ -133,61 +127,16 @@ public enum WordNetQuery {
 		else return true;
 	}
 	
-	public boolean detectIsNounPlusPreposition(String str){
-		String[] words = str.split(" ");
-		if (words.length==3 && words[0].equals("is")){
-			Synset[] synsets = database.getSynsets(words[1],SynsetType.NOUN);
-			// System.out.println(synsets);
-			if (synsets.length<1)
-				return false;
-			return true;
+	public String findNounSubstring(String str){
+		// System.out.println("findNounSubstring called with + " + str);
+		String[] arr = str.split(_space);  
+		for (String st : arr){
+			if (isType(st,SynsetType.NOUN)>0 && !st.equals("is")){
+				//System.out.println("noun found! " + st);
+				return st;
+			}
 		}
-		if (words.length==2){
-			Synset[] synsets = database.getSynsets(words[0],SynsetType.NOUN);
-			// System.out.println(synsets);
-			if (synsets.length<1)
-				return false;
-		} 
-		if (words[1].equals("of"))
-			return true;
-		return false;
-	}
-	
-	public boolean detectNounPlusPreposition(String str){
-		String[] words = str.split(" ");
-		
-		if (words.length==2){
-			Synset[] synsets = database.getSynsets(words[0],SynsetType.NOUN);
-			// System.out.println(synsets);
-			if (synsets.length<1)
-				return false;
-		} 
-		if (words[1].equals("of"))
-			return true;
-		return false;
-	}
-	
-	public void wordnetTest(){
-		database = WordNetDatabase.getFileInstance();
-		Synset[] synsets = database.getSynsets("person");
-		// System.out.println("Found synsets for 'person': " + synsets.length);
-		for (int i = 0; i < synsets.length; i++) {
-			Synset synSet = synsets[i];
-			String[] usageExample = synSet.getUsageExamples();
-			System.out.println(Arrays.toString(usageExample));
-		}
-		int[] types = getTypes("person");
-		System.out.println(Arrays.toString(types));
-	}
-	
-	public boolean isKnown(String str){
-		// known exceptions
-	
-		Synset[] synsets = database.getSynsets(str,SynsetType.NOUN);
-		// System.out.println("Length " + synsets.length);
-		if (synsets.length<1)
-			return false;
-		else return true;
+		return null;
 	}
 	
 }

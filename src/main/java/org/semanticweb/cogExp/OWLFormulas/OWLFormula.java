@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.core.Pair;
-import org.semanticweb.owlapi.model.OWLObject;
 
 
 public class OWLFormula {
@@ -412,6 +411,14 @@ public class OWLFormula {
 		return new OWLFormula(OWLSymb.OBJECTPROPERTYASSERTION, taillist);
 	}
 	
+	public static OWLFormula createFormulaDataPropertyAssertion(OWLFormula propertyexpression, OWLFormula indivSub, OWLFormula litObj){
+		ArrayList<OWLFormula> taillist = new ArrayList<OWLFormula>();
+		taillist.add(propertyexpression);
+		taillist.add(indivSub);
+		taillist.add(litObj);
+		return new OWLFormula(OWLSymb.DATAPROPERTYASSERTION, taillist);
+	}
+	
 	public boolean containsSubformula(OWLFormula subformula){
 		if (this.equals(subformula)){
 			return true;
@@ -477,11 +484,6 @@ public class OWLFormula {
 	}
 	
 	public String prettyPrint(){
-		OWLObject ob = ConversionManager.toOWLAPI(this);
-		if (ob==null){
-			System.out.println(" warn warn: unconvertable formula  " + this);
-			return "";
-		}
 		return VerbalisationManager.prettyPrint(ConversionManager.toOWLAPI(this));
 	}
 	

@@ -109,8 +109,8 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 
 //	private Language lang = Language.GERMAN;
 	private Locale lang = VerbaliseTreeManager.locale;
-	// private static ResourceBundle VerbalisationManager.LogicLabels = ResourceBundle.getBundle("resources.VerbalisationManager.LogicLabels", VerbaliseTreeManager.locale);
-	// static ResourceBundle VerbalisationManager.LogicLabels = VerbalisationManager.VerbalisationManager.LogicLabels;
+	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
+	
 	
 //	for Debuging reasons only
 	private boolean debug = VerbaliseTreeManager.debug;
@@ -327,20 +327,19 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLSubClassOfAxiom arg0) {
 		// System.out.println("-------");
 		// define some elements that will be used later
-		LogicElement somethingthatElement = new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat"));
-		LogicElement thatElement =  new LogicElement(VerbalisationManager.LogicLabels.getString("that"));
+		// LogicElement somethingthatElement = new LogicElement(LogicLabels.getString("somethingThat"));
+		// When "something" is on the left hand side, it plays the role of "everything"
+		LogicElement somethingthatElement = new LogicElement("everything that");
+		LogicElement thatElement =  new LogicElement(LogicLabels.getString("that"));
 		LogicElement commaElement =  new LogicElement(",");
-		LogicElement isElement =  new LogicElement(VerbalisationManager.LogicLabels.getString("is"));
+		LogicElement isElement =  new LogicElement(LogicLabels.getString("is"));
 		
 		// System.out.println("visit subclassof called with " + arg0);
 		// Left hand side
 		Sentence leftstringSentence = arg0.getSubClass().accept(this);
-		// System.out.println("DEBUG 1 " +  leftstringSentence);
-		leftstringSentence.setOrder(SentenceOrder.A_is_B);
-		// System.out.println("DEBUG 2 " + leftstringSentence.toTextElementSequence());
-		List<TextElement> leftstring =  new ArrayList<TextElement>();
-		if (leftstringSentence.toTextElementSequence()!=null)
-			leftstring = leftstringSentence.toTextElementSequence().getTextElements();
+		// System.out.println("leftstringsentence " + leftstringSentence);
+		List<TextElement> leftstring = leftstringSentence.toList();
+		
 		List<TextElement> somethingthat = new ArrayList<TextElement>();
 		somethingthat.add(somethingthatElement);
 		
@@ -349,11 +348,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			OWLObjectSomeValuesFrom some1 = (OWLObjectSomeValuesFrom) arg0.getSubClass();
 			OWLClassExpression cl = VerbalisationManager.INSTANCE.getDomain(some1.getProperty().getNamedProperty());
 //		 System.out.println("SUBCLASS SOMEOF DEBUG " + some1 + " " + cl);
-			if (cl!=null){
+			if (cl!=null && !cl.equals(arg0.getSuperClass())){ // in the second case, would produce tautological statement
 				//somethingthat = cl.toString() + " that ";
-				Sentence domainSentence = cl.accept(this);
-				domainSentence.setOrder(SentenceOrder.A_is_B);
-				somethingthat =domainSentence.toTextElementSequence().getTextElements(); 
+				somethingthat =cl.accept(this).toList(); 
 				somethingthat.add(thatElement);
 			}
 		}
@@ -378,7 +375,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())){
 			leftstring = new ArrayList<TextElement>();
 			leftstring.add(somethingthatElement); 
-			leftstring.addAll(VerbalisationManager.INSTANCE.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())) ;
+			leftstring.addAll(VerbalisationManager.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSubClass())) ;
 		}
 		
 		if (arg0.getSubClass() instanceof OWLObjectIntersectionOf 
@@ -463,10 +460,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				}	
 			}	
 		
-			//System.out.println(" DEBUG (1) -- " +  filler.accept(this));
-			Sentence fillerSentence = filler.accept(this); 
-			fillerSentence.setOrder(SentenceOrder.A_is_B);
-			fillerstrs.add(fillerSentence.toTextElementSequence().getTextElements());
+			fillerstrs.add(filler.accept(this).toList());
 			Sentence propsentence = VerbalisationManager.textualisePropertyAsSentence(property, fillerstrs, middle);
 						
 			Sentence sentence = new Sentence(new TextElementSequence(leftstring),
@@ -485,7 +479,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		if (arg0.getSuperClass() instanceof OWLObjectIntersectionOf 
 				&& VerbalisationManager.checkMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass())){
 			// System.out.println("DEBUG : case of multiple exists patterns");
-			middlestring.addAll(VerbalisationManager.INSTANCE.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass()));
+			middlestring.addAll(VerbalisationManager.textualiseMultipleExistsPattern((OWLObjectIntersectionOf) arg0.getSuperClass()));
 			
 			Sentence sentence = new Sentence(new TextElementSequence(leftstring),
 					new TextElementSequence(middlestring),
@@ -527,10 +521,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 
 		middlestring.add(isElement);
 		
-		Sentence anotherSentence = arg0.getSuperClass().accept(this);
-		anotherSentence.setOrder(SentenceOrder.A_is_B);
-		if (anotherSentence.toTextElementSequence()!=null)
-			rightstring.addAll(anotherSentence.toTextElementSequence().getTextElements());
+		rightstring.addAll(arg0.getSuperClass().accept(this).toList());
 		
 		// System.out.println("leftstring (3) " + leftstring);
 		// System.out.println("middlestring (3) " + middlestring);
@@ -600,8 +591,8 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		ClassElement headElement = new ClassElement(head,tooltiptext);
 		seq.add(headElement);
 		// is there more?
-		if (someExps.size()>0 || allExps.size()>0 || allelseExps.size()>0 || someDataExps.size()>0 || dataHasValueExps.size()>0){
-			seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("that")));
+		if (someExps.size()>0 || allExps.size()>0 || allelseExps.size()>0 || someDataExps.size()>0|| dataHasValueExps.size()>0){
+			seq.add(new LogicElement(LogicLabels.getString("that")));
 			// head += " that ";
 		}
 		
@@ -649,7 +640,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			boolean isFirst = true;
 			for(OWLObjectAllValuesFrom all : allExps){
 				if (!isFirst)
-					seq4.add(new LogicElement(VerbalisationManager.LogicLabels.getString("and"))) ;
+					seq4.add(new LogicElement(LogicLabels.getString("and"))) ;
 				seq4.concat(new TextElementSequence(all.accept(this).toTextElementSequence().getTextElements()));
 				isFirst = false;
 			}
@@ -662,14 +653,9 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			// TODO: this is not aggregating in case there is a multiple exists pattern
 			boolean isFirst = true;
 			for(OWLClassExpression allelse : allelseExps){
-				System.out.println("DEBUG --  allelse " + allelse);
 				if (!isFirst)
-					seq4.add(new LogicElement(VerbalisationManager.LogicLabels.getString(("and")))) ;
-				Sentence allelseSentence = allelse.accept(this);
-				System.out.println("DEBUG --  allelseSentence " + allelseSentence.toString());
-				TextElementSequence allelseTES = allelseSentence.toTextElementSequence();
-				System.out.println("DEBUG --  allelseTES " + allelseTES.toString());
-				List<TextElement> allelseString = allelseTES.getTextElements();
+					seq4.add(new LogicElement(LogicLabels.getString(("and")))) ;
+				List<TextElement> allelseString = allelse.accept(this).toTextElementSequence().getTextElements();
 				if (allelseString == null){
 					seq.add(new LogicElement("{NULL}"));
 				}else{
@@ -691,17 +677,15 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	
 
 	public Sentence visit(OWLObjectIntersectionOf arg0) {
-		System.out.println(" intersection text visitor called with: " + arg0);
+		// System.out.println(" intersection text visitor called with: " + arg0);
 		Sentence result = new Sentence();
-		LogicElement somethingthatElement = new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat"));
+		LogicElement somethingthatElement = new LogicElement(LogicLabels.getString("somethingThat"));
 		if (VerbalisationManager.checkMultipleExistsPattern(arg0)){
 			result.setSubjekt(somethingthatElement);
-			result.addToSubject(new TextElementSequence(VerbalisationManager.INSTANCE.textualiseMultipleExistsPattern(arg0)));
+			result.addToSubject(new TextElementSequence(VerbalisationManager.textualiseMultipleExistsPattern(arg0)));
 			// System.out.println("visit intersect (1): " + new TextElementSequence(resultList).toString());
-			result.setOrder(SentenceOrder.A_is_B); //
-			result.makeAisBSentence();
+
 			if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
-			System.out.println(" DEBUG intersection text visitor  returning (1) " + result);
 			return result;
 			// return result.getSentence();
 		} else{
@@ -714,7 +698,6 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
 				result.setOrder(SentenceOrder.A_is_B);
 				result.makeABisSentence();
-				System.out.println(" DEBUG intersection text visitor  returning (2)  " + result);
 				return result;
 				// return result.getSentence();
 			} else{
@@ -731,7 +714,6 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 						if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
 						result.setOrder(SentenceOrder.A_is_B);
 						result.makeABisSentence();
-						System.out.println(" DEBUG intersection text visitor  returning (3) " + result);
 						return result;
 						// return result.getSentence();
 						}
@@ -743,7 +725,6 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		if (visitorDebug) result.concat(new TextElement("visit:"+arg0.getClassExpressionType().getName()));
 		result.setOrder(SentenceOrder.A_is_B);
 		result.makeABisSentence();
-		System.out.println(" DEBUG intersection text visitor  returning (4) " + result);
 		return result;
 		// return result.getSentence();
 	}
@@ -761,8 +742,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		boolean firstp = true;
 		for (OWLClassExpression exp: ((OWLObjectUnionOf) arg0).getOperandsAsList()){
 			if (!firstp){
-				LogicElement orElement = new LogicElement("or");
-				// LogicElement orElement = new LogicElement(VerbalisationManager.LogicLabels.getString("or"));
+				LogicElement orElement = new LogicElement(LogicLabels.getString("or"));
 				resultList.add(orElement);}
 			firstp = false;
 			result.addToSubject(exp.accept(this).toTextElementSequence());
@@ -779,7 +759,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	
 	public Sentence visit(OWLObjectComplementOf arg0) {
 		Sentence result = new Sentence();
-		LogicElement notElement = new LogicElement(VerbalisationManager.LogicLabels.getString("not"));
+		LogicElement notElement = new LogicElement(LogicLabels.getString("not"));
 		result.setSubjekt(notElement);
 		result.addToSubject(arg0.getOperand().accept(this).toTextElementSequence());
 		
@@ -796,13 +776,13 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		OWLClassExpression filler = existsexpr.getFiller();
 		List<List<TextElement>> fillerstrs = new ArrayList<List<TextElement>>();
 		List<TextElement> middlestring = new ArrayList<TextElement>();
-		middlestring.add(new LogicElement(VerbalisationManager.LogicLabels.getString("nothing but")));
+		middlestring.add(new LogicElement(LogicLabels.getString("nothing but")));
 		if (filler instanceof OWLObjectSomeValuesFrom)
-			middlestring.add(new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat")));
+			middlestring.add(new LogicElement(LogicLabels.getString("somethingThat")));
 		fillerstrs.add(filler.accept(this).toTextElementSequence().getTextElements());
 		
 		
-		List<TextElement> resultseq = VerbalisationManager.INSTANCE.textualiseProperty(property, fillerstrs, middlestring);
+		List<TextElement> resultseq = VerbalisationManager.textualiseProperty(property, fillerstrs, middlestring);
 		result.addToSubject(new TextElementSequence(resultseq));
 		
 		if (visitorDebug) result.concat(new TextElement("visit:objctAVF1"));
@@ -827,13 +807,12 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 			if (cl !=null){
 				middle.add(new ClassElement(cl.toString()));// = cl.toString();
 			}else{
-			middle.add(new LogicElement(VerbalisationManager.LogicLabels.getString("somethingThat")));
+			middle.add(new LogicElement(LogicLabels.getString("somethingThat")));
 			}
 		}
-		Sentence fillerSentence = filler.accept(this);
-		fillerSentence.setOrder(SentenceOrder.A_is_B);
-		fillerstrs.add(fillerSentence.toTextElementSequence().getTextElements());
-		List<TextElement> resultseq = VerbalisationManager.INSTANCE.textualiseProperty(property,fillerstrs,middle);
+		fillerstrs.add(filler.accept(this).toList());
+		List<TextElement> resultseq = VerbalisationManager.textualiseProperty(property,fillerstrs,middle);
+		// System.out.println("DEBUG visit " + resultseq);
 		// String str = VerbalisationManager.verbaliseProperty(property,fillerstrs,middle);
 		// System.out.println("DEBUG visit " + str);
 //		result.add(new LogicElement("_blabla_"));
@@ -863,7 +842,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 		if (classexp!=null){
 			if(lang == Locale.ENGLISH){
 				// System.out.println("classexp not null, language english");
-				result.setSubjekt(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
+				result.setSubjekt(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
 				// System.out.println("classexp: " + classexp);
 				Sentence recSentence = classexp.accept(this);
 				// System.out.println("recSentence: " + recSentence);
@@ -879,7 +858,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 				for (OWLClassExpression ex:exprs){
 					if (!ex.equals(classexp)){
 							if (!firstp){
-								result.setObjekt(new LogicElement(VerbalisationManager.LogicLabels.getString("and")));
+								result.setObjekt(new LogicElement(LogicLabels.getString("and")));
 								firstp = false;
 							}
 							if (ex instanceof OWLObjectSomeValuesFrom){
@@ -890,25 +869,25 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 							Sentence recSentence2 = ex.accept(this);
 							result.setObjekt(recSentence2);
 								
-							//  System.out.println("result:  " + result.inspect());
+						 // System.out.println("result:  " + result.inspect());
 					}
 				}
 			}
 			if(lang == Locale.GERMAN){
-				result.setSubjekt(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
+				result.setSubjekt(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
 				
-				result.setPraedikat(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
+				result.setPraedikat(new LogicElement(LogicLabels.getString("is")));
 				result.addToObject(classexp.accept(this).toTextElementSequence());
 				
 				boolean firstp = true;
 				for (OWLClassExpression ex:exprs){
 					if (!ex.equals(classexp)){
 							if (!firstp){
-								result.setObjekt(new LogicElement(VerbalisationManager.LogicLabels.getString("and")));
+								result.setObjekt(new LogicElement(LogicLabels.getString("and")));
 								firstp = false;
 							}
 							if (ex instanceof OWLObjectSomeValuesFrom)
-								result.setObjekt(new LogicElement(VerbalisationManager.LogicLabels.getString("something that")));
+								result.setObjekt(new LogicElement(LogicLabels.getString("something that")));
 								result.addToSubject(ex.accept(this).toTextElementSequence());
 								
 					}
@@ -1053,13 +1032,15 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 
 	public Sentence visit(OWLObjectPropertyDomainAxiom arg0) {
 		// treat this as syntactic sugar, convert this to the form \exists r. \top \sqsubseteq X and output
+		// System.out.println("HERE!!!");
 		OWLObjectPropertyExpression prop = arg0.getProperty();
 		OWLClassExpression classexp = arg0.getDomain();
 		OWLDataFactory dataFactory=OWLAPIManagerManager.INSTANCE.getDataFactory();
 		OWLSubClassOfAxiom subclax = dataFactory.getOWLSubClassOfAxiom(
 				dataFactory.getOWLObjectSomeValuesFrom(prop,dataFactory.getOWLThing()), classexp);
 		Sentence result = new Sentence(subclax.accept(this));
-		
+		// System.out.println("HERE!!!" + subclax);
+		// System.out.println("HERE!!!" + result);
 		if (visitorDebug) result.concat(new TextElement("visit:objctpropdom"));
 		return  result.getSentence();
 	}
@@ -1281,7 +1262,7 @@ public class SentenceOWLObjectVisitor implements OWLObjectVisitorEx<Sentence>{
 	public Sentence visit(OWLClassAssertionAxiom arg0) {
 		Sentence result = new Sentence();
 		result.add(arg0.getIndividual().accept(this));
-		result.setPraedikat(new LogicElement(VerbalisationManager.LogicLabels.getString("is")));
+		result.setPraedikat(new LogicElement(LogicLabels.getString("is")));
 		result.add(arg0.getClassExpression().accept(this));
         
 		result.makeAisBSentence();

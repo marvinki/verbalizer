@@ -13,7 +13,7 @@
 		<plugin-zip.file>
 			${project.artifactId}-${project.version}
 		</plugin-zip.file>
-		<protege.version>5.2.1-SNAPSHOT</protege.version>
+		<protege.version>5.1.0</protege.version>
 		<!--   <elk.version>0.4.0</elk.version>-->
 		<!--   <elk.version>0.5.0-SNAPSHOT</elk.version> -->
 		<!--  <elk.version>0.3.2</elk.version> -->
@@ -25,11 +25,7 @@
 			<id>jitpack.io</id>
 			<name>jitpack</name>
 			<url>https://jitpack.io</url>
-		</repository>  
-		 <repository>
-        <id>org.topbraid</id>
-        <url>http://topquadrant.com/repository/spin</url>
-    </repository>
+		</repository>
 	</repositories>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
@@ -82,7 +78,7 @@
 	
 	<description>Serves to verbalise derivations</description>
 	<dependencies>
-		   <dependency>
+		<dependency>
 			<groupId>edu.stanford.protege</groupId>
 			<artifactId>protege-common</artifactId>
 			<version>${protege.version}</version>
@@ -99,19 +95,8 @@
 			<artifactId>protege-editor-owl</artifactId>
 			<version>${protege.version}</version>
 			<scope>provided</scope>
-		</dependency> 
-	<dependency>
-    <groupId>net.sourceforge.owlapi</groupId>
-    <artifactId>owlapi-distribution</artifactId>
-    <version>4.2.8</version>
-    <scope>provided</scope>
-	</dependency>
-	<dependency>
-    <groupId>net.sourceforge.owlapi</groupId>
-    <artifactId>owlapi-api</artifactId>
-    <version>4.2.8</version>
-    <scope>provided</scope>
-	</dependency>
+		</dependency>
+
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-osgidistribution</artifactId>
@@ -124,7 +109,6 @@
 			<version>2.0.0</version>
 			<scope>provided</scope>
 		</dependency>
-		
 		<dependency>
 			<groupId>com.github.jaytaylor</groupId>
 			<artifactId>jaws</artifactId>
@@ -134,14 +118,8 @@
 			<groupId>org.semanticweb.elk</groupId>
 			<artifactId>elk-owlapi</artifactId>
 			<version>${elk.version}</version>
-		    <!--   <scope>test</scope> -->
-			<!-- https://mvnrepository.com/artifact/com.hermit-reasoner/org.semanticweb.hermit -->
-			</dependency>
-	<dependency>
-    	<groupId>com.hermit-reasoner</groupId>
-   	 <artifactId>org.semanticweb.hermit</artifactId>
-  	  <version>1.3.8.4</version>
-	</dependency>
+			<scope>test</scope>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
 	<dependency>
     <groupId>ch.qos.logback</groupId>
@@ -153,21 +131,14 @@
     <groupId>net.sourceforge.owlapi</groupId>
     <artifactId>jfact</artifactId>
     <version>1.0.0</version>
-    <!--   <scope>test</scope> -->
+    <scope>test</scope>
 	</dependency>
 		<dependency>
 			<groupId>org.semanticweb.elk</groupId>
 			<artifactId>elk-reasoner</artifactId>
 			<version>${elk.version}</version>
-		   <!--   <scope>test</scope>  -->
+			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.semanticweb.elk/elk-util-collections -->
-<dependency>
-    <groupId>org.semanticweb.elk</groupId>
-    <artifactId>elk-util-collections</artifactId>
-    <version>0.4.3</version>
-</dependency>
-		
 		<!-- <dependency> <groupId>net.sourceforge.owlapi</groupId> <artifactId>telemetry</artifactId> 
 			<version>2.0.0</version> <scope>provided</scope> </dependency> -->
 		<!-- <dependency> <groupId>net.sourceforge.owlapi</groupId> <artifactId>owlapi-distribution</artifactId> 
@@ -179,57 +150,6 @@
 			<version>18.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-	<dependency>
-    	<groupId>mysql</groupId>
-    	<artifactId>mysql-connector-java</artifactId>
-    	<version>5.1.6</version>
-	</dependency>
-		<!-- https://mvnrepository.com/artifact/org.json/json -->
-	<dependency>
-    	<groupId>org.json</groupId>
-    	<artifactId>json</artifactId>
-    	<version>20160810</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-lang3</artifactId>
-    <version>3.0</version>
-</dependency>
- <dependency>
-    	<groupId>org.topbraid</groupId>
-    	<artifactId>spin</artifactId>
-    	<version>2.0.0</version>
-    </dependency>
-		<dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>apache-jena-libs</artifactId>
-    <type>pom</type>
-    <version>3.4.0</version>
-    <scope>runtime</scope>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>apache-jena-osgi</artifactId>
-    <type>pom</type>
-    <version>3.4.0</version>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>jena-core</artifactId>
-    <version>3.4.0</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>jena-arq</artifactId>
-    <version>3.4.0</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>jena-iri</artifactId>
-    <version>3.4.0</version>
-</dependency>
 	</dependencies>
 
 	<profiles>
@@ -298,5 +218,6 @@
 			</build>
 		</profile>
 	</profiles>
+
 
 </project>

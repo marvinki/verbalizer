@@ -30,7 +30,7 @@ public class Sentence extends TextElementSequence{
 	
 	
 	private Locale lang = VerbaliseTreeManager.locale;
-	// private ResourceBundle LogicLabels = VerbalisationManager.LogicLabels;
+	private ResourceBundle LogicLabels = VerbaliseTreeManager.LogicLabels;
 	/**
 	 * 
 	 */
@@ -182,7 +182,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		
 		setOrder(SentenceOrder.noOrder);
 		
-		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
+		this.add(new LogicElement(LogicLabels.getString("AccordingToItsDefinition")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
 		 	this.add(praedikat);
@@ -210,7 +210,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		
 		setOrder(SentenceOrder.noOrder);
 		
-		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("thus")));
+		this.add(new LogicElement(LogicLabels.getString("thus")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
 			this.add(praedikat);
@@ -265,7 +265,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		
 		setOrder(SentenceOrder.noOrder);
 		
-		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("since")));
+		this.add(new LogicElement(LogicLabels.getString("since")));
 		//German Sentences
 		if(lang == Locale.GERMAN){	
 			this.add(subjekt);
@@ -292,10 +292,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		if(sentenceMade) return;
 		
 		setOrder(SentenceOrder.noOrder);	
-		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("byDefinitionItIs")));
+		this.add(new LogicElement(LogicLabels.getString("byDefinitionItIs")));
 		
 		//German Sentences
-		System.out.println("makebyDefinitionItIsSentence (2)");
 		if(lang == Locale.GERMAN){
 			// this.add(new LogicElement(", "));
 			this.add(new LogicElement(","));  // <-- spaces are added after all sentences automatically, no matter what language
@@ -438,9 +437,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 			}	
 		}
 		
-		// if (sentence==null || isEmpty(sentence) || sentence.size()<1){
-		if (this==null || this.size()<1){
-			System.out.println("null case");
+		if (this==null || isEmpty(this) || this.size()<1){
 			return null;
 		}
 		
@@ -572,6 +569,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	/**
 	 * @return the sentence as List of TextElements
 	 */
+	/* The below is evil because it removes information about the types of elements
 	public List<TextElement> toList(){
 		List<TextElement> list = new ArrayList<TextElement>();
 //		list.add(new TextElement("example text"));
@@ -584,6 +582,11 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		}
 		//		list.add(this);		
 		return list;
+		
+	} */ 
+	
+	public List<TextElement> toList(){	
+		return sequence;
 		
 	}
 

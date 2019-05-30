@@ -23,6 +23,7 @@ import org.semanticweb.cogExp.core.RuleApplicationResults;
 import org.semanticweb.cogExp.core.RuleBinding;
 import org.semanticweb.cogExp.core.RuleBindingForNode;
 import org.semanticweb.cogExp.core.RuleKind;
+import org.semanticweb.cogExp.core.RuleSetManager;
 import org.semanticweb.cogExp.core.Sequent;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
 import org.semanticweb.cogExp.core.SequentList;
@@ -2070,7 +2071,6 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						Set<Pair<OWLFormula,OWLFormula>> input = new HashSet<Pair<OWLFormula,OWLFormula>>();
 						
 						for (OWLFormula cand : candidates){
-							
 							if (!cand.getHead().equals(OWLSymb.SUBCL))
 								continue;
 							
@@ -2125,7 +2125,50 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							} // i loop
 						}
 						
-					
+						/*
+						for (List<Pair<OWLFormula,OWLFormula>> pairs : chains){
+							List<OWLFormula> chain = new ArrayList<OWLFormula>();
+							for (Pair p : pairs){
+								OWLFormula form = OWLFormula.createFormulaSubclassOf((OWLFormula) p.t, (OWLFormula)p.u) ;
+								chain.add(form);
+							}
+							if (!resultchains.contains(chain))	
+								resultchains.add(chain);
+						}
+						
+						
+						// System.out.println("Resultchains " + resultchains.size());
+						
+						Set<OWLFormula> already_considered_conclusions = new HashSet<OWLFormula>();
+						
+						for (List<OWLFormula> chain : resultchains){
+							for (int i = 0; i< chain.size();i++){
+								for (int j = i; j< chain.size();j++){
+									if (chain.get(i).getArgs().get(0).equals(chain.get(j).getArgs().get(1))){
+										continue;
+									}
+									OWLFormula resultformula = OWLFormula.createFormula(OWLSymb.SUBCL, 
+											chain.get(i).getArgs().get(0),
+											chain.get(j).getArgs().get(1));
+									if (already_considered_conclusions.contains(resultformula))
+										continue;
+									already_considered_conclusions.add(resultformula);
+									// System.out.println("considering conclusion : " + resultformula.prettyPrint());
+									if(!s.alreadyContainedInAntecedent(resultformula)){
+										RuleBinding binding = new RuleBinding(resultformula,null);
+										
+										int ind = 0;
+										for(int p = i; p<=j ; p++){
+											ind=ind+1;
+											SequentPosition pos = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(chain.get(p)));
+											binding.insertPosition("A" + ind, pos);
+										}			
+										results.add(binding);
+									} // end if 
+								} // j loop
+							} // i loop
+						}
+						*/
 						
 						// System.out.println("Returning results " + results.size());
 					
@@ -2958,7 +3001,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							} // end second loop
 						} // end formula 1 loop
 						// System.out.println("DEBUG === results " + results);		
-						System.out.println("AND-I: " + results.size());
+						// System.out.println("AND-I: " + results.size());
 						return results;
 					}
 					
@@ -3752,19 +3795,29 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 				}
 			}
 		}
-		/* System.out.println("Pairs " + results.size());
+		
+		Set<List<Pair<OWLFormula,OWLFormula>>> filtered_results = new HashSet<List<Pair<OWLFormula,OWLFormula>>>();
+		
+		// System.out.println("Pairs " + results.size());
 		for (List<Pair<OWLFormula,OWLFormula>> lst : results){
+			boolean axiomPresent = false;
+			boolean incoherence = false;
 			for (Pair p : lst){
-				System.out.print(p.t + " "+ p.u  + ",");
+				OWLFormula subcl = OWLFormula.createFormula(OWLSymb.SUBCL, (OWLFormula) p.t, (OWLFormula) p.u);
+				if (! RuleSetManager.getAxioms().contains(subcl) && axiomPresent)
+					incoherence=true;
+				if (RuleSetManager.getAxioms().contains(subcl))
+				axiomPresent=true;
 				}
-			System.out.println();
+			if (!incoherence)
+				filtered_results.add(lst);
 		}
-		*/
+		
 		
 		CHAINS_CACHE = results;
 		CHAINS_INPUT_CACHE = input;
 		
-		return results;
+		return filtered_results;
 	}
 	
 	

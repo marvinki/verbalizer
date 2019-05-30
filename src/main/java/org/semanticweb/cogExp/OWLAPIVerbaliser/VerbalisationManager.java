@@ -1,9 +1,5 @@
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,6 +15,7 @@ import org.semanticweb.cogExp.PrettyPrint.PrettyPrintClassExpressionVisitor;
 import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLAxiomVisitor;
 import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLObjectVisitor;
 import org.semanticweb.cogExp.core.InferenceApplicationService;
+import org.semanticweb.cogExp.core.RuleSetManager;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owl.explanation.api.ExplanationGenerator;
@@ -32,7 +29,6 @@ import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -87,26 +83,9 @@ public enum VerbalisationManager {
 //	private Language lang = Language.GERMAN;
 	private Locale lang = VerbaliseTreeManager.locale;
 	
-	private static URL[] getUrls(){
-		try {
-			URL[] urls = {file.toURI().toURL()};
-			return urls;
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
 	
-	private static File file = new File("./resource");
-	private static URL[] urls = getUrls();
-	public static ClassLoader loader = new URLClassLoader(urls);
-	// public final static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", Locale.getDefault(), loader)
-	public static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale, loader);
-	
-	// public final static String logiclabelsPath = "resource.LogicLabels";
 
-	// private static ResourceBundle LogicLabels = ResourceBundle.getBundle(logiclabelsPath, VerbaliseTreeManager.locale);
+	private static ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
 	
 	private static boolean verbalisationManagerdebug = VerbaliseTreeManager.verbalisationManagerdebug;
 	
@@ -114,6 +93,9 @@ public enum VerbalisationManager {
 
 	public static TextElementSequence textualise(OWLObject ob) {
 		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit).toList());
+		// System.out.println("seq: " + seq.toHTML());
+		// System.out.println("seq: " + seq.inspect());
+		
 		if(verbalisationManagerdebug) seq.add(new LogicElement("textualise(OWLObject ob)"));
 		return seq;
 	}
@@ -334,114 +316,6 @@ public enum VerbalisationManager {
 			str = LogicLabels.getString("is") + _space + str;
 		return str;
 	}
-	
-	public String getPropertyNLString(OWLDataPropertyExpression property) {
-		if (VerbaliseTreeManager.locale.equals(Locale.GERMAN)){
-			if (getLabel(property.asOWLDataProperty(),"de")!=null)
-				return getLabel(property.asOWLDataProperty(),"de");
-		}
-		OWLProperty namedproperty  = property.asOWLDataProperty();
-		// System.out.println("DEBUG - named : " + namedproperty);
-		String str = "";
-		if (namedproperty != null) {
-			if (this.ontology == null) { // if no ontology is provided, simply
-											// return the classname
-				// System.out.println("DEBUG + " +
-				// property.getNamedProperty().getIRI().getFragment());
-				String result = property.asOWLDataProperty().getIRI().getFragment();
-				/*
-				if (textOWLObjectVisit.getObfuscator() != null) {
-					result = textOWLObjectVisit.getObfuscator().obfuscateRole(result);
-				}
-				*/
-				return result;
-			}
-			// collect annotation axioms
-			Set<OWLOntology> imported = ontology.getImports();
-			Set<OWLAnnotationAssertionAxiom> annotationaxioms = new HashSet<OWLAnnotationAssertionAxiom>();
-			for (OWLOntology ont : imported) {
-				//
-				/*
-				 * Stream<OWLAnnotationAssertionAxiom> aaa =
-				 * EntitySearcher.getAnnotationAssertionAxioms(namedproperty,
-				 * this.ontology); OWLAnnotationAssertionAxiom[] aaa2 =
-				 * (OWLAnnotationAssertionAxiom[]) aaa.toArray();
-				 * annotationaxioms.addAll(Arrays.asList(aaa2));
-				 */
-				annotationaxioms.addAll(EntitySearcher.getAnnotationAssertionAxioms(namedproperty, this.ontology));
-				// annotationaxioms.addAll(namedproperty.getAnnotationAssertionAxioms(ont));
-				// annotationaxioms.addAll(namedproperty.getAnnotationAssertionAxioms(ont))
-			}
-			//
-
-			/*
-			 * Stream<OWLAnnotationAssertionAxiom> aaa3 =
-			 * EntitySearcher.getAnnotationAssertionAxioms(namedproperty,
-			 * this.ontology); OWLAnnotationAssertionAxiom[] aaa4 =
-			 * (OWLAnnotationAssertionAxiom[]) aaa3.toArray();
-			 * annotationaxioms.addAll(Arrays.asList(aaa4));
-			 */
-			annotationaxioms.addAll(EntitySearcher.getAnnotationAssertionAxioms(namedproperty, this.ontology));
-			// annotationaxioms.addAll(namedproperty.getAnnotationAssertionAxioms(ontology));
-			if (annotationaxioms != null) {
-				for (OWLAnnotationAssertionAxiom axiom : annotationaxioms) {
-					if (axiom.getAnnotation().getProperty().getIRI().getFragment().equals("label")) {
-						// System.out.println("DEBUG TO STRING " +
-						// axiom.getAnnotation().getValue());
-						// SimpleRenderer renderer = new SimpleRenderer();
-						// OWLLiteral literal =
-						// axiom.getAnnotation().getValue().asLiteral().get();
-						OWLLiteral literal = axiom.getAnnotation().getValue().asLiteral().get();
-						str = literal.getLiteral();
-						// str = axiom.getAnnotation().getValue().toString();
-					}
-				}
-			}
-		} // Obfuscate
-
-		// shortcut for labels with [X]
-		if (str.indexOf("[X]") > -1) {
-			/*
-			if (textOWLObjectVisit.getObfuscator() != null) {
-				str = textOWLObjectVisit.getObfuscator()
-						.obfuscateRole(property.asOWLDataProperty().getIRI().getFragment());
-			}
-			*/
-			return str;
-		}
-		// remove language tags
-		if (str.indexOf("@en") > 0) {
-			str = str.substring(1, str.length() - 4);
-		}
-		// In case there are no annotations
-		// -- detect if camel case
-		if (str == "") {
-			str = namedproperty.getIRI().getFragment();
-			// System.out.println("DEBUG " + str);
-		}
-		// Obfuscate!
-		/*
-		if (textOWLObjectVisit.getObfuscator() != null) {
-			str = textOWLObjectVisit.getObfuscator().obfuscateRole(str);
-		}
-		*/
-		/*
-		 * if (VerbaliseOWLObjectVisitor.detectLowCamelCase(str)) str =
-		 * VerbaliseOWLObjectVisitor.removeCamelCase(str); // heuristic!
-		 * if(str.indexOf("_of")>=0) str =
-		 * VerbaliseOWLObjectVisitor.removeUnderscores(str);
-		 * if(str.indexOf("_")>=0) str =
-		 * VerbaliseOWLObjectVisitor.removeUnderscores(str);
-		 */
-		str = treatCamelCaseAndUnderscores(str);
-		if (str.indexOf("^^xsd:string") >= 0)
-			str = str.substring(1, str.length() - 13);
-		// detect if name is of the form "_ of"
-		if (detect_noun_of(str) && !str.contains("is"))
-			str = LogicLabels.getString("is") + _space + str;
-		return str;
-	}
-	
 
 	public static String verbaliseProperty(OWLObjectPropertyExpression property, List<String> fillerstrs, String middle,
 			Obfuscator obfuscator) {
@@ -493,7 +367,7 @@ public enum VerbalisationManager {
 		return result;
 	}
 
-	public List<TextElement> textualiseProperty(OWLObjectPropertyExpression property,
+	public static List<TextElement> textualiseProperty(OWLObjectPropertyExpression property,
 			List<List<TextElement>> fillerelements, List<TextElement> middle) {
 		// String result = "";
 		List<TextElement> result = new ArrayList<TextElement>();
@@ -504,6 +378,7 @@ public enum VerbalisationManager {
 		}
 
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(property);
+		// System.out.println(propstring);
 		// check case where string contains a pattern.
 		if (propstring.indexOf("[X]") >= 0) {
 			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
@@ -530,10 +405,7 @@ public enum VerbalisationManager {
 		boolean needsep = false;
 		for (List<TextElement> str : fillerelements) {
 			if (needsep) {
-				if (lang.equals(Locale.ENGLISH))
-					result.add(new LogicElement("and"));
-				else
-					result.add(new LogicElement("und"));
+				result.add(new LogicElement("and"));
 				// result += _space + "and" + _space;
 			}
 			result.addAll(str);
@@ -674,14 +546,12 @@ public enum VerbalisationManager {
 	}
 
 	public static String treatCamelCaseAndUnderscores(String str) {
-		if (str.contains("+") || str.contains("-"))
-			return str;
 		
 		String resultstring = "";
 		
 		if(VerbaliseTreeManager.locale == Locale.GERMAN) return str;
 		
-		if(str.length() <= 0 || str.isEmpty() || str.equals("") ) return resultstring;
+		if(str.length() <= 0 || str.isEmpty() || str.equals("")) return resultstring;
 
 			
 		List<String> tokens = new ArrayList<String>();
@@ -692,13 +562,11 @@ public enum VerbalisationManager {
 			// detect THE END
 			if (i == str.length() - 1) {
 				currenttoken = currenttoken + str.substring(i, i + 1);
-				// System.out.println("adding token (1) >" + currenttoken + "<");
 				tokens.add(currenttoken);
 				break;
 			}
 			// detect seperator
 			if (str.substring(i, i + 1).equals("_") || str.substring(i, i + 1).equals(" ")) {
-				// System.out.println("adding token (2) >" + currenttoken + "<");
 				tokens.add(currenttoken);
 				currenttoken = "";
 				lastChar = "";
@@ -707,7 +575,6 @@ public enum VerbalisationManager {
 			// detect camelcasing
 			if (Character.isUpperCase(str.charAt(i)) && lastChar.length() > 0
 					&& Character.isLowerCase(lastChar.charAt(0))) {
-				// System.out.println("adding token (3) >" + currenttoken + "<");
 				tokens.add(currenttoken);
 				currenttoken = str.substring(i, i + 1);
 				lastChar = currenttoken;
@@ -716,12 +583,10 @@ public enum VerbalisationManager {
 			currenttoken = currenttoken + str.substring(i, i + 1);
 			lastChar = str.substring(i, i + 1);
 		}
-		// System.out.println("postprocessing");
 		// now postprocess all tokens
 		List<String> processedtokens = new ArrayList<String>();
 		boolean tokenEmpty = false;
 		for (String token : tokens) {
-			// System.out.println(">" + token + "<");
 			// if acronym (both first letters are capitals), do nothing
 			
 			if(token.length() <= 0 || token.isEmpty() || token.equals("")){
@@ -732,27 +597,24 @@ public enum VerbalisationManager {
 				processedtokens.add(token);
 				continue;
 			}
-			// now lowercase
-			if (!tokenEmpty) // token.length()>0)
+			// now lowercase	
+			if(!tokenEmpty){
 				token = token.substring(0, 1).toLowerCase() + token.substring(1, token.length());
-			// now find hypens and lowercase
-			int ind = 0;
-			// System.out.println("working on token" + token);
-			while (ind < token.length()) {
-				// System.out.println("ind " + ind + " token.length() " + token.length());
-				int foundint = token.substring(ind).indexOf("-") + ind;
-				//System.out.println(token.charAt(foundint+1) + " " + foundint + " " + ind);
-				if (foundint < 0 || foundint < ind || foundint + 1 > token.length())
-					break;
-				token = token.substring(0, foundint) + "-" + Character.toLowerCase(token.charAt(foundint + 1))
-						+ token.substring(foundint + 2);
-				// System.out.println("token " + token);
-				ind = foundint + 1;
+				// now find hypens and lowercase
+				int ind = 0;
+				while (ind < token.length()) {
+					int foundint = token.substring(ind).indexOf("-");
+					// System.out.println(token.charAt(foundint+1));
+					if (foundint < 0 || foundint + 1 > token.length())
+						break;
+					token = token.substring(0, foundint) + "-" + Character.toLowerCase(token.charAt(foundint + 1))
+							+ token.substring(foundint + 2);
+					ind = foundint + 1;
+				}
 			}
 			
 			processedtokens.add(token);
 		}
-		// System.out.println("joining");
 		// now join all tokens together
 		for (int i = 0; i < processedtokens.size(); i++) {
 			if (i == processedtokens.size() - 1) {
@@ -875,16 +737,17 @@ public enum VerbalisationManager {
 		String str2 = "";
 		boolean hasLabel = false;
 		boolean labelFound = false;
+		String rdfsLabel = "";
+		String firstLabel = "";
+		
 		
 		if (this.ontology != null) {
-			// System.out.println("before collecting annotations");
 			Set<OWLAnnotation> annotations = collectAnnotations(classname);
-			// System.out.println("after collecting annotations " + annotations.size());
 			for (OWLAnnotation annotation : annotations) {
+				// System.out.println("Annotation " + annotation);
 				
 				if (VerbaliseTreeManager.locale==Locale.GERMAN) {
-					// System.out.println("GERMAN LOCALE");
-					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("de")){ //is locale german ?
+					if(annotation.getValue().asLiteral().orNull().hasLang("de")){ //is locale german ?
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
 						labelFound = true;
 					}
@@ -896,19 +759,42 @@ public enum VerbalisationManager {
 				
 //				annotation.getProperty().getIRI().getFragment().equals("@en")
 				
-				
 				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
 					// System.out.println("ENGLISH LOCALE");
 					if(annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().isPresent() && annotation.getValue().asLiteral().orNull().hasLang("en")){
 						str = annotation.getValue().asLiteral().orNull().getLiteral() ;// annotation.getValue().toString()
+						// System.out.println("(1)" + annotation.getProperty());
+						if(annotation.getProperty().toString().contains("rdfs:label")){
+							// System.out.println("label!" + str);
+							rdfsLabel = str;
+						}
+						if (firstLabel.equals(""))
+							firstLabel = str;
 						labelFound = true;
-					}if(!labelFound && annotation.getValue().asLiteral().isPresent()){
+					}if(rdfsLabel.equals("") && annotation.getValue().asLiteral().isPresent()){
+						// System.out.println("(2)" + annotation.getProperty());
 						// Marvin: using quotes makes Mrs Koelle's structural cueing module crash.
 						str = annotation.getValue().asLiteral().orNull().getLiteral();
 						// str = "\"" + annotation.getValue().asLiteral().orNull().getLiteral() + "\"" ;
+						if(annotation.getProperty().toString().contains("rdfs:label")){
+							// System.out.println("label!" + str);
+							rdfsLabel = str;
+							break;
+						}
+						if(annotation.getProperty().toString().contains("Reference")){
+							str = rdfsLabel;
+						}
+						if (firstLabel.equals(""))
+							firstLabel = str;
 						labelFound = true;// annotation.getValue().toString()
 					}
-				}				
+} 
+				if (!rdfsLabel.equals(""))
+					str = rdfsLabel;
+				else{
+					str = firstLabel;
+				}
+						
 					
 //				
 //					if (annotation.getProperty().getIRI().getFragment().equals("label")) {
@@ -920,12 +806,11 @@ public enum VerbalisationManager {
 //					}
 //				} 
 				
-			}  // end for annotations 
+			}
 			// remove unnecessary stuff
 			if (str.indexOf("@e") > 0)
 				str = str.substring(0, str.length() - 3);
 		}
-		// System.out.println("get class NL String (2) " + classname);
 		if (!str.equals("") || !str2.equals(""))
 			hasLabel = true;
 		// search for the type tag of the annotation (e.g. ^^xsd:string)
@@ -938,32 +823,18 @@ public enum VerbalisationManager {
 				// str= str.substring(i+1,str.length()-1);
 			}
 			if (lang.equals(Locale.ENGLISH))
-				// System.out.println("str (A) " + str);
 				str = treatCamelCaseAndUnderscores(str);
-				// System.out.println("str (B) " + str);
 			// System.out.println("returning (1) " + str);
-			
-			
-			// Reduce length
-			if (str.length()>40)
-				str = str.substring(0, 40) + "[...]";
-			
-			if (str.contains("'")){
-				str = str.replaceAll("'","");	
-			System.out.println("replaced 's");
+			// Cheating
+			if (str.equals("exercise")) {
+				return "an exercise";
 			}
 			return str;
 		}
-		// System.out.println("get class NL String (3) " + classname);
 		if (str == "") {
-				str = classname.getIRI().getFragment();
-			
-			// str = ppCEvisit.visit(classname);
-			// System.out.println("DBG after pretty print visit --- " + str);
-			// if (verbOWLObjectVisit.getObfuscator() != null) {
-			// 	str = verbOWLObjectVisit.getObfuscator().obfuscateName(str);
-			// }
-			// System.out.println("DEBUG after prettyprint " + str);
+			// System.out.println("CLASS NAME HAS NO LABEL: " + classname);
+			str = ppCEvisit.visit(classname);
+	
 			// check if camelcasing was used
 			str = treatCamelCaseAndUnderscores(str);
 			boolean isUncountable = false;
@@ -979,13 +850,6 @@ public enum VerbalisationManager {
 			// System.out.println("DEBGU -- " + str);
 			if (!isUncountable)
 				str = aOrAnIfy(str);
-			
-			if (str.length()>40)
-				str = str.substring(0, 40) + "[...]";
-			if (str.contains("'")){
-				str = str.replaceAll("'","");
-				System.out.println("replaced 's");
-			}
 			return str;
 		}
 		if (!str2.equals("")) {
@@ -994,13 +858,6 @@ public enum VerbalisationManager {
 
 		if (!hasLabel || ontologyLabelsIncludeDeterminers == false)
 			str = aOrAnIfy(str);
-		
-		if (str.length()>40)
-			str = str.substring(0, 40) + "[...]";
-		if (str.contains("'")){
-			System.out.println("replaced 's");
-			str = str.replaceAll("'","");
-		}
 		return str;
 	};
 
@@ -1019,7 +876,6 @@ public enum VerbalisationManager {
 	}
 
 	public String getSimpleIntersectionNLString(List<OWLClassExpression> exprs) {
-		// System.out.println("<><> getSimpleIntersectionNLString called");
 		String result = "";
 		List<OWLObject> noun_concepts = new ArrayList<OWLObject>();
 		List<OWLObject> attribute_concepts = new ArrayList<OWLObject>();
@@ -1163,7 +1019,7 @@ public enum VerbalisationManager {
 			// first case: more than one noun
 			// start with nouns, then use "that is"
 			for (String str : noun_concepts_strings) {
-				System.out.println("}" + str + "{");
+				// System.out.println("}" + str + "{");
 				if (firstToken == true) {
 					firstToken = false;
 					str = aOrAnIfy(str);
@@ -1215,7 +1071,7 @@ public enum VerbalisationManager {
 				}
 				noun_or_attribute_concepts_strings.remove(current);
 				result = result + current + _space;
-				// System.out.println("result-}" + result + "{");
+				System.out.println("result-}" + result + "{");
 				noun_concepts_strings.remove(current);
 			}
 			for (String str : noun_concepts_strings) {
@@ -1252,34 +1108,6 @@ public enum VerbalisationManager {
 	}
 
 	public String getPropertyNLStringPart2(OWLObjectPropertyExpression property) {
-		String str = getPropertyNLString(property);
-		if (str.length() < 4) {
-			return "";
-		}
-		int i = str.indexOf("[X]");
-		// search for the type tag of the annotation (e.g. ^^xsd:string)
-		if (str.contains("^")) {
-			int j = str.indexOf("^");
-			return str.substring(i + 3, j - 1);
-		} else {
-			if (str.substring(i + 3).contains("\"")) {
-				return str.substring(i + 3, str.substring(i + 3).indexOf("\"") + i + 3);
-			} else
-				return str.substring(i + 3);
-		}
-	}
-	
-	public String getPropertyNLStringPart1(OWLDataPropertyExpression property) {
-		String str = getPropertyNLString(property);
-		if (str.length() < 4) {
-			return "";
-		}
-		int i = str.indexOf("\"");
-		int j = str.indexOf("[X]");
-		return str.substring(i + 1, j);
-	}
-
-	public String getPropertyNLStringPart2(OWLDataPropertyExpression property) {
 		String str = getPropertyNLString(property);
 		if (str.length() < 4) {
 			return "";
@@ -1372,7 +1200,7 @@ public enum VerbalisationManager {
 	}
 
 	public String verbaliseComplexIntersection(OWLObjectIntersectionOf inter, Obfuscator obfuscator) {
-		// System.out.println(" <><> complex intersection called with " + inter);
+		// System.out.println("complex intersection called with " + inter);
 		String result = "";
 		List<OWLClassExpression> simpleExpressions = new ArrayList<OWLClassExpression>();
 		List<OWLClassExpression> existsExpressions = new ArrayList<OWLClassExpression>();
@@ -1390,6 +1218,21 @@ public enum VerbalisationManager {
 		// if (otherExpressions.size()>0)
 		// System.out.println("verbaliseComplexIntersection --- CAN'T HANDLE
 		// THIS! " + otherExpressions);
+		// Check if there is no "easy" part, but if it can be replaced
+		if (simpleExpressions.size()<1 && existsExpressions.size()>0){
+			OWLObjectSomeValuesFrom someexpr = (OWLObjectSomeValuesFrom) (existsExpressions.get(0));
+			OWLObjectPropertyExpression prop = someexpr.getProperty();
+			String propstr = VerbalisationManager.INSTANCE.getPropertyNLString(prop);
+			if (WordNetQuery.INSTANCE.findNounSubstring(propstr)!=null && propstr.contains("is")){
+				String noun = WordNetQuery.INSTANCE.findNounSubstring(propstr);
+				String someexpstr = existsExpressions.get(0).accept(sentenceOWLObjectVisit).toString();
+				// remove the "is"
+				someexpstr = someexpstr.replaceAll("is ", "");
+				result = result + someexpstr + _space;
+				// result = result + noun + _space;
+				existsExpressions.remove(0);
+			}
+		}
 		// Verbalise the "easy" part
 		result = result + getSimpleIntersectionNLString(simpleExpressions) + _space;
 		// Verbalise the existential part
@@ -1402,8 +1245,7 @@ public enum VerbalisationManager {
 				OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) someobj;
 				String somefillertext = some.getFiller().accept(sentenceOWLObjectVisit).toString();
 				if (some.getFiller() instanceof OWLObjectSomeValuesFrom) {
-					// System.out.println("<><> inserting 'something that' ");
-					somefillertext = LogicLabels.getString("somethingThat") + somefillertext;
+					somefillertext = LogicLabels.getString("somethingThat ") + somefillertext;
 				}
 				substrings.add(somefillertext);
 			}
@@ -1412,6 +1254,8 @@ public enum VerbalisationManager {
 				result = result + _space + LogicLabels.getString("and") + _space;
 			}
 		}
+		//System.out.println("complex intersection returning " + result);
+		result = result.replace("part of","a part of");
 		return result;
 	}
 
@@ -1441,7 +1285,6 @@ public enum VerbalisationManager {
 
 	public static String pseudoNLStringMultipleExistsPattern(OWLObjectIntersectionOf ints,
 			Obfuscator obfuscator) {
-		// System.out.println("<><> multiple exists called (1)");
 		String result = "";
 		List<OWLClassExpression> exprs = ints.getOperandsAsList();
 		List<String> substrings = new ArrayList<String>();
@@ -1460,8 +1303,7 @@ public enum VerbalisationManager {
 		return result;
 	}
 
-	public List<TextElement> textualiseMultipleExistsPattern(OWLObjectIntersectionOf ints) {
-		// System.out.println("<><> multiple exists called (2)");
+	public static List<TextElement> textualiseMultipleExistsPattern(OWLObjectIntersectionOf ints) {
 		List<TextElement> result;
 		List<OWLClassExpression> exprs = ints.getOperandsAsList();
 		List<List<TextElement>> substrings = new ArrayList<List<TextElement>>();
@@ -1477,8 +1319,7 @@ public enum VerbalisationManager {
 		// result = "something that " + verbaliseProperty(commonpropexpr,
 		// substrings,"");
 		List<TextElement> st = new ArrayList<TextElement>();
-		// if (!commonpropexpr.toString().contains("[X]"))
-		// 	st.add(new LogicElement("something that"));
+		st.add(new LogicElement("something that"));
 		result = textualiseProperty(commonpropexpr, substrings, st);
 		return result;
 	}
@@ -1710,7 +1551,6 @@ public enum VerbalisationManager {
 		// System.out.println("checking axiom " + axiom);
 		// BRANCH FOR DIFFERENT TYPES OF AXIOMS
 
-		System.out.println("DBG: before generating explanation");
 		if (axiom instanceof OWLSubClassOfAxiom || axiom instanceof OWLObjectPropertyDomainAxiom
 				|| axiom instanceof OWLClassAssertionAxiom) {
 			Set<Explanation<OWLAxiom>> explanations = gen.getExplanations(axiom, 1);
@@ -1720,7 +1560,6 @@ public enum VerbalisationManager {
 				explanation = exp.getAxioms();
 			}
 		}
-		System.out.println("DBG: after generating explanation");
 
 		if (explanation.size() == 0) {
 			System.out.println("no justification found!");
@@ -1736,17 +1575,16 @@ public enum VerbalisationManager {
 		OWLFormula axiomFormula;
 		List<OWLFormula> justificationFormulas = new ArrayList<OWLFormula>();
 		try {
-			System.out.println("DEBUG --- to be proven " + axiom);
+			// System.out.println("DEBUG --- Trying to add " + axiom);
 			axiomFormula = ConversionManager.fromOWLAPI(axiom);
 
 			for (OWLAxiom ax : explanation) {
 				// System.out.println("DEBUG --- Trying to add " + ax);
-				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
+				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));		
+				RuleSetManager.addAxiom(ConversionManager.fromOWLAPI(ax));
 
-				System.out.println("VerbalisationManager: adding: " +
-						  ax);
-				System.out.println("VerbalisationManager: adding: " +
-				  ConversionManager.fromOWLAPI(ax).prettyPrint());
+				// System.out.println("VerbalisationManager: adding: " +
+				// ConversionManager.fromOWLAPI(ax).prettyPrint());
 			}
 		} catch (Exception e) {
 			return null;
@@ -1862,7 +1700,7 @@ public enum VerbalisationManager {
 			// 2: show rule names
 			// 3: HTML/text
 
-			String result = VerbaliseTreeManager.verbaliseNL(tree, false, false, asHTML, obfuscator); // parameter
+			String result = VerbaliseTreeManager.verbaliseNL(tree, false, asHTML, obfuscator); // parameter
 																								// for
 																								// rule
 																								// names!
@@ -1877,7 +1715,6 @@ public enum VerbalisationManager {
 	public static TextElementSequence verbalizeAxiomAsSequence(OWLAxiom axiom, OWLReasoner reasoner,
 			OWLReasonerFactory factory, OWLOntology ontology, int maxsteps, long maxtime, String ruleset,
 			boolean asHTML, boolean obf) {
-		System.out.println("Axiom: " + axiom);
 
 		TextElementSequence resultSequence = new TextElementSequence();
 
@@ -1897,18 +1734,9 @@ public enum VerbalisationManager {
 			return resultSequence;
 		}
 
-		//System.out.println(ontology.getAxioms().size());
-		for (OWLAxiom ax: ontology.getAxioms()){
-			if (ax.toString().equals(axiom.toString())){
-				// System.out.println("DEBUG (3)");
-				resultSequence.concat(VerbalisationManager.textualise(axiom));
-				return resultSequence;
-			}
-				
-		}
-		
 		if (ontology.getAxioms().contains(axiom)) {
-			// System.out.println("DEBUG (3)");	
+			System.out.println("DEBUG (3)");
+			
 			// LogicElement element = new LogicElement("Axiom contained.");
 			// resultSequence.add(element);
 			// resultSequence.add(new LinebreakElement());
@@ -1916,11 +1744,11 @@ public enum VerbalisationManager {
 			return resultSequence;
 		}
 
-		// System.out.println("DEBUG (4)");
+		System.out.println("DEBUG (4)");
 		GentzenTree tree = computeGentzenTree(axiom, reasoner, factory, ontology, maxsteps, maxtime, ruleset);
-		// System.out.println("DEBUG (5)");
+		System.out.println("DEBUG (5)");
 		if (tree == null) {
-			// System.out.println("DEBUG (6)");
+			System.out.println("DEBUG (6)");
 			// resultSequence.add(new LogicElement("fooooo"));
 			resultSequence.add(new EmptyTreeElement());
 			return resultSequence;
@@ -2055,17 +1883,10 @@ public enum VerbalisationManager {
 	 * return tree; }
 	 */
 
-	public static String computeVerbalization(GentzenTree tree, boolean asHTML, boolean longtext, Obfuscator obfuscator) {
+	public static String computeVerbalization(GentzenTree tree, boolean asHTML, Obfuscator obfuscator) {
 		// WordNetQuery.INSTANCE.disableDict();
-		String result = VerbaliseTreeManager.verbaliseNL(tree, true, asHTML, longtext, obfuscator);
+		String result = VerbaliseTreeManager.verbaliseNL(tree, true, asHTML, obfuscator);
 		return result;
-	}
-	
-	public static String germanGrammarify(String input){
-		System.out.println("grammarify called with " + input);
-		input = input.replaceAll("mit die übliche", "mit der üblichen");
-		input = input.replaceAll("mit die", "mit der");
-		return input;
 	}
 
 }

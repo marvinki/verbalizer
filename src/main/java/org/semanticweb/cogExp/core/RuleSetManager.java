@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 import org.semanticweb.cogExp.inferencerules.SequentTerminationAxiom;
@@ -13,6 +14,16 @@ import org.semanticweb.cogExp.inferencerules.SequentTerminationAxiom;
 public enum RuleSetManager {
 	INSTANCE;
 	private HashMap<java.lang.String,List<SequentInferenceRule>> rulesets = new HashMap<java.lang.String,List<SequentInferenceRule>>(); 
+	
+	private static List<OWLFormula> axiom_store = new ArrayList<OWLFormula>();
+	
+	public static void addAxiom(OWLFormula ax){
+		axiom_store.add(ax);
+	}
+	
+	public static List<OWLFormula>  getAxioms(){
+		return axiom_store;
+	}
 	
 	private RuleSetManager(){
 		// generate ALC ruleset
@@ -85,8 +96,6 @@ public enum RuleSetManager {
 	    		INLG2012NguyenEtAlRules.RULE33,
 	    		*/
 	    		INLG2012NguyenEtAlRules.RULE34,
-	    		INLG2012NguyenEtAlRules.RULE34nary,
-	    		INLG2012NguyenEtAlRules.RULE35nary,
 	    		// INLG2012NguyenEtAlRules.RULE35,
 	    		// INLG2012NguyenEtAlRules.RULE36,
 	    		INLG2012NguyenEtAlRules.RULE37,
@@ -164,14 +173,13 @@ public enum RuleSetManager {
 	    rulesets.put("ELRules",elRules);
 	    
 	    SequentInferenceRule[] ELInit = {
-	    		AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
 	    		AdditionalDLRules.SIMPLETERMINATION,
 	    		SequentTerminationAxiom.INSTANCE,
+	    		AdditionalDLRules.SUBCLANDEQUIVELIM,
+	    		INLG2012NguyenEtAlRules.RULE12new,
     			AdditionalDLRules.EQUIVEXTRACT,
     			INLG2012NguyenEtAlRules.RULE1neo,
     			INLG2012NguyenEtAlRules.RULE1,
-    			AdditionalDLRules.SUBCLANDEQUIVELIM,
-    			INLG2012NguyenEtAlRules.RULE12new,
     			// AdditionalDLRules.FORALLUNION,
     			// INLG2012NguyenEtAlRules.RULE23Repeat,
     			// INLG2012NguyenEtAlRules.RULE23,
@@ -183,12 +191,11 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE6neo,
     			AdditionalDLRules.ELEXISTSMINUS,
     			INLG2012NguyenEtAlRules.RULE34, // handle disjointness
-    			INLG2012NguyenEtAlRules.RULE34nary,
     			INLG2012NguyenEtAlRules.RULE35, // handle disjointness
-    			INLG2012NguyenEtAlRules.RULE35nary,
     			AdditionalDLRules.APPLRANGE,
+    			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
     			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
-    			AdditionalDLRules.R0, // introduce trivial subsumptions // <--- DONT TURN THIS OFF! Needed for A->B, A^B->C ---> A->C.
+    			// AdditionalDLRules.R0, // introduce trivial subsumptions
     			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
     			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
     			INLG2012NguyenEtAlRules.RULE42,
@@ -199,7 +206,8 @@ public enum RuleSetManager {
     			AdditionalDLRules.INDIVIDUAL,
     			AdditionalDLRules.INVERSEOBJECTPROPERTY,
     			AdditionalDLRules.OBJPROPASSERIONEXISTS,
-    			AdditionalDLRules.INDIVTOPINTRO
+    			AdditionalDLRules.INDIVTOPINTRO,
+    			AdditionalDLRules.SUBCLCHAIN
     			
 	    };
 	    
@@ -259,7 +267,6 @@ public enum RuleSetManager {
 	    
 	    
 	    SequentInferenceRule[] ELInitNonredundant = {
-	    		AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
 	    		AdditionalDLRules.SIMPLETERMINATION,
 	    		SequentTerminationAxiom.INSTANCE,
     			// AdditionalDLRules.EQUIVEXTRACT,   // <--- should be off
@@ -276,12 +283,11 @@ public enum RuleSetManager {
     			INLG2012NguyenEtAlRules.RULE6neo,
     			AdditionalDLRules.ELEXISTSMINUS,
     			INLG2012NguyenEtAlRules.RULE34, // handle disjointness
-    			INLG2012NguyenEtAlRules.RULE34nary,
     			INLG2012NguyenEtAlRules.RULE35, // handle disjointness
-    			INLG2012NguyenEtAlRules.RULE35nary,
+    			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
     			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
-    			AdditionalDLRules.R0, // introduce trivial subsumptions  // <--- DONT TURN THIS OFF! Needed for A->B, A^B->C ---> A->C.
-    		    AdditionalDLRules.DEFDOMAIN, // translate domain definition 
+    			// AdditionalDLRules.R0, // introduce trivial subsumptions  // <--- off?
+    			AdditionalDLRules.DEFDOMAIN, // translate domain definition 
     			INLG2012NguyenEtAlRules.RULE37, // handle subpropertyof
     			INLG2012NguyenEtAlRules.RULE42,
     			INLG2012NguyenEtAlRules.RULE23Repeat,
@@ -320,8 +326,6 @@ public enum RuleSetManager {
 			INLG2012NguyenEtAlRules.RULE6neo,
 			AdditionalDLRules.ELEXISTSMINUS,
 			INLG2012NguyenEtAlRules.RULE34, // handle disjointness
-			INLG2012NguyenEtAlRules.RULE34nary,
-			INLG2012NguyenEtAlRules.RULE35nary,
 			AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
 			AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
 			AdditionalDLRules.R0, // introduce trivial subsumptions
@@ -363,9 +367,7 @@ public enum RuleSetManager {
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE15) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE6neo) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE34) || // handle disjointness
-	    	rule.equals(INLG2012NguyenEtAlRules.RULE34nary) || // handle disjointness
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE35) || // handle disjointness
-	    	rule.equals(INLG2012NguyenEtAlRules.RULE35nary) || // handle disjointness
 			// AdditionalDLRules.TOPINTRO, // introduce fact that every expression is subsumed by top
 			// AdditionalDLRules.BOTINTRO, // introduce fact that every expression subsumes bot (needed to show that unsatisfiable concepts subsume each other)
 			// AdditionalDLRules.R0, // introduce trivial subsumptions
@@ -376,16 +378,7 @@ public enum RuleSetManager {
 	    	rule.equals(AdditionalDLRules.APPLRANGE) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE23Repeat) ||
 	    	rule.equals(INLG2012NguyenEtAlRules.RULE23) ||
-	    	rule.equals(INLG2012NguyenEtAlRules.RULE42) ||
-	    	rule.equals(AdditionalDLRules.SUBCLCHAIN) ||
-            // Rules for dealing with the A-Box/Individuals
-	    	rule.equals(AdditionalDLRules.INDIVIDUAL) ||
-	    	rule.equals(AdditionalDLRules.INVERSEOBJECTPROPERTY) ||
-	    	rule.equals(AdditionalDLRules.OBJPROPASSERIONEXISTS) ||
-	    	rule.equals(AdditionalDLRules.OBJPROPASSERIONASWITNESS) ||
-	    	rule.equals(AdditionalDLRules.ANDIVIDUAL) ||
-	    	rule.equals(AdditionalDLRules.INDIVTOPINTRO) ||
-	    	rule.equals(AdditionalDLRules.ONEOFINTRO)
+	    	rule.equals(INLG2012NguyenEtAlRules.RULE42)
 	    	)
 	    		return true;
 	    	else return false;

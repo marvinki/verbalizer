@@ -39,8 +39,6 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 public class TacticExample {
 	
 	public static void main(String[] args){
-		
-		
 	
 		OWLFormula formA = OWLFormula.createFormulaClass("A-thing", "ant");
 		OWLFormula formB = OWLFormula.createFormulaClass("B-thing", "banana");
@@ -96,11 +94,9 @@ public class TacticExample {
 			// Output the expanded proof tree (each line is a rule application: rule name, conclusion, premises)
 			System.out.println("Prooftree \n" + VerbaliseTreeManager.listOutput(tree2) + "\n");
 			
-			WordNetQuery.INSTANCE.disableDict();
-			
-			String seq1 = VerbalisationManager.computeVerbalization(tree1, false, false, null);
+			String seq1 = VerbalisationManager.computeVerbalization(tree1, false, null);
 			System.out.println(seq1);
-			String seq2 = VerbalisationManager.computeVerbalization(tree2, false, false, null);
+			String seq2 = VerbalisationManager.computeVerbalization(tree2, false, null);
 			System.out.println(seq2);
 			
 		} catch (ProofNotFoundException e) {

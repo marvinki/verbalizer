@@ -22,7 +22,7 @@ public class RoleElement extends TextElement{
 
 	@Override
 	public String toHTML(){
-		return "<font color=Maroon>" + content + "</font>";  // <-- there was a space there on purpose 
+		return "<font color=Maroon>" + content + "</font>"; 
 	}
 	
 	@Override

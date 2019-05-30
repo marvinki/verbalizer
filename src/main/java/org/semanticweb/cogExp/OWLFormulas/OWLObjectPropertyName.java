@@ -1,6 +1,10 @@
 package org.semanticweb.cogExp.OWLFormulas;
 
-
+import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPIManagerManager;
+import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 
 public class OWLObjectPropertyName implements OWLAtom {
 	private String objectpropertyname;
@@ -67,6 +71,16 @@ public class OWLObjectPropertyName implements OWLAtom {
 	@Override
 	public boolean isIndividual() {
 		return false;
+	}
+	
+	@Override
+	public String toNLString() {
+		OWLDataFactory dataFactory = OWLAPIManagerManager.INSTANCE.getDataFactory();
+		OWLObjectPropertyExpression expr = dataFactory.getOWLObjectProperty(IRI.create(objectpropertyname));
+		String str = VerbalisationManager.INSTANCE.getPropertyNLString(expr);
+		// System.out.println("rolename " + objectpropertyname);
+		// System.out.println("rolename returned: " +  str);
+		return str;
 	}
 	
 }

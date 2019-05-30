@@ -65,14 +65,6 @@ public class Sequent<FormulaType> {
 		formulaDepth.put(formulaID, depth);
 	}
 	
-	public String getStatistics(){
-		// System.out.println("calling statistics for seq id " + id);
-		// String result = "dummy";
-		// System.out.println("Antecedent stats: " + antecedent.getStatistics());
-		String result = "Sequent id: " + id +  " Antecedent " + antecedent.getStatistics() + " Succedent: " + succedent.getStatistics() + " Subformulas " + subexprs.getStatistics();
-		return result;
-	}
-	
 	/* ===== CONSTRUCTORS ====== */
 	
 	public Sequent(ArrayList<FormulaType> ant, ArrayList<FormulaType> succ) throws Exception{

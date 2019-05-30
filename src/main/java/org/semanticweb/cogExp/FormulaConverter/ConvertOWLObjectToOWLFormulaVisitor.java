@@ -223,7 +223,7 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 		OWLFormula formulaprop = OWLFormula.createFormulaDataProperty(prop.asOWLDataProperty().getIRI().getFragment(), 
 				prop.asOWLDataProperty().getIRI().toString());
 		OWLFormula formulafiller = filler.accept(this);
-		// System.out.println("returning " + OWLFormula.createFormula(OWLSymb.DATASOMEVALUESFROM,formulaprop, formulafiller));
+		System.out.println("returning " + OWLFormula.createFormula(OWLSymb.DATASOMEVALUESFROM,formulaprop, formulafiller));
 		return OWLFormula.createFormula(OWLSymb.DATASOMEVALUESFROM,formulaprop, formulafiller);
 	}
 
@@ -233,12 +233,12 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 		OWLFormula formulaprop = OWLFormula.createFormulaDataProperty(prop.asOWLDataProperty().getIRI().getFragment(), 
 				prop.asOWLDataProperty().getIRI().toString());
 		OWLFormula formulafiller = filler.accept(this);
-		// System.out.println("returning " + OWLFormula.createFormula(OWLSymb.DATAALLVALUESFROM,formulaprop, formulafiller));
+		System.out.println("returning " + OWLFormula.createFormula(OWLSymb.DATAALLVALUESFROM,formulaprop, formulafiller));
 		return OWLFormula.createFormula(OWLSymb.DATAALLVALUESFROM,formulaprop, formulafiller);
 	}
 
 	public OWLFormula visit(OWLDataHasValue odhv) {
-		// System.out.println("DEBUG!  conversion visiting " + odhv);
+		System.out.println("DEBUG!  conversion visiting " + odhv);
 		OWLDataPropertyExpression prop = odhv.getProperty();
 		OWLLiteral literal = odhv.getValue();
 		prop.asOWLDataProperty().getIRI();
@@ -246,7 +246,7 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 										 prop.asOWLDataProperty().getIRI().toString(),
 										 literal.getLiteral(),
 										 ConversionManager.datatypeToLiteraltype(literal.getDatatype()));
-		// System.out.println("DEBUG!  conversion returning " + formula);
+		System.out.println("DEBUG!  conversion returning " + formula);
 		return formula;
 	}
 
@@ -292,9 +292,8 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLAsymmetricObjectPropertyAxiom arg0) {
-		OWLFormula f2 = OWLFormula.createFormula(OWLSymb.ASYMMETRICOBJECTPROPERTY,
-				arg0.getProperty().accept(this));
-		return f2;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public OWLFormula visit(OWLReflexiveObjectPropertyAxiom arg0) {
@@ -333,7 +332,6 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 		for (OWLObjectPropertyExpression exp : exprs){
 			tail.add(exp.accept(this));
 		}
-		System.out.println("conversion returning: " + new OWLFormula(OWLSymb.EQUIVOBJPROP,tail));
 		return new OWLFormula(OWLSymb.EQUIVOBJPROP,tail);
 	}
 
@@ -396,10 +394,8 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLSymmetricObjectPropertyAxiom arg0) {
-		OWLFormula f2 = OWLFormula.createFormula(OWLSymb.SYMMETRICOBJECTPROPERTY,
-				arg0.getProperty().accept(this));
-		return f2;
-		
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public OWLFormula visit(OWLDataPropertyRangeAxiom arg0) {
@@ -446,8 +442,14 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLDataPropertyAssertionAxiom arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		OWLDataPropertyExpression propExp = arg0.getProperty();
+		OWLIndividual indivSub = arg0.getSubject();
+		OWLLiteral lit = arg0.getObject();
+		// OWLIndividual indivObj = arg0.getObject();
+		OWLFormula propForm = propExp.accept(this);
+		OWLFormula subForm = indivSub.accept(this);
+		OWLFormula litForm = lit.accept(this);
+		return OWLFormula.createFormulaDataPropertyAssertion(propForm, subForm, litForm);
 	}
 
 	public OWLFormula visit(OWLTransitiveObjectPropertyAxiom ax) {

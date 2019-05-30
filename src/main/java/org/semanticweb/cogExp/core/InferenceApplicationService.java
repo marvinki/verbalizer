@@ -661,7 +661,6 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 	public ProofTree runSimpleLoop(ProofTree initialtree,List<SequentInferenceRule> rules, int limit, long timelimit, boolean...saturate){
 		
 		AlreadyTriedCache.INSTANCE.reset();
-		// System.out.println(AlreadyTriedCache.INSTANCE.toString());
 		
 		Pair<List<RuleBindingForNode>,List<SequentInferenceRule>> bindings_dash_save = null;
 		long starttime = System.currentTimeMillis();
@@ -681,7 +680,6 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			    for (ProofNode opennode : open_nodes){
 			    	
 			    	Sequent seq = (Sequent) opennode.getContent();
-			    	// System.out.println(seq.getStatistics());
 			    	if (seq instanceof IncrementalSequent){
 			    		seq = ((IncrementalSequent) seq).amputateDepth(bfsLevel);
 			    	} else{
@@ -722,8 +720,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 				bfsLevel=bfsLevel + 1;
 				// System.out.println("BFS LEVEL NOW: " + bfsLevel);
 				/// HACKY!
-				if (bfsLevel > 50){
-					System.out.println("simpleLoop: Reached BFS bounds.");
+				if (bfsLevel > 30){
 					return initialtree;
 				}
 				// 
@@ -738,12 +735,8 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 				// for (RuleBinding rb: bindings){
 					// System.out.println(" in simple loop " + rb.getNewAntecedent());
 				// }
-					
-					/* ENABLE THIS FOR DEBUG OUTPUT */
 				   // System.out.println("ONE APPLICATION is carried out by runSimpleLoop");
 				   // System.out.println("rulename " + current_rule.getName() + " at bfs level " + bfsLevel + " limit " + limit + " timelimit " + (timelimit - (System.currentTimeMillis()-starttime)));
-				 
-				   
 				   // System.out.println(" in simple loop " + bindings.get(0).getNewAntecedent());
 				// System.out.println(current_rule.getName() + "-->" + bindings.get(0).getNewAntecedent());
 				   
@@ -805,9 +798,6 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 					// System.out.println("checkpoint1 " + rb.getNewAntecedent());
 					Sequent seqnew = (Sequent) newopennode.getContent();
 					Sequent oldseq = (Sequent) initialtree.getProofNode(rb.getNodeId()).getContent();
-					
-					// System.out.println(seqnew.getStatistics());
-					
 					RuleBinding rbnew = rb.convert(oldseq, seqnew);
 					// System.out.println("checkpoint2 " + rbnew.getNewAntecedent());
 					if ( rbnew!=null && (rbnew.getNewAntecedent()==null 
@@ -914,9 +904,6 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		}
 		
 		long endtime = System.currentTimeMillis();
-		if (System.currentTimeMillis()-starttime >timelimit){
-			System.out.println("simpleLoop: Timelimit reached");
-		} 
 		// System.out.println("Time taken was " + (endtime - starttime) + "ms.");
 					return null;
 	}

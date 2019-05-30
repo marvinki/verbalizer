@@ -6,8 +6,6 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
-import org.json.JSONArray;
-// import org.json.JSONArray;
 import org.protege.editor.owl.OWLEditorKit;
 
 public class ConclusionMarkerElement extends TextElement{
@@ -61,9 +59,4 @@ public class ConclusionMarkerElement extends TextElement{
 		return true;
 	}
 		
-	public JSONArray toJSON(){
-		TextElementSequence seq = new TextElementSequence(content);
-	 	return seq.toJSON();
-	 }
-	
 }

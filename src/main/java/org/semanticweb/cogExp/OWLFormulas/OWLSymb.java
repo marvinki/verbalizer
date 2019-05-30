@@ -10,7 +10,8 @@ package org.semanticweb.cogExp.OWLFormulas;
 public enum OWLSymb implements OWLAtom{
 	SUBCL, INT, UNION, EXISTS, FORALL, TOP, BOT, NEG, EQUIV, RANGE, DOMAIN, DATADOMAIN, DATAHASVALUE, DATASOMEVALUESFROM, DATAALLVALUESFROM, OBJECTHASVALUE, 
 	TRANSITIVE, FUNCTIONAL, FUNCTIONALDATA, IRREFLEXIVE, INVERSEOBJPROP, INVFUNCTIONAL, DISJ, SUBPROPERTYCHAIN, SUBPROPERTYOF, EQUIVOBJPROP, ONEOF, DATAONEOF, 
-	OBJECTMINCARDINALITY, OBJECTMAXCARDINALITY, OBJECTEXACTCARDINALITY,DATAMINCARDINALITY, DATAMAXCARDINALITY, DATAEXACTCARDINALITY, SYMMETRICOBJECTPROPERTY, ASYMMETRICOBJECTPROPERTY, CLASSASSERTION, OBJECTPROPERTYASSERTION;; 
+	OBJECTMINCARDINALITY, OBJECTMAXCARDINALITY, OBJECTEXACTCARDINALITY,DATAMINCARDINALITY, DATAMAXCARDINALITY, DATAEXACTCARDINALITY, CLASSASSERTION, OBJECTPROPERTYASSERTION, DATAPROPERTYASSERTION; 
+
 	
 	/** Returns a pretty printed string for a symbol
 	 * 
@@ -31,8 +32,6 @@ public enum OWLSymb implements OWLAtom{
 			case DOMAIN:       output="dom"; break;
 			case DATADOMAIN:       output="datadom"; break;
 			case TRANSITIVE:   output="tran"; break;
-			case SYMMETRICOBJECTPROPERTY:   output="symmetric"; break;
-			case ASYMMETRICOBJECTPROPERTY:   output="asymmetric"; break;
 			case FUNCTIONAL:   output="functional"; break;
 			case FUNCTIONALDATA:   output="functionaldata"; break;
 			case IRREFLEXIVE:   output="iref"; break;
@@ -56,6 +55,7 @@ public enum OWLSymb implements OWLAtom{
 			case DISJ:     output="disj"; break;
 			case CLASSASSERTION:     output="classassertion"; break;
 			case OBJECTPROPERTYASSERTION:     output="objectpropertyassertion"; break;
+			case DATAPROPERTYASSERTION:     output="datapropertyassertion"; break;
 		}
 		return output;
 	}
@@ -80,6 +80,11 @@ public enum OWLSymb implements OWLAtom{
 	@Override
 	public boolean isIndividual() {
 		return false;
+	}
+	
+	@Override
+	public String toNLString() {
+		return this.toString();
 	}
 	
 }
