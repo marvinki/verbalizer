@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.inferencerules.SequentTerminationAxiom;
@@ -240,8 +239,8 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 	
 	
 	public void  print(){
-		System.out.println("PROOFTREE No. " + id);
-		System.out.println("Opennodes " + open_nodes);
+//		System.out.println("PROOFTREE No. " + id);
+//		System.out.println("Opennodes " + open_nodes);
 		Set<Integer> keyset = nodesHashMap.keySet();
 		List<Integer> keylist = new ArrayList<Integer>(keyset);
 		Collections.sort(keylist);
@@ -249,9 +248,9 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 		ProofNode node;
 		while(it.hasNext()){
 			int i = it.next();
-			System.out.print(i + ": ");
+//			System.out.print(i + ": ");
 			node  = nodesHashMap.get(i);
-			System.out.print(node.getContent());
+//			System.out.print(node.getContent());
 			// if (node.getJustifications().size() !=0){
 			//	System.out.print(" by " + node.getTopJustification().getJustification());
 			// 	System.out.print(" from " + node.getTopJustification().getPremises());
@@ -262,38 +261,38 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 			else{
 			List<JustificationNode> jnodes = hnodes.get(0).getJustifications();
 			for (JustificationNode jnode : jnodes){
-				if (!first_flag){System.out.print(", or");}
+//				if (!first_flag){System.out.print(", or");}
 				first_flag = false;
-				System.out.print(" by " + jnode.getJustification());
-				System.out.print(" from " + jnode.getPremises());	
+//				System.out.print(" by " + jnode.getJustification());
+//				System.out.print(" from " + jnode.getPremises());	
 			}
 			}
-			System.out.println("");
+//			System.out.println("");
 		}
-		System.out.println();;
+//		System.out.println();;
 		try {
 			this.computeConsequenceOrdering();
 		} catch (Exception e) {
 			//  Auto-generated catch block
 			e.printStackTrace();
 		} 
-		for (int i :consequenceOrdering.keySet()){
-			System.out.println(i + " : " + consequenceOrdering.get(i));
-		}
+//		for (int i :consequenceOrdering.keySet()){
+//			System.out.println(i + " : " + consequenceOrdering.get(i));
+//		}
 		
 		
     	this.computeNodeDepth();
-		for (int i : nodeDepth.keySet()){
-			System.out.println(i + " : " + nodeDepth.get(i));
-		}
+//		for (int i : nodeDepth.keySet()){
+//			System.out.println(i + " : " + nodeDepth.get(i));
+//		}
 		
 		return;
 	}
 	
 	
 	public void  print2(){
-		System.out.println("PROOFTREE No. " + id);
-		System.out.println("Opennodes " + open_nodes);
+//		System.out.println("PROOFTREE No. " + id);
+//		System.out.println("Opennodes " + open_nodes);
 		Set<Integer> keyset = nodesHashMap.keySet();
 		List<Integer> keylist = new ArrayList<Integer>(keyset);
 		Collections.sort(keylist);
@@ -301,21 +300,21 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 		ProofNode node;
 		while(it.hasNext()){
 			int i = it.next();
-			System.out.print(i + ": ");
+//			System.out.print(i + ": ");
 			node  = nodesHashMap.get(i);
-			System.out.print(node.getContent());
+//			System.out.print(node.getContent());
 			boolean first_flag = true;
 			List<HierarchNode> hnodes = node.getJustifications(); // by default only look at first option
 			if (hnodes==null||hnodes.size()==0){}
 			else{
 				for (HierarchNode hnode : hnodes){
-					System.out.println(hnode.toString());
+//					System.out.println(hnode.toString());
 					List<JustificationNode> jnodes = hnodes.get(0).getJustifications();
-					for (JustificationNode jnode : jnodes){
-						System.out.print(" by " + jnode.getJustification());
-						System.out.print(" from " + jnode.getPremises());	
-						System.out.println("backlinks: " + jnode.getJustifiedNode());
-					}
+//					for (JustificationNode jnode : jnodes){
+//						System.out.print(" by " + jnode.getJustification());
+//						System.out.print(" from " + jnode.getPremises());	
+//						System.out.println("backlinks: " + jnode.getJustifiedNode());
+//					}
 				}
 				/* 
 			List<JustificationNode> jnodes = hnodes.get(0).getJustifications();
@@ -327,9 +326,9 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 			} 
 			*/
 			}
-			System.out.println("");
+//			System.out.println("");
 		}
-		System.out.println();;
+//		System.out.println();;
 		try {
 			this.computeConsequenceOrdering();
 		} catch (Exception e) {
@@ -337,13 +336,13 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 			e.printStackTrace();
 		} 
 		for (int i :consequenceOrdering.keySet()){
-			System.out.println(i + " : " + consequenceOrdering.get(i));
+//			System.out.println(i + " : " + consequenceOrdering.get(i));
 		}
 		
 		
     	this.computeNodeDepth();
 		for (int i : nodeDepth.keySet()){
-			System.out.println(i + " : " + nodeDepth.get(i));
+//			System.out.println(i + " : " + nodeDepth.get(i));
 		}
 		
 		return;
@@ -693,8 +692,8 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 	} 
 	
 	public java.lang.String reportConsequenceOrdering(){
-		System.out.println("report");
-		System.out.println(consequenceOrdering.keySet());
+//		System.out.println("report");
+//		System.out.println(consequenceOrdering.keySet());
 		String result = "";
 		Set<Integer> keys = consequenceOrdering.keySet();
 		for (Integer i : keys){
@@ -704,8 +703,8 @@ public class ProofTree<Type extends ProofNode> implements IDentifiable{
 	}
 	
 	public java.lang.String reportNodeDepths(){
-		System.out.println("report");
-		System.out.println(nodeDepth.keySet());
+//		System.out.println("report");
+//		System.out.println(nodeDepth.keySet());
 		String result = "";
 		Set<Integer> keys = nodeDepth.keySet();
 		for (Integer i : keys){

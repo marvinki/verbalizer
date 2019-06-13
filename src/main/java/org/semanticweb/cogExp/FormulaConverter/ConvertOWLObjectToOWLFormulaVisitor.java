@@ -20,8 +20,6 @@ package org.semanticweb.cogExp.FormulaConverter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.semanticweb.cogExp.OWLFormulas.OWLClassName;
 import org.semanticweb.cogExp.OWLFormulas.OWLDataRan;
@@ -30,9 +28,7 @@ import org.semanticweb.cogExp.OWLFormulas.OWLIndividualName;
 import org.semanticweb.cogExp.OWLFormulas.OWLInteger;
 import org.semanticweb.cogExp.OWLFormulas.OWLLiteralType;
 import org.semanticweb.cogExp.OWLFormulas.OWLLiteralValue;
-import org.semanticweb.cogExp.OWLFormulas.OWLRoleName;
 import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
-import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
@@ -44,8 +40,6 @@ import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
 import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLDataComplementOf;
 import org.semanticweb.owlapi.model.OWLDataExactCardinality;
@@ -224,7 +218,7 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLObjectOneOf oneof) {
-		System.out.println("construct OWL Formula oneof " + oneof);
+//		System.out.println("construct OWL Formula oneof " + oneof);
 		Set<OWLIndividual> individuals = oneof.getIndividuals();
 		List<OWLFormula> individualnames = new ArrayList<OWLFormula>();
 		for (OWLIndividual indiv : individuals){
@@ -350,7 +344,7 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 		for (OWLObjectPropertyExpression exp : exprs){
 			tail.add(exp.accept(this));
 		}
-		System.out.println("conversion returning: " + new OWLFormula(OWLSymb.EQUIVOBJPROP,tail));
+//		System.out.println("conversion returning: " + new OWLFormula(OWLSymb.EQUIVOBJPROP,tail));
 		return new OWLFormula(OWLSymb.EQUIVOBJPROP,tail);
 	}
 
@@ -563,7 +557,7 @@ public class ConvertOWLObjectToOWLFormulaVisitor implements OWLObjectVisitorEx<O
 	}
 
 	public OWLFormula visit(OWLDataOneOf arg0) {
-		System.out.println("convert dataoneof " + arg0);
+//		System.out.println("convert dataoneof " + arg0);
 		Set<OWLLiteral> individuals = arg0.getValues();
 		List<OWLFormula> literalformulas = new ArrayList<OWLFormula>();
 		for (OWLLiteral indiv : individuals){

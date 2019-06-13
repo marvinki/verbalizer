@@ -18,13 +18,10 @@
 package org.semanticweb.cogExp.OWLFormulas;
 
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
@@ -504,7 +501,7 @@ public class OWLFormula {
 	public String prettyPrint(){
 		OWLObject ob = ConversionManager.toOWLAPI(this);
 		if (ob==null){
-			System.out.println(" warn warn: unconvertable formula  " + this);
+//			System.out.println(" warn warn: unconvertable formula  " + this);
 			return "";
 		}
 		return VerbalisationManager.prettyPrint(ConversionManager.toOWLAPI(this));

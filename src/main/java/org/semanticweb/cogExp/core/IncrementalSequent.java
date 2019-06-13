@@ -19,12 +19,10 @@ package org.semanticweb.cogExp.core;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormulaComparator;
 import org.semanticweb.cogExp.OWLFormulas.TermTree;
@@ -152,10 +150,10 @@ public class IncrementalSequent extends Sequent{
 		boolean contained = false;
 		int id = -1;
 		if (containedMaster){
-			if (f==null)
-			{System.out.println("f null");}
-			if (mastersequent==null)
-			{System.out.println("masterseq null");}
+//			if (f==null)
+//			{System.out.println("f null");}
+//			if (mastersequent==null)
+//			{System.out.println("masterseq null");}
 			id = mastersequent.antecedentFormulaGetID(f);
 			contained = antecedents.contains(id);
 		}
@@ -249,22 +247,22 @@ public class IncrementalSequent extends Sequent{
 	}
 	
 	public void reportSubexpressionFormulas(){
-		System.out.println("Asking for subexpressions report from id " + id);
+//		System.out.println("Asking for subexpressions report from id " + id);
 		mastersequent.reportSubexpressionFormulas();
 	}
 	
 	public void reportAntecedent(){
-		System.out.println("ANTECEDENT REPORT for incremental sequent " + id + " with mastersequent " + mastersequent.id);
+//		System.out.println("ANTECEDENT REPORT for incremental sequent " + id + " with mastersequent " + mastersequent.id);
 		Set<OWLFormula> exprs = mastersequent.getAllAntecedentOWLFormulas();
 		List<OWLFormula> sortedexprs = new ArrayList<>(exprs);
 		Comparator<OWLFormula> c = new OWLFormulaComparator();
 		sortedexprs.sort(c);
 		int i = 0;
 		for (OWLFormula form : sortedexprs){
-			System.out.println(i + ": " + form.prettyPrint() + " {" + getFormulaDepth(antecedentFormulaGetID(form)) + "}");
+//			System.out.println(i + ": " + form.prettyPrint() + " {" + getFormulaDepth(antecedentFormulaGetID(form)) + "}");
 			i++;
 		}
-		System.out.println("\n");
+//		System.out.println("\n");
 	}
 	
 	/* ==== AMPUTATION === */

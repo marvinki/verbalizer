@@ -17,27 +17,15 @@
 
 package org.semanticweb.cogExp.ProofBasedExplanation;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/*
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-*/
-
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 public enum WordnetTmpdirManager {
 	INSTANCE;
@@ -99,10 +87,10 @@ public enum WordnetTmpdirManager {
 		ucl.close();
 		*/
 		
-		System.out.println("input " + input);
+//		System.out.println("input " + input);
 		
 		if (input1==null){
-			System.out.println("NULL!!!!");
+//			System.out.println("NULL!!!!");
 			
 			/*
 			System.out.println(FrameworkUtil.getBundle(WordnetTmpdirManager.INSTANCE.getClass()));
@@ -114,8 +102,8 @@ public enum WordnetTmpdirManager {
 		}
 		File target1 = new File(output);
 		target1.createNewFile();
-		System.out.println("input " + input);
-		System.out.println("copying file " + input1 + " to " + target1);
+//		System.out.println("input " + input);
+//		System.out.println("copying file " + input1 + " to " + target1);
 		copyFileUsingStream(input1,target1);
 		input1.close();
 	}

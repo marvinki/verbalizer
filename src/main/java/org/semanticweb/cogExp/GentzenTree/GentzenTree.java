@@ -23,12 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
-import org.semanticweb.cogExp.core.SequentInferenceRule;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
 import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLAxiomVisitor;
+import org.semanticweb.cogExp.core.SequentInferenceRule;
+import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 
 public class GentzenTree {
@@ -94,7 +94,7 @@ public class GentzenTree {
 			// System.out.println("DEBUG -- considering premise formulas " + prem);
 			/*
 			if (infrule.equals(AdditionalDLRules.ONLYSOME))
-				System.out.println("DEBUG -- considering premise formulas " + prem.prettyPrint());
+//				System.out.println("DEBUG -- considering premise formulas " + prem.prettyPrint());
 				*/
 			if (!formulas.contains(prem))
 				formulas.add(prem);
@@ -193,7 +193,7 @@ public class GentzenTree {
 					// System.out.println(premises);
 					/*
 					for (int k : premises){
-						System.out.println(VerbalisationManager.prettyPrint(formulas.get(k)));
+//						System.out.println(VerbalisationManager.prettyPrint(formulas.get(k)));
 					}
 					*/
 					// System.out.println(conclusion.getArgs().get(0));
@@ -401,7 +401,7 @@ public class GentzenTree {
 						int tmp3 = nodelabel.indexOf("&#x2293;",i+2);
 						int tmp4 = nodelabel.indexOf("&#x2294;",i+2);
 
-						System.out.println("i " + i + " tmp1 " + tmp1 + " tmp2 " + tmp2 + " tmp3 " + tmp3 + " tmp4 " + tmp4 + " i " + i);
+//						System.out.println("i " + i + " tmp1 " + tmp1 + " tmp2 " + tmp2 + " tmp3 " + tmp3 + " tmp4 " + tmp4 + " i " + i);
 
 						if (tmp1<skip) 
 							tmp1=5000;
@@ -413,7 +413,7 @@ public class GentzenTree {
 							tmp4=5000;
 						int min = Math.min(tmp1,Math.min(tmp2,Math.min(tmp3,tmp4)));
 
-						System.out.println("min " + min); 
+//						System.out.println("min " + min); 
 
 						if (min<5000 && min>skip){
 							nodelabel = nodelabel.substring(0, min) + "\n" +  nodelabel.substring(min, nodelabel.length());

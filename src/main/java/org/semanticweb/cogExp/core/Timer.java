@@ -18,7 +18,6 @@
 package org.semanticweb.cogExp.core;
 
 import java.util.HashMap;
-import java.util.Set;
 
 public enum Timer {
 	INSTANCE;
@@ -49,10 +48,10 @@ public enum Timer {
 		}
 		
 		public void report(){
-			Set<String> keys = timings.keySet();
-			for(String k : keys){
-				System.out.println(k + " " + timings.get(k));
-		}
+//			Set<String> keys = timings.keySet();
+//			for(String k : keys){
+//				System.out.println(k + " " + timings.get(k));
+//		}
 		}
 		
 

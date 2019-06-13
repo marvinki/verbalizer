@@ -17,9 +17,7 @@
 
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 
 // import org.semanticweb.cogExp.ErrorWriter;
 
@@ -191,10 +189,10 @@ public enum WordNetQuery {
 		for (int i = 0; i < synsets.length; i++) {
 			Synset synSet = synsets[i];
 			String[] usageExample = synSet.getUsageExamples();
-			System.out.println(Arrays.toString(usageExample));
+//			System.out.println(Arrays.toString(usageExample));
 		}
 		int[] types = getTypes("person");
-		System.out.println(Arrays.toString(types));
+//		System.out.println(Arrays.toString(types));
 	}
 	
 	public boolean isKnown(String str){

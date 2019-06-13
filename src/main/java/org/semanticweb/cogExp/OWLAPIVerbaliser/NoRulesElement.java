@@ -17,11 +17,6 @@
 
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
 // import org.protege.editor.owl.OWLEditorKit;
@@ -47,8 +42,8 @@ public class NoRulesElement extends TextElement{
 	 * @param explanation is added at the end
 	 */
 	public NoRulesElement(String explanation) {
-		ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
-		this.content = LogicLabels.getString("thatsAlreadyStated") + explanation;
+//		ResourceBundle LogicLabels = ResourceBundle.getBundle("LogicLabels", VerbaliseTreeManager.locale);
+		this.content = VerbaliseTreeManager.INSTANCE.getLogicLabels().getString("thatsAlreadyStated") + explanation;
 	}
 	
 

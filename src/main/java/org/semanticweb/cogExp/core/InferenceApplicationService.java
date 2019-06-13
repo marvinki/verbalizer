@@ -17,18 +17,16 @@
 
 package org.semanticweb.cogExp.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 
@@ -85,7 +83,7 @@ public List<RuleBindingForNode> findRuleBindingsWhereInferenceApplicableDepthLim
 		// Optimization! This is one difference to above!
 		Sequent amputatedSequent = sequent.amputateDepth(bfslevel);
 		// Sequent amputatedSequent = sequent;
-		System.out.println("amputated sequent, depth " + bfslevel + " "+ sequent);
+//		System.out.println("amputated sequent, depth " + bfslevel + " "+ sequent);
 		List<RuleBinding> bindings = new ArrayList<RuleBinding>();
 		// System.out.println("DEBUG (Inference appl.): before getting bindings in findRuleBindingsWhereInferenceApplicable");
 		if (saturation.length>0){ 
@@ -302,12 +300,12 @@ public void applySequentInferenceRule(ProofTree tree, RuleBindingForNode binding
 	}
 	// System.out.println(premiseSequents.getSequents());
 	if (premiseSequents == null || premiseSequents.getSequents().size()==0){
-		System.out.println("STH WICKED HAPPENED");
-		System.out.println("-- rule: " + rule.getName());
+//		System.out.println("STH WICKED HAPPENED");
+//		System.out.println("-- rule: " + rule.getName());
 		throw new UselessInferenceException();
 	}
 	if (premiseSequents == null || premiseSequents.getSequents().size()==0) throw new UselessInferenceException();
-	if (premiseSequents.getSequents().get(0).equals(sequent)){System.out.println("FOO " + premiseSequents.getSequents().get(0) + " AND " + sequent);}
+//	if (premiseSequents.getSequents().get(0).equals(sequent)){System.out.println("FOO " + premiseSequents.getSequents().get(0) + " AND " + sequent);}
 	if (premiseSequents.getSequents().get(0).equals(sequent)){throw new UselessInferenceException();}
 	// this is the case where a termination axiom has applied
 		if (premiseSequents.getSequents().size()==1 && 
@@ -461,7 +459,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		List<ProofTree> resulttrees = new ArrayList();
 		// loop for rules
 		for (SequentInferenceRule rule : rules){
-			if (rule.getName()=="SubClassLeftSequent") {System.out.println("subclass left sequent is being tried");}
+//			if (rule.getName()=="SubClassLeftSequent") {System.out.println("subclass left sequent is being tried");}
 			 // System.out.println(rule.getName()); //
 			 // List<SequentPositionInNode> positions = findPositionsWhereInferenceApplicable(tree, rule);
 			 List<RuleBindingForNode> bindings = findRuleBindingsWhereInferenceApplicable(tree, rule);
@@ -489,7 +487,9 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 						 }
 					 }
 					 resulttrees.add(newtree);
-				 } catch (UselessInferenceException e){System.out.println("caught");}
+				 } catch (UselessInferenceException e){
+//				     System.out.println("caught");
+				 }
 			 } // end loop for positions
 		}	// end loop for rules
 		// System.out.println("exit");
@@ -506,7 +506,9 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			ProofTree currenttree = queue.poll();
 			nodecounter++;
 			List<ProofTree> next = computeAllNextSteps(currenttree,rules,queue);
-			if (next.size()==0 || next.get(0)==null){System.out.println("Dead end");}
+			if (next.size()==0 || next.get(0)==null){
+//			    System.out.println("Dead end");
+			}
 			else{ 
 			ProofTree elem = next.get(0);
 			// next = new ArrayList<ProofTree>();
@@ -514,19 +516,19 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			// System.out.println("Next size " + next.size());
 			for (ProofTree tree: next){
 				if (tree.getOpenNodes().size() == 0){
-					System.out.println();
-					System.out.println("Heureka, after stepping through " + nodecounter + " search nodes, finally found a proof!");
-					System.out.println();
+//					System.out.println();
+//					System.out.println("Heureka, after stepping through " + nodecounter + " search nodes, finally found a proof!");
+//					System.out.println();
 					long endtime = System.currentTimeMillis();
-					System.out.println("Time taken was " + (endtime - starttime) + "ms.");
+//					System.out.println("Time taken was " + (endtime - starttime) + "ms.");
 					return tree;
 				} // endif
 				// UNCOMMENT FOR DEBUG
 				//  tree.print();
-				 System.out.println();
+//				 System.out.println();
 				if (nodecounter > limit){
 					long endtime = System.currentTimeMillis();
-					System.out.println("Unsuccessful. Time taken was " + (endtime - starttime) + "ms.");
+//					System.out.println("Unsuccessful. Time taken was " + (endtime - starttime) + "ms.");
 					return null;
 					}
 				queue.offer(tree);
@@ -542,7 +544,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		ProofTree oneresult = null;
 		List<ProofTree> results = computeAllNextSteps(tree, rules, new LinkedList<ProofTree>());
 		if (!(results==null) || results.size()==0){
-			System.out.println("got a next step");
+//			System.out.println("got a next step");
 			oneresult = results.get(0);
 			oneresult.print();
 		}
@@ -740,7 +742,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 				// System.out.println("BFS LEVEL NOW: " + bfsLevel);
 				/// HACKY!
 				if (bfsLevel > 30){
-					System.out.println("simpleLoop: Reached BFS bounds.");
+//					System.out.println("simpleLoop: Reached BFS bounds.");
 					return initialtree;
 				}
 				// 
@@ -862,7 +864,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 							e.printStackTrace();
 						}
 						if (!seqnew_check.alreadyContainedInAntecedent(rbnewfn.getNewAntecedent())){
-							System.out.println("reported not to be contained");
+//							System.out.println("reported not to be contained");
 							throw new RuntimeException();
 						}
 						boolean notin = true;
@@ -873,7 +875,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 						}
 						}
 						if (notin){
-							System.out.println("not in list");
+//							System.out.println("not in list");
 							throw new RuntimeException();
 						}
 					} // end sanity checks
@@ -932,7 +934,7 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 		
 		long endtime = System.currentTimeMillis();
 		if (System.currentTimeMillis()-starttime >timelimit){
-			System.out.println("simpleLoop: Timelimit reached");
+//			System.out.println("simpleLoop: Timelimit reached");
 		} 
 		// System.out.println("Time taken was " + (endtime - starttime) + "ms.");
 					return null;
@@ -1050,9 +1052,9 @@ public void applySequentInferenceRuleToFillGap(ProofTree tree, RuleBindingForNod
 			// initialtree.sequentDeltaPrint();
 			limit--;
 		}
-		System.out.println("Remaining open nodes: "+ initialtree.getOpenNodes().size());
+//		System.out.println("Remaining open nodes: "+ initialtree.getOpenNodes().size());
 		long endtime = System.currentTimeMillis();
-		System.out.println("Time taken was " + (endtime - starttime) + "ms.");
+//		System.out.println("Time taken was " + (endtime - starttime) + "ms.");
 					return null;
 	}
 	
