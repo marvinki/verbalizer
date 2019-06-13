@@ -2973,7 +2973,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							} // end second loop
 						} // end formula 1 loop
 						// System.out.println("DEBUG === results " + results);		
-//						System.out.println("AND-I: " + results.size());
+						// System.out.println("AND-I: " + results.size());
 						return results;
 					}
 					

@@ -40,6 +40,7 @@ import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owl.explanation.api.ExplanationGenerator;
 import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
 import org.semanticweb.owl.explanation.api.ExplanationManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -60,6 +61,7 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
@@ -81,7 +83,6 @@ public enum VerbalisationManager {
     
 //	static final TextElementOWLObjectVisitor textOWLObjectVisit = new TextElementOWLObjectVisitor();
 	static final SentenceOWLObjectVisitor sentenceOWLObjectVisit = new SentenceOWLObjectVisitor();
-	
 	static final PrettyPrintClassExpressionVisitor ppCEvisit = new PrettyPrintClassExpressionVisitor();
 	static final PrettyPrintOWLAxiomVisitor ppOAvisit = new PrettyPrintOWLAxiomVisitor();
 	static final PrettyPrintOWLObjectVisitor ppOOvisit = new PrettyPrintOWLObjectVisitor();
@@ -127,6 +128,8 @@ public enum VerbalisationManager {
 	
 
 	public static TextElementSequence textualise(OWLObject ob) {
+		// System.out.println("textualise called with " + ob);
+		// System.out.println(ob.accept(sentenceOWLObjectVisit));
 		TextElementSequence seq = new TextElementSequence(ob.accept(sentenceOWLObjectVisit).toList());
 		if(verbalisationManagerdebug) seq.add(new LogicElement("textualise(OWLObject ob)"));
 		return seq;
@@ -285,6 +288,7 @@ public enum VerbalisationManager {
 				if (sentenceOWLObjectVisit.getObfuscator() != null) {
 					result = sentenceOWLObjectVisit.getObfuscator().obfuscateRole(result);
 				}
+				// System.out.println("returning __ (2) " + str);
 				return result;
 			}
 			// collect annotation axioms
@@ -327,9 +331,6 @@ public enum VerbalisationManager {
 						OWLLiteral literal = OWLAPICompatibility.getLiteral(axiom); // axiom.getAnnotation().getValue().asLiteral().get();
 								
 						str = literal.getLiteral();
-						
-						
-						// str = axiom.getAnnotation().getValue().toString();
 					}
 				}
 			}
@@ -341,6 +342,7 @@ public enum VerbalisationManager {
 				str = sentenceOWLObjectVisit.getObfuscator()
 						.obfuscateRole(property.getNamedProperty().getIRI().getFragment());
 			}
+			// System.out.println("returning __(1) " + str);
 			return str;
 		}
 		// remove language tags
@@ -439,8 +441,6 @@ public enum VerbalisationManager {
 						OWLLiteral literal = OWLAPICompatibility.getLiteral(axiom); //  axiom.getAnnotation().getValue().asLiteral().get();
 						str = literal.getLiteral();
 						
-						
-						// str = axiom.getAnnotation().getValue().toString();
 					}
 				}
 			}
@@ -608,10 +608,12 @@ public enum VerbalisationManager {
 			// hey, we certainly got a feature!
 			VerbalisationManager.INSTANCE.featureRoleAgg = true;
 		}
-
+		
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(property);
+		// System.out.println(" textualisePropertyAsSentence called (2) " + propstring + " property " + property);
 		// check case where string contains a pattern.
 		if (propstring.indexOf("[X]") >= 0) {
+			// System.out.println("if part");
 			String part1 = VerbalisationManager.INSTANCE.getPropertyNLStringPart1(property);
 			String part2 = VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
 			if (part1.endsWith(" ")) {
@@ -620,6 +622,7 @@ public enum VerbalisationManager {
 			if (part2.startsWith(" ")) {
 				part2 = part2.substring(1, part2.length());
 			}
+			// System.out.println("if part (1)");
 			result.setPraedikat(new RoleElement(part1)); // += part1;
 			if (part2.equals("") && part1.equals("") || part1 == null && part2 == null) {
 				result.setPraedikat(new RoleElement(
@@ -649,9 +652,6 @@ public enum VerbalisationManager {
 			}
 			result.setObjekt(new RoleElement(p2));
 		}
-		// result +=
-		// VerbalisationManager.INSTANCE.getPropertyNLStringPart2(property);
-
 		return result.getSentence();
 	}
 	
@@ -1894,7 +1894,6 @@ public enum VerbalisationManager {
 		// System.out.println("checking axiom " + axiom);
 		// BRANCH FOR DIFFERENT TYPES OF AXIOMS
 
-		// System.out.println("DBG: before generating explanation");
 		if (axiom instanceof OWLSubClassOfAxiom || axiom instanceof OWLObjectPropertyDomainAxiom
 				|| axiom instanceof OWLClassAssertionAxiom) {
 			Set<Explanation<OWLAxiom>> explanations = gen.getExplanations(axiom, 1);
@@ -1926,14 +1925,17 @@ public enum VerbalisationManager {
 			for (OWLAxiom ax : explanation) {
 				// System.out.println("DEBUG --- Trying to add " + ax);
 				justificationFormulas.add(ConversionManager.fromOWLAPI(ax));
-
-				// System.out.println("VerbalisationManager: adding (1): " + ax);
-				// System.out.println("VerbalisationManager: adding (2): " +
-//				  ConversionManager.fromOWLAPI(ax).prettyPrint());
-				// System.out.println("VerbalisationManager: adding (3): " +
-//				  VerbalisationManager.textualise(ax).toString());
+				/*
+				System.out.println("VerbalisationManager: adding (1): " +
+						  ax);
+				System.out.println("VerbalisationManager: adding (2): " +
+				  ConversionManager.fromOWLAPI(ax).prettyPrint());
+				System.out.println("VerbalisationManager: adding (3): " +
+				  VerbalisationManager.textualise(ax).toString());
+				  */
 			}
 		} catch (Exception e) {
+			System.out.println("exception hit");
 			return null;
 		}
 
@@ -2273,6 +2275,22 @@ public enum VerbalisationManager {
 			// System.out.println("reading element (2): " + e2);
 		}
 		return input;
+	}
+	
+	public static void verbalizeAllOntologyAxioms(String ontologypath){
+		File ontologyfile = new java.io.File(ontologypath);
+		try {
+			OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);
+			Set<OWLAxiom> axioms = ontology.getAxioms();
+			for (OWLAxiom ax : axioms){
+				TextElementSequence tes = textualise(ax);
+				System.out.println(tes.toString());
+			}
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

@@ -431,7 +431,6 @@ public enum VerbaliseTreeManager {
 					// System.out.println(previousconclusion);
 					// System.out.println(before_previousconclusion);
 					// System.out.println(premiseformulas);
-					// System.out.println("{{{{{{");
 					if(premiseformulas.contains(previousconclusion)
 						&& 	premiseformulas.contains(before_previousconclusion) || premiseformulas.size()==2 // this is unlike in the paper!
 							){
