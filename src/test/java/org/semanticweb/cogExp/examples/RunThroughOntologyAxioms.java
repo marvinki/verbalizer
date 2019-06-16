@@ -10,7 +10,7 @@ public class RunThroughOntologyAxioms {
 	
 	public static void main(String[] args){
 	
-		VerbaliseTreeManager.setLocale(Locale.ENGLISH);	
+		VerbaliseTreeManager.INSTANCE.init(Locale.ENGLISH);	
 		List<String> sts = VerbalisationManager.verbalizeAllOntologyAxiomsAsStrings("U:\\project\\HI-013\\sparql_output.ttl");
 		for (String st:sts){
 			 System.out.println(st);
