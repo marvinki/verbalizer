@@ -19,7 +19,6 @@ package org.semanticweb.cogExp.inferencerules;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -29,7 +28,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.semanticweb.cogExp.OWLFormulas.OWLAtom;
+import org.semanticweb.cogExp.OWLFormulas.OWLClassName;
+import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
+import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
+import org.semanticweb.cogExp.OWLFormulas.TermTree;
 import org.semanticweb.cogExp.core.AbstractSequentPositions;
+import org.semanticweb.cogExp.core.AlreadyTriedCache;
 import org.semanticweb.cogExp.core.IncrementalSequent;
 import org.semanticweb.cogExp.core.InferenceApplicationService;
 import org.semanticweb.cogExp.core.JustificationNode;
@@ -46,15 +51,6 @@ import org.semanticweb.cogExp.core.SequentPart;
 import org.semanticweb.cogExp.core.SequentPosition;
 import org.semanticweb.cogExp.core.SequentSinglePosition;
 import org.semanticweb.cogExp.core.Timer;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.cogExp.core.AlreadyTriedCache;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
-import org.semanticweb.cogExp.OWLFormulas.OWLAtom;
-import org.semanticweb.cogExp.OWLFormulas.OWLClassName;
-import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
-import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
-import org.semanticweb.cogExp.OWLFormulas.TermTree;
 
 
 public enum INLG2012NguyenEtAlRules implements SequentInferenceRule{
@@ -2316,7 +2312,7 @@ RULE11{ //SubCla(X,\exists r. Y) and SubCla((>1,r,Y),Z) --> SubCla(X,Z)
 				// System.out.println("candidates2 " + candidates2);
 				}
 				catch (Exception e){
-					System.out.println(" Rule 12: this should not happen");
+//					System.out.println(" Rule 12: this should not happen");
 				}
 				for (int j = 0 ; j < candidates2.size(); j++){
 					OWLFormula cand1 = cand;
@@ -2514,7 +2510,7 @@ RULE11{ //SubCla(X,\exists r. Y) and SubCla((>1,r,Y),Z) --> SubCla(X,Z)
 									candidates2 = s.findMatchingFormulasInAntecedent(prem_2);	
 								}
 								catch (Exception e){
-									System.out.println(" Rule 12: this should not happen");
+//									System.out.println(" Rule 12: this should not happen");
 								} // end try-catch
 								// System.out.println(cands + " matched with " + candidates2);
 							bins.put(cands.getArgs().get(1),candidates2);
@@ -3255,7 +3251,7 @@ RULE14{
 				// System.out.println("candidates2 " + candidates2);
 				}
 				catch (Exception e){
-					System.out.println(" Rule 15: this should not happen");
+//					System.out.println(" Rule 15: this should not happen");
 					e.printStackTrace();
 				}
 				for (int j = 0 ; j < candidates2.size(); j++){
@@ -5292,7 +5288,7 @@ RULE34semiold{ // SubCla(X,Y) and disjoint(X,Y) --> SubCla(X,\bot)
 				for (OWLFormula cand2: candidates2b){
 					// build conclusion formula
 					OWLFormula conclusion = OWLFormula.createFormula(OWLSymb.SUBCL, cand.getArgs().get(0),OWLFormula.createFormulaBot());
-					System.out.println("building conclusion R34 " + conclusion);
+//					System.out.println("building conclusion R34 " + conclusion);
 					if (!s.alreadyContainedInAntecedent(conclusion)){
 						RuleBinding binding = new RuleBinding(conclusion,null);
 						SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, s.antecedentFormulaGetID(cand));
@@ -5303,7 +5299,7 @@ RULE34semiold{ // SubCla(X,Y) and disjoint(X,Y) --> SubCla(X,\bot)
 					}
 				}
 			}
-			System.out.println("Rule 34 results " + results);
+//			System.out.println("Rule 34 results " + results);
 			return results;
 		}
 			
@@ -5333,7 +5329,7 @@ RULE34semiold{ // SubCla(X,Y) and disjoint(X,Y) --> SubCla(X,\bot)
 			RuleApplicationResults result = new RuleApplicationResults();
 			result.setOriginalFormula(sequent);
 			result.addAddition("A1",conclusionformula);
-			System.out.println("CONCL R34 : " + conclusionformula);
+//			System.out.println("CONCL R34 : " + conclusionformula);
 			results.add(result);
 			result.setMaxFormulaDepth(InferenceApplicationService.computeRuleBindingMaxDepth(sequent, binding));
 			return results;
@@ -5867,7 +5863,7 @@ RULE37{ // SubCla(X,\exists r0.Y)  and SubProp(r0,r1) --> SubCla(X,\exists r1.Y)
 				}
 			}
 			else {
-				System.out.println("Something bad happened!");
+//				System.out.println("Something bad happened!");
 			
 			}
 			return results;
@@ -6934,7 +6930,7 @@ RULE48{ // SubCla(X, \forall r0.Y)  and InvObjProp(r1,r0) --> SubCla(\exists r1.
 	
 	@Override
 	public List<RuleBinding> findRuleBindings(Sequent s){
-		System.out.println("DEBUG -- entered deprecated method");
+//		System.out.println("DEBUG -- entered deprecated method");
 		List<SequentPosition> positions = findPositions(s);
 		ArrayList<RuleBinding> bindings = new ArrayList<RuleBinding>();
 		for (SequentPosition pos: positions){

@@ -20,8 +20,6 @@ package org.semanticweb.cogExp.OWLAPIVerbaliser;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JLabel;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 // import org.protege.editor.owl.OWLEditorKit;
@@ -185,7 +183,7 @@ public class TextElementSequence extends TextElement{
 			return;
 		start = sequence.get(0);
 		String str = start.content;
-		str= VerbaliseTreeManager.makeUppercaseStart(str);
+		str= VerbaliseTreeManager.INSTANCE.makeUppercaseStart(str);
 		start.content = str;
 	}
 	
@@ -253,9 +251,6 @@ public class TextElementSequence extends TextElement{
 		// JSONObject result = new JSONObject();
 		int itemcounter = 0;
 		for (TextElement element : sequence){
-			
-			// System.out.println("dealing with " + element + " " + element.getClass());
-			
 			if (element instanceof ClassElement){
 				ClassElement classElement = (ClassElement) element;
 				String classDescription = classElement.toString();
@@ -322,7 +317,7 @@ public class TextElementSequence extends TextElement{
 		String result = "";		
 		for (TextElement element : sequence){
 			
-			System.out.println("toWikiFormat dealing with " + element + " " + element.getClass());
+//			System.out.println("toWikiFormat dealing with " + element + " " + element.getClass());
 			
 			if (element instanceof ClassElement){
 				ClassElement classElement = (ClassElement) element;

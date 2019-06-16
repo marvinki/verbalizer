@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>verbalizer</groupId>
+	<groupId>org.semanticweb.cogexp</groupId>
 	<artifactId>verbalizer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>verbalizer</name>
@@ -29,10 +29,10 @@
 			<name>jitpack</name>
 			<url>https://jitpack.io</url>
 		</repository>
-		<repository>
+<!-- 		<repository>
 			<id>org.topbraid</id>
 			<url>http://topquadrant.com/repository/spin</url>
-		</repository>
+		</repository> -->
 	</repositories>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
@@ -40,7 +40,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.3</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -120,12 +120,12 @@
 			<version>1.2.3</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>jfact</artifactId>
 			<version>1.0.0</version>
-			<!-- <scope>test</scope> -->
-		</dependency>
+			<scope>test</scope>
+		</dependency> -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
@@ -133,11 +133,11 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<!-- https://mvnrepository.com/artifact/org.json/json -->  
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20160810</version>
+			<version>20180318</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
@@ -145,12 +145,12 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.0</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.topbraid</groupId>
 			<artifactId>spin</artifactId>
 			<version>2.0.0</version>
-		</dependency>
-		<dependency>
+		</dependency> -->
+<!-- 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>apache-jena-libs</artifactId>
 			<type>pom</type>
@@ -177,17 +177,17 @@
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-iri</artifactId>
 			<version>3.4.0</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
     	<groupId>org.semanticweb.elk</groupId>
     	<artifactId>elk-reasoner</artifactId>
     	<version>0.4.3</version>
     	</dependency>
     	<dependency>
-    <groupId>org.semanticweb.elk</groupId>
-    <artifactId>elk-owlapi</artifactId>
-    <version>0.4.3</version>
-</dependency>
+		    <groupId>org.semanticweb.elk</groupId>
+		    <artifactId>elk-owlapi</artifactId>
+		    <version>0.4.3</version>
+		</dependency>
 	</dependencies>
 
 

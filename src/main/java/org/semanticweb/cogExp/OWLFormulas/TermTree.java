@@ -74,7 +74,7 @@ public class TermTree {
 		// do not insert if formula is already present!
 		// System.out.println("Checking containment with tree " + this);
 		if (contains(formula)){
-			System.out.println("Formula already contained! " + formula);
+//			System.out.println("Formula already contained! " + formula);
 			return;
 		}
 		// System.out.println("TT Insert is inserting formula: " + formula);
@@ -629,8 +629,8 @@ public class TermTree {
 		if (formula==null)
 		{System.out.println("formula null");}
 		if (formulaToIDMapping.get(formula)==null){
-			System.out.println("Mapping " + formulaToIDMapping);
-			System.out.println("formulaGetID called with formula " + formula);
+//			System.out.println("Mapping " + formulaToIDMapping);
+//			System.out.println("formulaGetID called with formula " + formula);
 		}
 		int id = formulaToIDMapping.get(formula);
 		return id;

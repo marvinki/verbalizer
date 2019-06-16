@@ -1,13 +1,10 @@
 package org.semanticweb.cogExp.examples;
 import java.io.File;
-
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
 
 // import org.apache.log4j.Level;
 // import org.apache.log4j.Level;
@@ -17,24 +14,15 @@ import org.semanticweb.cogExp.GentzenTree.GentzenStep;
 import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
-import org.semanticweb.cogExp.OWLFormulas.OWLAtom;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
-import org.semanticweb.cogExp.core.RuleSetManager;
 import org.semanticweb.cogExp.core.SequentInferenceRule;
-import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
-import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
@@ -43,9 +31,6 @@ import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
 import org.slf4j.LoggerFactory;
-
-// import org.apache.log4j.Level;
-// import org.apache.log4j.LogManager;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -142,7 +127,7 @@ public class RunThroughExample {
                     // 	// WordNetQuery.INSTANCE.disableDict();
                     // String explanation = VerbalisationManager.computeVerbalization(tree, false, false,null);
                     // 	System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax) + "\":\n");
-			VerbaliseTreeManager.setLocale(Locale.ENGLISH);
+			VerbaliseTreeManager.INSTANCE.init(Locale.ENGLISH);
 		String explanation = VerbalisationManager.computeVerbalization(tree, false, false, null);
 		System.out.println("Explanation for \"" + VerbalisationManager.textualise(ax).toString() + "\":\n");
 

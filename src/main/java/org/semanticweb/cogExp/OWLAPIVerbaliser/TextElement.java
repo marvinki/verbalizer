@@ -17,10 +17,6 @@
 
 package org.semanticweb.cogExp.OWLAPIVerbaliser;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
@@ -111,7 +107,7 @@ public class TextElement {
 	}
 	
 	public void makeUppercase(){
-		content = VerbaliseTreeManager.makeUppercaseStart(content);
+		content = VerbaliseTreeManager.INSTANCE.makeUppercaseStart(content);
 		return;
 	}
 	

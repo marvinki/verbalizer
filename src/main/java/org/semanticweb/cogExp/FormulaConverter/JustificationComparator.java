@@ -27,7 +27,6 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
@@ -296,7 +295,7 @@ public class JustificationComparator {
 				idmap.put(emptyprop,emptyprop);
 				results.add(idmap);
 				// we have failed to produce a mapping
-				System.out.println(results);
+//				System.out.println(results);
 			}
 			
 			return results;
@@ -345,9 +344,9 @@ public class JustificationComparator {
 		
 		
 		List<List<Object>> results = generatePermutations(str);
-		for (List<Object> seq : results){
-			System.out.println(seq.toString());
-		}
+//		for (List<Object> seq : results){
+//			System.out.println(seq.toString());
+//		}
 		OWLDataFactory dataFactory=OWLManager.createOWLOntologyManager().getOWLDataFactory();
 	  	String ontologyuri = "http://www.semanticweb.org/dennis/ontologies/2013/9/complete-ontology-20#";
 	  	OWLClass AClass  = dataFactory.getOWLClass(IRI.create(ontologyuri + "AClass"));
@@ -396,26 +395,26 @@ public class JustificationComparator {
 		
 		Set<HashMap<OWLClass,OWLClass>> mappings = generateClassMappings(axioms1,axioms2);
 		
-		for (HashMap map : mappings){
-			System.out.println("MAPPING");
-			for (Object cl : map.keySet()){
-				System.out.println(" " + cl + map.get(cl));
-			}
-		}
+//		for (HashMap map : mappings){
+//			System.out.println("MAPPING");
+//			for (Object cl : map.keySet()){
+//				System.out.println(" " + cl + map.get(cl));
+//			}
+//		}
 		
 		Set<HashMap<OWLObjectProperty,OWLObjectProperty>> mappings2 = generatePropertyMappings(axioms1,axioms2);
 		
-		for (HashMap map : mappings2){
-			System.out.println("MAPPING");
-			for (Object cl : map.keySet()){
-				System.out.println(" " + cl + map.get(cl));
-			}
-		}
+//		for (HashMap map : mappings2){
+//			System.out.println("MAPPING");
+//			for (Object cl : map.keySet()){
+//				System.out.println(" " + cl + map.get(cl));
+//			}
+//		}
 		
 		HashMap<OWLClass,OWLClass> result = setsReplacementEqual(axioms1,axioms2);
-		 for (Object cl : result.keySet()){
-		 	System.out.println(" " + cl + result.get(cl));
-		 }
+//		 for (Object cl : result.keySet()){
+//		 	System.out.println(" " + cl + result.get(cl));
+//		 }
 		 
 		 Set<OWLAxiom> originalSet1 = new HashSet<OWLAxiom>();
 		 for (OWLObject ax : axioms1){
@@ -423,9 +422,9 @@ public class JustificationComparator {
 		 }
 		 
 		 Set<OWLAxiom> replaced = replaceClassnames(originalSet1,result);
-		for (OWLAxiom rep : replaced){
-			System.out.println(rep);
-		}
+//		for (OWLAxiom rep : replaced){
+//			System.out.println(rep);
+//		}
 		 
 		
 	}

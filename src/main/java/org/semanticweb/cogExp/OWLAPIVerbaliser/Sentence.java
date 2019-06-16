@@ -23,7 +23,6 @@ package org.semanticweb.cogExp.OWLAPIVerbaliser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 /**
  * @author fpaffrath
@@ -46,8 +45,8 @@ public class Sentence extends TextElementSequence{
 //	private String sentenceType = "default";
 	
 	
-	private Locale lang = VerbaliseTreeManager.locale;
-	// private ResourceBundle LogicLabels = VerbalisationManager.LogicLabels;
+//	private Locale lang = VerbaliseTreeManager.locale;
+	// private ResourceBundle LogicLabels = VerbaliseTreeManager.INSTANCE.getLogicLabels();
 	/**
 	 * 
 	 */
@@ -114,7 +113,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		if(sentenceMade) return;
 		//German Sentences
 		setOrder(SentenceOrder.noOrder);
-		if(lang == Locale.GERMAN){	
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.GERMAN)){	
 		
 				this.add(subjekt);
 				this.add(praedikat);
@@ -123,7 +122,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		}
 
 		//English Sentence
-		if(lang == Locale.ENGLISH){
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.ENGLISH)){
 	
 				this.add(subjekt);
 				this.add(praedikat);
@@ -199,9 +198,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		
 		setOrder(SentenceOrder.noOrder);
 		
-		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("AccordingToItsDefinition")));
+		this.add(new LogicElement(VerbaliseTreeManager.INSTANCE.getLogicLabels().getString("AccordingToItsDefinition")));
 		//German Sentences
-		if(lang == Locale.GERMAN){	
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.GERMAN)){	
 		 	this.add(praedikat);
 			this.add(subjekt);
 			this.add(objekt);
@@ -209,7 +208,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		}
 
 		//English Sentence
-		if(lang == Locale.ENGLISH){
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.ENGLISH)){
 			this.add(subjekt);
 			this.add(praedikat);
 			this.add(objekt);
@@ -227,9 +226,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		
 		setOrder(SentenceOrder.noOrder);
 		
-		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("thus")));
+		this.add(new LogicElement(VerbaliseTreeManager.INSTANCE.getLogicLabels().getString("thus")));
 		//German Sentences
-		if(lang == Locale.GERMAN){	
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.GERMAN)){	
 			this.add(praedikat);
 			this.add(subjekt);
 			this.add(objekt);
@@ -237,7 +236,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		}
 
 		//English Sentence
-		if(lang == Locale.ENGLISH){
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.ENGLISH)){
 			this.add(subjekt);
 			this.add(praedikat);
 			this.add(objekt);
@@ -256,7 +255,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		setOrder(SentenceOrder.noOrder);
 		
 		//German Sentences
-		if(lang == Locale.GERMAN){
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.GERMAN)){
 			this.add(subjekt);
 			this.add(objekt);
 			this.add(praedikat);
@@ -264,7 +263,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		}
 
 		//English Sentence
-		if(lang == Locale.ENGLISH){
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.ENGLISH)){
 			this.add(subjekt);
 			this.add(praedikat);
 			this.add(objekt);
@@ -282,9 +281,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		
 		setOrder(SentenceOrder.noOrder);
 		
-		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("since")));
+		this.add(new LogicElement(VerbaliseTreeManager.INSTANCE.getLogicLabels().getString("since")));
 		//German Sentences
-		if(lang == Locale.GERMAN){	
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.GERMAN)){	
 			this.add(subjekt);
 			this.add(objekt);
 			this.add(praedikat);
@@ -292,7 +291,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		}
 
 		//English Sentence
-		if(lang == Locale.ENGLISH){
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.ENGLISH)){
 			this.add(subjekt);
 			this.add(praedikat);
 			this.add(objekt);
@@ -309,18 +308,18 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		if(sentenceMade) return;
 		
 		setOrder(SentenceOrder.noOrder);	
-		this.add(new LogicElement(VerbalisationManager.LogicLabels.getString("byDefinitionItIs")));
+		this.add(new LogicElement(VerbaliseTreeManager.INSTANCE.getLogicLabels().getString("byDefinitionItIs")));
 		
 		//German Sentences
-		System.out.println("makebyDefinitionItIsSentence (2)");
-		if(lang == Locale.GERMAN){
+//		System.out.println("makebyDefinitionItIsSentence (2)");
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.GERMAN)){
 			// this.add(new LogicElement(", "));
 			this.add(new LogicElement(","));  // <-- spaces are added after all sentences automatically, no matter what language
 			this.add(subjekt);		
 		}
 
 		//English Sentence
-		if(lang == Locale.ENGLISH){
+		if(VerbaliseTreeManager.INSTANCE.getLocale().equals(Locale.ENGLISH)){
 			this.add(subjekt);
 		}	
 		
@@ -459,7 +458,7 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 		
 		// if (sentence==null || isEmpty(sentence) || sentence.size()<1){
 		if (this==null || this.size()<1){
-			System.out.println("null case");
+//			System.out.println("null case");
 			return null;
 		}
 		

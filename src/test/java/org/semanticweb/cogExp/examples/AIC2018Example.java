@@ -1,38 +1,20 @@
 package org.semanticweb.cogExp.examples;
 import java.io.File;
-
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import org.semanticweb.HermiT.Reasoner;
-// import org.apache.log4j.Level;
-// import org.apache.log4j.Level;
-// import org.apache.log4j.Logger;
-import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
-import org.semanticweb.cogExp.GentzenTree.GentzenStep;
-import org.semanticweb.cogExp.GentzenTree.GentzenTree;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPICompatibility;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementSequence;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
-import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
-import org.semanticweb.cogExp.core.RuleSetManager;
-import org.semanticweb.cogExp.core.SequentInferenceRule;
-import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
-import org.semanticweb.cogExp.inferencerules.INLG2012NguyenEtAlRules;
-import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLIndividualAxiom;
-import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
@@ -40,33 +22,10 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
-import org.semanticweb.owlapi.util.InferredAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredDataPropertyCharacteristicAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredDisjointClassesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentDataPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredIndividualAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredInverseObjectPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredObjectPropertyCharacteristicAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
-import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubDataPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubObjectPropertyAxiomGenerator;
-import org.slf4j.LoggerFactory;
-
-// import org.apache.log4j.Level;
-// import org.apache.log4j.LogManager;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import uk.ac.manchester.cs.jfact.JFactFactory;
 
 public class AIC2018Example {
 	
@@ -93,7 +52,7 @@ public class AIC2018Example {
 	
 	// Language setting
 	
-	VerbaliseTreeManager.setLocale(Locale.ENGLISH);
+	VerbaliseTreeManager.INSTANCE.init(Locale.ENGLISH);
 	
 	// OWLReasonerFactory reasonerFactory = new JFactFactory();
 	// SimpleConfiguration configuration = new SimpleConfiguration(50000);

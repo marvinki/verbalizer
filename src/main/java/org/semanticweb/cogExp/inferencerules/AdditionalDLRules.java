@@ -25,9 +25,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.semanticweb.cogExp.OWLFormulas.OWLAtom;
+import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
+import org.semanticweb.cogExp.OWLFormulas.OWLIndividualName;
+import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
 import org.semanticweb.cogExp.core.AbstractSequentPositions;
 import org.semanticweb.cogExp.core.HierarchNode;
 import org.semanticweb.cogExp.core.IncrementalSequent;
@@ -46,12 +50,6 @@ import org.semanticweb.cogExp.core.SequentList;
 import org.semanticweb.cogExp.core.SequentPart;
 import org.semanticweb.cogExp.core.SequentPosition;
 import org.semanticweb.cogExp.core.SequentSinglePosition;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
-import org.semanticweb.cogExp.OWLFormulas.OWLAtom;
-import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
-import org.semanticweb.cogExp.OWLFormulas.OWLIndividualName;
-import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
 
 public enum AdditionalDLRules implements SequentInferenceRule{
 
@@ -1012,9 +1010,9 @@ public List<RuleKind> qualifyRule(){
 							// System.out.println("DEFDOMAIN ADDING " + newant);
 						}
 					}
-					else{
-						System.out.println("ADDITIONAL RULES; THIS SHOULD NOT HAPPEN!");
-					}
+//					else{
+//						System.out.println("ADDITIONAL RULES; THIS SHOULD NOT HAPPEN!");
+//					}
 					return results;
 				}
 				
@@ -1108,12 +1106,12 @@ public List<RuleKind> qualifyRule(){
 									result.addAddition("A1",newant);
 									results.add(result);
 									result.setMaxFormulaDepth(InferenceApplicationService.computeRuleBindingMaxDepth(sequent, binding));
-									System.out.println("APPLRAN ADDING " + newant);
-									System.out.println(result.getMaxFormulaDepth());
+//									System.out.println("APPLRAN ADDING " + newant);
+//									System.out.println(result.getMaxFormulaDepth());
 								}
 							}
 							else{
-								System.out.println("ADDITIONAL RULES; THIS SHOULD NOT HAPPEN!");
+//								System.out.println("ADDITIONAL RULES; THIS SHOULD NOT HAPPEN!");
 							}
 							return results;
 						}
@@ -1676,14 +1674,14 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 											sub);
 									 // System.out.println("RULE5 generated binding with formula, before checking" + resultformula);
 									if (!s.alreadyContainedInAntecedent(resultformula)){
-										  System.out.println("RULE5BIN generated binding with formula !" + resultformula);
+//										  System.out.println("RULE5BIN generated binding with formula !" + resultformula);
 										 RuleBinding binding = new RuleBinding(resultformula,null);
 										 // produce correct positions, needed to find premises!
 										 boolean gotAllTargets = true;
 										 for (int j = 0; j<sub.getArgs().size(); j++){
 											 OWLFormula subbie = sub.getArgs().get(j);
 											 OWLFormula target = OWLFormula.createFormula(OWLSymb.SUBCL, lefthands.get(i),subbie);
-											 System.out.println(" target " + target);
+//											 System.out.println(" target " + target);
 											 List<OWLFormula> candidatesTarget = s.findMatchingFormulasInAntecedent(target);
 											 if (candidatesTarget.size()==0){
 												 // System.out.println("zero!");
@@ -1692,7 +1690,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 											 }
 											 List<Integer> list = new ArrayList<Integer>();
 											 list.add(s.antecedentFormulaGetID(candidatesTarget.get(0)));
-											 System.out.println("found target " + candidatesTarget.get(0));
+//											 System.out.println("found target " + candidatesTarget.get(0));
 											 SequentPosition position1 = new SequentSinglePosition(SequentPart.ANTECEDENT, list);
 											 binding.insertPosition("A" + (j+1), position1);
 											 if (j>1){
@@ -1705,8 +1703,8 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 										 //  System.out.println(binding);
 										 // System.out.println(resultformula);
 										 if (gotAllTargets){
-											 System.out.println("got all");
-											 System.out.println(binding);
+//											 System.out.println("got all");
+//											 System.out.println(binding);
 											 resultsPre.add(binding);
 										 }
 									}					
@@ -2679,7 +2677,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 						List<OWLFormula> candidates1 = s.findMatchingFormulasInAntecedent(prem1);
 						
 						for (int i = 0 ; i < candidates1.size(); i++){
-							System.out.println("prem_1: " + candidates1.get(i));
+//							System.out.println("prem_1: " + candidates1.get(i));
 						    List<OWLFormula> candidates2 = new ArrayList<OWLFormula>();
 							// get matcher 
 							try{
@@ -2687,7 +2685,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							
 							// now build new formula using the matcher
 							OWLFormula prem_2 = prem2.applyMatcher(matcher);
-							System.out.println("prem_2: " + prem_2);
+//							System.out.println("prem_2: " + prem_2);
 							
 							// now search for this formula in sequent
 							candidates2 = s.findMatchingFormulasInAntecedent(prem_2);
@@ -2697,7 +2695,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 								matcher2.addAll(matcher);
 								
 								OWLFormula prem_3 = prem3.applyMatcher(matcher2);
-								System.out.println("prem_3: " + prem_3);
+//								System.out.println("prem_3: " + prem_3);
 								
 								    List<OWLFormula> candidates3 = new ArrayList<OWLFormula>();
 								    candidates3 = s.findMatchingFormulasInAntecedent(prem_3);
@@ -2709,7 +2707,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 									matcher3.addAll(matcher2);					
 											
 									OWLFormula conclusion = result.applyMatcher(matcher3);	
-									System.out.println("OBJPROPASSERIONEXISTS conclusion: " + conclusion);
+//									System.out.println("OBJPROPASSERIONEXISTS conclusion: " + conclusion);
 									// System.out.println(s.alreadyContainedInAntecedent(conclusion));
 									if (!s.alreadyContainedInAntecedent(conclusion)){
 										RuleBinding binding = new RuleBinding(conclusion,null);																						
@@ -2806,7 +2804,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							
 							// now build new formula using the matcher
 							OWLFormula prem_2 = prem2.applyMatcher(matcher);
-							System.out.println("prem_2: " + prem_2);
+//							System.out.println("prem_2: " + prem_2);
 							
 							// now search for this formula in sequent
 							candidates2 = s.findMatchingFormulasInAntecedent(prem_2);
@@ -2929,8 +2927,8 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 								if (candidates1.get(i).getArgs().get(1).equals(candidates1.get(j).getArgs().get(1)))
 								{
 									
-									System.out.println("candidates1.get(i) " +candidates1.get(i));
-									System.out.println("candidates2.get(j) "+ candidates1.get(j));
+//									System.out.println("candidates1.get(i) " +candidates1.get(i));
+//									System.out.println("candidates2.get(j) "+ candidates1.get(j));
 									
 								OWLFormula conclusion1 = OWLFormula.createFormula(OWLSymb.CLASSASSERTION,
 										OWLFormula.createFormula(OWLSymb.INT,
@@ -2943,7 +2941,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 										candidates1.get(j).getArgs().get(0))))
 									continue;
 								
-								System.out.println("ANDI proposing : " + conclusion1);
+//								System.out.println("ANDI proposing : " + conclusion1);
 												
 									if (!s.alreadyContainedInAntecedent(conclusion1)){
 										RuleBinding binding = new RuleBinding(conclusion1,null);																						
@@ -3095,9 +3093,9 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							for (OWLFormula subexpr : subexprs){
 								// System.out.println("Examining " + subexprs);
 								if (subexpr.getHead().equals(OWLSymb.ONEOF)){
-									System.out.println("Examining  oneof " + subexpr);
+//									System.out.println("Examining  oneof " + subexpr);
 									OWLFormula conclusion = OWLFormula.createFormula(OWLSymb.CLASSASSERTION,subexpr,subexpr.getArgs().get(0));
-									System.out.println("Proposing " + conclusion);
+//									System.out.println("Proposing " + conclusion);
 									if (!s.alreadyContainedInAntecedent(conclusion) 
 											){
 											RuleBinding binding = new RuleBinding(conclusion,null);
@@ -3402,10 +3400,10 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 							sequent.removeOWLFormulaFromAntecedent((OWLFormula) formula);
 						} else
 						{
-							System.out.println("SOMETHING WENT QUITE WRONG");
+//							System.out.println("SOMETHING WENT QUITE WRONG");
 						}
 						} else {
-							System.out.println("SOMETHING WENT QUITE WRONG");	
+//							System.out.println("SOMETHING WENT QUITE WRONG");	
 						}
 					} // endif
 			// additions
@@ -3428,7 +3426,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 				} else{
 				try {
 					// sequent.addAntecedent(formula);
-					System.out.println("SOMETHING WENT QUITE WRONG");	
+//					System.out.println("SOMETHING WENT QUITE WRONG");	
 				} catch (Exception e) {
 					//  Auto-generated catch block
 					e.printStackTrace();
@@ -3436,7 +3434,7 @@ TRANSOBJECTPROPERTY{ // transitive(rel) and SubCla(A,exists rel.B) and SubCla(B,
 		}else {
 				try {
 					// sequent.addSuccedent(formula);
-					System.out.println("SOMETHING WENT QUITE WRONG");	
+//					System.out.println("SOMETHING WENT QUITE WRONG");	
 				} catch (Exception e) {
 					//  Auto-generated catch block
 					e.printStackTrace();

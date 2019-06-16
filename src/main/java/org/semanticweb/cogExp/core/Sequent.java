@@ -17,16 +17,17 @@
 
 package org.semanticweb.cogExp.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Set;
 
-import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
-import org.semanticweb.cogExp.OWLFormulas.*;
+import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
+import org.semanticweb.cogExp.OWLFormulas.OWLFormulaComparator;
+import org.semanticweb.cogExp.OWLFormulas.TermTree;
 
 
 public class Sequent<FormulaType> {
@@ -163,7 +164,7 @@ public class Sequent<FormulaType> {
 		// System.out.println("sequent add called (1)");
 		// System.out.println("DBG ADDANT DELEGATE CALLED (2) ");
 		if (formula==null){
-			System.out.println("we are about to throw an exception for " + formula);
+//			System.out.println("we are about to throw an exception for " + formula);
 			throw new Exception();
 		}
 		int id = -100;
@@ -578,29 +579,29 @@ public class Sequent<FormulaType> {
 	}
 	
 	public void reportSubexpressionFormulas(){
-		System.out.println("SUBEXPRESSIONS REPORT for sequent " + id);
+//		System.out.println("SUBEXPRESSIONS REPORT for sequent " + id);
 		Set<OWLFormula> exprs = subexprs.getAllFormulas();
 		List<OWLFormula> sortedexprs = new ArrayList<>(exprs);
 		Comparator<OWLFormula> c = new OWLFormulaComparator();
 		sortedexprs.sort(c);
 		for (OWLFormula form : sortedexprs){
-			System.out.println(form.prettyPrint());
+//			System.out.println(form.prettyPrint());
 		}
-		System.out.println("\n");
+//		System.out.println("\n");
 	}
 	
 	public void reportAntecedent(){
-		System.out.println("ANTECEDENT REPORT for sequent " + id);
+//		System.out.println("ANTECEDENT REPORT for sequent " + id);
 		Set<OWLFormula> exprs = antecedent.getAllFormulas();
 		List<OWLFormula> sortedexprs = new ArrayList<>(exprs);
 		Comparator<OWLFormula> c = new OWLFormulaComparator();
 		sortedexprs.sort(c);
 		int i = 0;
 		for (OWLFormula form : sortedexprs){
-			System.out.println(i + ": " + form.prettyPrint() + " {" + getFormulaDepth(antecedentFormulaGetID(form)) + "}");
+//			System.out.println(i + ": " + form.prettyPrint() + " {" + getFormulaDepth(antecedentFormulaGetID(form)) + "}");
 			i++;
 		}
-		System.out.println("\n");
+//		System.out.println("\n");
 	}
 	
 }

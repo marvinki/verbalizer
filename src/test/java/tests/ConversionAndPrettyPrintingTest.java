@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.semanticweb.cogExp.core.Pair;
-import org.semanticweb.cogExp.inferencerules.AdditionalDLRules;
 import org.semanticweb.cogExp.FormulaConverter.ConversionManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.SentenceOWLObjectVisitor;
 //import org.semanticweb.cogExp.OWLAPIVerbaliser.TextElementOWLObjectVisitor;
@@ -15,6 +13,7 @@ import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbaliseTreeManager;
 // import org.semanticweb.cogExp.OWLAPIVerbaliser.WordNetQuery;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
+import org.semanticweb.cogExp.core.Pair;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -83,7 +82,7 @@ public class ConversionAndPrettyPrintingTest {
 		// Sentences
 		System.out.println("\n\n English sentences...\n");
 		// WordNetQuery.INSTANCE.disableDict();
-		VerbaliseTreeManager.setLocale(Locale.GERMAN);
+		VerbaliseTreeManager.INSTANCE.init(Locale.GERMAN);
 		SentenceOWLObjectVisitor sentenceOWLObjectVisit = new SentenceOWLObjectVisitor();
 		
 		OWLSubClassOfAxiom subcl1 =  dataFactory.getOWLSubClassOfAxiom(class1,class2);

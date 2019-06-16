@@ -47,9 +47,9 @@ public class Birds {
 				reasoner);
 		// GentzenTree tree2 = ProofBasedExplanationService.computeTree("CoalTit", "Tit", "/Users/marvin/work/ki-ulm-repository/miscellaneous/Bosch/Ontologien/ornithology.owl", reasonerFactory, reasoner);
 		
-		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+//		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		String result2 = VerbaliseTreeManager.verbaliseNL(tree2, false, true, false, null);
-		System.out.println(result2);
+//		System.out.println(result2);
 	}
 
 }

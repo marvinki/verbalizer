@@ -24,37 +24,34 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.semanticweb.cogExp.OWLAPIVerbaliser.OWLAPIManagerManager;
-import org.semanticweb.cogExp.OWLAPIVerbaliser.VerbalisationManager;
 import org.semanticweb.cogExp.OWLFormulas.OWLAtom;
 import org.semanticweb.cogExp.OWLFormulas.OWLClassName;
+import org.semanticweb.cogExp.OWLFormulas.OWLDataPropertyName;
 import org.semanticweb.cogExp.OWLFormulas.OWLDataRan;
 import org.semanticweb.cogExp.OWLFormulas.OWLFormula;
 import org.semanticweb.cogExp.OWLFormulas.OWLIndividualName;
 import org.semanticweb.cogExp.OWLFormulas.OWLInteger;
 import org.semanticweb.cogExp.OWLFormulas.OWLLiteralType;
 import org.semanticweb.cogExp.OWLFormulas.OWLLiteralValue;
-import org.semanticweb.cogExp.OWLFormulas.OWLRoleName;
-import org.semanticweb.cogExp.OWLFormulas.OWLDataPropertyName;
 import org.semanticweb.cogExp.OWLFormulas.OWLObjectPropertyName;
+import org.semanticweb.cogExp.OWLFormulas.OWLRoleName;
 import org.semanticweb.cogExp.OWLFormulas.OWLSymb;
-import org.semanticweb.cogExp.PrettyPrint.PrettyPrintOWLObjectVisitor;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.vocab.XSDVocabulary;
 
 public enum ConversionManager {
@@ -304,7 +301,7 @@ public enum ConversionManager {
 					result = dataFactory.getOWLSubPropertyChainOfAxiom(props, subp2);
 				}
 				else{
-					System.out.println("DBG conversion, converting : " + formula);
+//					System.out.println("DBG conversion, converting : " + formula);
 					OWLObjectPropertyExpression subp1 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(0));
 					OWLObjectPropertyExpression subp2 = (OWLObjectPropertyExpression) toOWLAPI(tail.get(1));
 					result = dataFactory.getOWLSubObjectPropertyOfAxiom(subp1,subp2);

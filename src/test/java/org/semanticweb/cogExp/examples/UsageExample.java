@@ -29,7 +29,7 @@ public class UsageExample {
 	
 	public static void main(String[] args) throws OWLOntologyCreationException{
 	
-	VerbaliseTreeManager.setLocale(Locale.ENGLISH);	
+	VerbaliseTreeManager.INSTANCE.init(Locale.ENGLISH);	
 		
 	// load an ontology through the OWL API
 	File file = new File(".");
@@ -75,7 +75,7 @@ public class UsageExample {
 	GentzenTree tree = VerbalisationManager.computeGentzenTree(axiom,reasoner, reasonerFactory, ont, 100, 1000, "OP");
 	
 	// Output the proof tree (each line is a rule application: rule name, conclusion, premises)
-	System.out.println("Prooftree \n" + VerbaliseTreeManager.listOutput(tree) + "\n");
+	System.out.println("Prooftree \n" + VerbaliseTreeManager.INSTANCE.listOutput(tree) + "\n");
 	
 	// Generate the explanation from the proof tree
 	String explanation = VerbalisationManager.computeVerbalization(tree, false, false, null);
