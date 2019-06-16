@@ -33,7 +33,7 @@ import org.json.JSONObject;
  */
 public class TextElementSequence extends TextElement{
 
-	private List<TextElement> sequence = new ArrayList<TextElement>();
+	protected List<TextElement> sequence = new ArrayList<TextElement>();
 	
 	
 	/**
@@ -80,6 +80,8 @@ public class TextElementSequence extends TextElement{
 				result += " ";
 			result += elem.toString();
 			needsep = true;
+			if (elem instanceof LinebreakElement)
+				needsep = false;
 		}
 		result.trim();
 		return result;
@@ -252,7 +254,7 @@ public class TextElementSequence extends TextElement{
 		int itemcounter = 0;
 		for (TextElement element : sequence){
 			
-			System.out.println("dealing with " + element + " " + element.getClass());
+			// System.out.println("dealing with " + element + " " + element.getClass());
 			
 			if (element instanceof ClassElement){
 				ClassElement classElement = (ClassElement) element;

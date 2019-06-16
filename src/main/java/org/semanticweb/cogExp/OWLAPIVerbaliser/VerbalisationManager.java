@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -509,7 +510,8 @@ public enum VerbalisationManager {
 		}
 
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(property);
-
+		
+		
 		// Obfuscate, if needed
 		if (obfuscator != null) {
 			propstring = obfuscator.obfuscateRole(propstring);
@@ -548,7 +550,7 @@ public enum VerbalisationManager {
 	}
 
 	public List<TextElement> textualiseProperty(OWLObjectPropertyExpression property,
-			List<List<TextElement>> fillerelements, List<TextElement> middle) {
+			List<List<TextElement>> fillerelements, List<TextElement> middle,boolean... matchPlural) {
 		// String result = "";
 		List<TextElement> result = new ArrayList<TextElement>();
 		//
@@ -577,6 +579,14 @@ public enum VerbalisationManager {
 				// "-successor ";;
 			}
 		} else {
+			
+			if (propstring.indexOf("[is/are]") >= 0){
+				propstring = propstring.substring(8);
+				if (matchPlural.length>0)
+					propstring = "are" + propstring;
+				else
+					propstring = "is" + propstring;
+			} 
 			result.add(new RoleElement(propstring));
 		}
 
@@ -607,7 +617,7 @@ public enum VerbalisationManager {
 	}
 	
 	public static Sentence textualisePropertyAsSentence(OWLObjectPropertyExpression property,
-			List<List<TextElement>> fillerelements, List<TextElement> middle) {
+			List<List<TextElement>> fillerelements, List<TextElement> middle, boolean... matchPlural) {
 		Sentence result = new Sentence();
 		
 		//
@@ -639,6 +649,13 @@ public enum VerbalisationManager {
 				// "-successor ";;
 			}
 		} else {
+			if (propstring.indexOf("[is/are]") >= 0){
+				propstring = propstring.substring(8);
+				if (matchPlural.length>0)
+					propstring = "are" + propstring;
+				else
+					propstring = "is" + propstring;
+			} 
 			result.setPraedikat(new RoleElement(propstring));
 		}
 
@@ -1037,11 +1054,10 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			for (OWLAnnotation annotation : annotations) {
 				
 				if (VerbaliseTreeManager.locale==Locale.GERMAN) {
-					System.out.println("----- GERMAN LOCALE --------");
+					// System.out.println("----- GERMAN LOCALE --------");
 					if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
 							&& OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("de")){ //is locale german ?
 						str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral() ;// annotation.getValue().toString()
-						System.out.println("prop " + annotation.getProperty());
 						if (annotation.getProperty().isLabel())
 							labelStr = str;
 						if (!labelStr.equals(""))
@@ -1059,32 +1075,20 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 				
 				if (VerbaliseTreeManager.locale==Locale.ENGLISH) { // is locale english ?
 
-					System.out.println("----- ENGLISH LOCALE -----");
+					// System.out.println("----- ENGLISH LOCALE -----");
 					if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
 							//&& OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent() 
 							&& OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("en")){
 						str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral() ;// annotation.getValue().toString()
 						
 		
-						
-						System.out.println(" prop (1): " + annotation.getProperty());
-						System.out.println(" prop (1): " + annotation.getProperty().getIRI());
-						System.out.println(" prop (1): " + annotation.getProperty().getIRI().equals(OWLRDFVocabulary.RDFS_LABEL.getIRI()));
-						System.out.println(" name is " + str); 
 						labelFound = true;
 					}if(OWLAPICompatibility.asLiteral(annotation.getValue()).isPresent()
 							&& !OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().hasLang("de")	// <-- ignore this if english local and german label is found
 							){
-						// Marvin: using quotes makes Mrs Koelle's structural cueing module crash.
-				
-						System.out.println(" Annotation object " + annotation);
-						
-				
+
 						str = OWLAPICompatibility.asLiteral(annotation.getValue()).orNull().getLiteral();
-						System.out.println("prop " + annotation.getProperty().getEntityType());
-						System.out.println(" prop (2): " + annotation.getProperty().getIRI());
-						System.out.println(" prop (2): " + annotation.getProperty().getIRI().equals(OWLRDFVocabulary.RDFS_LABEL.getIRI()));
-						if (annotation.getProperty().asOWLAnnotationProperty().getIRI().toString().equals("http://www.w3.org/2000/01/rdf-schema#label"))
+							if (annotation.getProperty().asOWLAnnotationProperty().getIRI().toString().equals("http://www.w3.org/2000/01/rdf-schema#label"))
 						// if (annotation.getProperty().isLabel())
 							labelStr = str;
 						if (!labelStr.equals(""))
@@ -1352,7 +1356,7 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 			// first case: more than one noun
 			// start with nouns, then use "that is"
 			for (String str : noun_concepts_strings) {
-				System.out.println("}" + str + "{");
+				// System.out.println("}" + str + "{");
 				if (firstToken == true) {
 					firstToken = false;
 					str = aOrAnIfy(str);
@@ -1706,6 +1710,9 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 
 		}
 		String propstring = VerbalisationManager.INSTANCE.getPropertyNLString(commonpropexpr);
+		if (propstring.indexOf("[is/are]") >= 0){
+			propstring = propstring.substring(8);
+		}
 		String middlepart = "";
 		boolean needsep = false;
 		boolean innersep = false;
@@ -2282,20 +2289,49 @@ System.out.println("textualiseDataPropertyAsSentence returns " + result);
 		return input;
 	}
 	
-	public static void verbalizeAllOntologyAxioms(String ontologypath){
+	public static List<TextElementSequence> verbalizeAllOntologyAxioms(String ontologypath){
 		File ontologyfile = new java.io.File(ontologypath);
+		List<TextElementSequence> result = new ArrayList<TextElementSequence>();
 		try {
 			OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyfile);
 			Set<OWLAxiom> axioms = ontology.getAxioms();
 			for (OWLAxiom ax : axioms){
 				TextElementSequence tes = textualise(ax);
-				System.out.println(tes.toString());
+				result.add(tes);
 			}
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return result;
 		
+	}
+	
+	public static List<String> verbalizeAllOntologyAxiomsAsStrings(String ontologypath){
+		List<TextElementSequence> tes =  verbalizeAllOntologyAxioms(ontologypath);
+		List<String> result = new ArrayList<String>();
+		for (TextElementSequence te : tes){
+			String st = te.toString();
+			if (st.length()>1 && st.startsWith(" "))
+				st = st.substring(1);
+			st = VerbaliseTreeManager.makeUppercaseStart(st);
+			st = st + ".";
+			boolean contained = false;
+			for (String str : result){
+				if (str.equals(st)){
+					contained = true;
+					break;
+				}
+			}
+			if (!contained)
+				result.add(st);
+		}
+		Collections.sort(result,String.CASE_INSENSITIVE_ORDER);
+		return result;
+	}
+	
+	public static boolean isEnglishPlural(String st){
+		return (st.endsWith("men") || st.endsWith("es") || st.endsWith("fs") ||st.endsWith("ls") || st.endsWith("ns") || st.endsWith("ks") || st.endsWith("bs") || st.endsWith("ts") || st.endsWith("pi") ||st.endsWith("ce") || st.endsWith("eet")|| st.endsWith("as")|| st.endsWith("ghs"));
 	}
 
 }

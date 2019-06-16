@@ -427,7 +427,9 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	/**
 	 * @return When recursion is used with sentences, this can be used to access the plain content independent of language
 	 */
-	public TextElementSequence toTextElementSequence(){		
+	public TextElementSequence toTextElementSequence(){	
+		if (sentenceMade)
+			return this;
 		if(order!=null){
 			switch(getOrder()){
 			case A_B_is:
@@ -580,7 +582,8 @@ public Sentence(TextElementSequence subjekt, TextElementSequence praedikat, Text
 	public String inspect(){
 		String result = "";
 		result = "Sentence: " + this.toString() + "\n";
-		result = result + subjekt.toString() + " -- " + praedikat.toString() + " -- " + objekt.toString();
+		result = result + subjekt.toString() + " -- " + praedikat.toString() + " -- " + objekt.toString() + "\n";;
+		result = result + this.sequence + "\n";
 	return result;
 }	
 	

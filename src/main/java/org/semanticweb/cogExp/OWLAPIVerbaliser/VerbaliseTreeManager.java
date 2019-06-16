@@ -191,7 +191,7 @@ public enum VerbaliseTreeManager {
 				    || infrule.equals(INLG2012NguyenEtAlRules.RULE5)
 				    || infrule.equals(INLG2012NguyenEtAlRules.RULE1) // <-- definitions off
 				    || infrule.equals(AdditionalDLRules.RULE5MULTI)
-				    || infrule.equals(AdditionalDLRules.EQUIVEXTRACT) // <-- new
+				    //|| infrule.equals(AdditionalDLRules.EQUIVEXTRACT) // <-- new
 					// || infrule.equals(INLG2012NguyenEtAlRules.RULE15) // <-- new
 					|| (infrule.equals(AdditionalDLRules.R0) && !singletonStep)
 					|| (infrule.equals(AdditionalDLRules.TOPINTRO) && !singletonStep)
@@ -570,9 +570,11 @@ public enum VerbaliseTreeManager {
 					TextElementSequence firstpart = VerbalisationManager.textualise((OWLObject) additions_to_antecedent.get(0),obfuscator);
 					firstpart.makeUppercaseStart();
 					implied_conclusions.add(ConversionManager.fromOWLAPI((OWLSubClassOfAxiom) additions_to_antecedent.get(0)));
+					/*
 					for (OWLFormula form : implied_conclusions){
 						System.out.println("now contain: " + form);
 					}
+					*/
 					
 					return firstpart;
 					// return firstpart;
@@ -1014,11 +1016,6 @@ public enum VerbaliseTreeManager {
 								}
 								else {
 
-									// System.out.println("DEBUG --- Absolute Else case");
-
-									// System.out.println("DEBUG --- Absolute Else case");
-										
-
 									seq.add(new LogicElement(VerbalisationManager.LogicLabels.getString("since"))); 
 									// resultstring += "Since ";
 								};
@@ -1043,6 +1040,7 @@ public enum VerbaliseTreeManager {
 						};
 						needsep = true;
 						// resultstring += VerbalisationManager.verbalise( (OWLObject) formula);
+		
 						seq.concat(VerbalisationManager.textualise((OWLObject) formula));
 						
 					}
@@ -2002,10 +2000,8 @@ public enum VerbaliseTreeManager {
 	}
 	
 	public static void setLocale(Locale alocale) {
-		System.out.println("Setting locale " + locale);
 		VerbaliseTreeManager.locale = alocale;
-		// System.out.println("setting locale...");
-		LogicLabels =  ResourceBundle.getBundle("LogicLabels", locale);
+		LogicLabels =  ResourceBundle.getBundle("LogicLabels", alocale);
 	}
 
 
