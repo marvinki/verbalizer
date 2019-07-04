@@ -11,7 +11,7 @@ public class RunThroughOntologyAxioms {
 	public static void main(String[] args){
 	
 		VerbaliseTreeManager.INSTANCE.init(Locale.ENGLISH);	
-		List<String> sts = VerbalisationManager.verbalizeAllOntologyAxiomsAsStrings("U:\\project\\HI-013\\sparql_output.ttl");
+		List<String> sts = VerbalisationManager.verbalizeAllOntologyAxiomsAsStrings("<INSERT FILE NAME HERE>");
 		for (String st:sts){
 			 System.out.println(st);
 		}
